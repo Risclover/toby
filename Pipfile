@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+psycopg2-binary = "*"
+flask = "*"
+flask-cors = "*"
+flask-login = "*"
+python-dotenv = "*"
+flask-migrate = "*"
+flask-wtf = "*"
+flask-sqlalchemy = "*"
+flask-talisman = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
