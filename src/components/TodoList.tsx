@@ -10,6 +10,7 @@ export const TodoList = ({ list }: Props) => {
     const [completeTodo] = useCompleteTodoMutation()
 
     const handleCompleteTodo = async (e: MouseEvent, todoId: number) => {
+        e.preventDefault()
         await completeTodo({ todoId: todoId, listId: list.id })
         console.log("list:", list)
     }
