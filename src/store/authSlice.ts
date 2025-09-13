@@ -94,7 +94,14 @@ export const authSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Session"] })
                 body: { username, csrf_token: getCsrfTokenFromCookie() }
             })
         }),
-
+        checkEmail: builder.mutation<{ Message: boolean }, { email: string }>({
+            query: ({ email }) => ({
+                url: `/auth/signup/check-email/${email}`,
+                method: "POST",
+                credentials: "include",
+                body: { email }
+            })
+        })
 
     })
 })
@@ -107,4 +114,5 @@ export const {
     useJoinHouseholdMutation,
     useGenerateInviteMutation,
     useCheckUsernameMutation,
+    useCheckEmailMutation
 } = authSlice;

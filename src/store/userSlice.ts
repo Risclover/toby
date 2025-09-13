@@ -6,6 +6,10 @@ export const userSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["User"] }).in
             query: (userId) => `/users/${userId}`,
             providesTags: (result, error, userId) => [{ type: "User", id: userId }],
         }),
+        getAllUsers: builder.query({
+            query: () => `/users/`,
+            providesTags: (result, error, userId) => [{ type: "User", id: userId }],
+        }),
         // 1. Daily Checkin
         checkin: builder.mutation<{ message: string }, number | string | undefined>({
             query: (userId) => ({
@@ -62,6 +66,7 @@ export const userSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["User"] }).in
 
 export const {
     useGetUserQuery,
+    useGetAllUsersQuery,
     useCheckinMutation,
     useUpdateUserDetailsMutation,
     useTrackHabitMutation,
