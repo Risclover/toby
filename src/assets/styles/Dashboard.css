@@ -1,0 +1,14 @@
+.dashboard {
+    padding: 3rem;
+    width: 100%;
+}
+
+.dashboard h1 {
+    font-size: 2.25rem;
+}
+
+.dashboard-titlebar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
