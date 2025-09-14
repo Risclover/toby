@@ -3,8 +3,11 @@ import { skipToken } from "@reduxjs/toolkit/query"; // ⬅️ add this
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import "../assets/styles/Dashboard.css";
+import { Button } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
+    const navigate = useNavigate();
     const { data: user, isFetching: authFetching } = useAuthenticateQuery();
     const householdId = user?.householdId;
 
@@ -19,14 +22,20 @@ export const Dashboard = () => {
         console.log("user:", user);
     }, [user]);
 
+    const handleClick = (e) => {
+        e.preventDefault();
+        navigate("/login")
+    }
+
     return (
         <div className="dashboard">
             <div className="dashboard-titlebar">
                 <h1>{household?.name ?? (authFetching || householdFetching ? "…" : "")}</h1>
                 <div className="dashboard-titlebar-right">
                     <input type="search" name="search" id="search" placeholder="Search" />
-                    <button>Bell</button>
-                    <button>Gear</button>
+                    <Button variant="light" color="violet">Bell</Button>
+                    <Button variant="light" color="violet">Gear</Button>
+                    <Button variant="filled" color="violet" onClick={handleClick}>Sign In</Button>
                 </div>
             </div>
             <div className="dashboard-body">

@@ -45,7 +45,8 @@ export const Join = () => {
             {user?.errors && <form onSubmit={handleJoin}>
                 <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
                 <input type="username" id="username" name="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
-                <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />                <button type="submit">Submit</button>
+                <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+                <button type="submit">Submit</button>
             </form>}
         </>
     )
