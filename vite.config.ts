@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { dirname, resolve } from "path";
+import path from "path";
+import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -8,7 +10,7 @@ const __dirname = dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   server: {
     proxy: {
       host: 'localhost',
@@ -21,7 +23,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"),
-    }
+      "@": resolve(__dirname, "./src"),
+    },
+    dedupe: ["react", "react-dom"],
   }
 })

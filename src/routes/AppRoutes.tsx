@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { Join } from "../Join";
 import { SignUp } from "../SignUp";
 import { UserPage } from "../pages/UserPage";
-import { TodoLists } from "../components/TodoLists";
+import { TodoLists } from "../component/TodoLists";
 import { Dashboard } from "@/pages/Dashboard";
 import { SignIn } from "@/SignIn";
 

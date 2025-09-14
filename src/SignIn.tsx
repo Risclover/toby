@@ -2,7 +2,7 @@ import { useState, type MouseEvent } from "react";
 import { useAuthenticateQuery, useGenerateInviteMutation, useLoginMutation, useLogoutMutation } from "./store/authSlice";
 import { useAddTodoMutation, useCreateTodoListMutation, useGetTodoListQuery } from "./store/todoSlice";
 import { data } from "react-router-dom";
-import { Navbar } from "./components/Navbar";
+import { Navbar } from "./component/Navbar";
 
 export const SignIn = () => {
     const { data: user } = useAuthenticateQuery(undefined);
@@ -59,7 +59,7 @@ export const SignIn = () => {
 
     }
     return (
-        <>
+        <div className="login-page">
             {!user?.email && <form onSubmit={handleLogin}>
                 <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
                 <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
@@ -73,6 +73,6 @@ export const SignIn = () => {
             <button onClick={handleAddTodo}>Add Todo to Todo List</button>
 
 
-        </>
+        </div>
     )
 }
