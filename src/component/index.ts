@@ -1,5 +1,5 @@
 export { AddNewTodo } from "./AddNewTodo";
-export { Navbar } from "./Navbar";
+export { Layout } from "./Layout";
 export { TodoList } from "./TodoList";
-export { TodoLists } from "./TodoLists";
+export { HouseholdTodoLists } from "./HouseholdTodoLists";
 export { LoggedOutNavbar } from "./LoggedOutNavbar"

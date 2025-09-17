@@ -40,6 +40,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@reduxjs/toolkit": "^2.9.0",
+    "@tailwindcss/cli": "^4.1.13",
     "@tailwindcss/vite": "^4.1.13",
     "@tiptap/extension-link": "^3.4.2",
     "@tiptap/pm": "^3.4.2",

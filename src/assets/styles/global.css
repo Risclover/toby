@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
-* {
+/* * {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
@@ -10,8 +10,27 @@ body {
     font-family: "Rubik", sans-serif;
     font-style: normal;
     width: 100%;
+} */
+
+
+.single-btns svg,
+.single-btns .material-symbols-rounded {
+    font-size: 16px;
+    width: 16px;
+
 }
 
-.login-page {
-    margin-left: 270px;
+
+.full {
+    display: flex;
+    position: relative;
+}
+
+.main {
+    width: 100%;
+}
+
+a:nth-child(2) {
+    width: 100%;
+    text-align: start;
 }

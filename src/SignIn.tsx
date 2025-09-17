@@ -1,9 +1,6 @@
 import { useState, type MouseEvent } from "react";
 import { useAuthenticateQuery, useGenerateInviteMutation, useLoginMutation, useLogoutMutation } from "./store/authSlice";
-import { useAddTodoMutation, useCreateTodoListMutation, useGetTodoListQuery } from "./store/todoSlice";
-import { data } from "react-router-dom";
-import { Navbar } from "./component/Navbar";
-
+import { useAddTodoMutation, useCreateHouseholdTodoListMutation } from "./store/todoSlice";
 export const SignIn = () => {
     const { data: user } = useAuthenticateQuery(undefined);
     const [logout] = useLogoutMutation();
@@ -11,19 +8,16 @@ export const SignIn = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [title, setTitle] = useState("");
-
     const [inviteCode, setInviteCode] = useState("");
     const [generateInvite] = useGenerateInviteMutation();
-    const [createTodoList] = useCreateTodoListMutation();
+    const [createTodoList] = useCreateHouseholdTodoListMutation();
     const [addTodo] = useAddTodoMutation();
-    const [todoListId, setTodoListId] = useState();
-    const { data: todoList } = useGetTodoListQuery(todoListId);
+    const [todoListId, setTodoListId] = useState<number | undefined>();
 
+    const [listTitle, setListTitle] = useState("")
 
     const handleLogout = async () => {
         await logout();
-        console.log('user:', user)
         setEmail("");
         setPassword("");
     }
@@ -48,16 +42,14 @@ export const SignIn = () => {
     const handleCreateNewTodoList = async (e: MouseEvent) => {
         e.preventDefault();
         const { data } = await createTodoList({ title: "Hello", userId: user.id, householdId: user.householdId });
-        console.log('data:', data)
-        setTodoListId(data.id);
+        setTodoListId(data?.id);
     }
 
     const handleAddTodo = async (e: MouseEvent) => {
         e.preventDefault();
-        const { data } = await addTodo({ title: "One", description: "One todo", status: "in_progress", priority: "low", dueDate: undefined, assignedToId: user?.id, listId: todoListId })
-        console.log('data:', todoList);
-
+        await addTodo({ title: "One", description: "One todo", status: "in_progress", priority: "low", dueDate: undefined, assignedToId: user?.id, listId: todoListId })
     }
+
     return (
         <div className="login-page">
             {!user?.email && <form onSubmit={handleLogin}>

@@ -24,8 +24,9 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarTrigger,
 } from "../components/ui/sidebar"
-
+import DashboardIcon from '@mui/icons-material/Dashboard';
 // This is sample data.
 const data = {
   user: {
@@ -51,6 +52,11 @@ const data = {
     },
   ],
   navMain: [
+    {
+      title: "Dashboard",
+      url: "/",
+      icon: DashboardIcon,
+    },
     {
       title: "Playground",
       url: "#",
