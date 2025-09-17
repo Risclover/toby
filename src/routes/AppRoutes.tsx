@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { Join } from "../Join";
 import { SignUp } from "../SignUp";
 import { UserPage } from "../pages/UserPage";
-import { TodoLists } from "../component/TodoLists";
+import { HouseholdTodoLists } from "../component/HouseholdTodoLists";
 import { Dashboard } from "@/pages/Dashboard";
 import { SignIn } from "@/SignIn";
 
@@ -12,7 +12,7 @@ export const AppRoutes = () => {
             <Route path="/join/:inviteCode" element={<Join />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/users/:userId" element={<UserPage />} />
-            <Route path="/todo_lists" element={<TodoLists />} />
+            <Route path="/tasks" element={<HouseholdTodoLists />} />
             <Route path="/login" element={<SignIn />} />
             <Route path="/" element={<Dashboard />} />
         </Routes>

@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, type MouseEvent } from "react";
 import { skipToken } from "@reduxjs/toolkit/query"; // ⬅️ add this
-import { useAuthenticateQuery } from "@/store/authSlice";
+import { useAuthenticateQuery, useLogoutMutation } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import "../assets/styles/Dashboard.css";
 import { Button } from "@mantine/core";
@@ -10,6 +10,7 @@ export const Dashboard = () => {
     const navigate = useNavigate();
     const { data: user, isFetching: authFetching } = useAuthenticateQuery();
     const householdId = user?.householdId;
+    const [logout] = useLogoutMutation()
 
     // Only run the query once we have an id
     const {
@@ -22,9 +23,13 @@ export const Dashboard = () => {
         console.log("user:", user);
     }, [user]);
 
-    const handleClick = (e) => {
+    const handleSignIn = (e: MouseEvent) => {
         e.preventDefault();
         navigate("/login")
+    }
+
+    const handleLogout = async () => {
+        await logout();
     }
 
     return (
@@ -35,7 +40,7 @@ export const Dashboard = () => {
                     <input type="search" name="search" id="search" placeholder="Search" />
                     <Button variant="light" color="violet">Bell</Button>
                     <Button variant="light" color="violet">Gear</Button>
-                    <Button variant="filled" color="violet" onClick={handleClick}>Sign In</Button>
+                    {!user?.email ? <Button variant="filled" color="violet" onClick={handleSignIn}>Sign In</Button> : <Button variant="filled" color="violet" onClick={handleLogout}>Log Out</Button>}
                 </div>
             </div>
             <div className="dashboard-body">
