@@ -6,6 +6,7 @@ import { CreateTodoListMembers } from "./CreateTodoListMembers";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useMemberSelection } from "@/hooks/useMemberSelection";
+import AddIcon from '@mui/icons-material/Add';
 
 type CreateTodoList = {
     householdId: number
@@ -79,7 +80,7 @@ export const CreateTodoList = ({ householdId }: { householdId: number }) => {
             </Modal>
 
             <Button variant="filled" color="violet" onClick={open}>
-                Create Todo List
+                <AddIcon />
             </Button>
         </div>
     );

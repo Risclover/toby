@@ -1,36 +1,103 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
-/* * {
+:root {
+    --sidebar-w: 240px;
+    --sidebar-w-collapsed: 64px;
+
+    --bg: #0f172a;
+    /* page bg */
+    --surface: #1f2937;
+    /* sidebar bg */
+    --text: #e5e7eb;
+    /* text */
+    --hover: #374151;
+    /* hover */
+    --ring: #a78bfa;
+    /* focus ring */
+    --sidebar-w: 240px;
+    --sidebar-w-collapsed: 64px;
+
+    /* smoother & nicer easing */
+    --t: 260ms cubic-bezier(.22, .61, .36, 1);
+
+}
+
+* {
     box-sizing: border-box;
-    padding: 0;
-    margin: 0;
+}
+
+html,
+body,
+#root {
+    height: 100%;
 }
 
 body {
-    font-family: "Rubik", sans-serif;
-    font-style: normal;
-    width: 100%;
-} */
-
-
-.single-btns svg,
-.single-btns .material-symbols-rounded {
-    font-size: 16px;
-    width: 16px;
-
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.4 system-ui;
 }
 
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span {
 
-.full {
-    display: flex;
-    position: relative;
+    font-family: "IBM Plex Sans", sans-serif;
 }
 
-.main {
-    width: 100%;
+button {
+    font-family: "Noto Sans", sans-serif !important;
+    font-weight: 500 !important;
 }
 
-a:nth-child(2) {
-    width: 100%;
-    text-align: start;
+html.preload .sidebar {
+    transition: none !important;
+}
+
+/* If user prefers collapsed, render collapsed BEFORE React hydrates */
+html.prefers-collapsed .sidebar {
+    width: var(--sidebar-w-collapsed);
+}
+
+html.prefers-collapsed .sidebar .title {
+    opacity: 0;
+    max-width: 0;
+    margin: 0;
+}
+
+html.prefers-collapsed .sidebar .nav-link {
+    grid-template-columns: 28px;
+    justify-content: center;
+    padding: 10px;
+}
+
+html.prefers-collapsed .sidebar .nav-link .label {
+    opacity: 0;
+    max-width: 0;
+    margin: 0;
+}
+
+.app {
+    min-height: 100dvh;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    /* let .sidebar's width drive the column */
+}
+
+.sidebar {
+    background: var(--surface);
+}
+
+.content {
+    padding: 24px;
+}
+
+button svg {
+    font-size: 1.25rem !important;
 }

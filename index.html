@@ -17,6 +17,24 @@
 
 <body>
   <div id="root"></div>
+  <script>
+    (function () {
+      // prevent first-paint animations
+      document.documentElement.classList.add('preload');
+      // apply collapsed preference before paint
+      try {
+        if (localStorage.getItem('sidebar-collapsed') === '1') {
+          document.documentElement.classList.add('prefers-collapsed');
+        }
+      } catch (e) { }
+      // remove preload after first frame
+      window.addEventListener('DOMContentLoaded', function () {
+        requestAnimationFrame(function () {
+          document.documentElement.classList.remove('preload');
+        });
+      });
+    })();
+  </script>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
