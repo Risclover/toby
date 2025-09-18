@@ -1,8 +1,10 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import type { TodoListType } from "@/store/todoSlice";
-import { Avatar, Card, Progress, Tooltip } from "@mantine/core";
+import { Avatar, Card, Checkbox, Progress, Tooltip } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { HouseholdTasklistTask } from "./HouseholdTasklistTask";
+import { useMemo } from "react";
 
 type HouseholdTasklistProps = {
     list: TodoListType;
@@ -22,9 +24,21 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
     const visible = members.slice(0, VISIBLE);
     const hidden = members.slice(VISIBLE);
 
+    console.log('list:', list.todos)
+
     const nameOf = (p: any) => p?.displayName || p?.username || "Member";
     const avatarInitial = (p: any) =>
         (p?.displayName?.[0] || p?.username?.[0] || "?").toUpperCase();
+
+    const todos = list?.todos ?? [];
+
+    const { done, total, percent } = useMemo(() => {
+        const total = todos.length;
+        const done = todos.filter(t => t.status === "completed").length;
+        const raw = total ? (done / total) * 100 : 0;
+        const percent = Math.min(100, Math.max(0, Math.round(raw)));
+        return { done, total, percent };
+    }, [todos]);
 
     if (!list?.memberIds?.includes(user?.id)) return null;
 
@@ -50,7 +64,7 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
                             <Tooltip
                                 withArrow
                                 label={
-                                    <div style={{ lineHeight: 1.2 }}>
+                                    <div>
                                         {hidden.map((p: any) => (
                                             <div key={p.id}>{nameOf(p)}</div>
                                         ))}
@@ -66,7 +80,16 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
                 </Tooltip.Group>
             </div>
 
-            <Progress value={0} />
+            <div className="progress">
+                <div className="progress-left">
+                    <Progress color="violet" value={percent} />
+                </div>
+                {percent}%
+            </div>
+            {list.todos?.map((todo) => todo.status !== "completed" && <HouseholdTasklistTask task={todo} />)}
+            {list?.todos && (list?.todos?.length - 3) > 0 && <div className="household-tasklist-bottom">
+                + 1 more task{list?.todos.length > 1 && "s"}
+            </div>}
         </Card>
     );
 }

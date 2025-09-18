@@ -29,7 +29,7 @@ export const HouseholdTasklists = () => {
             <div className="household-tasklists-heading">
                 <div className="household-tasklists-heading-title">
                     <h1>Tasklists</h1>
-                    <p>Shared lists for your household</p>
+                    <p>Shared lists for your household. Click to open full list.</p>
                 </div>
                 <CreateTodoList householdId={householdId} />
             </div>
@@ -42,6 +42,7 @@ export const HouseholdTasklists = () => {
                     <HouseholdTasklist key={list.id} list={list} />
                 ))}
             </div>
+
         </div>
     );
 };
