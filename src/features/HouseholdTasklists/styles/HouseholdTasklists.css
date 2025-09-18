@@ -45,6 +45,31 @@
     margin-bottom: 1rem;
 }
 
+.progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.75rem;
+}
+
+.progress-left {
+    width: 85%;
+}
+
+.household-tasklist-task {
+    margin-top: 0.825rem;
+}
+
+.household-tasklist-bottom {
+    border-top: 1px solid lightgray;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--mantine-color-violet-filled);
+}
+
 @media (width >=40rem) {
     .household-tasklists-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr))
