@@ -21,7 +21,7 @@ const items: Item[] = [
         ),
     },
     {
-        href: "/tasks",
+        href: "/tasklists",
         label: "Tasks",
         ariaLabel: "Tasks",
         icon: (

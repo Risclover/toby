@@ -62,9 +62,6 @@
 }
 
 .household-tasklist-bottom {
-    border-top: 1px solid lightgray;
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--mantine-color-violet-filled);

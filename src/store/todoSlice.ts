@@ -78,38 +78,50 @@ export interface DeleteListRequest {
 export interface CompleteTodoRequest {
     todoId: number;
     listId: number;
+    completed: boolean;
+    householdId?: number;
 }
+
+type TodoListTag = { type: "TodoList"; id: number | string };
 
 export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }).injectEndpoints({
     endpoints: (builder) => ({
         getTodoList: builder.query<TodoListType, number | undefined>({
             query: (todoListId) => `/todo_lists/${todoListId}`,
-            providesTags: (result, error, todoListId) =>
-                result ? [{ type: "TodoList", id: todoListId }] : [{ type: "TodoList", id: todoListId }],
-        }),
-        getTodoLists: builder.query<TodoListType[], void>({
-            query: (householdId) => `/todo_lists/${householdId}`,
-            transformResponse: (body: unknown) =>
-                Array.isArray(body) ? body : [],
-            providesTags: (result) =>
-                result
-                    ? [
-                        ...result.map((list) => ({ type: "TodoList" as const, id: list.id })),
-                        { type: "TodoList", id: "LIST" },
-                    ]
-                    : [{ type: "TodoList", id: "LIST" }],
-        }),
-        completeTodo: builder.mutation<Todo, CompleteTodoRequest>({
-            query: ({ todoId }) => ({
-                url: `/todos/${todoId}/completed`,
-                method: "PUT",
-                // no body needed
-            }),
-            invalidatesTags: (result, error, { listId }) => [
-                { type: "TodoList", id: listId }
+            providesTags: (result, error, todoListId): TodoListTag[] => [
+                { type: "TodoList", id: todoListId ?? "LIST" }, // string | number
             ],
         }),
 
+        getTodoLists: builder.query<TodoListType[], number>({
+            query: (householdId) => `/todo_lists/${householdId}`,
+            providesTags: (result, _error, householdId): TodoListTag[] =>
+                result?.length
+                    ? [
+                        ...result.map((l) => ({ type: "TodoList", id: l.id } as TodoListTag)),
+                        { type: "TodoList", id: `HOUSEHOLD_${householdId}` }, // string tag ok
+                        { type: "TodoList", id: "LIST" },
+                    ]
+                    : [
+                        { type: "TodoList", id: `HOUSEHOLD_${householdId}` },
+                        { type: "TodoList", id: "LIST" },
+                    ],
+        }),
+
+        completeTodo: builder.mutation<Todo, CompleteTodoRequest>({
+            query: ({ todoId, completed }) => ({
+                url: `/todos/${todoId}/completed`,
+                method: "PUT",
+                body: { completed },
+            }),
+            invalidatesTags: (result, error, { listId, householdId }): TodoListTag[] => {
+                const tags: TodoListTag[] = [{ type: "TodoList", id: listId }];
+                if (householdId != null) tags.push({ type: "TodoList", id: `HOUSEHOLD_${householdId}` });
+                // keep the list “bucket” fresh too
+                tags.push({ type: "TodoList", id: "LIST" });
+                return tags;
+            },
+        }),
         createHouseholdTodoList: builder.mutation<TodoListType, CreateTodoListRequest>({
             query: (arg) => {
                 // user-owned

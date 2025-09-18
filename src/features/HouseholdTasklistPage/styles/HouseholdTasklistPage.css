@@ -1,0 +1,16 @@
+.household-tasklist-page-progress {
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.household-tasklist-page-task {
+    display: flex;
+
+}
+
+.completed-task {
+    text-decoration: line-through;
+}
