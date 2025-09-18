@@ -3,6 +3,7 @@ import { useAuthenticateQuery } from "../store/authSlice"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { AppRoutes } from "@/routes"
+import Sidebar from "@/layout/Sidebar"
 export const Layout = () => {
     const { open } = useSidebar();
     return (
@@ -14,7 +15,7 @@ export const Layout = () => {
         //     <li><Link to={`/users/${user?.id}`}>Profile</Link></li>
         // </ul>
         <>
-            <AppSidebar />
+            <Sidebar />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">

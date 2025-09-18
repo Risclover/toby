@@ -1,7 +1,7 @@
 import { apiSlice } from "./apiSlice";
 
 export type Household = { id: number; name: string };
-export type TodoList = { id: number; name: string; createdAt: string; memberIds: number[] };
+export type TodoList = { id: number; title: string; createdAt: string; memberIds: number[] };
 
 const householdSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Household", "TodoList"] }).injectEndpoints({
     endpoints: (builder) => ({

@@ -22,6 +22,7 @@ export function CreateTodoListMembers({
     return (
         <Fieldset legend="Who is this list for?">
             <Checkbox
+                color="violet"
                 className=""
                 size="xs"
                 label="All household members"
@@ -35,6 +36,7 @@ export function CreateTodoListMembers({
                         <Stack gap="xs" ml="lg">
                             {members?.map((m) => (
                                 <Checkbox
+                                    color="violet"
                                     key={m.id}
                                     size="xs"
                                     label={

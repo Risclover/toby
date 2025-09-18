@@ -18,9 +18,10 @@ export interface TodoListType {
     title: string;
     userId?: number;
     householdId?: number;
+    memberIds?: number[];
     todos?: Todo[];
     createdAt: string;   // <- camelCase
-    updatedAt: string;
+    updatedAt?: string;
 }
 
 type CreateTodoListBase = {
