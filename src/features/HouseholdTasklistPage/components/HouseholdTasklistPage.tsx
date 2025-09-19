@@ -9,6 +9,7 @@ import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { HouseholdTasklistPageAddTask } from "./HouseholdTasklistPageAddTask";
 import { EditableTitle } from "../../../component/EditableTitle";
 import { HouseholdTasklistPageList } from "./HouseholdTasklistPageList";
+import { TaskListDnd } from "./TaskListDnd";
 
 export const HouseholdTasklistPage = () => {
     const { tasklistId } = useParams();
@@ -60,7 +61,6 @@ export const HouseholdTasklistPage = () => {
             </div>
 
             <HouseholdTasklistPageList tasklist={tasklist} />
-
             <HouseholdTasklistPageAddTask listId={tasklist?.id} /> {/* number, not undefined */}
         </div>
     );

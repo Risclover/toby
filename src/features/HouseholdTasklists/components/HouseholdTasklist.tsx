@@ -1,10 +1,10 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import type { TodoListType } from "@/store/todoSlice";
-import { Avatar, Card, Checkbox, Divider, Progress, Tooltip } from "@mantine/core";
+import { Avatar, Card, Divider, Progress, Tooltip } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklistTask } from "./HouseholdTasklistTask";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 type HouseholdTasklistProps = {
@@ -17,9 +17,24 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
         user?.householdId ?? skipToken
     );
 
-    const uncompletedTodos = list?.todos?.filter((todo) => todo.status === "in_progress");
-
     const navigate = useNavigate();
+
+    // Sort by sortIndex (stable tiebreaker by id)
+    const todosSorted = useMemo(() => {
+        const todos = list?.todos ?? [];
+        return [...todos].sort((a: any, b: any) => {
+            const ai = a.sortIndex ?? 0;
+            const bi = b.sortIndex ?? 0;
+            if (ai !== bi) return ai - bi;
+            return (a.id ?? 0) - (b.id ?? 0);
+        });
+    }, [list?.todos]);
+
+    // Uncompleted from the sorted array
+    const uncompletedTodos = useMemo(() => {
+        // If you specifically want only "in_progress" change predicate accordingly.
+        return todosSorted.filter((t: any) => t.status !== "completed");
+    }, [todosSorted]);
 
     const members =
         household?.members?.filter((m: any) => list?.memberIds?.includes(m?.id)) ??
@@ -29,8 +44,6 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
     const visible = members.slice(0, VISIBLE);
     const hidden = members.slice(VISIBLE);
 
-    console.log('list:', list.todos)
-
     const nameOf = (p: any) => p?.displayName || p?.username || "Member";
     const avatarInitial = (p: any) =>
         (p?.displayName?.[0] || p?.username?.[0] || "?").toUpperCase();
@@ -39,7 +52,7 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
 
     const { done, total, percent } = useMemo(() => {
         const total = todos.length;
-        const done = todos.filter(t => t.status === "completed").length;
+        const done = todos.filter((t: any) => t.status === "completed").length;
         const raw = total ? (done / total) * 100 : 0;
         const percent = Math.min(100, Math.max(0, Math.round(raw)));
         return { done, total, percent };
@@ -47,14 +60,20 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
 
     const navigateToTasklistPage = () => {
         navigate(`/tasklists/${list.id}`);
-    }
-
-    console.log("uncompleted:", uncompletedTodos)
+    };
 
     if (!list?.memberIds?.includes(user?.id)) return null;
 
+    const remainingCount = Math.max(0, (uncompletedTodos?.length ?? 0) - 3);
+
     return (
-        <Card shadow="sm" padding="lg" radius="md" withBorder onClick={navigateToTasklistPage}>
+        <Card
+            shadow="sm"
+            padding="lg"
+            radius="md"
+            withBorder
+            onClick={navigateToTasklistPage}
+        >
             <div className="tasklist-head">
                 {list.title}
                 <Tooltip.Group openDelay={300} closeDelay={100}>
@@ -97,11 +116,18 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
                 </div>
                 {percent}%
             </div>
-            {uncompletedTodos && uncompletedTodos.slice(0, 3).map((todo) => <HouseholdTasklistTask task={todo} />)}
-            {uncompletedTodos && (uncompletedTodos.length - 3) > 0 && <Divider my="md" />}
-            {uncompletedTodos && (uncompletedTodos.length - 3) > 0 && <div className="household-tasklist-bottom">
-                + {uncompletedTodos && uncompletedTodos.length - 3 > 0 && uncompletedTodos.length - 3} more task{uncompletedTodos && (uncompletedTodos.length - 3) > 1 && "s"}
-            </div>}
+
+            {uncompletedTodos?.slice(0, 3).map((todo: any) => (
+                <HouseholdTasklistTask key={todo.id} task={todo} />
+            ))}
+
+            {remainingCount > 0 && <Divider my="md" />}
+
+            {remainingCount > 0 && (
+                <div className="household-tasklist-bottom">
+                    + {remainingCount} more task{remainingCount > 1 && "s"}
+                </div>
+            )}
         </Card>
     );
 }
