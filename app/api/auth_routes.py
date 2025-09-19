@@ -1,0 +1,173 @@
+from flask import Blueprint, request, session, redirect, abort, current_app, jsonify
+from flask_login import current_user, login_user, logout_user, login_required
+from werkzeug.security import generate_password_hash
+from sqlalchemy import func
+
+from app.models import User, Household
+from app.extensions import db
+from app.forms import LoginForm, SignUpForm
+from app.helpers import validation_errors_to_error_messages
+from uuid import uuid4
+
+
+auth_routes = Blueprint('auth', __name__)
+
+@auth_routes.route('/')
+def authenticate():
+    """
+    Authenticates a user.
+    """
+    if current_user.is_authenticated:
+        return current_user.to_dict()
+    return {'errors': ['Unauthorized']}
+
+
+@auth_routes.route('/login', methods=['POST'])
+def login():
+    """
+    Logs a user in
+    """
+    # form = LoginForm()
+    # # Get the csrf_token from the request cookie and put it into the
+    # # form manually to validate_on_submit can be used
+    # form['csrf_token'].data = request.cookies['csrf_token']
+    # if form.validate_on_submit():
+    #     # Add the user to the session, we are logged in!
+    #     user = User.query.filter(User.email == form.data['email']).first()
+    #     login_user(user)
+    #     return user.to_dict()
+
+    data = request.get_json()
+
+    if data:
+        user = User.query.filter(User.email == data['email']).first()
+        login_user(user)
+        return user.to_dict()
+    return {'errors': validation_errors_to_error_messages(form.errors)}, 401
+
+
+@auth_routes.route('/logout')
+def logout():
+    """
+    Logs a user out
+    """
+    logout_user()
+    return {'message': 'User logged out'}
+
+@auth_routes.route("/signup/<string:username>", methods=["POST"])
+def check_username(username):
+    """
+    Checks if username is taken
+    """
+    username_lower = username.lower()
+    user = User.query.filter(func.lower(User.username) == username_lower).first()
+    if user:
+        return {"Message": True}
+    else:
+        return {"Message": False}
+
+@auth_routes.route("/signup/check-email/<string:email>", methods=["POST"])
+def check_email(email):
+    email_lower = email.lower()
+    user = User.query.filter(func.lower(User.email) == email_lower).first()
+
+    if user:
+        return {"Message": True}
+    else:
+        return {"Message": False}
+
+# --------------------------------------------------------------------------- #
+#  Regular username / password signup
+# --------------------------------------------------------------------------- #
+@auth_routes.route("/signup", methods=["POST"])
+def sign_up():
+    """
+    Signup a new user. Optionally create a household.
+    """
+    data = request.get_json()
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+    household_name = data.get("household_name")  # optional
+
+    # Create user first
+    user = User(username=username, email=email, password=password)
+    db.session.add(user)
+    db.session.flush()  # flush to get user.id
+
+    # If household_name provided, create household and assign user as member & creator
+    household = None
+    if household_name:
+        household = Household(
+            name=household_name,
+            creator_id=user.id
+        )
+        db.session.add(household)
+        db.session.flush()  # flush to get household.id
+        user.household_id = household.id
+
+    db.session.commit()
+    login_user(user)
+
+    response = {
+        "user": user.to_dict()
+    }
+    if household:
+        response["household"] = household.to_dict()
+
+    return jsonify(response), 201
+
+@auth_routes.route("/join/<string:invite_code>", methods=["POST"])
+def join_household(invite_code):
+    """
+    Join a household using an invite code.
+    """
+    data = request.get_json()
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+
+    household = Household.query.filter_by(invite_code=invite_code).first()
+    if not household:
+        return jsonify({"error": "Invalid invite code"}), 400
+
+    # Create user and assign to household
+    user = User(
+        username=username,
+        email=email,
+        password=password,
+        household_id=household.id
+    )
+    db.session.add(user)
+    db.session.commit()
+    login_user(user)
+
+    return jsonify({
+        "user": user.to_dict(),
+        "household": household.to_dict()
+    }), 201
+
+@auth_routes.route("/households/<int:household_id>/invite", methods=["POST"])
+@login_required
+def generate_invite(household_id):
+    """
+    Generate invite code for household (creator only)
+    """
+    household = Household.query.get(household_id)
+    if not household:
+        return jsonify({"error": "Household not found"}), 404
+
+    # Generate UUID as invite code
+    invite_code = str(uuid4())
+    household.invite_code = invite_code
+    db.session.commit()
+
+    return jsonify({"invite_code": invite_code}), 200
+
+
+@auth_routes.route('/unauthorized')
+def unauthorized():
+    """
+    Returns unauthorized JSON when flask-login authentication fails
+    """
+    return {'errors': ['Unauthorized']}, 401
