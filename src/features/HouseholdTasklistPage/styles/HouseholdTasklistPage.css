@@ -14,3 +14,7 @@
 .completed-task {
     text-decoration: line-through;
 }
+
+.household-tasklist-page-title.editable-title {
+    font-family: "IBM Plex Sans", sans-serif;
+}
