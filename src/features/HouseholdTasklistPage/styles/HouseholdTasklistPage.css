@@ -1,3 +1,8 @@
+.household-tasklist-page {
+    display: flex;
+    flex-direction: column;
+}
+
 .household-tasklist-page-progress {
     max-width: 800px;
     width: 100%;
@@ -16,7 +21,14 @@
     gap: 0.5rem;
     align-items: center;
     padding-left: 0.8rem;
+    width: 100%;
+}
 
+
+
+.household-tasklist-page-task input.editable-title {
+    font-size: 1rem;
+    font-weight: normal;
 }
 
 .completed-task {
@@ -36,12 +48,13 @@ input.editable-title {
 }
 
 .household-tasklist-page-list {
-    overflow: hidden;
     margin-top: 1rem;
+    max-height: calc(100vh - 51px - (16px + 16px + 48px + 62px));
+    overflow-x: hidden;
 }
 
-.household-tasklist-page-completed {
-    /* margin-top: 2rem; */
+.household-tasklist-page-completed .household-tasklist-page-task {
+    border-bottom: 1px solid lightgray;
 }
 
 .household-tasklist-page-completed-title {
@@ -66,5 +79,35 @@ input.editable-title {
     width: 100%;
     border-bottom: 1px solid lightgray;
     padding-left: 0.8rem;
+}
 
+.add-task {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    border: 1px solid lightgray;
+    padding: 0.4rem;
+    padding-left: 0.8rem;
+    border-radius: 0.4rem;
+    background: white;
+    box-shadow: var(--mantine-shadow-sm);
+    position: sticky;
+    bottom: 0;
+
+}
+
+.add-task input {
+    width: calc(100% - 50px);
+    outline: none;
+    font-family: "IBM Plex Sans", sans-serif;
+}
+
+.tasklist-panel {
+    flex: 1;
+    min-height: 0;
+    /* critical for child scrolling */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
