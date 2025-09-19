@@ -69,17 +69,15 @@ export function EditableTitle({ title, onSave, className }: Props) {
             aria-label="Edit list title"
         />
     ) : (
-        <h2
-            className={className}
-            onClick={() => setEditing(true)}
-            role="button"
+        <div role="button"
             tabIndex={0}
-            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setEditing(true)}
             aria-label="Edit list title"
             title="Click to edit"
-            style={{ cursor: "text" }}
+            className="editable-title"
+            onClick={() => setEditing(true)}
+            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setEditing(true)}
         >
             {displayTitle || "Untitled"}
-        </h2>
+        </div>
     );
 }

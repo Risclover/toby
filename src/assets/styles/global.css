@@ -37,6 +37,14 @@ body {
     background: var(--bg);
     color: var(--text);
     font: 14px/1.4 system-ui;
+    background: #fbf9fa !important;
+
+}
+
+main {
+    max-width: 80rem;
+    margin: 0 auto;
+    background: #fbf9fa !important;
 }
 
 p,

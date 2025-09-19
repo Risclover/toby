@@ -8,6 +8,7 @@ import "../styles/HouseholdTasklistPage.css";
 import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { HouseholdTasklistPageAddTask } from "./HouseholdTasklistPageAddTask";
 import { EditableTitle } from "../../../component/EditableTitle";
+import { HouseholdTasklistPageList } from "./HouseholdTasklistPageList";
 
 export const HouseholdTasklistPage = () => {
     const { tasklistId } = useParams();
@@ -58,16 +59,7 @@ export const HouseholdTasklistPage = () => {
                 {percent}%
             </div>
 
-            <div className="household-tasklist-page-tasks">
-                {tasklist?.todos?.map((todo) => (
-                    <HouseholdTasklistPageTask
-                        key={todo.id}                    // <-- add key
-                        householdId={user?.householdId}  // can be optional in child
-                        listId={tasklist.id}             // <-- guaranteed number here
-                        task={todo}
-                    />
-                ))}
-            </div>
+            <HouseholdTasklistPageList tasklist={tasklist} />
 
             <HouseholdTasklistPageAddTask listId={tasklist?.id} /> {/* number, not undefined */}
         </div>
