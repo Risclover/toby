@@ -59,9 +59,10 @@ export const HouseholdTasklistPage = () => {
                 </div>
                 {percent}%
             </div>
-
-            <HouseholdTasklistPageList tasklist={tasklist} />
-            <HouseholdTasklistPageAddTask listId={tasklist?.id} /> {/* number, not undefined */}
+            <div className="tasklist-panel">
+                <HouseholdTasklistPageList tasklist={tasklist} />
+                <HouseholdTasklistPageAddTask listId={tasklist?.id} /> {/* number, not undefined */}
+            </div>
         </div>
     );
 };

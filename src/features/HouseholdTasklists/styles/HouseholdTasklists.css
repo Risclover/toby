@@ -73,6 +73,11 @@
     border: 1px solid lightgray;
     background: white;
     box-shadow: var(--mantine-shadow-sm);
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    position: relative;
+
 }
 
 @media (width >=40rem) {
