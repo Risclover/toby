@@ -1,6 +1,10 @@
 import { useEffect, useState, type JSX } from "react";
 import "./Sidebar.css";
-
+import { TobyIcon } from "@/assets/icons/TobyIcon";
+import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
+import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 type Item = {
     href: string;
     label: string;
@@ -11,13 +15,10 @@ type Item = {
 const items: Item[] = [
     {
         href: "/",
-        label: "Home",
-        ariaLabel: "Home",
+        label: "Dashboard",
+        ariaLabel: "Dashboard",
         icon: (
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-                <path d="M3 11l9-7 9 7v8a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2v-8z"
-                    stroke="currentColor" strokeWidth="2" fill="none" strokeLinejoin="round" />
-            </svg>
+            <GridViewRoundedIcon />
         ),
     },
     {
@@ -25,10 +26,7 @@ const items: Item[] = [
         label: "Tasks",
         ariaLabel: "Tasks",
         icon: (
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
-                <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
-            </svg>
+            <AssignmentTurnedInRoundedIcon />
         ),
     },
     {
@@ -36,10 +34,7 @@ const items: Item[] = [
         label: "Calendar",
         ariaLabel: "Calendar",
         icon: (
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-                <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
-                <path d="M16 3v4M8 3v4M3 11h18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
-            </svg>
+            <CalendarMonthRoundedIcon />
         ),
     },
     {
@@ -47,11 +42,7 @@ const items: Item[] = [
         label: "Settings",
         ariaLabel: "Settings",
         icon: (
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" stroke="currentColor" strokeWidth="2" fill="none" />
-                <path d="M19.4 15a8 8 0 0 0 .1-6l1.7-1-2-3.5-2 .9a8 8 0 0 0-5.6 0l-2-.9-2 3.5 1.7 1a8 8 0 0 0 0 6l-1.7 1 2 3.5 2-.9a8 8 0 0 0 5.6 0l2 .9 2-3.5-1.7-1z"
-                    stroke="currentColor" strokeWidth="2" fill="none" strokeLinejoin="round" />
-            </svg>
+            <SettingsRoundedIcon />
         ),
     },
 ];
@@ -80,8 +71,8 @@ export default function Sidebar() {
     return (
         <nav className={`sidebar${collapsed ? " collapsed" : ""}`} aria-label="Primary">
             <div className="brand">
-                <div className="logo" aria-hidden="true" />
-                <div className="title">YourApp</div>
+                <TobyIcon />
+                <div className="title">Toby</div>
                 <button
                     className="collapse-btn"
                     onClick={toggle}

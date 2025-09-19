@@ -14,8 +14,8 @@
     /* hover */
     --ring: #a78bfa;
     /* focus ring */
-    --sidebar-w: 240px;
-    --sidebar-w-collapsed: 64px;
+    --sidebar-w: 180px;
+    --sidebar-w-collapsed: 100px;
 
     /* smoother & nicer easing */
     --t: 260ms cubic-bezier(.22, .61, .36, 1);
@@ -114,4 +114,8 @@ html.prefers-collapsed .sidebar .nav-link .label {
 
 button svg {
     font-size: 1.25rem !important;
+}
+
+.brand svg {
+    fill: white;
 }
