@@ -8,13 +8,42 @@
 
 .household-tasklist-page-task {
     display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border-bottom: 1px solid lightgray;
+    padding-left: 0.8rem;
 
 }
 
 .completed-task {
     text-decoration: line-through;
+    padding: 0.8rem;
 }
 
-.household-tasklist-page-title.editable-title {
+.editable-title {
     font-family: "IBM Plex Sans", sans-serif;
+    width: 100%;
+    padding: 0.8rem
+}
+
+input.editable-title {
+    outline: none;
+}
+
+.household-tasklist-page-list {
+    overflow: hidden;
+}
+
+.household-tasklist-page-completed {
+    margin-top: 2rem;
+}
+
+.household-tasklist-page-completed-title {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+    padding-left: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid lightgray;
 }

@@ -67,6 +67,14 @@
     color: var(--mantine-color-violet-filled);
 }
 
+.household-tasklist-page-list {
+    border-radius: 1rem;
+    width: 100%;
+    border: 1px solid lightgray;
+    background: white;
+    box-shadow: var(--mantine-shadow-sm);
+}
+
 @media (width >=40rem) {
     .household-tasklists-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr))
