@@ -1,4 +1,6 @@
-import { useCompleteTodoMutation, type Todo } from "@/store/todoSlice";
+import { EditableTitle } from "@/component/EditableTitle";
+import { useAuthenticateQuery } from "@/store/authSlice";
+import { useCompleteTodoMutation, useUpdateTodoMutation, type Todo } from "@/store/todoSlice";
 import { Checkbox } from "@mantine/core";
 import { useEffect, useState, type ChangeEvent } from "react";
 
@@ -9,8 +11,10 @@ type Props = {
 };
 
 export function HouseholdTasklistPageTask({ task, listId, householdId }: Props) {
+    const { data: user } = useAuthenticateQuery();
     const [checked, setChecked] = useState(task.status === "completed");
     const [completeTodo, { isLoading }] = useCompleteTodoMutation();
+    const [updateTodoTitle] = useUpdateTodoMutation();
 
     // keep local state in sync if task.status changes externally
     useEffect(() => {
@@ -37,6 +41,11 @@ export function HouseholdTasklistPageTask({ task, listId, householdId }: Props) 
         }
     };
 
+    const handleUpdateTitle = async (next: string) => {
+        if (!task) return; // guard
+        await updateTodoTitle({ todoId: task.id, title: next, listId }).unwrap();
+    };
+
     return (
         <div className="household-tasklist-page-task">
             <Checkbox
@@ -49,7 +58,7 @@ export function HouseholdTasklistPageTask({ task, listId, householdId }: Props) 
             {checked ? (
                 <div className="completed-task">{task.title}</div>
             ) : (
-                task.title
+                <EditableTitle title={task.title} onSave={handleUpdateTitle} className="household-tasklist-page-title editable-title" />
             )}
         </div>
     );

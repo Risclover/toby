@@ -200,8 +200,32 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 { type: "TodoList", id: "LIST" },
             ],
         }),
-    }),
-});
+
+        updateTodoList: builder.mutation({
+            query: ({ listId, title, householdId }) => ({
+                url: `/todo_lists/${listId}`,
+                method: "PUT",
+                body: { title }
+            }),
+            invalidatesTags: (result, error, { listId, householdId }): TodoListTag[] => {
+                const tags: TodoListTag[] = [{ type: "TodoList", id: listId }];
+                if (householdId != null) tags.push({ type: "TodoList", id: `HOUSEHOLD_${householdId}` });
+                tags.push({ type: "TodoList", id: listId })
+                tags.push({ type: "TodoList", id: "LIST" });
+                return tags;
+            },
+        }),
+
+        updateTodo: builder.mutation<Todo, { todoId: number; title: string; listId: number }>({
+            query: ({ todoId, title }) => ({
+                url: `/todos/${todoId}`,
+                method: "PUT",
+                body: { title },
+            }),
+            invalidatesTags: (_r, _e, { listId }) => [{ type: "TodoList", id: listId }],
+        }),
+    })
+})
 
 export const {
     useGetTodoListQuery,
@@ -211,5 +235,7 @@ export const {
     useDeleteTodoMutation,
     useClearListMutation,
     useDeleteListMutation,
-    useCompleteTodoMutation
+    useCompleteTodoMutation,
+    useUpdateTodoListMutation,
+    useUpdateTodoMutation
 } = todoSlice;
