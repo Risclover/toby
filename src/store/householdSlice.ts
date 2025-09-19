@@ -4,7 +4,7 @@ export type Household = { id: number; name: string };
 export type TodoList = { id: number; title: string; createdAt: string; memberIds: number[] };
 type TodoListTag = { type: "TodoList"; id: number | string };
 
-const householdSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Household", "TodoList"] }).injectEndpoints({
+export const householdSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Household", "TodoList"] }).injectEndpoints({
     endpoints: (builder) => ({
         getHousehold: builder.query({
             query: (householdId) => `/households/${householdId}`,

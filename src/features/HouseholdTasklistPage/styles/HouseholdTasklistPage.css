@@ -6,11 +6,15 @@
     gap: 0.5rem;
 }
 
+.household-tasklist-page-title {
+    font-size: 24px;
+    font-weight: 600;
+}
+
 .household-tasklist-page-task {
     display: flex;
     gap: 0.5rem;
     align-items: center;
-    border-bottom: 1px solid lightgray;
     padding-left: 0.8rem;
 
 }
@@ -23,7 +27,8 @@
 .editable-title {
     font-family: "IBM Plex Sans", sans-serif;
     width: 100%;
-    padding: 0.8rem
+    padding: 0.8rem;
+    padding-left: 0.4rem;
 }
 
 input.editable-title {
@@ -32,10 +37,11 @@ input.editable-title {
 
 .household-tasklist-page-list {
     overflow: hidden;
+    margin-top: 1rem;
 }
 
 .household-tasklist-page-completed {
-    margin-top: 2rem;
+    /* margin-top: 2rem; */
 }
 
 .household-tasklist-page-completed-title {
@@ -43,7 +49,22 @@ input.editable-title {
     align-items: center;
     gap: 0.25rem;
     font-weight: 500;
-    padding-left: 0.8rem;
-    padding-bottom: 0.8rem;
+    padding: 0.8rem;
     border-bottom: 1px solid lightgray;
+    cursor: pointer
+}
+
+.drag-handle svg {
+    font-size: 1rem;
+    color: #696565;
+    padding-bottom: 1px;
+}
+
+.task-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-bottom: 1px solid lightgray;
+    padding-left: 0.8rem;
+
 }

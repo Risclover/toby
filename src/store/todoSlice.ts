@@ -1,4 +1,5 @@
 import { apiSlice } from "./apiSlice";
+import { householdSlice } from "./householdSlice"; // 👈 add this import
 
 export interface Todo {
     id: number;
@@ -6,6 +7,7 @@ export interface Todo {
     description?: string;
     status: "pending" | "in_progress" | "completed";
     priority: "low" | "normal" | "high";
+    sortIndex: number;
     dueDate?: string;
     assignedToId?: number;
     list_id: number;
@@ -61,6 +63,12 @@ export interface CreateTodoRequest {
     assignedToId?: number | null;
     listId: number | undefined;
 }
+
+export type ReorderPayload = {
+    listId: number;
+    orderedIds: number[];
+    householdId?: number; // pass when you have it; we’ll try to derive if not
+};
 
 export interface DeleteTodoRequest {
     listId: number;
@@ -224,6 +232,56 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
             }),
             invalidatesTags: (_r, _e, { listId }) => [{ type: "TodoList", id: listId }],
         }),
+
+        reorderTodos: builder.mutation<void, ReorderPayload>({
+            query: ({ listId, orderedIds }) => ({
+                url: `/todo_lists/${listId}/reorder`,
+                method: "PATCH",
+                body: { orderedIds },
+            }),
+            async onQueryStarted({ listId, orderedIds, householdId }, { dispatch, getState, queryFulfilled }) {
+                // 1) Patch the single list detail
+                const p1 = dispatch(
+                    todoSlice.util.updateQueryData("getTodoList", listId, (draft: TodoListType | undefined) => {
+                        if (!draft?.todos) return;
+                        draft.todos.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
+                        draft.todos.forEach((t, i) => (t.sortIndex = i));
+                    })
+                );
+
+                // Infer householdId if missing
+                if (householdId == null) {
+                    const sel = todoSlice.endpoints.getTodoList.select(listId)(getState() as any);
+                    householdId = sel?.data?.householdId ?? undefined;
+                }
+
+                // 2) Patch the household grid (endpoint lives on householdSlice)
+                const p2 =
+                    householdId != null
+                        ? dispatch(
+                            householdSlice.util.updateQueryData(
+                                "getHouseholdTodoLists",
+                                householdId, // must match useGetHouseholdTodoListsQuery arg
+                                (lists: any[] | undefined) => {
+                                    if (!lists) return;
+                                    const target = lists.find((l) => l.id === listId);
+                                    if (!target?.todos) return;
+                                    target.todos.sort((a: any, b: any) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
+                                    target.todos.forEach((t: any, i: number) => (t.sortIndex = i));
+                                }
+                            )
+                        )
+                        : { undo: () => { } };
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    p1.undo();
+                    p2.undo?.();
+                }
+            },
+        })
+
     })
 })
 
@@ -237,5 +295,6 @@ export const {
     useDeleteListMutation,
     useCompleteTodoMutation,
     useUpdateTodoListMutation,
-    useUpdateTodoMutation
+    useUpdateTodoMutation,
+    useReorderTodosMutation
 } = todoSlice;
