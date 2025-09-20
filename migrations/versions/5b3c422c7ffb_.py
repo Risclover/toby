@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 9c70841c48d6
+Revision ID: 5b3c422c7ffb
 Revises: 
-Create Date: 2025-09-19 00:50:03.085679
+Create Date: 2025-09-19 19:51:53.689945
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9c70841c48d6'
+revision = '5b3c422c7ffb'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -45,6 +45,31 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
+    )
+    op.create_table('announcements',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('household_id', sa.Integer(), nullable=False),
+    sa.Column('text', sa.String(length=120), nullable=False),
+    sa.Column('is_pinned', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('published_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('expires_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['household_id'], ['households.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('events',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('household_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=120), nullable=False),
+    sa.Column('start_utc', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('end_utc', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('tzid', sa.String(length=64), nullable=False),
+    sa.ForeignKeyConstraint(['household_id'], ['households.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('shopping_lists',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -131,6 +156,8 @@ def downgrade():
 
     op.drop_table('todo_lists')
     op.drop_table('shopping_lists')
+    op.drop_table('events')
+    op.drop_table('announcements')
     op.drop_table('users')
     op.drop_table('households')
     # ### end Alembic commands ###

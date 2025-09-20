@@ -8,13 +8,21 @@
 [] update points
 """
 
-from flask import Blueprint 
-from app.models import User
+from flask import Blueprint, current_app, jsonify, request
+from app.models import User, Checkin
+from flask_login import current_user
 from app.extensions import db
-
-import datetime
+from datetime import datetime, date, timedelta
+from zoneinfo import ZoneInfo 
 
 user_routes = Blueprint('users', __name__)
+
+def today_local_date():
+    tzid = getattr(current_app.config, "DEFAULT_TZID", "America/Los_Angeles")
+    return datetime.now(ZoneInfo(tzid)).date()
+
+def _d(s: str | None):
+    return date.fromisoformat(s) if s else None  # expects "YYYY-MM-DD"
 
 @user_routes.route("/")
 def get_all_users():
@@ -77,3 +85,37 @@ def user_checkin(id):
     db.session.commit()
 
     return {"message": "User daily checkin successful"}
+
+
+
+@user_routes.route("/<int:user_id>/checkins")
+def get_user_checkins(user_id):
+    # default: last 365 days (inclusive)
+    dto   = _d(request.args.get("to"))   or date.today()
+    dfrom = _d(request.args.get("from")) or (dto - timedelta(days=365))
+
+    rows = (Checkin.query
+            .filter(Checkin.user_id == user_id,
+                    Checkin.local_date >= dfrom,
+                    Checkin.local_date <= dto)
+            .order_by(Checkin.local_date.asc())
+            .all())
+
+    # Heatmap-friendly: return just the dates (and add a verbose variant if you like)
+    return jsonify({
+        "userId": user_id,
+        "from": dfrom.isoformat(),
+        "to": dto.isoformat(),
+        "dates": [c.local_date.isoformat() for c in rows]
+    }), 200
+
+@user_routes.route("/<int:user_id>/checkins", methods=["POST"])
+def check_in_today(user_id):
+    if user_id != current_user.id: abort(403)
+    tld = today_local_date()
+    exists = Checkin.query.filter_by(user_id=user_id, local_date=tld).first()
+    if not exists:
+        db.session.add(Checkin(user_id=user_id, local_date=tld))
+        db.session.commit()
+    return jsonify({"checkedInToday": True, "localDate": tld.isoformat()})
+

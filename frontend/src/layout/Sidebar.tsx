@@ -3,8 +3,11 @@ import "./Sidebar.css";
 import { TobyIcon } from "@/assets/icons/TobyIcon";
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
-import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded'; import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
+import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
+import EditCalendarRoundedIcon from '@mui/icons-material/EditCalendarRounded';
+
 type Item = {
     href: string;
     label: string;
@@ -34,17 +37,33 @@ const items: Item[] = [
         label: "Calendar",
         ariaLabel: "Calendar",
         icon: (
-            <CalendarMonthRoundedIcon />
+            <EditCalendarRoundedIcon />
         ),
     },
     {
         href: "#",
-        label: "Settings",
-        ariaLabel: "Settings",
+        label: "Projects",
+        ariaLabel: "Projects",
         icon: (
-            <SettingsRoundedIcon />
-        ),
+            <Inventory2RoundedIcon />
+        )
     },
+    {
+        href: "#",
+        label: "Shopping Lists",
+        ariaLabel: "Shopping Lists",
+        icon: (
+            <ShoppingCartRoundedIcon />
+        )
+    },
+    // {
+    //     href: "#",
+    //     label: "Settings",
+    //     ariaLabel: "Settings",
+    //     icon: (
+    //         <SettingsRoundedIcon />
+    //     ),
+    // },
 ];
 
 export default function Sidebar() {
@@ -73,18 +92,18 @@ export default function Sidebar() {
             <div className="brand">
                 <TobyIcon />
                 <div className="title">Toby</div>
-                <button
-                    className="collapse-btn"
-                    onClick={toggle}
-                    aria-expanded={!collapsed}
-                    aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-                >
-                    <svg className="chevron" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </button>
-            </div>
 
+            </div>
+            <button
+                className="collapse-btn"
+                onClick={toggle}
+                aria-expanded={!collapsed}
+                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+                <svg className="chevron" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+            </button>
             <ul className="nav">
                 {items.map((it) => (
                     <li className="nav-item" key={it.label}>

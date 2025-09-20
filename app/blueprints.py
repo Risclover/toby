@@ -6,7 +6,9 @@ _BLUEPRINT_PATHS = (
     "app.api.user_routes:user_routes",
     "app.api.todo_list_routes:todo_list_routes",
     "app.api.todo_routes:todo_routes",
-    "app.api.announcement_routes:announcement_routes"
+    "app.api.announcement_routes:announcement_routes",
+    "app.api.event_routes:event_routes",
+    
 )
 
 def register_blueprints(app):

@@ -27,7 +27,7 @@ class Announcement(db.Model):
             "createdAt": self.created_at, 
             "updatedAt": self.updated_at,
             "publishedAt": self.published_at,
-            "expiresAt": self.expiresAt
+            "expiresAt": self.expires_at
         }
     
     def __repr__(self):

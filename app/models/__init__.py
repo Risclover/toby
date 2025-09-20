@@ -7,3 +7,5 @@ from .todo_list import TodoList
 from .todo import Todo 
 from .todo_list_member import TodoListMember
 from .announcement import Announcement
+from .event import Event
+from .checkin import Checkin

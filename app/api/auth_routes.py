@@ -1,6 +1,6 @@
 from flask import Blueprint, request, session, redirect, abort, current_app, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
 
 from app.models import User, Household
@@ -24,26 +24,27 @@ def authenticate():
 
 @auth_routes.route('/login', methods=['POST'])
 def login():
-    """
-    Logs a user in
-    """
-    # form = LoginForm()
-    # # Get the csrf_token from the request cookie and put it into the
-    # # form manually to validate_on_submit can be used
-    # form['csrf_token'].data = request.cookies['csrf_token']
-    # if form.validate_on_submit():
-    #     # Add the user to the session, we are logged in!
-    #     user = User.query.filter(User.email == form.data['email']).first()
-    #     login_user(user)
-    #     return user.to_dict()
+    data = request.get_json(silent=True) or {}
+    email = (data.get('email') or '').strip().lower()
+    password = data.get('password') or ''
 
-    data = request.get_json()
+    if not email or not password:
+        return jsonify({'errors': ['Email and password are required']}), 400
 
-    if data:
-        user = User.query.filter(User.email == data['email']).first()
-        login_user(user)
-        return user.to_dict()
-    return {'errors': validation_errors_to_error_messages(form.errors)}, 401
+    user = (User.query
+        .filter(func.lower(User.email) == email)
+        .first())
+
+    if user is None or not check_password_hash(user.hashed_password, password):
+        # don’t leak which part failed
+        return jsonify({'errors': ['Invalid credentials']}), 401
+
+    # optional: block disabled users
+    # if not user.is_active:
+    #     return jsonify({'errors': ['Account disabled']}), 403
+
+    login_user(user)  # safe: user is real and has is_active via UserMixin
+    return jsonify(user.to_dict()), 200
 
 
 @auth_routes.route('/logout')

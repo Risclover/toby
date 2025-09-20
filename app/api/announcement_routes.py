@@ -26,8 +26,15 @@ def _get_announcement_or_404(id: int):
     # TODO: membership/role check here if you want
     return a
 
+@announcement_routes.route("/", methods=["GET"])
+def list_announcements():
+    hid = request.args.get("householdId", type=int)
+    if not hid:
+        abort(400, description="householdId is required")
+    anns = Announcement.query.filter_by(household_id=hid).all()
+    return jsonify([a.to_dict() for a in anns]), 200
+
 @announcement_routes.route("/", methods=["POST"])
-@login_required
 def create_announcement():
     data = request.get_json(silent=True) or {}
     text = data.get("text")
@@ -48,13 +55,11 @@ def create_announcement():
     return jsonify(announcement.to_dict()), 201
 
 @announcement_routes.route("/<int:id>", methods=["GET"])
-@login_required
 def get_announcement(id):
     a = _get_announcement_or_404(id)
     return jsonify(a.to_dict())
 
 @announcement_routes.route("/<int:id>", methods=["PATCH"])
-@login_required
 def patch_announcement(id):
     a = _get_announcement_or_404(id)
     data = request.get_json(silent=True) or {}
@@ -72,7 +77,6 @@ def patch_announcement(id):
     return jsonify(a.to_dict())
 
 @announcement_routes.route("/<int:id>", methods=["DELETE"])
-@login_required
 def delete_announcement(id):
     a = _get_announcement_or_404(id)
     db.session.delete(a)
