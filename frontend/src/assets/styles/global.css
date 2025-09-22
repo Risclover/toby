@@ -119,3 +119,33 @@ button svg {
 .brand svg {
     fill: white;
 }
+
+.invite-link-container {
+    padding: 2rem;
+}
+
+.generate-new-link-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
+    cursor: pointer;
+    color: #7950f2;
+}
+
+.generate-new-link-btn:hover {
+    text-decoration: underline;
+}
+
+.generate-new-link-btn svg {
+    width: 1.1rem;
+    color: #7950f2;
+}
+
+.dashboard-titlebar-right {
+    display: flex;
+    gap: 0.8rem;
+}

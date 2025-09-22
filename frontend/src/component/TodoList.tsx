@@ -3,15 +3,12 @@ import { AddNewTodo } from "./AddNewTodo";
 import { useCompleteTodoMutation, useDeleteListMutation, type Todo } from "../store/todoSlice";
 import { Button } from "@mantine/core";
 import { useAuthenticateQuery } from "@/store/authSlice";
-import { useGetHouseholdQuery } from "@/store/householdSlice";
 
 type Props = {
-    householdId: number;
     list: any
 }
-export const TodoList = ({ householdId, list }: Props) => {
+export const TodoList = ({ list }: Props) => {
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId)
 
     const [showForm, setShowForm] = useState(false);
     const [completeTodo] = useCompleteTodoMutation()
@@ -20,7 +17,7 @@ export const TodoList = ({ householdId, list }: Props) => {
 
     const handleCompleteTodo = async (e: MouseEvent, todoId: number) => {
         e.preventDefault()
-        await completeTodo({ todoId: todoId, listId: list.id })
+        await completeTodo({ todoId: todoId, listId: list.id, completed: false })
     }
 
     const handleDeleteList = async () => {

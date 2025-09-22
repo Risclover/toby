@@ -50,15 +50,15 @@ function MemberRow({
 
     return (
         <div className="flex items-center">
-            <div className={`flex items-center gap-2 ${nameColClass}`}>
-                <div className="h-6 w-6 rounded-full grid place-items-center text-xs overflow-hidden">
+            <div className={`flex px-2 gap-2 items-center ${nameColClass}`}>
+                {/* <div className="h-6 w-8 rounded-full grid place-items-center text-xs">
                     {member.profileImg ? (
                         <img src={member.profileImg} alt="" className="h-6 w-6 object-cover" />
                     ) : (
                         member.username?.slice(0, 1).toUpperCase()
                     )}
-                </div>
-                <span className="truncate text-sm">{member.username}</span>
+                </div> */}
+                <span className="text-sm text-right text-align-right w-full">{member.username}</span>
             </div>
 
             <div className="flex items-center" style={{ gap }}>

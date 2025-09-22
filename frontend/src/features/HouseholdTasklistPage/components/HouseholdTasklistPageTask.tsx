@@ -1,7 +1,6 @@
 import { EditableTitle } from "@/component/EditableTitle";
-import { useAuthenticateQuery } from "@/store/authSlice";
-import { useCompleteTodoMutation, useDeleteTodoMutation, useUpdateTodoMutation, type Todo } from "@/store/todoSlice";
-import { Button, Checkbox } from "@mantine/core";
+import { useCompleteTodoMutation, useUpdateTodoMutation, type Todo } from "@/store/todoSlice";
+import { Checkbox } from "@mantine/core";
 import { useEffect, useState, type ChangeEvent } from "react";
 
 type Props = {
@@ -11,11 +10,9 @@ type Props = {
 };
 
 export function HouseholdTasklistPageTask({ task, listId, householdId }: Props) {
-    const { data: user } = useAuthenticateQuery();
     const [checked, setChecked] = useState(task.status === "completed");
     const [completeTodo, { isLoading }] = useCompleteTodoMutation();
     const [updateTodoTitle] = useUpdateTodoMutation();
-    const [deleteTodo] = useDeleteTodoMutation();
 
     // keep local state in sync if task.status changes externally
     useEffect(() => {
@@ -46,10 +43,6 @@ export function HouseholdTasklistPageTask({ task, listId, householdId }: Props) 
         if (!task) return; // guard
         await updateTodoTitle({ todoId: task.id, title: next, listId }).unwrap();
     };
-
-    const handleDeletion = async () => {
-        await deleteTodo({ todoId: task.id, listId })
-    }
 
     return (
         <div className="household-tasklist-page-task">

@@ -50,12 +50,12 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
 
     const todos = list?.todos ?? [];
 
-    const { done, total, percent } = useMemo(() => {
+    const { percent } = useMemo(() => {
         const total = todos.length;
         const done = todos.filter((t: any) => t.status === "completed").length;
         const raw = total ? (done / total) * 100 : 0;
         const percent = Math.min(100, Math.max(0, Math.round(raw)));
-        return { done, total, percent };
+        return { percent };
     }, [todos]);
 
     const navigateToTasklistPage = () => {

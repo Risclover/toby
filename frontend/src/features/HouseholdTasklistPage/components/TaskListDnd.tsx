@@ -17,21 +17,14 @@ import {
     sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useReorderTodosMutation } from "@/store/todoSlice";
+import { useReorderTodosMutation, type Todo } from "@/store/todoSlice";
 import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-type Task = {
-    id: number;
-    title: string;
-    sortIndex: number;
-    listId: number;
-    // ...anything else you need
-};
 
 type Props = {
     listId: number;
-    tasks: Task[]; // fetched via RTK Query
+    tasks: Todo[]; // fetched via RTK Query
 };
 
 export function TaskListDnd({ listId, tasks }: Props) {
@@ -40,7 +33,7 @@ export function TaskListDnd({ listId, tasks }: Props) {
         () => [...tasks].sort((a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0)),
         [tasks]
     );
-    const [local, setLocal] = useState<Task[]>(initial);
+    const [local, setLocal] = useState<Todo[]>(initial);
 
     useEffect(() => {
         const a = initial.map(t => t.id).join(",");
@@ -97,7 +90,7 @@ export function TaskListDnd({ listId, tasks }: Props) {
     );
 }
 
-function SortableTaskItem({ task }: { task: Task }) {
+function SortableTaskItem({ task }: { task: Todo }) {
     const {
         attributes,
         listeners,

@@ -1,4 +1,4 @@
-import { useGetAnnouncementQuery, useGetAnnouncementsQuery } from "@/store/announcementSlice"
+import { useGetAnnouncementsQuery } from "@/store/announcementSlice"
 
 type Props = {
     householdId: number;

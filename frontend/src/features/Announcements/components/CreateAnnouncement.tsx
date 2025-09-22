@@ -1,7 +1,7 @@
 import { useCreateAnnouncementMutation } from "@/store/announcementSlice"
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { Button, Modal } from "@mantine/core";
-import React, { useState } from "react";
+import { useState } from "react";
 
 type Props = {
     opened: boolean;

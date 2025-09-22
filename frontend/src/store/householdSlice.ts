@@ -8,7 +8,10 @@ export const householdSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Househo
     endpoints: (builder) => ({
         getHousehold: builder.query({
             query: (householdId) => `/households/${householdId}`,
-            providesTags: (result, error, householdId) => [{ type: "Household", id: householdId }],
+            providesTags: (result, error, householdId) => {
+                void result; void error;
+                return [{ type: "Household", id: householdId }]
+            }
         }),
         getHouseholdTodoLists: builder.query<TodoList[], number>({
             query: (householdId) => `households/${householdId}/todo_lists`, // no leading slash

@@ -1,7 +1,7 @@
 import type React from "react";
 import { useAuthenticateQuery, useJoinHouseholdMutation, useLogoutMutation } from "./store/authSlice";
 import { useEffect, useState } from "react";
-import { data, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useGetHouseholdQuery } from "./store/householdSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
 
@@ -11,7 +11,6 @@ export const Join = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
-    const [householdName, setHouseholdName] = useState("");
     const { inviteCode } = useParams();
     const { data: user } = useAuthenticateQuery();
     const [logout] = useLogoutMutation();
@@ -23,11 +22,10 @@ export const Join = () => {
 
     const handleJoin = async (e: React.FormEvent) => {
         e.preventDefault();
-        const { data } = await joinHousehold({ email, username, password, inviteCode });
+        await joinHousehold({ email, username, password, inviteCode });
         setEmail("");
         setUsername("");
         setPassword("");
-        if (data) setHouseholdName(data.household.name)
     }
 
     const handleLogout = async (e: React.MouseEvent) => {

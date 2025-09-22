@@ -5,15 +5,13 @@ import { useGetHouseholdQuery } from "@/store/householdSlice";
 import "../assets/styles/Dashboard.css";
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import { useCreateAnnouncementMutation } from "@/store/announcementSlice";
 import { CreateAnnouncement } from "@/features/Announcements/components/CreateAnnouncement";
 import { Announcements } from "@/features/Announcements/components/Announcements";
 import { WeekStrip } from "@/features/Events/components/DashboardMiniCalendar";
 import { UpcomingThisWeek } from "@/features/Events/components/UpcomingThisWeek";
-import { useCheckInTodayMutation, useGetUserCheckinsQuery } from "@/store/checkinSlice";
-import Checkins from "@/features/Checkins/components/Checkins";
 import HouseholdCheckinsMini from "@/features/Checkins/components/HouseholdCheckinsMini";
 import { CheckInButton } from "@/features/Checkins/components/CheckInButton";
+import { InviteLink } from "@/component/InviteLink";
 
 export const Dashboard = () => {
     const navigate = useNavigate();
@@ -21,8 +19,7 @@ export const Dashboard = () => {
     const householdId = user?.householdId;
     const [logout] = useLogoutMutation()
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
-    const [checkInToday] = useCheckInTodayMutation()
-    const { data: checkins } = useGetUserCheckinsQuery({ userId: user?.id })
+    const [showInviteModal, setShowInviteModal] = useState(false);
 
     // Only run the query once we have an id
     const {
@@ -44,23 +41,16 @@ export const Dashboard = () => {
         await logout();
     }
 
-    const handleCheckin = async () => {
-        await checkInToday({ userId: user?.id })
-    }
-
-    console.log('checkins:', checkins)
-
     return (
         <div className="dashboard">
             <div className="dashboard-titlebar">
                 <h1>{household?.name ?? (authFetching || householdFetching ? "…" : "")}</h1>
                 <div className="dashboard-titlebar-right">
-                    <input type="search" name="search" id="search" placeholder="Search" />
-                    <Button variant="light" color="violet">Bell</Button>
-                    <Button variant="light" color="violet">Gear</Button>
-                    {!user?.email ? <Button variant="filled" color="violet" onClick={handleSignIn}>Sign In</Button> : <Button variant="filled" color="violet" onClick={handleLogout}>Log Out</Button>}
+
                     <Button color="violet" onClick={() => setShowCreateAnnouncement(true)}>Add Announcement</Button>
+                    <Button color="violet" onClick={() => setShowInviteModal(true)}>Invite</Button>
                     <CheckInButton />
+                    {!user?.email ? <Button variant="filled" color="violet" onClick={handleSignIn}>Sign In</Button> : <Button variant="filled" color="violet" onClick={handleLogout}>Log Out</Button>}
                 </div>
             </div>
             <Announcements householdId={household?.id} />
@@ -76,6 +66,7 @@ export const Dashboard = () => {
             </div>
             <HouseholdCheckinsMini members={household?.members} />
             {showCreateAnnouncement && <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />}
+            {showInviteModal && <InviteLink opened={showInviteModal} close={() => setShowInviteModal(false)} />}
             <div className="dashboard-body">
                 {error ? <p>Couldn’t load household.</p> : null}
             </div>

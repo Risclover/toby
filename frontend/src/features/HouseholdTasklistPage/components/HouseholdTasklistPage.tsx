@@ -5,11 +5,9 @@ import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query"; // <-- use this
 import "../styles/HouseholdTasklistPage.css";
-import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { HouseholdTasklistPageAddTask } from "./HouseholdTasklistPageAddTask";
 import { EditableTitle } from "../../../component/EditableTitle";
 import { HouseholdTasklistPageList } from "./HouseholdTasklistPageList";
-import { TaskListDnd } from "./TaskListDnd";
 
 export const HouseholdTasklistPage = () => {
     const { tasklistId } = useParams();
@@ -25,12 +23,12 @@ export const HouseholdTasklistPage = () => {
 
     const todos = tasklist?.todos ?? [];
 
-    const { done, total, percent } = useMemo(() => {
+    const { percent } = useMemo(() => {
         const total = todos.length;
         const done = todos.filter((t) => t.status === "completed").length;
         const raw = total ? (done / total) * 100 : 0;
         const percent = Math.min(100, Math.max(0, Math.round(raw)));
-        return { done, total, percent };
+        return { percent };
     }, [todos]);
 
     const handleUpdateTitle = async (next: string) => {

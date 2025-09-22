@@ -1,10 +1,8 @@
 // src/store/index.ts
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import type { PreloadedState } from 'redux';
-import { apiSlice } from './apiSlice'; // adjust path if needed
-// import uiReducer from './uiSlice' // example non-RTKQ slice
+import { apiSlice } from './apiSlice';
 
-// Build the root reducer (you can add more non-RTKQ slices here)
+// Build the root reducer (add more non-RTKQ slices here)
 const rootReducer = combineReducers({
   // Use the same key as your apiSlice.reducerPath (usually 'api')
   api: apiSlice.reducer,
@@ -13,14 +11,18 @@ const rootReducer = combineReducers({
 
 export type RootState = ReturnType<typeof rootReducer>;
 
+// Tiny helper so preloadedState can be partial/deeply optional
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
+
 // Only allow preloading of YOUR slices (exclude RTK Query's 'api' cache)
-type AppPreloadedState = PreloadedState<Omit<RootState, 'api'>>;
+type AppPreloadedState = DeepPartial<Omit<RootState, 'api'>>;
 
 export function setupStore(preloadedState?: AppPreloadedState) {
   return configureStore({
     reducer: rootReducer,
     preloadedState,
-    // Let RTK infer middleware types; just append the RTK Query middleware
     middleware: (getDefault) => getDefault().concat(apiSlice.middleware),
     devTools: process.env.NODE_ENV !== 'production',
   });

@@ -55,6 +55,8 @@
 }
 
 .collapse-btn {
+    position: absolute;
+
     margin: 0 auto;
     border: 0;
     background: transparent;

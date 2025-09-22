@@ -1,7 +1,6 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import "../styles/HouseholdTasklists.css"
 import { useGetHouseholdTodoListsQuery } from "@/store/householdSlice";
-import { Card, Progress } from "@mantine/core";
 import { HouseholdTasklist } from "./HouseholdTasklist";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { CreateTodoList } from "@/component/CreateTodoList";

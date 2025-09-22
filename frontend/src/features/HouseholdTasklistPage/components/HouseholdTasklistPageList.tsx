@@ -4,25 +4,31 @@ import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask"
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import { TaskListDnd } from "./TaskListDnd";
+import type { TodoListType } from "@/store/todoSlice";
 
-export const HouseholdTasklistPageList = ({ tasklist }) => {
+type Props = {
+    tasklist: TodoListType | undefined
+}
+
+export const HouseholdTasklistPageList = ({ tasklist }: Props) => {
     const [showCompleted, setShowCompleted] = useState(false);
 
     const { data: user } = useAuthenticateQuery();
+
     const uncompleted = useMemo(
         () =>
-            [...tasklist.todos]
+            [...tasklist?.todos as any[]]
                 .filter((t) => t.status === "in_progress")
                 .sort((a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0)),
-        [tasklist.todos]
+        [tasklist?.todos]
     );
-    const completed = tasklist.todos.filter((todo) => todo.status === "completed")
+    const completed = tasklist?.todos?.filter((todo) => todo.status === "completed")
 
     return <div className='household-tasklist-page-list'>
         <div className="household-tasklist-page-tasks">
-            <TaskListDnd tasks={uncompleted} listId={tasklist.id} />
+            {tasklist && <TaskListDnd tasks={uncompleted} listId={tasklist.id} />}
         </div>
-        {completed.length > 0 && <div className='household-tasklist-page-completed'>
+        {completed && completed?.length > 0 && <div className='household-tasklist-page-completed'>
             <div
                 className="household-tasklist-page-completed-title"
                 onClick={() => setShowCompleted(prev => !prev)}
@@ -32,7 +38,7 @@ export const HouseholdTasklistPageList = ({ tasklist }) => {
                 {showCompleted ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
             </div>
             {showCompleted && <div className="household-tasklist-page-tasks">
-                {completed.map((todo) => (
+                {tasklist && completed.map((todo) => (
                     <HouseholdTasklistPageTask
                         key={todo.id}                    // <-- add key
                         householdId={user?.householdId}  // can be optional in child

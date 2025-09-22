@@ -1,5 +1,6 @@
 import { useGetUserCheckinsQuery, useCheckInTodayMutation } from "@/store/checkinSlice";
 import { useAuthenticateQuery } from "@/store/authSlice";
+import { Button } from "@mantine/core";
 
 const toISO = (d: Date) => d.toISOString().slice(0, 10); // "YYYY-MM-DD"
 
@@ -17,7 +18,8 @@ export function CheckInButton() {
     const [checkInToday, { isLoading: checkingIn }] = useCheckInTodayMutation();
 
     return (
-        <button
+        <Button
+            color="green"
             disabled={!userId || checkedInToday || isFetching || checkingIn}
             onClick={async () => {
                 if (!userId) return;
@@ -26,6 +28,6 @@ export function CheckInButton() {
             }}
         >
             {checkedInToday ? "Checked in ✓" : checkingIn ? "Checking in…" : "Check in today"}
-        </button>
+        </Button>
     );
 }

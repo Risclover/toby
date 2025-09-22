@@ -10,7 +10,7 @@ export interface Todo {
     sortIndex: number;
     dueDate?: string;
     assignedToId?: number;
-    list_id: number;
+    listId: number;
     createdAt: string;   // <- camelCase
     updatedAt: string;
 }
@@ -96,9 +96,12 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
     endpoints: (builder) => ({
         getTodoList: builder.query<TodoListType, number | undefined>({
             query: (todoListId) => `/todo_lists/${todoListId}`,
-            providesTags: (result, error, todoListId): TodoListTag[] => [
-                { type: "TodoList", id: todoListId ?? "LIST" }, // string | number
-            ],
+            providesTags: (result, error, todoListId): TodoListTag[] => {
+                void result; void error;
+                return [
+                    { type: "TodoList", id: todoListId ?? "LIST" }, // string | number
+                ]
+            }
         }),
 
         getTodoLists: builder.query<TodoListType[], number>({
@@ -123,6 +126,7 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 body: { completed },
             }),
             invalidatesTags: (result, error, { listId, householdId }): TodoListTag[] => {
+                void result; void error;
                 const tags: TodoListTag[] = [{ type: "TodoList", id: listId }];
                 if (householdId != null) tags.push({ type: "TodoList", id: `HOUSEHOLD_${householdId}` });
                 // keep the list “bucket” fresh too
@@ -179,7 +183,10 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                     list_id: listId,
                 },
             }),
-            invalidatesTags: (result, error, arg: CreateTodoRequest) => [{ type: "TodoList", id: arg.listId }],
+            invalidatesTags: (result, error, arg: CreateTodoRequest) => {
+                void result; void error;
+                return [{ type: "TodoList", id: arg.listId }]
+            }
         }),
 
         deleteTodo: builder.mutation<Todo, DeleteTodoRequest>({
@@ -187,7 +194,10 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 url: `/todo_lists/${listId}/todos/${todoId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, arg: DeleteTodoRequest) => [{ type: "TodoList", id: arg.listId }],
+            invalidatesTags: (result, error, arg: DeleteTodoRequest) => {
+                void result; void error;
+                return [{ type: "TodoList", id: arg.listId }]
+            }
         }),
 
         clearList: builder.mutation<{ message: string }, ClearListRequest>({
@@ -195,7 +205,10 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 url: `/todo_lists/${listId}/todos`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, arg: ClearListRequest) => [{ type: "TodoList", id: arg.listId }],
+            invalidatesTags: (result, error, arg: ClearListRequest) => {
+                void result; void error;
+                return [{ type: "TodoList", id: arg.listId }]
+            }
         }),
 
         deleteList: builder.mutation<{ message: string }, DeleteListRequest>({
@@ -203,19 +216,20 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 url: `/todo_lists/${listId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, arg: DeleteListRequest) => [
-                { type: "TodoList", id: arg.listId },
-                { type: "TodoList", id: "LIST" },
-            ],
+            invalidatesTags: (result, error, arg: DeleteListRequest) => {
+                void result; void error;
+                return [{ type: "TodoList", id: arg.listId }, { type: "TodoList", id: "LIST" }]
+            }
         }),
 
         updateTodoList: builder.mutation({
-            query: ({ listId, title, householdId }) => ({
+            query: ({ listId, title }) => ({
                 url: `/todo_lists/${listId}`,
                 method: "PUT",
                 body: { title }
             }),
             invalidatesTags: (result, error, { listId, householdId }): TodoListTag[] => {
+                void result; void error;
                 const tags: TodoListTag[] = [{ type: "TodoList", id: listId }];
                 if (householdId != null) tags.push({ type: "TodoList", id: `HOUSEHOLD_${householdId}` });
                 tags.push({ type: "TodoList", id: listId })

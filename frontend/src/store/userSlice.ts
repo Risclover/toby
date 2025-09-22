@@ -4,11 +4,17 @@ export const userSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["User"] }).in
     endpoints: (builder) => ({
         getUser: builder.query({
             query: (userId) => `/users/${userId}`,
-            providesTags: (result, error, userId) => [{ type: "User", id: userId }],
+            providesTags: (result, error, userId) => {
+                void result; void error;
+                return [{ type: "User", id: userId }]
+            }
         }),
         getAllUsers: builder.query({
             query: () => `/users/`,
-            providesTags: (result, error, userId) => [{ type: "User", id: userId }],
+            providesTags: (result, error, userId) => {
+                void result; void error;
+                return [{ type: "User", id: userId }]
+            }
         }),
         // 1. Daily Checkin
         checkin: builder.mutation<{ message: string }, number | string | undefined>({
@@ -16,7 +22,10 @@ export const userSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["User"] }).in
                 url: `/users/${userId}/checkin`,
                 method: "PUT",
             }),
-            invalidatesTags: (result, error, userId) => [{ type: "User", id: userId }],
+            invalidatesTags: (result, error, userId) => {
+                void result; void error;
+                return [{ type: "User", id: userId }]
+            }
         }),
 
         // 2. Update user details (display name, tagline, mood)

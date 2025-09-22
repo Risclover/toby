@@ -1,6 +1,6 @@
 import { Button, Modal, Stack, TextInput } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
-import { useCreateHouseholdTodoListMutation, type CreateTodoListRequest } from "@/store/todoSlice";
+import { useCreateHouseholdTodoListMutation } from "@/store/todoSlice";
 import { useState, type FormEvent } from "react";
 import { CreateTodoListMembers } from "./CreateTodoListMembers";
 import { useAuthenticateQuery } from "@/store/authSlice";

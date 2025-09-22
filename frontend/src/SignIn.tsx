@@ -14,8 +14,6 @@ export const SignIn = () => {
     const [addTodo] = useAddTodoMutation();
     const [todoListId, setTodoListId] = useState<number | undefined>();
 
-    const [listTitle, setListTitle] = useState("")
-
     const handleLogout = async () => {
         await logout();
         setEmail("");

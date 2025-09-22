@@ -1,12 +1,11 @@
 import { useEffect, useState, type JSX } from "react";
-import "./Sidebar.css";
 import { TobyIcon } from "@/assets/icons/TobyIcon";
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
-import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded'; import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import EditCalendarRoundedIcon from '@mui/icons-material/EditCalendarRounded';
+import "./Sidebar.css";
 
 type Item = {
     href: string;
