@@ -35,7 +35,6 @@ body,
 html,
 body {
     height: 100%;
-    overflow: hidden;
 }
 
 body {
@@ -45,6 +44,10 @@ body {
     font: 14px/1.4 system-ui;
     background: #fbf9fa !important;
 
+}
+
+#root {
+    display: flex;
 }
 
 main {

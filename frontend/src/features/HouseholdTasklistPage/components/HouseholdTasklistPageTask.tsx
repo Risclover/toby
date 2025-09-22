@@ -2,6 +2,10 @@ import { EditableTitle } from "@/component/EditableTitle";
 import { useCompleteTodoMutation, useUpdateTodoMutation, type Todo } from "@/store/todoSlice";
 import { Checkbox } from "@mantine/core";
 import { useEffect, useState, type ChangeEvent } from "react";
+import DeleteRounded from '@mui/icons-material/Delete';
+import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
+import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
+import { TaskDetails } from "./TaskDetails";
 
 type Props = {
     task: Todo;
@@ -10,6 +14,8 @@ type Props = {
 };
 
 export function HouseholdTasklistPageTask({ task, listId, householdId }: Props) {
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [showTaskDetails, setShowTaskDetails] = useState(false);
     const [checked, setChecked] = useState(task.status === "completed");
     const [completeTodo, { isLoading }] = useCompleteTodoMutation();
     const [updateTodoTitle] = useUpdateTodoMutation();
@@ -58,6 +64,19 @@ export function HouseholdTasklistPageTask({ task, listId, householdId }: Props) 
             ) : (
                 <EditableTitle title={task.title} onSave={handleUpdateTitle} className="household-tasklist-page-title editable-title" />
             )}
+            {!checked && <div className="household-tasklist-page-btns">
+                <BorderColorRoundedIcon onClick={() => setShowTaskDetails(true)} />
+                <DeleteRounded onClick={() => setShowDeleteConfirmation(true)} />
+            </div>}
+            {showDeleteConfirmation &&
+                <TaskDeletionConfirmation
+                    title={task.title}
+                    onClose={() => setShowDeleteConfirmation(false)}
+                    opened={showDeleteConfirmation}
+                    listId={task.listId}
+                    todoId={task.id}
+                />}
+            {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} task={task} />}
         </div>
     );
 }

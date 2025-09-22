@@ -5,7 +5,6 @@ import "./assets/styles/global.css"
 import '@mantine/core/styles.css';
 
 import { MantineProvider } from '@mantine/core';
-import { SidebarProvider } from './components/ui/sidebar'
 
 function App() {
 
@@ -13,9 +12,7 @@ function App() {
     <>
       <BrowserRouter>
         <MantineProvider>
-          <SidebarProvider>
-            <Layout />
-          </SidebarProvider>
+          <Layout />
         </MantineProvider>
       </BrowserRouter>
     </>

@@ -111,3 +111,24 @@ input.editable-title {
     flex-direction: column;
     overflow: hidden;
 }
+
+.household-tasklist-page-task:hover .household-tasklist-page-btns {
+    display: flex;
+}
+
+.household-tasklist-page-btns {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.household-tasklist-page-btns svg {
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: #7950f2;
+}
+
+.household-tasklist-page-btns svg:hover {
+    color: #7048e8
+}

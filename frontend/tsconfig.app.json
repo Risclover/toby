@@ -12,15 +12,12 @@
     "skipLibCheck": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
-    // "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     /* Output control */
-    // "noEmit": true,
     "noEmit": true,
-    "declaration": false,
-    "emitDeclarationOnly": false,
-    "composite": false,
+    // "composite": true,
     /* JSX */
     "jsx": "react-jsx",
     /* Linting */
