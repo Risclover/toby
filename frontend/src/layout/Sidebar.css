@@ -17,6 +17,7 @@
     z-index: 3;
     font-family: "Sedgwick Ave Display", cursive;
     font-weight: 400;
+    justify-content: space-between;
     /* keep tooltips above main content */
 }
 
@@ -55,8 +56,6 @@
 }
 
 .collapse-btn {
-    position: absolute;
-
     margin: 0 auto;
     border: 0;
     background: transparent;
@@ -202,13 +201,88 @@
 
 /* reveal on hover/focus when collapsed */
 .sidebar.collapsed .nav-link:hover .tooltip,
-.sidebar.collapsed .nav-link:focus .tooltip {
+.sidebar.collapsed .nav-link:focus .tooltip,
+.sidebar.collapsed .nav-profile:hover .tooltip,
+.sidebar.collapsed .nav-profile:focus .tooltip {
     opacity: 1;
     visibility: visible;
     transform: translateY(-50%) translateX(0);
 }
 
-/* reduced motion */
+.nav-profile {
+    display: flex;
+    gap: 8px;
+}
+
+.nav-profile-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    font-family: "Alan Sans", sans-serif;
+}
+
+.nav-profile-info-name {
+    font-size: 0.9rem;
+}
+
+.nav-profile-info-household {
+    font-size: 0.8rem;
+}
+
+
+/* Profile row */
+.nav-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    font-family: "Alan Sans", sans-serif;
+    text-decoration: none;
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 10px;
+    outline: 1px solid transparent;
+    transition: background var(--t), outline-color var(--t);
+
+}
+
+.nav-profile-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    /* take remaining space */
+    min-width: 0;
+}
+
+/* Collapsed state: hide text, center avatar */
+.sidebar.collapsed .nav-profile-info {
+    display: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-profile-info-household,
+.nav-profile-info-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar.collapsed .nav-profile {
+    justify-content: center;
+}
+
+/* (Optional) keep avatar size consistent */
+.nav-profile .mantine-Avatar-root {
+    width: 36px;
+    height: 36px;
+}
+
+.nav-profile:hover {
+    background: var(--hover);
+}
+
 @media (prefers-reduced-motion: reduce) {
 
     .chevron,

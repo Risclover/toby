@@ -6,6 +6,9 @@ import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import EditCalendarRoundedIcon from '@mui/icons-material/EditCalendarRounded';
 import "./Sidebar.css";
+import { Avatar, Tooltip } from "@mantine/core";
+import { useAuthenticateQuery } from "@/store/authSlice";
+import { useGetHouseholdQuery } from "@/store/householdSlice";
 
 type Item = {
     href: string;
@@ -66,6 +69,8 @@ const items: Item[] = [
 ];
 
 export default function Sidebar() {
+    const { data: user } = useAuthenticateQuery();
+    const { data: household } = useGetHouseholdQuery(user?.householdId)
     const [collapsed, setCollapsed] = useState<boolean>(() => {
         try { return localStorage.getItem("sidebar-collapsed") === "1"; }
         catch { return false; }
@@ -88,36 +93,49 @@ export default function Sidebar() {
 
     return (
         <nav className={`sidebar${collapsed ? " collapsed" : ""}`} aria-label="Primary">
-            <div className="brand">
+            <div><div className="brand">
                 <TobyIcon />
                 <div className="title">Toby</div>
 
             </div>
-            <button
-                className="collapse-btn"
-                onClick={toggle}
-                aria-expanded={!collapsed}
-                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-                <svg className="chevron" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </button>
-            <ul className="nav">
-                {items.map((it) => (
-                    <li className="nav-item" key={it.label}>
-                        <a
-                            className="nav-link"
-                            href={it.href}
-                            aria-label={it.ariaLabel ?? it.label}
-                        >
-                            <span className="icon" aria-hidden="true">{it.icon}</span>
-                            <span className="label">{it.label}</span>
-                            <span className="tooltip" role="tooltip">{it.label}</span>
-                        </a>
-                    </li>
-                ))}
-            </ul>
+                <button
+                    className="collapse-btn"
+                    onClick={toggle}
+                    aria-expanded={!collapsed}
+                    aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                >
+                    <svg className="chevron" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+                <ul className="nav">
+                    {items.map((it) => (
+                        <li className="nav-item" key={it.label}>
+                            <a
+                                className="nav-link"
+                                href={it.href}
+                                aria-label={it.ariaLabel ?? it.label}
+                            >
+                                <span className="icon" aria-hidden="true">{it.icon}</span>
+                                <span className="label">{it.label}</span>
+                                <span className="tooltip" role="tooltip">{it.label}</span>
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div className="nav-profile">
+                {collapsed ? (
+                    <Avatar src={user?.profileImg ?? undefined} radius="xl" />
+                ) : (
+                    <Avatar src={user?.profileImg ?? undefined} radius="xl" />
+                )}
+                <span className="tooltip" role="tooltip">{user?.displayName}</span>
+                <div className="nav-profile-info">
+                    <span className="nav-profile-info-name">{user?.displayName}</span>
+                    <span className="nav-profile-info-household">{household?.name}</span>
+                </div>
+            </div>
         </nav>
     );
 }
