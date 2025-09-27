@@ -8,9 +8,10 @@ export interface Todo {
     status: "pending" | "in_progress" | "completed";
     priority: "low" | "normal" | "high";
     sortIndex: number;
-    dueDate?: string;
-    assignedToId?: number;
+    dueDate?: string | Date | undefined | null;
+    assignedToId?: number | undefined | null;
     listId: number;
+    notes: string | undefined;
     createdAt: string;   // <- camelCase
     updatedAt: string;
 }
@@ -59,8 +60,8 @@ export interface CreateTodoRequest {
     description?: string;
     status?: "pending" | "in_progress" | "completed";
     priority?: "low" | "normal" | "high";
-    dueDate?: string;
-    assignedToId?: number | null;
+    dueDate?: string | Date | undefined;
+    assignedToId?: number | undefined | null;
     listId: number | undefined;
 }
 
@@ -90,14 +91,21 @@ export interface CompleteTodoRequest {
     householdId?: number;
 }
 
+type UpdateTodoPatch = Partial<
+    Pick<Todo, "priority" | "status" | "title" | "description" | "dueDate" | "assignedToId" | "notes">
+>;
+
 type TodoListTag = { type: "TodoList"; id: number | string };
 
-export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }).injectEndpoints({
+export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList", "Todo"] }).injectEndpoints({
     endpoints: (builder) => ({
+        getTodo: builder.query({
+            query: (todoId) => `/todos/${todoId}`,
+            providesTags: (_res, _err, todoId) => [{ type: "Todo", id: todoId }]
+        }),
         getTodoList: builder.query<TodoListType, number | undefined>({
             query: (todoListId) => `/todo_lists/${todoListId}`,
-            providesTags: (result, error, todoListId): TodoListTag[] => {
-                void result; void error;
+            providesTags: (_res, _err, todoListId): TodoListTag[] => {
                 return [
                     { type: "TodoList", id: todoListId ?? "LIST" }, // string | number
                 ]
@@ -125,8 +133,7 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 method: "PUT",
                 body: { completed },
             }),
-            invalidatesTags: (result, error, { listId, householdId }): TodoListTag[] => {
-                void result; void error;
+            invalidatesTags: (_res, _err, { listId, householdId }): TodoListTag[] => {
                 const tags: TodoListTag[] = [{ type: "TodoList", id: listId }];
                 if (householdId != null) tags.push({ type: "TodoList", id: `HOUSEHOLD_${householdId}` });
                 // keep the list “bucket” fresh too
@@ -134,6 +141,7 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 return tags;
             },
         }),
+
         createHouseholdTodoList: builder.mutation<TodoListType, CreateTodoListRequest>({
             query: (arg) => {
                 // user-owned
@@ -183,8 +191,7 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                     list_id: listId,
                 },
             }),
-            invalidatesTags: (result, error, arg: CreateTodoRequest) => {
-                void result; void error;
+            invalidatesTags: (_res, _err, arg: CreateTodoRequest) => {
                 return [{ type: "TodoList", id: arg.listId }]
             }
         }),
@@ -194,8 +201,7 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 url: `/todo_lists/${listId}/todos/${todoId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, arg: DeleteTodoRequest) => {
-                void result; void error;
+            invalidatesTags: (_res, _err, arg: DeleteTodoRequest) => {
                 return [{ type: "TodoList", id: arg.listId }]
             }
         }),
@@ -205,8 +211,7 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 url: `/todo_lists/${listId}/todos`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, arg: ClearListRequest) => {
-                void result; void error;
+            invalidatesTags: (_res, _err, arg: ClearListRequest) => {
                 return [{ type: "TodoList", id: arg.listId }]
             }
         }),
@@ -216,8 +221,7 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 url: `/todo_lists/${listId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, arg: DeleteListRequest) => {
-                void result; void error;
+            invalidatesTags: (_res, _err, arg: DeleteListRequest) => {
                 return [{ type: "TodoList", id: arg.listId }, { type: "TodoList", id: "LIST" }]
             }
         }),
@@ -228,8 +232,7 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
                 method: "PUT",
                 body: { title }
             }),
-            invalidatesTags: (result, error, { listId, householdId }): TodoListTag[] => {
-                void result; void error;
+            invalidatesTags: (_res, _err, { listId, householdId }): TodoListTag[] => {
                 const tags: TodoListTag[] = [{ type: "TodoList", id: listId }];
                 if (householdId != null) tags.push({ type: "TodoList", id: `HOUSEHOLD_${householdId}` });
                 tags.push({ type: "TodoList", id: listId })
@@ -238,13 +241,60 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
             },
         }),
 
-        updateTodo: builder.mutation<Todo, { todoId: number; title: string; listId: number }>({
-            query: ({ todoId, title }) => ({
+        updateTodo: builder.mutation<
+            Todo,
+            { todoId: number; listId: number; householdId?: number } & UpdateTodoPatch
+        >({
+            query: ({ todoId, listId, householdId, ...patch }) => ({
                 url: `/todos/${todoId}`,
-                method: "PUT",
-                body: { title },
+                method: "PATCH",                 // <-- partial update
+                body: patch,                     // <-- only what you pass in
             }),
-            invalidatesTags: (_r, _e, { listId }) => [{ type: "TodoList", id: listId }],
+            async onQueryStarted({ todoId, listId, householdId, ...patch }, { dispatch, getState, queryFulfilled }) {
+                const p1 = dispatch(
+                    todoSlice.util.updateQueryData("getTodoList", listId, (draft) => {
+                        const t = draft?.todos?.find(x => x.id === todoId);
+                        if (t) {
+                            Object.entries(patch).forEach(([k, v]) => { if (v !== undefined) (t as any)[k] = v; });
+                            (t as any).updatedAt = new Date().toISOString();
+                        }
+                    })
+                );
+
+                if (householdId == null) {
+                    const sel = todoSlice.endpoints.getTodoList.select(listId)(getState() as any);
+                    householdId = sel?.data?.householdId ?? undefined;
+                }
+
+                const p2 = householdId != null
+                    ? dispatch(
+                        householdSlice.util.updateQueryData("getHouseholdTodoLists", householdId, (lists: any[] | undefined) => {
+                            const list = lists?.find(l => l.id === listId);
+                            const t = list?.todos?.find((x: any) => x.id === todoId);
+                            if (t) {
+                                Object.entries(patch).forEach(([k, v]) => { if (v !== undefined) (t as any)[k] = v; });
+                                t.updatedAt = new Date().toISOString();
+                            }
+                        })
+                    )
+                    : { undo: () => { } };
+
+                const pSingle = dispatch(
+                    todoSlice.util.updateQueryData("getTodo", todoId, (draft: any) => {
+                        if (draft) Object.assign(draft, patch, { updatedAt: new Date().toISOString() });
+                    })
+                );
+                try { await queryFulfilled; } catch { p1.undo(); p2.undo?.(); pSingle.undo(); }
+            },
+            invalidatesTags: (_r, _e, { todoId, listId, householdId }) => {
+                const tags: any[] = [
+                    { type: "TodoList", id: listId },
+                    { type: "TodoList", id: "LIST" },
+                    { type: "Todo", id: todoId }, // ✅ refetch single-todo queries
+                ];
+                if (householdId != null) tags.push({ type: "TodoList", id: `HOUSEHOLD_${householdId}` });
+                return tags;
+            },
         }),
 
         reorderTodos: builder.mutation<void, ReorderPayload>({
@@ -300,6 +350,7 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList"] }
 })
 
 export const {
+    useGetTodoQuery,
     useGetTodoListQuery,
     useGetTodoListsQuery,
     useCreateHouseholdTodoListMutation,

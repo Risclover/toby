@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 5b3c422c7ffb
+Revision ID: 75cbe7222082
 Revises: 
-Create Date: 2025-09-19 19:51:53.689945
+Create Date: 2025-09-24 14:18:17.324446
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5b3c422c7ffb'
+revision = '75cbe7222082'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -60,6 +60,18 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('checkins',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('local_date', sa.Date(), nullable=False),
+    sa.Column('created_at_utc', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user_id', 'local_date', name='uq_checkins_user_localdate')
+    )
+    with op.batch_alter_table('checkins', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_checkins_user_id'), ['user_id'], unique=False)
+
     op.create_table('events',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('household_id', sa.Integer(), nullable=False),
@@ -130,7 +142,7 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('status', sa.Text(), nullable=True),
     sa.Column('priority', sa.Text(), nullable=True),
-    sa.Column('due_date', sa.DateTime(), nullable=True),
+    sa.Column('due_date', sa.Date(), nullable=True),
     sa.Column('assigned_to_id', sa.Integer(), nullable=True),
     sa.Column('sort_index', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
@@ -157,6 +169,10 @@ def downgrade():
     op.drop_table('todo_lists')
     op.drop_table('shopping_lists')
     op.drop_table('events')
+    with op.batch_alter_table('checkins', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_checkins_user_id'))
+
+    op.drop_table('checkins')
     op.drop_table('announcements')
     op.drop_table('users')
     op.drop_table('households')

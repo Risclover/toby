@@ -125,7 +125,7 @@ function SortableTaskItem({ task }: { task: Todo }) {
                     <DragIndicatorIcon />
                 </span>
 
-                <HouseholdTasklistPageTask task={task} listId={task.listId} householdId={user?.householdId} />
+                <HouseholdTasklistPageTask taskId={task.id} listId={task.listId} householdId={user?.householdId} />
                 {/* right-side actions, due date, etc. */}
             </div>
         </li>

@@ -8,6 +8,7 @@ import "../styles/HouseholdTasklistPage.css";
 import { HouseholdTasklistPageAddTask } from "./HouseholdTasklistPageAddTask";
 import { EditableTitle } from "../../../component/EditableTitle";
 import { HouseholdTasklistPageList } from "./HouseholdTasklistPageList";
+import { HouseholdTasklistPageCompleted } from "./HouseholdTasklistPageCompleted";
 
 export const HouseholdTasklistPage = () => {
     const { tasklistId } = useParams();
@@ -39,6 +40,9 @@ export const HouseholdTasklistPage = () => {
     if (!listId) return <div>Invalid list id.</div>;
     if (isFetching && !tasklist) return <div>Loading…</div>;
 
+    const completed = tasklist?.todos?.filter((todo) => todo.status === "completed")
+    const uncompleted = tasklist?.todos?.filter((todo) => todo.status === "in_progress")
+
     return (
         <div className="household-tasklist-page">
             <div onClick={() => navigate(-1)}>&lt; Back</div>
@@ -47,7 +51,6 @@ export const HouseholdTasklistPage = () => {
                 <EditableTitle
                     title={tasklist?.title ?? ""}   // <-- always a string
                     onSave={handleUpdateTitle}
-                    className="household-tasklist-page-title editable-title"
                 />
             </div>
 
@@ -58,7 +61,8 @@ export const HouseholdTasklistPage = () => {
                 {percent}%
             </div>
             <div className="tasklist-panel">
-                <HouseholdTasklistPageList tasklist={tasklist} />
+                {uncompleted && uncompleted.length > 0 && <HouseholdTasklistPageList tasklist={tasklist} />}
+                {completed && completed?.length > 0 && <HouseholdTasklistPageCompleted tasklist={tasklist} completed={completed} />}
                 <HouseholdTasklistPageAddTask listId={tasklist?.id} /> {/* number, not undefined */}
             </div>
         </div>

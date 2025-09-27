@@ -10,9 +10,10 @@ class Todo(db.Model):
     description=db.Column(db.Text)
     status=db.Column(db.Text)
     priority=db.Column(db.Text)
-    due_date=db.Column(db.DateTime, nullable=True)
+    due_date=db.Column(db.Date, nullable=True)
     assigned_to_id=db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     sort_index = db.Column(db.Integer, nullable=False, default=0)
+    notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
@@ -27,8 +28,9 @@ class Todo(db.Model):
             "description": self.description,
             "status": self.status,
             "priority": self.priority,
-            "dueDate": self.due_date,
+            "dueDate": self.due_date.isoformat() if self.due_date else None,
             "assignedToId": self.assigned_to_id,
+            "notes": self.notes,
             "sortIndex": self.sort_index,
             "createdAt": self.created_at,
             "updatedAt": self.updated_at

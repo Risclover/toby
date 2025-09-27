@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom'
 import "./index.css"
 import "./assets/styles/global.css"
 import '@mantine/core/styles.css';
-
+import '@mantine/dates/styles.css';
 import { MantineProvider } from '@mantine/core';
 
 function App() {
