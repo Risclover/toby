@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 logging = "*"
+boto3 = "*"
 
 [dev-packages]
 

@@ -253,10 +253,10 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList", "
             async onQueryStarted({ todoId, listId, householdId, ...patch }, { dispatch, getState, queryFulfilled }) {
                 const p1 = dispatch(
                     todoSlice.util.updateQueryData("getTodoList", listId, (draft) => {
-                        const t = draft?.todos?.find(x => x.id === todoId);
-                        if (t) {
-                            Object.entries(patch).forEach(([k, v]) => { if (v !== undefined) (t as any)[k] = v; });
-                            (t as any).updatedAt = new Date().toISOString();
+                        const todo = draft?.todos?.find(x => x.id === todoId);
+                        if (todo) {
+                            Object.entries(patch).forEach(([key, value]) => { if (value !== undefined) (todo as any)[key] = value; });
+                            (todo as any).updatedAt = new Date().toISOString();
                         }
                     })
                 );
@@ -270,10 +270,10 @@ export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList", "
                     ? dispatch(
                         householdSlice.util.updateQueryData("getHouseholdTodoLists", householdId, (lists: any[] | undefined) => {
                             const list = lists?.find(l => l.id === listId);
-                            const t = list?.todos?.find((x: any) => x.id === todoId);
-                            if (t) {
-                                Object.entries(patch).forEach(([k, v]) => { if (v !== undefined) (t as any)[k] = v; });
-                                t.updatedAt = new Date().toISOString();
+                            const todo = list?.todos?.find((x: any) => x.id === todoId);
+                            if (todo) {
+                                Object.entries(patch).forEach(([key, value]) => { if (value !== undefined) (todo as any)[key] = value; });
+                                todo.updatedAt = new Date().toISOString();
                             }
                         })
                     )

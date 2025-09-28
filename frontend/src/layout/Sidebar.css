@@ -7,10 +7,8 @@
     transition: width var(--t);
     background: var(--surface);
     border-right: 1px solid #111827;
-    padding: 12px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
     overflow-y: auto;
     overflow-x: hidden;
     color: white;
@@ -37,6 +35,8 @@
     gap: 1rem;
     letter-spacing: 3px;
     height: 60px;
+    margin-top: 12px;
+    margin-bottom: 12px;
 }
 
 .logo {
@@ -105,9 +105,10 @@
     align-items: center;
     gap: 12px;
     text-decoration: none;
+    width: 100%;
     color: var(--text);
     padding: 10px 12px;
-    border-radius: 10px;
+    padding-left: 24px;
     outline: 1px solid transparent;
     transition: background var(--t), outline-color var(--t);
 }
@@ -116,6 +117,7 @@
     background: var(--hover);
 }
 
+.nav-profile:focus-visible,
 .nav-link:focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
@@ -214,6 +216,11 @@
     gap: 8px;
 }
 
+.nav-profile img {
+    border: 2px solid #e5e7eb;
+    border-radius: 999px;
+}
+
 .nav-profile-info {
     display: flex;
     flex-direction: column;
@@ -239,10 +246,13 @@
     font-family: "Alan Sans", sans-serif;
     text-decoration: none;
     color: var(--text);
-    padding: 10px 12px;
     border-radius: 10px;
-    outline: 1px solid transparent;
+    /* outline: 1px solid transparent; */
     transition: background var(--t), outline-color var(--t);
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    justify-content: space-between;
 
 }
 
@@ -279,8 +289,21 @@
     height: 36px;
 }
 
-.nav-profile:hover {
-    background: var(--hover);
+
+.nav-profile-section {
+    background: #374151;
+    padding: 12px;
+    transition: background 500ms;
+}
+
+.nav-profile-section:hover {
+    background: transparent;
+}
+
+.collapsed .nav-profile-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 @media (prefers-reduced-motion: reduce) {

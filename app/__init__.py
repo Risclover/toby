@@ -19,12 +19,9 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 import time, logging
 from dotenv import load_dotenv 
-
-load_dotenv()
-
 import os
 print("FLASK_ENV =", os.getenv("FLASK_ENV"))
-
+print("S3_BUCKET =", os.environ.get("S3_BUCKET"))
 # --------------------------------------------------------------------------- #
 #  Application factory
 # --------------------------------------------------------------------------- #
@@ -32,6 +29,7 @@ def create_app(config_class=None) -> Flask:
     """
     Create and configure a new Flask application instance.
     """
+    load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
     app = Flask(
         __name__,
         static_folder=str(Path(__file__).resolve().parents[1] / "frontend" / "build"),

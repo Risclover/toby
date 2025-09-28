@@ -18,6 +18,7 @@ class User(db.Model, UserMixin):
     display_name = db.Column(db.String(30), default=default_display, nullable=True)
     tagline = db.Column(db.String(100), nullable=True)
     profile_img = db.Column(db.String(256), default="https://i.imgur.com/DRsIsR4.png")
+    banner_img = db.Column(db.String(256), nullable=True)
     points = db.Column(db.Integer, default=0)
     daily_checkin = db.Column(db.Boolean, default=False, nullable=False)
     last_checkin = db.Column(db.DateTime, nullable=True)
@@ -66,6 +67,7 @@ class User(db.Model, UserMixin):
             "displayName": self.display_name,
             "tagline": self.tagline,
             "profileImg": self.profile_img,
+            "bannerImg": self.banner_img,
             "points": self.points,
             "dailyCheckin": self.daily_checkin,
             "lastCheckin": self.last_checkin,

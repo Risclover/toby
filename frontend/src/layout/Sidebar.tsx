@@ -9,6 +9,8 @@ import "./Sidebar.css";
 import { Avatar, Tooltip } from "@mantine/core";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
+import { useNavigate } from "react-router-dom";
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 
 type Item = {
     href: string;
@@ -69,6 +71,7 @@ const items: Item[] = [
 ];
 
 export default function Sidebar() {
+    const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId)
     const [collapsed, setCollapsed] = useState<boolean>(() => {
@@ -93,11 +96,11 @@ export default function Sidebar() {
 
     return (
         <nav className={`sidebar${collapsed ? " collapsed" : ""}`} aria-label="Primary">
-            <div><div className="brand">
-                <TobyIcon />
-                <div className="title">Toby</div>
-
-            </div>
+            <div className="sidebar-top-section">
+                <div className="brand">
+                    <TobyIcon />
+                    <div className="title">Toby</div>
+                </div>
                 <button
                     className="collapse-btn"
                     onClick={toggle}
@@ -124,17 +127,18 @@ export default function Sidebar() {
                     ))}
                 </ul>
             </div>
-            <div className="nav-profile">
-                {collapsed ? (
+            <div className="nav-profile-section">
+                <button className="nav-profile" onClick={() => navigate(`/users/${user?.id}`)} role="button">
                     <Avatar src={user?.profileImg ?? undefined} radius="xl" />
-                ) : (
-                    <Avatar src={user?.profileImg ?? undefined} radius="xl" />
-                )}
-                <span className="tooltip" role="tooltip">{user?.displayName}</span>
-                <div className="nav-profile-info">
-                    <span className="nav-profile-info-name">{user?.displayName}</span>
-                    <span className="nav-profile-info-household">{household?.name}</span>
-                </div>
+                    <span className="tooltip" role="tooltip">{user?.displayName}</span>
+                    <div className="nav-profile-info">
+                        <span className="nav-profile-info-name">
+                            {user?.displayName}
+                        </span>
+                        <span className="nav-profile-info-household">{household?.name}</span>
+                    </div>
+                    <ExpandMoreRoundedIcon />
+                </button>
             </div>
         </nav>
     );

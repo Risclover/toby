@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useCheckinMutation, useGetUserQuery } from "../store/userSlice";
+import { useCheckinMutation, useGetUserQuery, useUploadImgMutation } from "../store/userSlice";
 import { useEffect, type MouseEvent } from "react";
 import Profile from "../assets/profile.png"
 import "./UserPage.css"
@@ -37,6 +37,7 @@ export const UserPage = () => {
     const checkedInToday = !!data?.dates?.length;
 
     const [checkInToday, { isLoading: checkingIn }] = useCheckInTodayMutation();
+    const [uploadImg, { isLoading }] = useUploadImgMutation();
 
     return (
         <div className="user-page">
@@ -49,6 +50,16 @@ export const UserPage = () => {
             <div><strong>Points:</strong> {user?.points}</div>
             <div><strong>Checked In?:</strong> {checkedInToday.toString()}</div>
 
+            <input
+                id="post-img"
+                type="file"
+                onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    await uploadImg({ userId: Number(userId), imgType: "profile", file });
+                }}
+                accept="image/png, image/jpeg, image/jpg"
+            />
             {currentUser?.id === user?.id && <button onClick={handleCheckin}>Check In</button>}
         </div>
     )

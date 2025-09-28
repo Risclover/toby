@@ -17,9 +17,11 @@ export const AddNewTodo = ({ todoListId }: Props) => {
 
     }
 
-    return <div>
-        <input type="text" name="title" id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-        <input type="text" name="description" id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
-        <button onClick={handleAddTodo}>Add Todo</button>
-    </div>
+    return (
+        <div>
+            <input type="text" name="title" id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
+            <input type="text" name="description" id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+            <button onClick={handleAddTodo}>Add Todo</button>
+        </div>
+    )
 }

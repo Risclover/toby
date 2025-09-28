@@ -1,5 +1,14 @@
 import { apiSlice } from "./apiSlice";
 
+type UploadImgArgs = {
+    userId: number | undefined;
+    imgType: "profile" | "banner";
+    file: File;               // <-- the actual file to upload
+};
+
+type UploadImgResponse = { url: string };
+
+
 export const userSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["User"] }).injectEndpoints({
     endpoints: (builder) => ({
         getUser: builder.query({
@@ -70,6 +79,24 @@ export const userSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["User"] }).in
             }),
             invalidatesTags: ["User"],
         }),
+
+        uploadImg: builder.mutation<UploadImgResponse, UploadImgArgs>({
+            query: ({ userId, imgType, file }) => {
+                const form = new FormData();
+                form.append("image", file);        // <-- key must be "image" for your route
+
+                return {
+                    url: `/users/${userId}/img/${imgType}`,
+                    method: "POST",
+                    body: form,                      // <-- let the browser set Content-Type
+                    // do NOT set headers: { "Content-Type": "multipart/form-data" }
+                };
+            },
+            invalidatesTags: (result, error, { userId }) => [
+                { type: "User", id: userId },      // if you tag users by id
+                "User",                            // fallback if you only have a generic tag
+            ],
+        })
     }),
 });
 
@@ -81,4 +108,5 @@ export const {
     useTrackHabitMutation,
     useCreateHabitMutation,
     useUpdatePointsMutation,
+    useUploadImgMutation
 } = userSlice;
