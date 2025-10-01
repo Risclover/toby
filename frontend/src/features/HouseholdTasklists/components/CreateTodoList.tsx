@@ -11,7 +11,7 @@ import AddIcon from '@mui/icons-material/Add';
 type CreateTodoList = {
     householdId: number
 }
-// CreateTodoList.tsx
+
 export const CreateTodoList = ({ householdId }: { householdId: number }) => {
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
@@ -49,7 +49,6 @@ export const CreateTodoList = ({ householdId }: { householdId: number }) => {
         }
 
         setTitle("");
-        // reset to everyone if you want:
         toggleAll(true);
         close();
     };
@@ -73,13 +72,13 @@ export const CreateTodoList = ({ householdId }: { householdId: number }) => {
                         onToggleAll={toggleAll}
                         onToggleOne={toggleOne}
                     />
-                    <Button type="submit" disabled={!canSubmit} variant="filled" color="violet">
+                    <Button type="submit" disabled={!canSubmit} variant="filled" color="cyan">
                         Submit
                     </Button>
                 </Stack>
             </Modal>
 
-            <Button variant="filled" color="violet" onClick={open}>
+            <Button variant="filled" color="cyan" onClick={open}>
                 <AddIcon />
             </Button>
         </div>

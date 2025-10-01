@@ -6,12 +6,13 @@ import { Dashboard } from "@/pages/Dashboard";
 import { SignIn } from "@/SignIn";
 import { HouseholdTasklists } from "@/features/HouseholdTasklists/components/HouseholdTasklists";
 import { HouseholdTasklistPage } from "@/features/HouseholdTasklistPage/components/HouseholdTasklistPage";
+import { Registration } from "@/features/Auth/components/Registration";
 
 export const AppRoutes = () => {
     return (
         <Routes>
-            <Route path="/join/:inviteCode" element={<Join />} />
-            <Route path="/signup" element={<SignUp />} />
+            <Route path="/join/:inviteCode" element={<Registration createHousehold={false} />} />
+            <Route path="/signup" element={<Registration createHousehold={true} />} />
             <Route path="/users/:userId" element={<UserPage />} />
             <Route path="/tasklists" element={<HouseholdTasklists />} />
             <Route path="/tasklists/:tasklistId" element={<HouseholdTasklistPage />} />

@@ -42,7 +42,7 @@ export const UserPage = () => {
     return (
         <div className="user-page">
             <img src={user?.profileImg} />
-            <div><strong>Username:</strong> {user?.username}</div>
+            <div><strong>Username:</strong> {user?.name}</div>
             <div><strong>Display Name:</strong> {user?.displayName}</div>
             <div><strong>Tagline:</strong> {user?.tagline}</div>
             <div><strong>Email:</strong> {user?.email}</div>

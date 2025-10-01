@@ -7,7 +7,6 @@ import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded';
 import { DatePickerInput } from '@mantine/dates';
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import dayjs from 'dayjs';
-import { AssignedToDropdown } from "./AssignedToDropdown";
 
 type Props = {
     opened: boolean;
@@ -89,12 +88,12 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
     const membersList =
         household?.members
             ?.filter((m) => todoList?.memberIds?.includes(m.id))
-            .map((m) => ({ id: m.id, username: m.username, profileImg: m.profileImg }))
+            .map((m) => ({ id: m.id, name: m.name, profileImg: m.profileImg }))
         ?? [];
 
     const data = membersList.map((m) => ({
         value: String(m.id),
-        label: m.username,
+        label: m.name,
         profileImg: m.profileImg, // keep raw data for renderOption
     }));
 
@@ -103,33 +102,45 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
     return <Drawer transitionProps={{ duration: 200, transition: 'fade-down' }} opened={opened} position="right" onClose={close}>
         <div className="task-details">
             <div>
+                <p className="task-details-label">Task:</p>
                 <div className="task-details-section">
                     <EditableTitle key={`${task?.id}-${task?.title}`} title={task.title} onSave={handleUpdateTitle} className="task-details-title editable-title" allowEmpty={false} />
                 </div>
+                <p className="task-details-label">Due Date:</p>
                 <DatePickerInput
                     value={dateValue}
                     placeholder="Add due date"
                     leftSection={<CalendarMonthRoundedIcon />}
                     leftSectionWidth="40px"
                     styles={{
-                        wrapper: { width: "100%" },
-                        input: { fontWeight: "normal", fontFamily: "IBM Plex Sans, sans-serif", border: 0, width: "100%", paddingLeft: "2.5rem", borderRadius: "0.2rem" },
+                        wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
+                        input: { fontWeight: "normal", fontFamily: "Nunito Sans, sans-serif", border: 0, width: "100%", paddingLeft: "2.5rem", borderRadius: "0.5rem", background: "var(--main-background)", color: "white" },
+
+                        month: { background: "var(--main-background)", color: "white" },
+                        day: { color: "white" },
+                        calendarHeader: { background: "var(--main-background)", color: "white" },
+                        presetsList: { background: "var(--main-background)", color: "white", borderColor: "var(--main-border)" },
+                        datePickerRoot: { background: "var(--main-background)", borderRadius: "0.5rem" },
+                        monthsListControl: { background: "var(--main-background)", color: "white" },
+                        yearsListControl: { background: "var(--main-background)", color: "white" },
+                        weekday: { color: "var(--sub-text)" },
+                        placeholder: { color: "var(--sub-text)" }
                     }}
                     clearable
-                    color="violet"
+                    color="cyan"
                     presets={[
                         { value: dayjs().format('YYYY-MM-DD HH:mm:ss'), label: 'Today' },
                         { value: dayjs().add(1, 'day').format('YYYY-MM-DD HH:mm:ss'), label: 'Tomorrow' },
                         { value: dayjs().add(1, "week").format("YYYY-MM-DD HH:mm:ss"), label: "Next week" },
                         { value: dayjs().add(1, 'month').format('YYYY-MM-DD HH:mm:ss'), label: 'Next month' },
                     ]}
-                    valueFormatter={({ date, format }) =>
+                    valueFormatter={({ date, format }: any) =>
                         date ? `Due ${dayjs(date).format(format)}` : ""
                     }
                     firstDayOfWeek={0}
                     onChange={handleDateInputPick}
                 />
-                <p className="task-details-label">ASSIGNED TO:</p>
+                <p className="task-details-label">Assigned To:</p>
                 <Select
                     value={assignedTo}                      // string | null
                     onChange={handleUpdateAssignedTo}       // (val: string | null) => void
@@ -139,32 +150,37 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
 
                     // Avatar in the INPUT when selected:
                     leftSection={
-                        selected ? <Avatar src={selected.profileImg} radius="xl" size="sm" /> : <PersonAddAltRoundedIcon />
+                        selected ? <Avatar src={selected.profileImg} radius="xl" size="xs" /> : <PersonAddAltRoundedIcon />
                     }
-
+                    leftSectionWidth="40px"
                     // Avatar in EACH OPTION row:
-                    renderOption={({ option }) => (
+                    renderOption={({ option }: any) => (
                         <Group gap="sm" wrap="nowrap">
-                            <Avatar src={option.profileImg} radius="xl" size="sm" />
+                            <Avatar src={option.profileImg} radius="xl" size="xs" />
                             <span>{option.label}</span>
                         </Group>
                     )}
 
                     nothingFoundMessage="No members"
                     styles={{
-                        wrapper: { width: "100%", },
+                        wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
                         input: {
-                            fontFamily: "IBM Plex Sans, sans-serif",
+                            fontFamily: "Nunito Sans, sans-serif",
+                            borderRadius: "0.5rem",
                             border: 0,
                             width: "100%",
                             paddingLeft: "2.5rem",
                             paddingTop: "1rem",
                             paddingBottom: "1rem",
-                            borderRadius: "0.2rem",
+                            background: "var(--main-background)",
+                            color: "white"
                         },
+                        section: { background: "transparent" },
+                        dropdown: { background: "var(--main-background)", border: "1px solid white", borderRadius: "0.5rem" },
+                        options: { background: "var(--main-background)", color: "white" },
                     }}
                 />
-                <p className="task-details-label">NOTES:</p>
+                <p className="task-details-label">Notes:</p>
                 <div className="task-details-section">
                     <EditableTitle
                         key={`${task.id}-${task.notes ?? ""}`}

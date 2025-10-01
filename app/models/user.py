@@ -5,13 +5,13 @@ from app.models.todo_list_member import TodoListMember
 from sqlalchemy import Index
 
 def default_display(context):
-    return context.get_current_parameters()['username']
+    return context.get_current_parameters()['name']
 
 class User(db.Model, UserMixin):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False, unique=True)
+    name = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     hashed_password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -61,7 +61,7 @@ class User(db.Model, UserMixin):
     def to_dict(self):
         return {
             "id": self.id,
-            "username": self.username,
+            "name": self.name,
             "email": self.email,
             "createdAt": self.created_at,
             "displayName": self.display_name,
@@ -75,4 +75,4 @@ class User(db.Model, UserMixin):
         }
 
     def __repr__(self):
-        return f"<User {self.id}: {self.username}>"
+        return f"<User {self.id}: {self.name}>"

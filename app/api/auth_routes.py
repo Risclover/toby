@@ -55,17 +55,6 @@ def logout():
     logout_user()
     return {'message': 'User logged out'}
 
-@auth_routes.route("/signup/<string:username>", methods=["POST"])
-def check_username(username):
-    """
-    Checks if username is taken
-    """
-    username_lower = username.lower()
-    user = User.query.filter(func.lower(User.username) == username_lower).first()
-    if user:
-        return {"Message": True}
-    else:
-        return {"Message": False}
 
 @auth_routes.route("/signup/check-email/<string:email>", methods=["POST"])
 def check_email(email):
@@ -86,13 +75,13 @@ def sign_up():
     Signup a new user. Optionally create a household.
     """
     data = request.get_json()
-    username = data.get("username")
+    name = data.get("name")
     email = data.get("email")
     password = data.get("password")
     household_name = data.get("household_name")  # optional
 
     # Create user first
-    user = User(username=username, email=email, password=password)
+    user = User(name=name, email=email, password=password)
     db.session.add(user)
     db.session.flush()  # flush to get user.id
 
@@ -124,7 +113,7 @@ def join_household(invite_code):
     Join a household using an invite code.
     """
     data = request.get_json()
-    username = data.get("username")
+    name = data.get("name")
     email = data.get("email")
     password = data.get("password")
 
@@ -134,7 +123,7 @@ def join_household(invite_code):
 
     # Create user and assign to household
     user = User(
-        username=username,
+        name=name,
         email=email,
         password=password,
         household_id=household.id

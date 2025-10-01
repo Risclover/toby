@@ -38,7 +38,7 @@ export const TodoList = ({ list }: Props) => {
                 </div>
             ))}
         </div>
-        <Button variant="filled" color="violet" onClick={handleDeleteList}>Delete List</Button>
+        <Button variant="filled" color="cyan" onClick={handleDeleteList}>Delete List</Button>
         <button onClick={() => setShowForm(true)}>Add Todo</button>
 
         {showForm && <AddNewTodo todoListId={list.id} />}

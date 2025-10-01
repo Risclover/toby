@@ -3,7 +3,7 @@ import { apiSlice } from "./apiSlice";
 
 interface User {
     id: number;
-    username: string;
+    name: string;
     email: string;
     displayName?: string;
     createdAt: string;
@@ -58,24 +58,24 @@ export const authSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Session"] })
         }),
         signup: builder.mutation<
             { user: User; household?: Household },
-            { username: string; email: string; password: string; household_name?: string }>({
-                query: ({ username, email, password, household_name }) => ({
+            { name: string; email: string; password: string; household_name?: string }>({
+                query: ({ name, email, password, household_name }) => ({
                     url: "/auth/signup",
                     method: "POST",
                     credentials: "include",
-                    body: { username, email, password, household_name }
+                    body: { name, email, password, household_name }
                 }),
                 invalidatesTags: ["Session"],
             }),
         joinHousehold: builder.mutation<
             { user: User; household: Household },
-            { username: string; email: string; password: string; inviteCode: string | undefined }
+            { name: string; email: string; password: string; inviteCode: string | undefined }
         >({
-            query: ({ username, email, password, inviteCode }) => ({
+            query: ({ name, email, password, inviteCode }) => ({
                 url: `/auth/join/${inviteCode}`,
                 method: "POST",
                 credentials: "include",
-                body: { username, email, password }
+                body: { name, email, password }
             }),
             invalidatesTags: ["Session"],
         }),
@@ -85,14 +85,6 @@ export const authSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Session"] })
                 method: "POST",
                 credentials: "include"
             }),
-        }),
-        checkUsername: builder.mutation<{ Message: boolean }, { username: string }>({
-            query: ({ username }) => ({
-                url: `/auth/signup/${username}`,
-                method: "POST",
-                credentials: "include",
-                body: { username, csrf_token: getCsrfTokenFromCookie() }
-            })
         }),
         checkEmail: builder.mutation<{ Message: boolean }, { email: string }>({
             query: ({ email }) => ({
@@ -113,6 +105,5 @@ export const {
     useSignupMutation,
     useJoinHouseholdMutation,
     useGenerateInviteMutation,
-    useCheckUsernameMutation,
     useCheckEmailMutation
 } = authSlice;

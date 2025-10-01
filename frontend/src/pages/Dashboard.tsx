@@ -47,10 +47,10 @@ export const Dashboard = () => {
                 <h1>{household?.name ?? (authFetching || householdFetching ? "…" : "")}</h1>
                 <div className="dashboard-titlebar-right">
 
-                    <Button color="violet" onClick={() => setShowCreateAnnouncement(true)}>Add Announcement</Button>
-                    <Button color="violet" onClick={() => setShowInviteModal(true)}>Invite</Button>
+                    <Button color="cyan" onClick={() => setShowCreateAnnouncement(true)}>Add Announcement</Button>
+                    <Button color="cyan" onClick={() => setShowInviteModal(true)}>Invite</Button>
                     <CheckInButton />
-                    {!user?.email ? <Button variant="filled" color="violet" onClick={handleSignIn}>Sign In</Button> : <Button variant="filled" color="violet" onClick={handleLogout}>Log Out</Button>}
+                    {!user?.email ? <Button variant="filled" color="cyan" onClick={handleSignIn}>Sign In</Button> : <Button variant="filled" color="cyan" onClick={handleLogout}>Log Out</Button>}
                 </div>
             </div>
             <Announcements householdId={household?.id} />

@@ -44,9 +44,9 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
     const visible = members.slice(0, VISIBLE);
     const hidden = members.slice(VISIBLE);
 
-    const nameOf = (p: any) => p?.displayName || p?.username || "Member";
+    const nameOf = (p: any) => p?.displayName || p?.name || "Member";
     const avatarInitial = (p: any) =>
-        (p?.displayName?.[0] || p?.username?.[0] || "?").toUpperCase();
+        (p?.displayName?.[0] || p?.name?.[0] || "?").toUpperCase();
 
     const todos = list?.todos ?? [];
 
@@ -68,6 +68,7 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
 
     return (
         <Card
+            className="household-tasklist"
             shadow="sm"
             padding="lg"
             radius="md"
@@ -112,7 +113,7 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
 
             <div className="progress">
                 <div className="progress-left">
-                    <Progress color="violet" value={percent} />
+                    <Progress color="cyan" value={percent} />
                 </div>
                 {percent}%
             </div>

@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { useGetUserCheckinsQuery } from "@/store/checkinSlice";
 
-type Member = { id: number; username: string; profileImg?: string };
+type Member = { id: number; name: string; profileImg?: string };
 
 function toISO(d: Date) {
     return d.toISOString().slice(0, 10); // YYYY-MM-DD
@@ -55,10 +55,10 @@ function MemberRow({
                     {member.profileImg ? (
                         <img src={member.profileImg} alt="" className="h-6 w-6 object-cover" />
                     ) : (
-                        member.username?.slice(0, 1).toUpperCase()
+                        member.name?.slice(0, 1).toUpperCase()
                     )}
                 </div> */}
-                <span className="text-sm text-right text-align-right w-full">{member.username}</span>
+                <span className="text-sm text-right text-align-right w-full">{member.name}</span>
             </div>
 
             <div className="flex items-center" style={{ gap }}>
@@ -77,9 +77,9 @@ function MemberRow({
 
                             ].join(" ")}
                             style={{ width: size, height: size }}
-                            title={`${member.username} • ${d.iso} • ${filled ? "Checked in" : "No check-in"}`}
+                            title={`${member.name} • ${d.iso} • ${filled ? "Checked in" : "No check-in"}`}
                             role="img"
-                            aria-label={`${member.username} ${d.iso} ${filled ? "checked in" : "no check-in"}`}
+                            aria-label={`${member.name} ${d.iso} ${filled ? "checked in" : "no check-in"}`}
                         />
                     );
                 })}

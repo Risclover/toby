@@ -13,8 +13,8 @@ export const AssignedToDropdown = ({ householdId, listId }: Props) => {
     const { data: household } = useGetHouseholdQuery(householdId)
     const { data: todoList } = useGetTodoListQuery(listId)
 
-    const membersList = household?.members.filter(member => todoList?.memberIds?.includes(member.id)).map((member) => { return { id: member.id, profileImg: member.profileImg, username: member.username } })
-    const memberOptions = membersList?.map((m) => ({ value: String(m.id), label: <><img src={m.profileImg} />{m.username}</> })) ?? [];
+    const membersList = household?.members.filter(member => todoList?.memberIds?.includes(member.id)).map((member) => { return { id: member.id, profileImg: member.profileImg, name: member.name } })
+    const memberOptions = membersList?.map((m) => ({ value: String(m.id), label: <><img src={m.profileImg} />{m.name}</> })) ?? [];
 
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
@@ -22,7 +22,7 @@ export const AssignedToDropdown = ({ householdId, listId }: Props) => {
 
     const options = membersList.map((item) => (
         <Combobox.Option value={item} key={item.id}>
-            <><img src={item.profileImg} />{item.username}</>
+            <><img src={item.profileImg} />{item.name}</>
         </Combobox.Option>
     ));
 

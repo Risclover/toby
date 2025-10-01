@@ -1,4 +1,5 @@
 import { useGetAnnouncementsQuery } from "@/store/announcementSlice"
+import "../styles/Announcements.css"
 
 type Props = {
     householdId: number;

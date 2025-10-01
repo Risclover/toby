@@ -64,7 +64,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
             <div className="task-check">
                 <Checkbox
                     radius="xl"
-                    color="violet"
+                    color="cyan"
                     checked={checked}
                     onChange={onChange}
                     disabled={isLoading}
@@ -74,7 +74,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
                 {checked ? (
                     <div className="completed-task">{task?.title}</div>
                 ) : (
-                    <span>{task?.title}</span>
+                    <div>{task?.title}</div>
                 )}
                 {!checked && <TaskExtra todo={task} listId={listId} householdId={householdId} />}
             </div>

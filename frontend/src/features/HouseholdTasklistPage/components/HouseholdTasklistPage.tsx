@@ -56,7 +56,7 @@ export const HouseholdTasklistPage = () => {
 
             <div className="household-tasklist-page-progress">
                 <div className="progress-left">
-                    <Progress color="violet" value={percent} />
+                    <Progress color="cyan" value={percent} />
                 </div>
                 {percent}%
             </div>

@@ -55,7 +55,7 @@ export const SignIn = () => {
                 <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
                 <button type="submit">Log In</button>
             </form>}
-            <br />{user?.email && "Welcome, " + user?.username}<br />
+            <br />{user?.email && "Welcome, " + user?.name}<br />
             {user?.email && <button onClick={handleLogout}>Logout</button>}
             <br /><button onClick={handleInvite}>Click to invite!</button>
             {inviteCode ? <div onClick={handleCopy}>localhost:5173/join/{inviteCode}</div> : ""}

@@ -12,9 +12,10 @@
     gap: 0.5rem;
 }
 
-.household-tasklist-page-title {
+.household-tasklist-page-title .editable-title {
+    font-family: "Alan Sans", sans-serif;
+    font-weight: 500;
     font-size: 1.5rem;
-    font-weight: 600;
 }
 
 .household-tasklist-page-task {
@@ -27,6 +28,7 @@
     width: 100%;
     word-wrap: break-word;
     padding-left: 0.5rem;
+    color: white;
 }
 
 .completed-task {
@@ -36,12 +38,16 @@
 }
 
 .editable-title {
-    font-family: "IBM Plex Sans", sans-serif;
+    font-family: "Nunito Sans", sans-serif;
     width: 100%;
     box-sizing: border-box;
     line-height: 1.4;
     /* keep consistent */
     padding: 0.8rem;
+}
+
+.task-details-title.editable-title {
+    font-size: 14px;
 }
 
 /* VIEW state (div) */
@@ -82,22 +88,25 @@ textarea.editable-title.is-editing {
 }
 
 .household-tasklist-page-completed {
-    background: white;
     margin-top: 1rem;
     max-height: calc(100vh - 51px - (16px + 16px + 48px + 62px));
     overflow-x: hidden;
     border-radius: 1rem;
     width: 100%;
-    border: 1px solid lightgray;
-    background: white;
+    border: 1px solid var(--main-border);
+    background: var(--main-background);
     box-shadow: var(--mantine-shadow-sm);
     min-height: 0;
     overflow-y: auto;
     position: relative;
 }
 
-.household-tasklist-page-completed .household-tasklist-page-task {
-    border-bottom: 1px solid lightgray;
+.household-tasklist-page-completed .household-tasklist-page-task:not(:last-child) {
+    border-bottom: 1px solid var(--main-border);
+}
+
+.household-tasklist-page-completed .household-tasklist-page-task:first-child {
+    border-top: 1px solid var(--main-border);
 }
 
 .household-tasklist-page-completed-title {
@@ -106,13 +115,12 @@ textarea.editable-title.is-editing {
     gap: 0.25rem;
     font-weight: 500;
     padding: 0.8rem;
-    border-bottom: 1px solid lightgray;
     cursor: pointer
 }
 
 .drag-handle svg {
     font-size: 1rem;
-    color: #696565;
+    color: white;
     padding-bottom: 1px;
 }
 
@@ -120,8 +128,11 @@ textarea.editable-title.is-editing {
     display: flex;
     align-items: center;
     width: 100%;
-    border-bottom: 1px solid lightgray;
     padding-left: 0.8rem;
+}
+
+.task:not(:last-child) {
+    border-bottom: 1px solid var(--main-border);
 }
 
 .add-task {
@@ -129,11 +140,11 @@ textarea.editable-title.is-editing {
     display: flex;
     justify-content: space-between;
     margin-top: 1rem;
-    border: 1px solid lightgray;
+    border: 1px solid var(--input-border);
     padding: 0.4rem;
     padding-left: 0.8rem;
     border-radius: 0.4rem;
-    background: white;
+    background: var(--input-background);
     box-shadow: var(--mantine-shadow-sm);
     position: sticky;
     bottom: 0;
@@ -143,7 +154,7 @@ textarea.editable-title.is-editing {
 .add-task input {
     width: calc(100% - 50px);
     outline: none;
-    font-family: "IBM Plex Sans", sans-serif;
+    font-family: "Nunito Sans", sans-serif;
 }
 
 .tasklist-panel {
@@ -170,19 +181,19 @@ textarea.editable-title.is-editing {
 .household-tasklist-page-btns svg {
     font-size: 1.3rem;
     cursor: pointer;
-    color: #7950f2;
+    color: var(--accent-color);
 }
 
 .household-tasklist-page-btns svg:hover {
-    color: #7048e8
+    color: var(--accent-color-hover);
 }
 
 .task-details-section {
     padding: 0.8rem;
-    border: 1px solid rgb(240, 240, 240);
+    border: 1px solid var(--main-border);
     border-radius: 0.5rem;
     padding-left: 0.5rem;
-    background: white;
+    background: var(--main-background);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -190,7 +201,7 @@ textarea.editable-title.is-editing {
 
 .task-section {
     padding: 1rem;
-    border: 1px solid rgb(240, 240, 240);
+    border: 1px solid var(--main-border);
     background: white;
     border-radius: 0.5rem;
     padding-left: 0.75rem;
@@ -198,12 +209,12 @@ textarea.editable-title.is-editing {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    font-family: "IBM Plex Sans", sans-serif;
+    font-family: "Nunito Sans", sans-serif;
 }
 
 .task-section svg {
     font-size: 1.5rem;
-    color: #7950f2;
+    color: #15aabf;
 }
 
 .task-details {
@@ -219,11 +230,12 @@ textarea.editable-title.is-editing {
     bottom: 0;
     left: 0;
     right: 0;
-    color: rgb(128, 126, 126);
+    color: var(--sub-text);
+    font-size: 0.9rem;
 }
 
 .mantine-Drawer-header {
-    background-color: rgb(240, 240, 240) !important;
+    background-color: var(--bg) !important;
 }
 
 .mantine-InputWrapper-root {
@@ -231,7 +243,7 @@ textarea.editable-title.is-editing {
 }
 
 .mantine-Input-section svg {
-    color: #7950f2
+    color: #15aabf
 }
 
 .date-picker {
@@ -265,8 +277,8 @@ textarea.editable-title.is-editing {
     width: 100%;
 }
 
-.mantine-focus-auto:where([data-selected]) {
-    background-color: #7950f2 !important;
+.mantine-focus-auto:where([data-selected]):hover {
+    background-color: var(--accent-color-hover) !important;
 }
 
 .task-main {
@@ -277,12 +289,12 @@ textarea.editable-title.is-editing {
     display: flex;
     align-items: center;
     font-size: 10px;
-    color: #696969;
+    color: white;
     gap: 4px;
 }
 
 .task-extra svg {
-    color: #7950f2;
+    color: #15aabf;
     font-size: 16px;
 }
 
@@ -316,7 +328,58 @@ textarea.editable-title.is-editing {
 
 .extra {
     display: flex;
-    align-items: center;
     margin: 0 2px;
     gap: 3px;
+}
+
+.task-details-label {
+    font-family: "Alan Sans", sans-serif;
+    margin-bottom: 0.2rem;
+    font-size: 0.9rem;
+}
+
+.task-details-label:not(:first-child) {
+    margin-top: 1rem;
+}
+
+.m_6c018570[data-variant='default'] {
+    background: var(--main-background) !important;
+}
+
+.mantine-Select-option:hover {
+    background: var(--input-background) !important;
+}
+
+.mantine-InputClearButton-root {
+    background: transparent !important;
+}
+
+.mantine-DatePickerInput-day:hover,
+.mantine-DatePickerInput-presetButton:hover,
+.mantine-DatePickerInput-calendarHeaderLevel:hover,
+.mantine-DatePickerInput-calendarHeaderControl:hover,
+.mantine-DatePickerInput-monthsListControl:hover,
+.mantine-DatePickerInput-yearsListControl:hover {
+    background: var(--input-background) !important;
+}
+
+.mantine-Popover-dropdown {
+    background: var(--main-background) !important;
+    border-radius: 0.5rem !important;
+}
+
+.mantine-Drawer-close {
+    color: white !important;
+}
+
+.task-details .mantine-Select-input::placeholder {
+    color: var(--sub-text);
+}
+
+.mantine-focus-auto:where([data-selected]) {
+    background-color: var(--accent-color) !important;
+}
+
+.mantine-focus-auto:where([data-selected]):hover {
+    background-color: var(--accent-color-hover) !important;
 }

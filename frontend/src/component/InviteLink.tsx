@@ -32,7 +32,7 @@ export const InviteLink = ({ opened, close }: Props) => {
             <TextInput value={inviteCode !== "" ? `localhost:5173/join/${inviteCode}` : ""} rightSection={<CopyButton value={inviteCode !== "" ? `localhost:5173/join/${inviteCode}` : ""} timeout={2000}>
                 {({ copied, copy }) => (
                     <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-                        <ActionIcon size="sm" disabled={inviteCode === ""} color={copied ? 'teal' : 'violet'} variant="subtle" onClick={copy}>
+                        <ActionIcon size="sm" disabled={inviteCode === ""} color={copied ? 'cyan' : 'cyan'} variant="subtle" onClick={copy}>
                             {copied ? <HiCheck /> : <IoCopyOutline />}
                         </ActionIcon>
                     </Tooltip>

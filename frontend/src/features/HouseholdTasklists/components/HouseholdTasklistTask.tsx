@@ -11,9 +11,9 @@ export const HouseholdTasklistTask = ({ task }: Props) => {
         <Checkbox
             size="xs"
             radius='xl'
-            label={task.title}
             readOnly
             checked={false}
         />
+        {task.title}
     </div>
 }

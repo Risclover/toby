@@ -1,5 +1,5 @@
 // CreateTodoListMembers.tsx
-import { Checkbox, Collapse, Fieldset, Stack } from "@mantine/core";
+import { Avatar, Checkbox, Collapse, Fieldset, Stack } from "@mantine/core";
 import type { UserLite } from "@/hooks/useMemberSelection";
 
 type Props = {
@@ -20,9 +20,9 @@ export function CreateTodoListMembers({
     onToggleOne,
 }: Props) {
     return (
-        <Fieldset legend="Who is this list for?">
+        <Fieldset legend="Who is this list for?" className="list-is-for">
             <Checkbox
-                color="violet"
+                color="cyan"
                 className=""
                 size="xs"
                 label="All household members"
@@ -36,12 +36,12 @@ export function CreateTodoListMembers({
                         <Stack gap="xs" ml="lg">
                             {members?.map((m) => (
                                 <Checkbox
-                                    color="violet"
+                                    color="cyan"
                                     key={m.id}
                                     size="xs"
                                     label={
-                                        <div className="flex items-center gap-1">
-                                            <img className="w-[20px]" src={m.profileImg} />
+                                        <div className="list-members">
+                                            <Avatar src={m.profileImg} size="xs" />
                                             <span>{m.displayName}</span>
                                         </div>
                                     }

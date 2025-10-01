@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 75cbe7222082
+Revision ID: 5cd523364f56
 Revises: 
-Create Date: 2025-09-24 14:18:17.324446
+Create Date: 2025-09-30 11:59:15.951134
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '75cbe7222082'
+revision = '5cd523364f56'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,21 +30,21 @@ def upgrade():
     )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('username', sa.String(length=20), nullable=False),
+    sa.Column('name', sa.String(length=20), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('hashed_password', sa.String(length=255), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('display_name', sa.String(length=30), nullable=True),
     sa.Column('tagline', sa.String(length=100), nullable=True),
     sa.Column('profile_img', sa.String(length=256), nullable=True),
+    sa.Column('banner_img', sa.String(length=256), nullable=True),
     sa.Column('points', sa.Integer(), nullable=True),
     sa.Column('daily_checkin', sa.Boolean(), nullable=False),
     sa.Column('last_checkin', sa.DateTime(), nullable=True),
     sa.Column('household_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['household_id'], ['households.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('username')
+    sa.UniqueConstraint('email')
     )
     op.create_table('announcements',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -145,6 +145,7 @@ def upgrade():
     sa.Column('due_date', sa.Date(), nullable=True),
     sa.Column('assigned_to_id', sa.Integer(), nullable=True),
     sa.Column('sort_index', sa.Integer(), nullable=False),
+    sa.Column('notes', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.ForeignKeyConstraint(['assigned_to_id'], ['users.id'], ),

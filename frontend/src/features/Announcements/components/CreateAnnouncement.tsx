@@ -1,6 +1,6 @@
 import { useCreateAnnouncementMutation } from "@/store/announcementSlice"
 import { useAuthenticateQuery } from "@/store/authSlice";
-import { Button, Modal } from "@mantine/core";
+import { Button, Group, Modal, Space, TextInput } from "@mantine/core";
 import { useState } from "react";
 
 type Props = {
@@ -19,8 +19,9 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
         close();
     }
 
-    return <Modal opened={opened} onClose={close} title="Create Todo List" centered>
-        <input type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Ex: Eat your peas" />
-        <Button color="violet" onClick={handleCreateAnnouncement}>Submit</Button>
+    return <Modal className="announcement-modal" opened={opened} onClose={close} title="Create Announcement" centered>
+        <TextInput type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Ex: Eat your peas" />
+        <Space h="md" />
+        <Group justify="flex-end"> <Button color="cyan" onClick={handleCreateAnnouncement}>Submit</Button></Group>
     </Modal>
 }

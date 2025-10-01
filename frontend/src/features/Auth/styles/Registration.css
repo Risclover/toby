@@ -1,0 +1,99 @@
+.registration {
+    width: 100%;
+    height: 100%;
+    background-color: #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100dvh;
+}
+
+.registration-form {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    max-width: 28rem;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 0.5rem;
+    background-color: #1f2937;
+    border: 1px solid #374151;
+    color: white;
+    height: "auto";
+    max-height: min(80dvh, 48rem)
+}
+
+
+.registration h2 {
+    font-size: 2rem;
+    font-weight: 500;
+    font-family: "Alan Sans", sans-serif;
+    margin-bottom: 1rem;
+    line-height: 1;
+
+}
+
+.registration-form input {
+    font-family: "Nunito Sans", sans-serif;
+    padding: 0.625rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    border: 1px solid lightgray;
+    outline: none;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.registration-form label {
+    font-weight: 500;
+}
+
+.registration-form button {
+    font-size: 14px;
+    font-family: "Nunito Sans", sans-serif;
+    color: white;
+    font-weight: 600;
+    width: 370px;
+    margin-top: 0.5rem;
+    width: 50%;
+}
+
+.form-back-btn {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 14px;
+    font-family: "Nunito Sans", sans-serif;
+    color: white;
+    font-weight: 600;
+    gap: 4px;
+    width: min-content;
+    cursor: pointer;
+}
+
+.form-back-btn:hover {
+    text-decoration: underline;
+}
+
+.registration-form-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.login-switch {
+    font-size: .9rem;
+    color: #9caabe;
+    margin-top: .5rem;
+}
+
+.login-link {
+    color: rgba(121, 196, 212, 1);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.login-link:hover {
+    color: #9caabe;
+}

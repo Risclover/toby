@@ -3,7 +3,7 @@ import "../styles/HouseholdTasklists.css"
 import { useGetHouseholdTodoListsQuery } from "@/store/householdSlice";
 import { HouseholdTasklist } from "./HouseholdTasklist";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { CreateTodoList } from "@/component/CreateTodoList";
+import { CreateTodoList } from "./CreateTodoList";
 
 export const HouseholdTasklists = () => {
     const { data: user, isLoading: authLoading } = useAuthenticateQuery();
