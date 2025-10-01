@@ -1,11 +1,9 @@
-import { Button } from "@mantine/core";
-import React, { useEffect, useState } from "react"
-import "../styles/Registration.css";
-import { FormInput } from "@/component/FormInput";
+import React, { useState } from "react"
 import { RegistrationPageOne } from "./RegistrationPageOne";
 import { RegistrationPageTwo } from "./RegistrationPageTwo";
 import { useCheckEmailMutation, useJoinHouseholdMutation, useSignupMutation } from "@/store/authSlice";
 import { useNavigate, useParams } from "react-router-dom";
+import "../styles/Registration.css";
 
 type Props = {
     createHousehold: boolean;
@@ -152,12 +150,6 @@ export const Registration = ({ createHousehold }: Props) => {
         setPage(1);
     }
 
-    const checkValidations = async () => {
-        await validateEmail();
-        validatePassword();
-        validateRepeatPassword();
-    }
-
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         await signup({ email, password, name, household_name: householdName });
@@ -182,7 +174,7 @@ export const Registration = ({ createHousehold }: Props) => {
 
     return (
         <div className="registration">
-            {page === 1 && <RegistrationPageOne onClick={handleContinue} inputProps={inputProps} checkValidations={checkValidations} createHousehold={createHousehold} />}
+            {page === 1 && <RegistrationPageOne onClick={handleContinue} inputProps={inputProps} createHousehold={createHousehold} />}
             {page === 2 && <RegistrationPageTwo handleBack={handleBack} onClick={handleSignup} inputProps={secondPageInputProps} />}
         </div>
     )

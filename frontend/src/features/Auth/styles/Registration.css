@@ -11,8 +11,8 @@
 .registration-form {
     display: flex;
     flex-direction: column;
-    padding: 2rem;
-    max-width: 28rem;
+    padding: 2rem 0;
+    max-width: 24rem;
     width: 100%;
     margin: 0 auto;
     border-radius: 0.5rem;
@@ -30,6 +30,7 @@
     font-family: "Alan Sans", sans-serif;
     margin-bottom: 1rem;
     line-height: 1;
+    text-align: center;
 
 }
 
@@ -54,8 +55,11 @@
     color: white;
     font-weight: 600;
     width: 370px;
+    margin: 0 auto;
     margin-top: 0.5rem;
     width: 50%;
+    border-radius: 999px;
+    flex-shrink: 0;
 }
 
 .form-back-btn {
@@ -84,6 +88,7 @@
 .login-switch {
     font-size: .9rem;
     color: #9caabe;
+    margin: 0 auto;
     margin-top: .5rem;
 }
 

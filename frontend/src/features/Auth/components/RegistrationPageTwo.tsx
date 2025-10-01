@@ -1,6 +1,6 @@
 import { FormInput } from "@/component/FormInput";
 import { Button } from "@mantine/core";
-import React, { useState, type SetStateAction } from "react"
+import React, { type SetStateAction } from "react"
 import KeyboardBackspaceRoundedIcon from '@mui/icons-material/KeyboardBackspaceRounded';
 
 type InputProps = {
@@ -37,7 +37,7 @@ export const RegistrationPageTwo = ({ handleBack, inputProps, onClick }: Props) 
                     />
                 )}
             </div>
-            <Button role="submit" size="md" radius="md" color="cyan" onClick={onClick}>Sign Up</Button>
+            <Button role="submit" size="md" radius="xl" style={{ margin: "0 auto", marginTop: "1rem" }} color="cyan" onClick={onClick}>Sign Up</Button>
         </div>
     )
 }

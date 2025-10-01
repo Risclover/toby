@@ -7,6 +7,7 @@ import { SignIn } from "@/SignIn";
 import { HouseholdTasklists } from "@/features/HouseholdTasklists/components/HouseholdTasklists";
 import { HouseholdTasklistPage } from "@/features/HouseholdTasklistPage/components/HouseholdTasklistPage";
 import { Registration } from "@/features/Auth/components/Registration";
+import { Login } from "@/features/Auth/components/Login";
 
 export const AppRoutes = () => {
     return (
@@ -16,7 +17,7 @@ export const AppRoutes = () => {
             <Route path="/users/:userId" element={<UserPage />} />
             <Route path="/tasklists" element={<HouseholdTasklists />} />
             <Route path="/tasklists/:tasklistId" element={<HouseholdTasklistPage />} />
-            <Route path="/login" element={<SignIn />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/" element={<Dashboard />} />
         </Routes>
     )

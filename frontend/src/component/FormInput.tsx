@@ -3,7 +3,7 @@ import type { SetStateAction } from "react";
 type Props = {
     inputName: string;
     label: string;
-    subLabel: string | undefined;
+    subLabel?: string | undefined;
     inputType: string;
     placeholder: string;
     inputValue: string;

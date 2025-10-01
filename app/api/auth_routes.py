@@ -5,7 +5,7 @@ from sqlalchemy import func
 
 from app.models import User, Household
 from app.extensions import db
-from app.forms import LoginForm, SignUpForm
+from app.forms import LoginForm
 from app.helpers import validation_errors_to_error_messages
 from uuid import uuid4
 
@@ -37,7 +37,7 @@ def login():
 
     if user is None or not check_password_hash(user.hashed_password, password):
         # don’t leak which part failed
-        return jsonify({'errors': ['Invalid credentials']}), 401
+        return jsonify({'errors': ['Incorrect email/password combination']}), 401
 
     # optional: block disabled users
     # if not user.is_active:
