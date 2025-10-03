@@ -2,6 +2,8 @@ import { FormInput } from "@/component/FormInput";
 import { Button } from "@mantine/core";
 import React, { type SetStateAction } from "react"
 import KeyboardBackspaceRoundedIcon from '@mui/icons-material/KeyboardBackspaceRounded';
+import { IoArrowBackOutline } from "react-icons/io5";
+
 
 type InputProps = {
     inputType: string;
@@ -21,8 +23,8 @@ type Props = {
 
 export const RegistrationPageTwo = ({ handleBack, inputProps, onClick }: Props) => {
     return (
-        <div className="registration-form">
-            <button className="form-back-btn" onClick={handleBack}><KeyboardBackspaceRoundedIcon />Back</button>
+        <div className="registration-form reg-page-two">
+            <span className="form-back-btn" onClick={handleBack}><IoArrowBackOutline />Back</span>
             <h2>Give your household a name</h2>
             <div className="registration-form-body">
                 {inputProps.map((props) =>

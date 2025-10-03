@@ -34,7 +34,7 @@ export const FormInput = ({ inputName, label, subLabel, inputType, placeholder, 
                 onChange={onInputChange}
                 onBlur={onBlur}
             />
-            <span className="form-input-error">{error}</span>
+            {error && error.length > 0 && <span className="form-input-error">{error}</span>}
         </div>
     )
 }

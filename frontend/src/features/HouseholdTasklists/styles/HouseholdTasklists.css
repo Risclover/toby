@@ -92,34 +92,11 @@
 
 }
 
-
-.mantine-Drawer-content {
-    background: var(--bg);
-}
-
-.mantine-Drawer-body {
-    height: calc(100% - 3.75rem);
-    background-color: var(--bg);
-    color: white;
-}
-
-.m_220c80f2:where(:not([data-disabled], :disabled)):hover {
-    background: var(--main-background) !important;
-}
-
 .household-tasklist {
     cursor: pointer;
     background: var(--main-background) !important;
     color: white !important;
     border: 1px solid var(--main-border) !important;
-}
-
-.household-tasklist .mantine-Divider-root {
-    border-color: var(--main-border) !important;
-}
-
-.mantine-Modal-content {
-    background: var(--main-background) !important;
 }
 
 .list-is-for .list-members {

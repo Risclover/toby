@@ -40,7 +40,7 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
         household?.members?.filter((m: any) => list?.memberIds?.includes(m?.id)) ??
         [];
 
-    const VISIBLE = 3;
+    const VISIBLE = 2;
     const visible = members.slice(0, VISIBLE);
     const hidden = members.slice(VISIBLE);
 
@@ -65,6 +65,9 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
     if (!list?.memberIds?.includes(user?.id)) return null;
 
     const remainingCount = Math.max(0, (uncompletedTodos?.length ?? 0) - 3);
+
+    const firstTwoMembers = visible.slice(0, 2);
+    console.log('firstTwoMembers:', firstTwoMembers);
 
     return (
         <Card
@@ -102,7 +105,7 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
                                     </div>
                                 }
                             >
-                                <Avatar radius="xl" size="sm">
+                                <Avatar radius="xl" size="sm" style={{ fontSize: "3rem" }}>
                                     +{hidden.length}
                                 </Avatar>
                             </Tooltip>

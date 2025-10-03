@@ -8,6 +8,7 @@ _BLUEPRINT_PATHS = (
     "app.api.todo_routes:todo_routes",
     "app.api.announcement_routes:announcement_routes",
     "app.api.event_routes:event_routes",
+    "app.api.mood_routes:mood_routes",
     
 )
 

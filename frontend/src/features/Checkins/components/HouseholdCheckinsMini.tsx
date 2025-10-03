@@ -1,6 +1,9 @@
 // src/components/HouseholdCheckinsMini.tsx
 import { useMemo } from "react";
 import { useGetUserCheckinsQuery } from "@/store/checkinSlice";
+import "../styles/HouseholdCheckins.css"
+import { Avatar, Tooltip } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 
 type Member = { id: number; name: string; profileImg?: string };
 
@@ -33,6 +36,7 @@ function MemberRow({
     size,
     gap,
     nameColClass,
+    className
 }: {
     member: Member;
     days: { iso: string; label: string; isToday: boolean }[];
@@ -41,7 +45,9 @@ function MemberRow({
     size: number;
     gap: number;
     nameColClass: string;
+    className: string;
 }) {
+    const navigate = useNavigate();
     const { data, isLoading } = useGetUserCheckinsQuery(
         { userId: member.id, from, to },
         { skip: !member?.id }
@@ -49,8 +55,8 @@ function MemberRow({
     const checked = useMemo(() => new Set(data?.dates ?? []), [data]);
 
     return (
-        <div className="flex items-center">
-            <div className={`flex px-2 gap-2 items-center ${nameColClass}`}>
+        <div className={`flex items-center ${className}`}>
+            <div className={`flex items-center`}>
                 {/* <div className="h-6 w-8 rounded-full grid place-items-center text-xs">
                     {member.profileImg ? (
                         <img src={member.profileImg} alt="" className="h-6 w-6 object-cover" />
@@ -58,7 +64,17 @@ function MemberRow({
                         member.name?.slice(0, 1).toUpperCase()
                     )}
                 </div> */}
-                <span className="text-sm text-right text-align-right w-full">{member.name}</span>
+                <Tooltip key={member.id} label={member.name} withArrow>
+                    <Avatar
+                        src={member.profileImg || undefined}
+                        radius="xl"
+                        size="xs"
+                        onClick={() => navigate(`/users/${member.id}`)}
+                        style={{ cursor: "pointer" }}
+                    >
+                        {!member.profileImg}
+                    </Avatar>
+                </Tooltip>
             </div>
 
             <div className="flex items-center" style={{ gap }}>
@@ -72,8 +88,8 @@ function MemberRow({
                                 isLoading
                                     ? "animate-pulse bg-gray-200"
                                     : filled
-                                        ? "bg-emerald-500"
-                                        : "bg-gray-200",
+                                        ? "icon-checked"
+                                        : "icon-none",
 
                             ].join(" ")}
                             style={{ width: size, height: size }}
@@ -102,47 +118,45 @@ export default function HouseholdCheckinsMini({
     const { days, from, to } = useMemo(makeWindow, []);
 
     return (
-        <div className="rounded-xl border border-gray-200 p-3">
-            {/* Header row with weekday labels */}
-            <div className="flex items-center">
-                <div className={`${nameColWidthClass} text-xs text-gray-500`} />
-                <div className="flex items-center" style={{ gap }}>
-                    {days.map((d) => (
+        <div className="household-checkins-mini">
+            <div className="checkins-header-row">
+                <div className="checkins-header-spacer"></div>
+                <div className="checkins-header">
+                    {days.map((day) => (
                         <div
-                            key={d.iso}
-                            className="text-[10px] text-gray-500 w-6 text-center select-none"
-                            style={{ width: size }}
-                            title={d.label}
+                            className="checkins-header-day"
+                            key={day.iso}
+                            title={day.label}
                         >
-                            {d.label.slice(0, 1)}
+                            {day.label.slice(0, 1)}
                         </div>
                     ))}
                 </div>
             </div>
-
-            {/* Member rows */}
-            <div className="">
-                {members?.map((m) => (
+            <div className="checkins-member-rows">
+                {members?.map((member) => (
                     <MemberRow
-                        key={m.id}
-                        member={m}
+                        key={member.id}
+                        member={member}
                         days={days}
                         from={from}
                         to={to}
                         size={size}
                         gap={gap}
                         nameColClass={nameColWidthClass}
+                        className="checkins-member-row"
                     />
                 ))}
             </div>
-
-            {/* Legend (tiny) */}
-            <div className="mt-2 flex items-center gap-3 text-[11px] text-gray-500">
-                <span className="inline-flex items-center gap-1">
-                    <i className="inline-block h-3 w-3 rounded bg-emerald-500" /> Checked
+            <div className="checkins-legend">
+                <div className="checkins-header-spacer"></div>
+                <span className="checkins-legend-item">
+                    <i className="checkins-legend-icon icon-checked" />
+                    Checked
                 </span>
-                <span className="inline-flex items-center gap-1">
-                    <i className="inline-block h-3 w-3 rounded bg-gray-200" /> None
+                <span className="checkins-legend-item">
+                    <i className="checkins-legend-icon icon-none" />
+                    None
                 </span>
             </div>
         </div>

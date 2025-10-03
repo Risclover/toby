@@ -25,7 +25,7 @@ export const RegistrationPageOne = ({ onClick, inputProps, createHousehold }: Pr
     return (
         <div className="registration-form">
             <h2>Sign Up</h2>
-            <ScrollArea h={390} offsetScrollbars overscrollBehavior="contain" style={{ paddingLeft: "1rem" }}>
+            <ScrollArea h={345} offsetScrollbars overscrollBehavior="contain" style={{ paddingLeft: "1rem" }}>
                 <Stack gap="xs">
                     {inputProps.map((props) =>
                         <FormInput

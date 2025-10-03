@@ -1,0 +1,70 @@
+.household-checkins-mini {
+    border-radius: 0.75rem;
+    border: 1px solid var(--main-border);
+    padding: 0.75rem;
+    background: var(--main-background);
+    width: fit-content;
+}
+
+.checkins-header-row {
+    display: flex;
+    align-items: center;
+}
+
+.checkins-header-spacer {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: white;
+    width: 1.4rem;
+}
+
+.checkins-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.checkins-header-day {
+    font-size: 10px;
+    color: white;
+    width: 16px;
+    text-align: center;
+    user-select: none;
+}
+
+.checkins-member-row {
+    gap: 6px;
+}
+
+.checkins-member-row {
+    margin-bottom: .25rem;
+}
+
+.checkins-legend {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 11px;
+    color: white;
+}
+
+.checkins-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.checkins-legend-icon {
+    display: inline-block;
+    height: 0.75rem;
+    width: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.icon-checked {
+    background: var(--accent-color);
+}
+
+.icon-none {
+    background: rgba(229, 231, 235, 1);
+}

@@ -53,7 +53,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
     };
 
     const handleUpdateTitle = async (next: string) => {
-        await updateTodoTitle({ todoId: task.id, title: next, listId, householdId }).unwrap();
+        await updateTodoTitle({ todoId: task?.id, title: next, listId, householdId }).unwrap();
     };
 
     console.log('task:', task)

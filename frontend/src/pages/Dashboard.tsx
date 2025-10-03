@@ -12,6 +12,8 @@ import { UpcomingThisWeek } from "@/features/Events/components/UpcomingThisWeek"
 import HouseholdCheckinsMini from "@/features/Checkins/components/HouseholdCheckinsMini";
 import { CheckInButton } from "@/features/Checkins/components/CheckInButton";
 import { InviteLink } from "@/component/InviteLink";
+import { useGetUserMoodQuery } from "@/store/userSlice";
+import { MemberMood } from "@/features/Mood/components/MemberMood";
 
 export const Dashboard = () => {
     const navigate = useNavigate();
@@ -20,6 +22,7 @@ export const Dashboard = () => {
     const [logout] = useLogoutMutation()
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
     // Only run the query once we have an id
     const {
@@ -39,6 +42,10 @@ export const Dashboard = () => {
 
     const handleLogout = async () => {
         await logout();
+    }
+
+    const handleMood = async (member: any) => {
+        setSelectedUserId(member.id);
     }
 
     return (
@@ -69,6 +76,10 @@ export const Dashboard = () => {
             {showInviteModal && <InviteLink opened={showInviteModal} close={() => setShowInviteModal(false)} />}
             <div className="dashboard-body">
                 {error ? <p>Couldn’t load household.</p> : null}
+            </div>
+            <div className="household-moods">
+                <h2>Moods:</h2>
+                {household?.members.map((user) => <MemberMood member={user} />)}
             </div>
         </div>
     );

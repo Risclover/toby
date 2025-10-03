@@ -6,6 +6,7 @@ import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { useNavigate } from "react-router-dom";
 
 dayjs.extend(customParseFormat);
 
@@ -33,6 +34,7 @@ export function relativeDayLabel(
 }
 
 export const TaskExtra = ({ todo, householdId, listId }: Props) => {
+    const navigate = useNavigate();
     const { data: household } = useGetHouseholdQuery(householdId)
     const { data: todoList } = useGetTodoListQuery(listId)
     const membersList =
@@ -52,7 +54,7 @@ export const TaskExtra = ({ todo, householdId, listId }: Props) => {
             : null;
     return <div className="task-extra">
         {assigned !== null && <div className="extra"><Tooltip key={assigned?.id} label={assigned?.name} withArrow>
-            <Avatar size="xs" src={assigned?.img} alt={assigned?.name} />
+            <Avatar style={{ cursor: "pointer" }} onClick={() => navigate(`/users/${assigned?.id}`)} size="xs" src={assigned?.img} alt={assigned?.name} />
         </Tooltip></div>}
         {dateLabel !== null && <div className="extra"><CalendarTodayRoundedIcon />{relativeDayLabel(todo?.dueDate)}</div>}
         {todo.notes !== "" && todo.notes !== null && <div className="extra"><TextSnippetIcon /> Notes </div>}

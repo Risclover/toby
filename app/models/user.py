@@ -25,6 +25,12 @@ class User(db.Model, UserMixin):
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
 
     # Relationships
+    user_mood = db.relationship(
+        "Mood",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )    
     household = db.relationship(
         "Household",
         back_populates="members",
@@ -72,6 +78,14 @@ class User(db.Model, UserMixin):
             "dailyCheckin": self.daily_checkin,
             "lastCheckin": self.last_checkin,
             "householdId": self.household_id
+        }
+
+    def to_dict_with_mood(self):
+        return {
+            "userId": self.id,
+            "name": self.name,
+            "profileImg": self.profile_img,
+            "mood": (str(self.user_mood.mood) if self.user_mood else None),
         }
 
     def __repr__(self):

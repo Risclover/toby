@@ -47,7 +47,7 @@ export const Login = () => {
         <div className="registration">
             <div className="registration-form">
                 <h2>Log In</h2>
-                <ScrollArea h={185} offsetScrollbars overscrollBehavior="contain" style={{ paddingLeft: "1rem" }}>
+                <ScrollArea h={160} offsetScrollbars overscrollBehavior="contain" style={{ paddingLeft: "1rem" }}>
                     <Stack gap="xs">
                         {inputProps.map((props) =>
                             <FormInput

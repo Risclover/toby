@@ -1,4 +1,5 @@
 import { apiSlice } from "./apiSlice";
+import type { MoodKey } from "./moodSlice";
 
 type UploadImgArgs = {
     userId: number | undefined;
@@ -7,7 +8,13 @@ type UploadImgArgs = {
 };
 
 type UploadImgResponse = { url: string };
-
+type UserMoodResponse = {
+    userId: number;
+    mood: MoodKey | null;
+    // include these if your backend returns them:
+    name?: string;
+    profileImg?: string | null;
+};
 
 export const userSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["User"] }).injectEndpoints({
     endpoints: (builder) => ({
@@ -92,11 +99,17 @@ export const userSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["User"] }).in
                     // do NOT set headers: { "Content-Type": "multipart/form-data" }
                 };
             },
-            invalidatesTags: (result, error, { userId }) => [
+            invalidatesTags: (_result, _error, { userId }) => [
                 { type: "User", id: userId },      // if you tag users by id
                 "User",                            // fallback if you only have a generic tag
             ],
-        })
+        }),
+
+        getUserMood: builder.query<UserMoodResponse, number>({
+            query: (userId) => `/users/${userId}/mood`,
+            // queries should PROVIDE tags, not invalidate
+            providesTags: (_result, _error, userId) => [{ type: "User", id: userId }],
+        }),
     }),
 });
 
@@ -108,5 +121,6 @@ export const {
     useTrackHabitMutation,
     useCreateHabitMutation,
     useUpdatePointsMutation,
-    useUploadImgMutation
+    useUploadImgMutation,
+    useGetUserMoodQuery
 } = userSlice;

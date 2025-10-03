@@ -234,18 +234,6 @@ textarea.editable-title.is-editing {
     font-size: 0.9rem;
 }
 
-.mantine-Drawer-header {
-    background-color: var(--bg) !important;
-}
-
-.mantine-InputWrapper-root {
-    width: 100%;
-}
-
-.mantine-Input-section svg {
-    color: #15aabf
-}
-
 .date-picker {
     background: white;
     width: min-content;
@@ -271,14 +259,6 @@ textarea.editable-title.is-editing {
 .date-picker {
     position: absolute;
     top: 3.5rem;
-}
-
-.date-picker .mantine-Group-root {
-    width: 100%;
-}
-
-.mantine-focus-auto:where([data-selected]):hover {
-    background-color: var(--accent-color-hover) !important;
 }
 
 .task-main {
@@ -340,46 +320,4 @@ textarea.editable-title.is-editing {
 
 .task-details-label:not(:first-child) {
     margin-top: 1rem;
-}
-
-.m_6c018570[data-variant='default'] {
-    background: var(--main-background) !important;
-}
-
-.mantine-Select-option:hover {
-    background: var(--input-background) !important;
-}
-
-.mantine-InputClearButton-root {
-    background: transparent !important;
-}
-
-.mantine-DatePickerInput-day:hover,
-.mantine-DatePickerInput-presetButton:hover,
-.mantine-DatePickerInput-calendarHeaderLevel:hover,
-.mantine-DatePickerInput-calendarHeaderControl:hover,
-.mantine-DatePickerInput-monthsListControl:hover,
-.mantine-DatePickerInput-yearsListControl:hover {
-    background: var(--input-background) !important;
-}
-
-.mantine-Popover-dropdown {
-    background: var(--main-background) !important;
-    border-radius: 0.5rem !important;
-}
-
-.mantine-Drawer-close {
-    color: white !important;
-}
-
-.task-details .mantine-Select-input::placeholder {
-    color: var(--sub-text);
-}
-
-.mantine-focus-auto:where([data-selected]) {
-    background-color: var(--accent-color) !important;
-}
-
-.mantine-focus-auto:where([data-selected]):hover {
-    background-color: var(--accent-color-hover) !important;
 }

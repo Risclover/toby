@@ -1,0 +1,139 @@
+.mantine-Modal-header,
+.mantine-Modal-content {
+    background: var(--main-background) !important;
+    color: white;
+}
+
+.mantine-Modal-content {
+    font-family: "Nunito Sans", sans-serif;
+}
+
+
+.mantine-Modal-close {
+    color: white !important;
+}
+
+.mantine-Modal-close:hover {
+    background: var(--input-background) !important;
+}
+
+.mantine-TextInput-input {
+    background: var(--input-background) !important;
+    border-color: var(--input-border) !important;
+}
+
+.mantine-TextInput-input {
+    color: white !important;
+    font-family: "Nunito Sans", sans-serif !important;
+}
+
+.m_8d3f4000:where(:disabled:not([data-loading]), [data-disabled]:not([data-loading])) {
+    background: var(--input-background) !important;
+    border-color: transparent !important;
+}
+
+.mantine-Button-root {
+    font-family: "Alan Sans", sans-serif !important;
+    font-weight: 500 !important;
+}
+
+.mantine-TextInput-label,
+.mantine-Fieldset-legend {
+    font-family: "Alan Sans", sans-serif !important;
+    font-weight: 400 !important;
+}
+
+.mantine-Fieldset-root {
+    background: var(--main-background) !important;
+}
+
+.mantine-focus-auto:where([data-selected]):hover {
+    background-color: var(--accent-color-hover) !important;
+}
+
+.m_6c018570[data-variant='default'] {
+    background: var(--main-background) !important;
+}
+
+.mantine-Select-option:hover {
+    background: var(--input-background) !important;
+}
+
+.mantine-InputClearButton-root {
+    background: transparent !important;
+}
+
+.mantine-DatePickerInput-day:hover,
+.mantine-DatePickerInput-presetButton:hover,
+.mantine-DatePickerInput-calendarHeaderLevel:hover,
+.mantine-DatePickerInput-calendarHeaderControl:hover,
+.mantine-DatePickerInput-monthsListControl:hover,
+.mantine-DatePickerInput-yearsListControl:hover {
+    background: var(--input-background) !important;
+}
+
+.mantine-Popover-dropdown {
+    background: var(--main-background) !important;
+    border-radius: 0.5rem !important;
+}
+
+.mantine-Drawer-close {
+    color: white !important;
+}
+
+.task-details .mantine-Select-input::placeholder {
+    color: var(--sub-text);
+}
+
+.mantine-focus-auto:where([data-selected]) {
+    background-color: var(--accent-color) !important;
+}
+
+.mantine-focus-auto:where([data-selected]):hover {
+    background-color: var(--accent-color-hover) !important;
+}
+
+.mantine-Drawer-header {
+    background-color: var(--bg) !important;
+}
+
+.mantine-InputWrapper-root {
+    width: 100%;
+}
+
+.mantine-Input-section svg {
+    color: #15aabf
+}
+
+.date-picker .mantine-Group-root {
+    width: 100%;
+}
+
+/* (Optional) keep avatar size consistent */
+.nav-profile .mantine-Avatar-root {
+    width: 36px;
+    height: 36px;
+}
+
+
+.mantine-Drawer-content {
+    background: var(--bg);
+}
+
+.mantine-Drawer-body {
+    height: calc(100% - 3.75rem);
+    background-color: var(--bg);
+    color: white;
+}
+
+.m_220c80f2:where(:not([data-disabled], :disabled)):hover {
+    background: var(--main-background) !important;
+}
+
+.mantine-Modal-content {
+    background: var(--main-background) !important;
+}
+
+.household-tasklist .mantine-Divider-root {
+    border-color: var(--main-border) !important;
+}

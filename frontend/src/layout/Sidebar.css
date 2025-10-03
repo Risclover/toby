@@ -9,8 +9,7 @@
     border-right: 1px solid #111827;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: visible;
     color: white;
     z-index: 3;
     font-family: "Sedgwick Ave Display", cursive;
@@ -282,13 +281,6 @@
 .sidebar.collapsed .nav-profile {
     justify-content: center;
 }
-
-/* (Optional) keep avatar size consistent */
-.nav-profile .mantine-Avatar-root {
-    width: 36px;
-    height: 36px;
-}
-
 
 .nav-profile-section {
     background: #374151;

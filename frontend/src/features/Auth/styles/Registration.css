@@ -42,7 +42,7 @@
     border: 1px solid lightgray;
     outline: none;
     border-radius: 0.5rem;
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
 }
 
 .registration-form label {
@@ -54,10 +54,9 @@
     font-family: "Nunito Sans", sans-serif;
     color: white;
     font-weight: 600;
-    width: 370px;
     margin: 0 auto;
     margin-top: 0.5rem;
-    width: 50%;
+    width: calc(100% - 2rem);
     border-radius: 999px;
     flex-shrink: 0;
 }
@@ -101,4 +100,12 @@
 
 .login-link:hover {
     color: #9caabe;
+}
+
+.reg-page-two {
+    padding: 1rem;
+}
+
+.reg-page-two button {
+    width: 100%;
 }

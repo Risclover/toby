@@ -142,3 +142,10 @@ def upload_image(id, type):
 
     db.session.commit()
     return {"url": url}
+
+
+@user_routes.route("/<int:id>/mood")
+def get_user_mood(id):
+    user = User.query.get(id)
+    mood = user.user_mood.mood if user and user.user_mood else None
+    return jsonify(user.to_dict_with_mood()), 200

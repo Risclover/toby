@@ -6,6 +6,7 @@ import "./UserPage.css"
 import { useGetHouseholdQuery } from "../store/householdSlice";
 import { useAuthenticateQuery } from "../store/authSlice";
 import { useCheckInTodayMutation, useGetUserCheckinsQuery } from "@/store/checkinSlice";
+import { SetMood } from "@/features/Mood/components/SetMood";
 
 const toISO = (d: Date) => d.toISOString().slice(0, 10); // "YYYY-MM-DD"
 
@@ -49,6 +50,7 @@ export const UserPage = () => {
             <div><strong>Household:</strong> {household?.name}</div>
             <div><strong>Points:</strong> {user?.points}</div>
             <div><strong>Checked In?:</strong> {checkedInToday.toString()}</div>
+            <SetMood />
 
             <input
                 id="post-img"
