@@ -1,4 +1,5 @@
 import { ShoppingList } from "@/features/Shopping/components/ShoppingList";
+import { useStablePending } from "@/hooks/useStablePending";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdShoppingListQuery } from "@/store/householdSlice";
 import { useAddShoppingItemMutation, useGetShoppingItemsQuery, useGetShoppingListQuery } from "@/store/shoppingSlice";
@@ -26,7 +27,8 @@ export const ShoppingListPage = () => {
         Number(listId) ? listId : (skipToken as any)
     );
 
-    const [addItem, { isLoading: adding }] = useAddShoppingItemMutation();
+    const [addItem, { isLoading }] = useAddShoppingItemMutation();
+    const loading = useStablePending(isLoading, { showAfterMs: 120, minVisibleMs: 300 });
 
     const handleAddItem = async () => {
         if (!Number(listId) || !itemName.trim()) return;
@@ -38,7 +40,7 @@ export const ShoppingListPage = () => {
         <div className="shopping-list-page">
             <h1>{list?.title}</h1>
             <TextInput value={itemName} onChange={(e) => setItemName(e.currentTarget.value)} placeholder="Item name" />
-            <Button color="cyan" loading={adding} onClick={handleAddItem}>Add Item</Button>
+            <Button color="cyan" loading={loading} onClick={handleAddItem}>Add Item</Button>
 
             {/* Render items from the items query */}
             <div style={{ marginTop: 12 }}>

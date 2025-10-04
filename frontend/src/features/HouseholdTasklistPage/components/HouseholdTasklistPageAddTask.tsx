@@ -1,3 +1,4 @@
+import { useStablePending } from "@/hooks/useStablePending";
 import { useAddTodoMutation } from "@/store/todoSlice";
 import { Button } from "@mantine/core"
 import { useRef, useState } from "react"
@@ -9,7 +10,9 @@ type Props = {
 export const HouseholdTasklistPageAddTask = ({ listId }: Props) => {
     const inputRef = useRef<HTMLInputElement>(null)
     const [title, setTitle] = useState("");
-    const [addTodo] = useAddTodoMutation();
+    const [addTodo, { isLoading }] = useAddTodoMutation();
+    const loading = useStablePending(isLoading, { showAfterMs: 120, minVisibleMs: 300 });
+
 
     const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value)
@@ -24,6 +27,6 @@ export const HouseholdTasklistPageAddTask = ({ listId }: Props) => {
 
     return <div className="add-task">
         <input value={title} onKeyDown={(e) => { if (e.key === "Enter") { handleAddTodo() } }} ref={inputRef} onChange={handleTitle} type="text" placeholder="Add a task and press Enter" />
-        <Button color="cyan" onClick={handleAddTodo}>Add</Button>
+        <Button color="cyan" loading={loading} onClick={handleAddTodo}>Add</Button>
     </div>
 }
