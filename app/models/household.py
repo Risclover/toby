@@ -19,7 +19,7 @@ class Household(db.Model):
         "User",
         foreign_keys=[creator_id]
     )
-
+    shopping_lists = db.relationship("ShoppingList", back_populates="household")
     todo_lists = db.relationship("TodoList", back_populates="household")
 
     def to_dict(self):

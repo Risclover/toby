@@ -52,6 +52,7 @@ def create_household_todo_list(household_id):
         if bad:
             return jsonify({"error": "memberIds must belong to the household", "invalid": bad}), 400
 
+
     # 4) Create list + (optional) audience rows
     tl = TodoList(title=title, household_id=household_id, all_members=all_members)
     db.session.add(tl)
@@ -63,3 +64,23 @@ def create_household_todo_list(household_id):
 
     db.session.commit()
     return jsonify(tl.to_dict(include_todos=False, include_members=True)), 201
+
+@household_routes.route("/<int:id>/shopping")
+def get_household_shopping_lists(id):
+    household = Household.query.get(id)
+    
+    return jsonify([sl.to_dict() for sl in household.shopping_lists]), 200
+
+@household_routes.route("/<int:household_id>/shopping/<int:shopping_list_id>")
+def get_household_shopping_list(household_id, shopping_list_id):
+    household = Household.query.get(household_id)
+
+    if not household:
+        return jsonify({"error": "Household not found"}), 404
+
+    shopping_list = next((sl for sl in household.shopping_lists if sl.id == shopping_list_id), None)
+    
+    if not shopping_list:
+        return jsonify({"error": "Shopping list not found in this household"}), 404
+
+    return jsonify(shopping_list.to_dict()), 200

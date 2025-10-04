@@ -1,7 +1,7 @@
 import { useEffect, useState, type MouseEvent } from "react";
 import { skipToken } from "@reduxjs/toolkit/query"; // ⬅️ add this
 import { useAuthenticateQuery, useLogoutMutation } from "@/store/authSlice";
-import { useGetHouseholdQuery } from "@/store/householdSlice";
+import { useGetHouseholdQuery, useGetHouseholdShoppingListsQuery } from "@/store/householdSlice";
 import "../assets/styles/Dashboard.css";
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +23,8 @@ export const Dashboard = () => {
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+    const { data: list } = useGetHouseholdShoppingListsQuery(householdId ?? skipToken);
 
     // Only run the query once we have an id
     const {
@@ -80,6 +82,9 @@ export const Dashboard = () => {
             <div className="household-moods">
                 <h2>Moods:</h2>
                 {household?.members.map((user) => <MemberMood member={user} />)}
+            </div>
+            <div>
+                {list?.map((list) => <div>{list.title}</div>)}
             </div>
         </div>
     );

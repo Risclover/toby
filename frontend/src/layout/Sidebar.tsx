@@ -53,7 +53,7 @@ const items: Item[] = [
         )
     },
     {
-        href: "#",
+        href: "/shopping",
         label: "Shopping Lists",
         ariaLabel: "Shopping Lists",
         icon: (

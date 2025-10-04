@@ -3,7 +3,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
 
-from app.models import User, Household
+from app.models import User, Household, ShoppingList
 from app.extensions import db
 from app.forms import LoginForm
 from app.helpers import validation_errors_to_error_messages
@@ -95,7 +95,10 @@ def sign_up():
         db.session.add(household)
         db.session.flush()  # flush to get household.id
         user.household_id = household.id
-
+        defaults = ["Groceries", "Necessities", "Wishlist"]
+        db.session.add_all([
+            ShoppingList(title=title, household_id=household.id) for title in defaults
+        ])
     db.session.commit()
     login_user(user)
 

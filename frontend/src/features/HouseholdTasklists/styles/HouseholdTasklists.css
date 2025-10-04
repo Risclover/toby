@@ -15,12 +15,6 @@
     justify-content: center;
 }
 
-.household-tasklist {
-    border: 1px solid black;
-    border-radius: 8px;
-    padding: 10px;
-}
-
 .household-tasklists-heading {
     display: flex;
     width: 100%;
@@ -97,6 +91,8 @@
     background: var(--main-background) !important;
     color: white !important;
     border: 1px solid var(--main-border) !important;
+    border-radius: 8px;
+    padding: 10px;
 }
 
 .list-is-for .list-members {
