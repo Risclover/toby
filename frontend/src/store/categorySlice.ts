@@ -1,61 +1,88 @@
-import { create } from "domain";
 import { apiSlice } from "./apiSlice";
 
+export type Category = {
+    id: number;
+    listId: number;
+    name: string;
+    createdAt?: string;
+    updatedAt?: string;
+};
 
-export const categorySlice = apiSlice.enhanceEndpoints({ addTagTypes: ["ShoppingCategory"] }).injectEndpoints({
-    endpoints: (builder) => ({
-        getShoppingCategories: builder.query<any, number>({
-            query: (listId) => `/shopping_lists/${listId}/categories`,
-            providesTags: (result, error, listId) =>
-                result
-                    ? [
-                        ...result.map(({ id }: { id: number }) => ({ type: "ShoppingCategory" as const, id })),
-                        { type: "ShoppingCategory", id: `LIST_${listId}` },
-                    ]
-                    : [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
-        }),
-        createShoppingCategory: builder.mutation<any, { listId: number; name: string }>({
-            query: ({ listId, name }) => ({
-                url: `/shopping_lists/${listId}/categories`,
-                method: "POST",
-                body: { name },
+
+export const categorySlice = apiSlice
+    .enhanceEndpoints({ addTagTypes: ["ShoppingCategory"] })
+    .injectEndpoints({
+        endpoints: (builder) => ({
+            getShoppingCategories: builder.query<Category[], number>({
+                query: (listId) => `/shopping_lists/${listId}/categories`,
+                providesTags: (result, _err, listId) =>
+                    result
+                        ? [
+                            ...result.map((c) => ({ type: "ShoppingCategory" as const, id: c.id })),
+                            { type: "ShoppingCategory", id: `LIST_${listId}` },
+                        ]
+                        : [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
             }),
-            async onQueryStarted({ listId, name }, { dispatch, queryFulfilled }) {
-                // optimistic: push a temp item into the cache
-                const patch = dispatch(
-                    categorySlice.util.updateQueryData("getShoppingCategories", listId, (draft) => {
-                        draft.push({
-                            id: Math.floor(Math.random() * -1e9), // temp negative id
-                            listId,
-                            name,
-                            createdAt: new Date().toISOString(),
-                            updatedAt: new Date().toISOString(),
-                        });
-                    })
-                );
-                try { await queryFulfilled; } catch { patch.undo(); }
-            },
-            invalidatesTags: (result, error, { listId }) => [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
-        }),
-        deleteShoppingCategory: builder.mutation<any, { categoryId: number; listId: number }>({
-            query: ({ categoryId }) => ({
-                url: `/shopping_categories/${categoryId}`,
-                method: "DELETE",
+
+            createShoppingCategory: builder.mutation<Category, { listId: number; name: string }>({
+                query: ({ listId, name }) => ({
+                    url: `/shopping_lists/${listId}/categories`,
+                    method: "POST",
+                    body: { name },
+                }),
+                async onQueryStarted({ listId, name }, { dispatch, queryFulfilled }) {
+                    const tempId = Math.floor(Math.random() * -1e9);
+                    const patch = dispatch(
+                        categorySlice.util.updateQueryData("getShoppingCategories", listId, (draft) => {
+                            draft.push({
+                                id: tempId,
+                                listId,
+                                name,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString(),
+                            });
+                        })
+                    );
+                    try {
+                        const { data } = await queryFulfilled;
+                        dispatch(
+                            categorySlice.util.updateQueryData("getShoppingCategories", listId, (draft) => {
+                                const i = draft.findIndex((c) => c.id === tempId);
+                                if (i !== -1) draft[i] = data;
+                            })
+                        );
+                    } catch {
+                        patch.undo();
+                    }
+                },
+                invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
             }),
-            async onQueryStarted({ categoryId, listId }, { dispatch, queryFulfilled }) {
-                // optimistic: remove the item from the cache
-                const patch = dispatch(
-                    categorySlice.util.updateQueryData("getShoppingCategories", listId, (draft) => {
-                        return draft.filter((cat) => cat.id !== categoryId);
-                    })
-                );
-                try { await queryFulfilled; } catch { patch.undo(); }
-            },
-            invalidatesTags: (result, error, { listId }) => [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
+
+            deleteShoppingCategory: builder.mutation<{ success: boolean }, { categoryId: number; listId: number }>({
+                query: ({ categoryId }) => ({
+                    url: `/shopping_categories/${categoryId}`,
+                    method: "DELETE",
+                }),
+                async onQueryStarted({ categoryId, listId }, { dispatch, queryFulfilled }) {
+                    const patch = dispatch(
+                        categorySlice.util.updateQueryData("getShoppingCategories", listId, (draft) => {
+                            const i = draft.findIndex((c) => c.id === categoryId);
+                            if (i !== -1) draft.splice(i, 1);
+                        })
+                    );
+                    try {
+                        await queryFulfilled;
+                    } catch {
+                        patch.undo();
+                    }
+                },
+                invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
+            }),
         }),
-    })
-})
+    });
 
 export const {
     useGetShoppingCategoriesQuery,
-} = categorySlice;      
+    useCreateShoppingCategoryMutation,
+    useDeleteShoppingCategoryMutation,
+} = categorySlice;

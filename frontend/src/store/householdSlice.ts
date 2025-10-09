@@ -10,6 +10,7 @@ export type ShoppingList = {
     title: string;
     createdAt?: string;
     items: any[];
+    categories: string[];
 };
 
 // arg type for this query

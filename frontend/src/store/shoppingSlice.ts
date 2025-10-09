@@ -10,7 +10,7 @@ export type ShoppingItem = {
     // add categoryId/categoryName if you return them
 };
 
-export const shoppingSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["ShoppingList", "ShoppingItem"] }).injectEndpoints({
+export const shoppingSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["ShoppingList", "ShoppingItem", "ShoppingCategory"] }).injectEndpoints({
     endpoints: (builder) => ({
         getShoppingLists: builder.query<any, void>({
             query: () => ({
@@ -57,6 +57,7 @@ export const shoppingSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Shopping
                             id: Math.floor(Math.random() * -1e9), // temp negative id
                             shoppingListId: listId,
                             name,
+                            category: "",
                             quantity: quantity ?? 1,
                             purchased: false,
                         });
@@ -93,11 +94,10 @@ export const shoppingSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Shopping
                 body: { purchased },
             }),
             async onQueryStarted({ itemId, listId, purchased }, { dispatch, queryFulfilled }) {
-                // optimistic update
                 const patch = dispatch(
                     shoppingSlice.util.updateQueryData("getShoppingItems", listId, (draft) => {
                         const item = draft.find((i) => i.id === itemId);
-                        if (item) item.purchased = purchased;
+                        if (item) item.purchased = purchased; // ✅ direct field set
                     })
                 );
                 try {
@@ -106,7 +106,7 @@ export const shoppingSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Shopping
                     patch.undo();
                 }
             },
-            invalidatesTags: (result, error, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
+            invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
         }),
 
         deleteShoppingItem: builder.mutation<{ success: boolean; id: number }, { itemId: number; listId: number }>({
@@ -115,10 +115,10 @@ export const shoppingSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Shopping
                 method: "DELETE",
             }),
             async onQueryStarted({ itemId, listId }, { dispatch, queryFulfilled }) {
-                // optimistic update
                 const patch = dispatch(
                     shoppingSlice.util.updateQueryData("getShoppingItems", listId, (draft) => {
-                        return draft.filter((i) => i.id !== itemId);
+                        const idx = draft.findIndex((i) => i.id === itemId);
+                        if (idx !== -1) draft.splice(idx, 1);
                     })
                 );
                 try {
@@ -127,7 +127,27 @@ export const shoppingSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Shopping
                     patch.undo();
                 }
             },
-            invalidatesTags: (result, error, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
+            invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
+        }),
+        getShoppingListCategories: builder.query<any, number>({
+            query: (listId) => `/shopping_lists/${listId}/categories`,
+            providesTags: (result, error, listId) =>
+                result
+                    ? [
+                        ...result.map(({ id }: { id: number }) => ({ type: "ShoppingCategory" as const, id })),
+                        { type: "ShoppingCategory", id: `LIST_${listId}` },
+                    ]
+                    : [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
+        }),
+        getShoppingItemCategory: builder.query<any, number>({
+            query: (itemId) => `/shopping_items/${itemId}/category`,
+            providesTags: (result, _err, _itemId) =>
+                result
+                    ? [
+                        { type: "ShoppingCategory", id: result.id },
+                        { type: "ShoppingCategory", id: `LIST_${result.listId}` }, // if your payload includes listId
+                    ]
+                    : []
         }),
     })
 });
@@ -139,5 +159,7 @@ export const {
     useGetShoppingItemsQuery,
     useEditShoppingListMutation,
     useCompleteShoppingItemMutation,
-    useDeleteShoppingItemMutation
+    useDeleteShoppingItemMutation,
+    useGetShoppingItemCategoryQuery,
+    useGetShoppingListCategoriesQuery
 } = shoppingSlice;

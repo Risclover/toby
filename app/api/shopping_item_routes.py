@@ -49,3 +49,16 @@ def toggle_shopping_item(id):
     db.session.commit()
 
     return jsonify(item.to_dict()), 200
+
+
+@shopping_item_routes.route("/<int:id>/category", methods=["GET"])
+def get_shopping_item_category(id):
+    item = ShoppingItem.query.get(id)
+
+    if not item:
+        return jsonify({"error": "Shopping item not found"}), 404
+
+    if not item.category:
+        return jsonify({"error": "Shopping item has no category"}), 404
+
+    return jsonify(item.category.to_dict()), 200
