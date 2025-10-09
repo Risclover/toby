@@ -1,18 +1,19 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetTodoListQuery, useUpdateTodoListMutation } from "@/store/todoSlice";
 import { Progress } from "@mantine/core";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query"; // <-- use this
-import "../styles/HouseholdTasklistPage.css";
+import "../../styles/HouseholdTasklistPage.css";
 import { HouseholdTasklistPageAddTask } from "./HouseholdTasklistPageAddTask";
-import { EditableTitle } from "../../../component/EditableTitle";
+import { EditableTitle } from "../../../../component/EditableTitle";
 import { HouseholdTasklistPageList } from "./HouseholdTasklistPageList";
 import { HouseholdTasklistPageCompleted } from "./HouseholdTasklistPageCompleted";
 
 export const HouseholdTasklistPage = () => {
     const { tasklistId } = useParams();
     const listId = tasklistId ? Number(tasklistId) : undefined;
+    const [showCompleted, setShowCompleted] = useState(false);
 
     const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
@@ -44,27 +45,29 @@ export const HouseholdTasklistPage = () => {
     const uncompleted = tasklist?.todos?.filter((todo) => todo.status === "in_progress")
 
     return (
-        <div className="household-tasklist-page">
-            <div onClick={() => navigate(-1)}>&lt; Back</div>
+        <div className={`household-tasklist-page tasklists-shell ${showCompleted ? 'completed-open' : 'completed-collapsed'}`}>
+            <header>
+                <div onClick={() => navigate(-1)}>&lt; Back</div>
 
-            <div className="household-tasklist-page-title">
-                <EditableTitle
-                    title={tasklist?.title ?? ""}   // <-- always a string
-                    onSave={handleUpdateTitle}
-                />
-            </div>
-
-            <div className="household-tasklist-page-progress">
-                <div className="progress-left">
-                    <Progress color="cyan" value={percent} />
+                <div className="household-tasklist-page-title shell-header">
+                    <EditableTitle
+                        title={tasklist?.title ?? ""}   // <-- always a string
+                        onSave={handleUpdateTitle}
+                    />
                 </div>
-                {percent}%
-            </div>
-            <div className="tasklist-panel">
+
+                <div className="household-tasklist-page-progress">
+                    <div className="progress-left">
+                        <Progress color="cyan" value={percent} />
+                    </div>
+                    {percent}%
+                </div>
+            </header>
+            <div className="sections">
                 {uncompleted && uncompleted.length > 0 && <HouseholdTasklistPageList tasklist={tasklist} />}
-                {completed && completed?.length > 0 && <HouseholdTasklistPageCompleted tasklist={tasklist} completed={completed} />}
-                <HouseholdTasklistPageAddTask listId={tasklist?.id} /> {/* number, not undefined */}
+                {completed && completed?.length > 0 && <HouseholdTasklistPageCompleted tasklist={tasklist} completed={completed} showCompleted={showCompleted} setShowCompleted={setShowCompleted} />}
             </div>
-        </div>
+            <HouseholdTasklistPageAddTask listId={tasklist?.id} /> {/* number, not undefined */}
+        </div >
     );
 };

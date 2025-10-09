@@ -48,10 +48,11 @@
     justify-content: space-between;
     width: 100%;
     font-size: 0.75rem;
+    gap: 0.5rem;
 }
 
 .progress-left {
-    width: 85%;
+    width: 100%;
 }
 
 .household-tasklist-task {
@@ -79,7 +80,7 @@
     border: 1px solid var(--main-border);
     background: var(--main-background);
     box-shadow: var(--mantine-shadow-sm);
-    flex: 1;
+    flex: 0 1 auto;
     min-height: 0;
     overflow-y: auto;
     position: relative;

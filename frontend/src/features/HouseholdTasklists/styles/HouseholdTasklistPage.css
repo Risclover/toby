@@ -1,11 +1,10 @@
 .household-tasklist-page {
     display: flex;
     flex-direction: column;
-    padding: 3rem;
+    overflow-y: hidden;
 }
 
 .household-tasklist-page-progress {
-    max-width: 800px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -83,22 +82,21 @@ textarea.editable-title.is-editing {
 
 .household-tasklist-page-list {
     margin-top: 1rem;
-    max-height: calc(100vh - 51px - (16px + 16px + 48px + 62px));
     overflow-x: hidden;
+    flex: 0 1 auto;
 }
 
 .household-tasklist-page-completed {
-    margin-top: 1rem;
-    max-height: calc(100vh - 51px - (16px + 16px + 48px + 62px));
-    overflow-x: hidden;
+    overflow: hidden;
     border-radius: 1rem;
     width: 100%;
     border: 1px solid var(--main-border);
     background: var(--main-background);
     box-shadow: var(--mantine-shadow-sm);
     min-height: 0;
-    overflow-y: auto;
     position: relative;
+    flex: 0 1 auto;
+    margin: 1rem auto;
 }
 
 .household-tasklist-page-completed .household-tasklist-page-task:not(:last-child) {
@@ -115,7 +113,13 @@ textarea.editable-title.is-editing {
     gap: 0.25rem;
     font-weight: 500;
     padding: 0.8rem;
-    cursor: pointer
+    cursor: pointer;
+}
+
+.household-tasklist-page-completed .household-tasklist-page-tasks {
+    min-height: 0;
+    max-height: 100%;
+    overflow-y: auto;
 }
 
 .drag-handle svg {
@@ -131,7 +135,7 @@ textarea.editable-title.is-editing {
     padding-left: 0.8rem;
 }
 
-.task:not(:last-child) {
+.task:not(:nth-last-child(2)) {
     border-bottom: 1px solid var(--main-border);
 }
 
@@ -139,7 +143,6 @@ textarea.editable-title.is-editing {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    margin-top: 1rem;
     border: 1px solid var(--input-border);
     padding: 0.4rem;
     padding-left: 0.8rem;
@@ -158,13 +161,12 @@ textarea.editable-title.is-editing {
 }
 
 .tasklist-panel {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
     /* critical for child scrolling */
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    max-height: calc(100vh - 51px - (48px + 62px));
 }
 
 .household-tasklist-page-task:hover .household-tasklist-page-btns {
@@ -319,5 +321,26 @@ textarea.editable-title.is-editing {
 }
 
 .task-details-label:not(:first-child) {
+    margin-top: 1rem;
+}
+
+.add-task-container {
+    background: var(--bg);
+    ;
+    position: sticky;
+    width: 100%;
+    bottom: 0;
+    padding: 1rem 3rem;
+}
+
+.sections {
+    overflow-y: auto;
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+.household-tasklist-page header {
+    padding-left: 3rem;
+    padding-right: 3rem;
     margin-top: 1rem;
 }

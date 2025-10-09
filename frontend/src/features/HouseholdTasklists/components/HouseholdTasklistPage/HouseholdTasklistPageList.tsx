@@ -15,8 +15,8 @@ export const HouseholdTasklistPageList = ({ tasklist }: Props) => {
         [tasklist?.todos]
     );
 
-    return <div className='household-tasklist-page-list'>
-        <div className="household-tasklist-page-tasks">
+    return <div className='household-tasklist-page-list panel tasklist-panel'>
+        <div className="household-tasklist-page-tasks panel-body">
             {tasklist && <TaskListDnd tasks={uncompleted} listId={tasklist.id} />}
         </div>
     </div >

@@ -1,5 +1,4 @@
 import type { ShoppingItem } from "@/store/shoppingSlice";
-import type { Todo } from "@/store/todoSlice";
 import { Checkbox } from "@mantine/core";
 
 

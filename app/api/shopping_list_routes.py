@@ -97,3 +97,21 @@ def get_shopping_list_items(id):
 
     items = shopping_list.items or []
     return jsonify([i.to_dict() for i in items]), 200
+
+
+@shopping_list_routes.route("/<int:id>", methods=["PUT"])
+def edit_shopping_list_info(id):
+    list = ShoppingList.query.get(id)
+
+    if not list:
+        return jsonify({"error": "Shopping list not found"}), 404
+
+    data = request.get_json()
+
+    title = data.get("title")
+    if title:
+        list.title = title
+        db.session.commit()
+
+    return jsonify(list.to_dict()), 200
+

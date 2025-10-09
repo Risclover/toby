@@ -1,4 +1,3 @@
-import { useGetShoppingListQuery } from "@/store/shoppingSlice";
 import { Card, Divider, Progress } from "@mantine/core";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,8 +9,6 @@ type Props = {
 
 export const ShoppingList = ({ list }: Props) => {
     const navigate = useNavigate();
-
-    console.log('list items:', list.items);
 
     const handleClick = () => {
         navigate(`/shopping/${list.id}`);
@@ -26,10 +23,11 @@ export const ShoppingList = ({ list }: Props) => {
     }, [list.items]);
 
     const unpurchased = useMemo(() => {
-        // If you specifically want only "in_progress" change predicate accordingly.
-        return list.items.filter((t: any) => t.status !== "completed");
+        return list.items.filter((t: any) => t.purchased !== true);
     }, [list.items]);
+
     const remainingCount = Math.max(0, (unpurchased?.length ?? 0) - 3);
+
     return (
         <Card className="household-tasklist"
             shadow="sm"
@@ -54,7 +52,7 @@ export const ShoppingList = ({ list }: Props) => {
 
             {remainingCount > 0 && (
                 <div className="household-tasklist-bottom">
-                    + {remainingCount} more task{remainingCount > 1 && "s"}
+                    + {remainingCount} more item{remainingCount > 1 && "s"}
                 </div>
             )}
         </Card>

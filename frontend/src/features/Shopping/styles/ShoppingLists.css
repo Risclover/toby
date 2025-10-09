@@ -31,6 +31,42 @@
     width: 100%;
 }
 
+.list-header-select {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.household-tasklist-page-title {
+    display: flex;
+    align-items: center;
+}
+
+.shopping-list-header {
+    padding-left: 3rem;
+    padding-right: 3rem;
+    margin-top: 1rem;
+}
+
+.shopping-item-expanded {
+    width: 100%;
+    background: var(--bg);
+    padding: 0.5rem 3rem;
+}
+
+.completed-panel .household-tasklist-page-task {
+    text-decoration: line-through;
+}
+
+.shopping-item-expanded-input-section label {
+    font-family: 'Alan Sans', sans-serif !important;
+    font-size: 0.9rem;
+}
+
+.shopping-item-expanded-input-section input {
+    font-family: 'Nunito Sans', sans-serif !important;
+}
+
 @media (width >=40rem) {
     .shopping-lists-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr))

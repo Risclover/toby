@@ -75,7 +75,68 @@ export const shoppingSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Shopping
                 }
             },
         }),
+
+        editShoppingList: builder.mutation<any, { listId: number; title: string; }>({
+            query: ({ listId, title }) => ({
+                url: `/shopping_lists/${listId}`,
+                method: "PUT",
+                body: { title },
+            }),
+            invalidatesTags: (result, error, { listId }) => [{ type: "ShoppingList", id: listId }],
+        }),
+
+        completeShoppingItem: builder.mutation<ShoppingItem, { itemId: number; listId: number; purchased: boolean }>({
+            query: ({ itemId, purchased }) => ({
+                url: `/shopping_items/${itemId}/toggle`,
+                method: "PUT",
+                body: { purchased },
+            }),
+            async onQueryStarted({ itemId, listId, purchased }, { dispatch, queryFulfilled }) {
+                // optimistic update
+                const patch = dispatch(
+                    shoppingSlice.util.updateQueryData("getShoppingItems", listId, (draft) => {
+                        const item = draft.find((i) => i.id === itemId);
+                        if (item) item.purchased = purchased;
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patch.undo();
+                }
+            },
+            invalidatesTags: (result, error, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
+        }),
+
+        deleteShoppingItem: builder.mutation<{ success: boolean; id: number }, { itemId: number; listId: number }>({
+            query: ({ itemId }) => ({
+                url: `/shopping_items/${itemId}`,
+                method: "DELETE",
+            }),
+            async onQueryStarted({ itemId, listId }, { dispatch, queryFulfilled }) {
+                // optimistic update
+                const patch = dispatch(
+                    shoppingSlice.util.updateQueryData("getShoppingItems", listId, (draft) => {
+                        return draft.filter((i) => i.id !== itemId);
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patch.undo();
+                }
+            },
+            invalidatesTags: (result, error, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
+        }),
     })
 });
 
-export const { useGetShoppingListsQuery, useGetShoppingListQuery, useAddShoppingItemMutation, useGetShoppingItemsQuery } = shoppingSlice;
+export const {
+    useGetShoppingListsQuery,
+    useGetShoppingListQuery,
+    useAddShoppingItemMutation,
+    useGetShoppingItemsQuery,
+    useEditShoppingListMutation,
+    useCompleteShoppingItemMutation,
+    useDeleteShoppingItemMutation
+} = shoppingSlice;

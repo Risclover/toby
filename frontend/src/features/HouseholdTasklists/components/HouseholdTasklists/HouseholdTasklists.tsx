@@ -1,9 +1,9 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
-import "../styles/HouseholdTasklists.css"
+import "../../styles/HouseholdTasklists.css"
 import { useGetHouseholdTodoListsQuery } from "@/store/householdSlice";
-import { HouseholdTasklist } from "./HouseholdTasklists/HouseholdTasklist";
+import { HouseholdTasklist } from "./HouseholdTasklist";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { CreateTodoList } from "./HouseholdTasklists/CreateTodoList";
+import { CreateTodoList } from "./CreateTodoList";
 
 export const HouseholdTasklists = () => {
     const { data: user, isLoading: authLoading } = useAuthenticateQuery();

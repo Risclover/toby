@@ -37,3 +37,15 @@ def delete_shopping_item(id):
 
     return jsonify({"message": "Shopping item deleted"}), 200
     
+
+@shopping_item_routes.route("/<int:id>/toggle", methods=["PUT"])
+def toggle_shopping_item(id):
+    item = ShoppingItem.query.get(id)
+
+    if not item:
+        return jsonify({"error": "Shopping item not found"}), 404
+
+    item.purchased = not item.purchased
+    db.session.commit()
+
+    return jsonify(item.to_dict()), 200

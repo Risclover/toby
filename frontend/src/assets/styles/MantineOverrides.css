@@ -137,3 +137,26 @@
 .household-tasklist .mantine-Divider-root {
     border-color: var(--main-border) !important;
 }
+
+.mantine-NumberInput-input {
+    overflow: hidden;
+}
+
+.mantine-NumberInput-input:focus,
+.mantine-NumberInput-input:focus-within {
+    border-color: var(--accent-color) !important;
+}
+
+.mantine-NumberInput-control:first-of-type {
+    border-left: none;
+    border-start-end-radius: 0.5rem;
+}
+
+.mantine-NumberInput-control:last-of-type {
+    border-end-end-radius: 0.5rem;
+    border-left: none;
+}
+
+.mantine-NumberInput-control:hover {
+    background: var(--main-border);
+}

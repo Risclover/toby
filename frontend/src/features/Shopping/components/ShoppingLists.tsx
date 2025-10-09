@@ -1,5 +1,5 @@
 import { useAuthenticateQuery } from "@/store/authSlice"
-import { useGetHouseholdShoppingListsQuery } from "@/store/householdSlice"
+import { useGetHouseholdShoppingListsQuery, type ShoppingList as ShoppingListType } from "@/store/householdSlice"
 import { skipToken } from "@reduxjs/toolkit/query"
 import { ShoppingList } from "./ShoppingList";
 import "../styles/ShoppingLists.css"
@@ -11,7 +11,7 @@ export const ShoppingLists = () => {
 
     return (
         <div className="shopping-lists-grid">
-            {lists?.map((list) => <ShoppingList list={list} />)}
+            {lists?.map((list: ShoppingListType) => <ShoppingList list={list} />)}
         </div>
     )
 }
