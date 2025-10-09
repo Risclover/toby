@@ -88,7 +88,7 @@ export const ShoppingListPage = () => {
                 {/* Also guard other components that require ShoppingList */}
                 <ShoppingListBody ref={listEndRef}>
                     {uncompleted.length > 0 && list ?
-                        uncompleted.map((listitem) => <ListItem key={listitem.id} listId={listIdNum} item={listitem} />)
+                        uncompleted.map((listitem) => <ListItem key={listitem.id} listId={listIdNum} item={listitem} uncompleted />)
                         :
                         null
                     }

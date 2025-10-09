@@ -1,4 +1,4 @@
-import { Combobox, ComboboxChevron, NumberInput, Select } from '@mantine/core'
+import { Button, Combobox, ComboboxChevron, NumberInput, Select } from '@mantine/core'
 import React from 'react'
 
 export const ItemExpanded = ({ item }) => {
@@ -43,6 +43,7 @@ export const ItemExpanded = ({ item }) => {
                         options: { background: "var(--main-background)", color: "white" },
                     }}
                 />
+                <Button variant="filled" color="cyan">Add</Button>
             </div>
         </div>
     )

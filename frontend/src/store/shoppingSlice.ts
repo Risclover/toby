@@ -6,6 +6,7 @@ export type ShoppingItem = {
     name: string;
     quantity: number;
     purchased: boolean;
+    category: string;
     // add categoryId/categoryName if you return them
 };
 

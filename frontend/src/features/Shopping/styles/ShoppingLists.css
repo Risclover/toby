@@ -67,6 +67,32 @@
     font-family: 'Nunito Sans', sans-serif !important;
 }
 
+.task-left,
+.task-right {
+    display: flex;
+    align-items: center;
+}
+
+.task-left {
+    gap: 1rem;
+    line-height: 0;
+}
+
+.task-right button {
+    width: min-content;
+    padding: 0;
+}
+
+.task-right button:first-child svg {
+    font-size: 2rem;
+}
+
+.household-tasklist-page-task {
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+}
+
 @media (width >=40rem) {
     .shopping-lists-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr))
