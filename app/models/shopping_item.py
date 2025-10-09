@@ -26,6 +26,7 @@ class ShoppingItem(db.Model):
             "id": self.id,
             "shoppingListId": self.shopping_list_id,
             "categoryId": self.shopping_category_id,
+            "category": self.category.name if self.category else None,
             "name": self.name,
             "quantity": self.quantity,
             "purchased": self.purchased,

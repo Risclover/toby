@@ -8,11 +8,10 @@ import "@/assets/styles/MantineOverrides.css"
 import { MantineProvider } from '@mantine/core';
 
 function App() {
-
   return (
     <>
       <BrowserRouter>
-        <MantineProvider>
+        <MantineProvider theme={{ primaryShade: 7 }}>
           <Layout />
         </MantineProvider>
       </BrowserRouter>

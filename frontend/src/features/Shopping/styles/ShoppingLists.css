@@ -48,15 +48,29 @@
     margin-top: 1rem;
 }
 
-.shopping-item-expanded {
+.shopping-item-expanded-container {
     width: 100%;
     background: var(--bg);
+}
+
+.shopping-item-expanded {
     padding: 0.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 450px;
+}
+
+.shopping-item-expanded-top {
+    display: flex;
+    gap: 1rem;
 }
 
 .completed-panel .household-tasklist-page-task {
     text-decoration: line-through;
 }
+
+
 
 .shopping-item-expanded-input-section label {
     font-family: 'Alan Sans', sans-serif !important;
@@ -92,6 +106,7 @@
     justify-content: space-between;
     padding: 0.5rem 1rem;
 }
+
 
 @media (width >=40rem) {
     .shopping-lists-grid {

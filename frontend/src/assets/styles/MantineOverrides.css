@@ -97,7 +97,7 @@
     background-color: var(--bg) !important;
 }
 
-.mantine-InputWrapper-root {
+.task-details .mantine-InputWrapper-root {
     width: 100%;
 }
 
@@ -159,4 +159,17 @@
 
 .mantine-NumberInput-control:hover {
     background: var(--main-border);
+}
+
+.task-right .mantine-Badge-root:first-child {
+    text-transform: lowercase !important;
+    margin-right: 0.5rem;
+}
+
+.shopping-item-expanded .mantine-Button-root {
+    padding: 0.5rem;
+}
+
+.shopping-item-expanded .mantine-Button-root svg {
+    font-size: 1.1rem;
 }
