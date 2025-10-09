@@ -29,6 +29,7 @@ class ShoppingCategory(db.Model):
             "id": self.id,
             "name": self.name,
             "listId": self.list_id,
+            "items": [item.to_dict() for item in self.items],
             "createdAt": self.created_at,
             "updatedAt": self.updated_at,
         }

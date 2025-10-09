@@ -37,6 +37,7 @@ class ShoppingList(db.Model):
             "id": self.id,
             "title": self.title,
             "householdId": self.household_id,
+            "categories": [category.to_dict() for category in self.categories],
             "createdAt": self.created_at,
             "updatedAt": self.updated_at,
             "items": [item.to_dict() for item in self.items]
