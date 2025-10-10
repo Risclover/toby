@@ -2,6 +2,8 @@ import { AppRoutes } from "@/routes"
 import Sidebar from "@/layout/Sidebar"
 import { useMantineColorScheme } from "@mantine/core";
 import { useEffect } from "react";
+import { SpeedDial } from 'primereact/speeddial';
+import { Tooltip } from "primereact/tooltip";
 
 export const Layout = () => {
     const { setColorScheme } = useMantineColorScheme();
@@ -9,6 +11,14 @@ export const Layout = () => {
     useEffect(() => {
         setColorScheme('light');
     }, [])
+
+    let items = [
+        {
+            label: "Hello",
+            icon: "",
+            command: () => console.log("hey")
+        }
+    ]
     return (
         <>
             <Sidebar />

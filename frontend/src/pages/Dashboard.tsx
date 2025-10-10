@@ -14,6 +14,31 @@ import { CheckInButton } from "@/features/Checkins/components/CheckInButton";
 import { InviteLink } from "@/component/InviteLink";
 import { useGetUserMoodQuery } from "@/store/userSlice";
 import { MemberMood } from "@/features/Mood/components/MemberMood";
+import { Tooltip } from "primereact/tooltip";
+import { SpeedDial } from "primereact/speeddial";
+import { FaUserCheck, FaUserPlus } from "react-icons/fa";
+import { BsJournalCheck } from "react-icons/bs";
+import { MdNotificationsActive } from "react-icons/md";
+import { RiMegaphoneFill } from "react-icons/ri";
+import { FaClipboardList } from "react-icons/fa";
+import { FaCalendarPlus } from "react-icons/fa6";
+import { FaSackDollar } from "react-icons/fa6";
+import { BsCashStack } from "react-icons/bs";
+import { HiUserGroup } from "react-icons/hi2";
+import { TbUsersPlus } from "react-icons/tb";
+import { MdGroupAdd } from "react-icons/md";
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import { FaUsers } from "react-icons/fa6";
+import { PiUsersThreeFill } from "react-icons/pi";
+import { LuNotebookPen } from "react-icons/lu";
+import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
+
+
+import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
+import { useCheckInTodayMutation, useGetUserCheckinsQuery } from "@/store/checkinSlice";
+
+
+const toISO = (d: Date) => d.toISOString().slice(0, 10); // "YYYY-MM-DD"
 
 export const Dashboard = () => {
     const navigate = useNavigate();
@@ -23,6 +48,7 @@ export const Dashboard = () => {
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+    const [checkInToday, { isLoading: checkingIn }] = useCheckInTodayMutation();
 
     const { data: list } = useGetHouseholdShoppingListsQuery(householdId ?? skipToken);
 
@@ -45,11 +71,46 @@ export const Dashboard = () => {
     const handleLogout = async () => {
         await logout();
     }
+    const today = toISO(new Date());
+    const { data, isFetching } = useGetUserCheckinsQuery(
+        { userId: user?.id!, from: today, to: today },
+        { skip: !user?.id }
+    );
+    const checkedInToday = !!data?.dates?.length;
+    let items = [
+        {
+            label: "Check In",
+            icon: <HowToRegRoundedIcon />,
+            className: checkedInToday ? "my-action p-disabled" : "",
+            command: () => checkInToday({ userId: user.id }).unwrap(),
+        },
+        {
+            label: "Invite Member",
+            icon: <GroupAddRoundedIcon />,
+            command: () => setShowInviteModal(true)
+        },
+        {
+            label: "+ Reminder",
+            icon: <MdNotificationsActive />,
+            command: () => console.log("Reminders")
+        },
+        {
+            label: "+ Announcement",
+            icon: <RiMegaphoneFill />,
+            command: () => setShowCreateAnnouncement(true)
+        },
+        {
+            label: "+ Event",
+            icon: <FaCalendarPlus />,
+            command: () => console.log("Event")
+        },
+    ]
 
-    const handleMood = async (member: any) => {
-        setSelectedUserId(member.id);
+    const handleCheckin = async () => {
+        if (checkedInToday) {
+
+        }
     }
-
     return (
         <div className="dashboard">
             <div className="dashboard-titlebar">
@@ -86,6 +147,8 @@ export const Dashboard = () => {
             <div>
                 {list?.map((list) => <div>{list.title}</div>)}
             </div>
+            <Tooltip target=".speeddial-bottom-right .p-speeddial-action" position="left" />
+            <SpeedDial model={items} direction="up" className="speeddial-bottom-right right-10 bottom-10" buttonClassName="p-button-cyan" />
         </div>
     );
 };

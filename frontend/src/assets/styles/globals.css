@@ -186,3 +186,41 @@ h6,
 form {
     width: 100%;
 }
+
+.p-button-cyan {
+    background: var(--accent-color);
+}
+
+.p-speeddial-action,
+.p-tooltip-active:first-child {
+    background: var(--input-background);
+
+}
+
+.p-speeddial-action:hover {
+    background: var(--input-background);
+}
+
+/* Generic disabled look (works with your own classes, too) */
+.p-disabled,
+.p-component:disabled,
+.my-action.p-disabled {
+    opacity: 0.55;
+    filter: grayscale(40%);
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+}
+
+/* Stop hover/active flair */
+.p-disabled:hover,
+.p-component:disabled:hover,
+.my-action.p-disabled:hover {
+    background: inherit !important;
+    color: inherit !important;
+    transform: none !important;
+}
+
+/* If you need to hard-block pointer events on a wrapper */
+.is-disabled {
+    pointer-events: none;
+}

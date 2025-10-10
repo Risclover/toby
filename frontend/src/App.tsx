@@ -6,14 +6,18 @@ import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import "@/assets/styles/MantineOverrides.css"
 import { MantineProvider } from '@mantine/core';
+import { PrimeReactProvider } from 'primereact/api';
+import "primereact/resources/themes/lara-light-cyan/theme.css";
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <MantineProvider theme={{ primaryShade: 7 }}>
-          <Layout />
-        </MantineProvider>
+        <PrimeReactProvider>
+          <MantineProvider theme={{ primaryShade: 7 }}>
+            <Layout />
+          </MantineProvider>
+        </PrimeReactProvider>
       </BrowserRouter>
     </>
   )
