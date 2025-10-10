@@ -1,7 +1,7 @@
 // QuickAddEvent.tsx (string-based DateInput + TimeInput)
 import { useEffect, useState } from "react";
 import { Modal, Button, TextInput, Group } from "@mantine/core";
-import { DateInput, TimeInput } from "@mantine/dates";
+import { DateInput, DatePickerInput, TimeInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useCreateEventMutation } from "@/store/eventSlice";
 
@@ -65,22 +65,47 @@ export function QuickAddEvent({
                 required
             />
             <Group grow mt="md">
-                <DateInput
+                <DatePickerInput
                     label="Date"
                     value={dateStr}                         // <-- string
                     onChange={(v) => setDateStr(v ?? "")}  // <-- expects string | null
                     required
+                    styles={{
+                        wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
+                        input: { fontWeight: "normal", fontFamily: "Nunito Sans, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", color: "white" },
+                        month: { background: "var(--main-background)", color: "white" },
+                        day: { color: "white" },
+                        calendarHeader: { background: "var(--main-background)", color: "white" },
+                        presetsList: { background: "var(--main-background)", color: "white", borderColor: "var(--main-border)" },
+                        datePickerRoot: { background: "var(--main-background)", borderRadius: "0.5rem" },
+                        monthsListControl: { background: "var(--main-background)", color: "white" },
+                        yearsListControl: { background: "var(--main-background)", color: "white" },
+                        weekday: { color: "var(--sub-text)" },
+                        placeholder: { color: "var(--sub-text)" }
+                    }}
                 />
                 <TimeInput
                     label="Time"
                     value={timeStr}                         // <-- string
                     onChange={(e) => setTimeStr(e.currentTarget.value)}
-                    required
+                    styles={{
+                        wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
+                        input: { fontWeight: "normal", fontFamily: "Nunito Sans, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", color: "white" },
+                        month: { background: "var(--main-background)", color: "white" },
+                        day: { color: "white" },
+                        calendarHeader: { background: "var(--main-background)", color: "white" },
+                        presetsList: { background: "var(--main-background)", color: "white", borderColor: "var(--main-border)" },
+                        datePickerRoot: { background: "var(--main-background)", borderRadius: "0.5rem" },
+                        monthsListControl: { background: "var(--main-background)", color: "white" },
+                        yearsListControl: { background: "var(--main-background)", color: "white" },
+                        weekday: { color: "var(--sub-text)" },
+                        placeholder: { color: "var(--sub-text)" }
+                    }}
                 />
             </Group>
             <Group justify="flex-end" mt="lg">
-                <Button variant="default" onClick={onClose}>Cancel</Button>
-                <Button loading={isLoading} onClick={handleSave}>Save</Button>
+                <Button color="cyan" variant="outline" onClick={onClose}>Cancel</Button>
+                <Button color="cyan" loading={isLoading} onClick={handleSave}>Save</Button>
             </Group>
         </Modal>
     );
