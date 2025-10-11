@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Modal, Button, TextInput, Group, Stack, Text, Loader, Anchor, ScrollArea } from "@mantine/core";
 import { DateInput, DatePickerInput, TimeInput } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useCreateEventMutation, useGetHouseholdEventsQuery } from "@/store/eventSlice";
+import { useCreateEventMutation, useDeleteEventMutation, useGetHouseholdEventsQuery } from "@/store/eventSlice";
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import "../styles/QuickAddEvent.css"
 
 function startEndIsoForLocalDay(ymd: string) {
@@ -41,6 +42,12 @@ export function QuickAddEvent({
     const [createEvent, { isLoading }] = useCreateEventMutation();
     const [titleError, setTitleError] = useState<string>("");
     const [dateError, setDateError] = useState<string>("");
+
+    const [deleteEvent] = useDeleteEventMutation();
+
+    const handleDeleteEvent = async (eventId: number) => {
+        await deleteEvent({ id: eventId, householdId }).unwrap()
+    }
 
     const handleClose = () => {
         onClose();
@@ -169,10 +176,13 @@ export function QuickAddEvent({
                     ) : loading ? <Text size="sm" c="white">Loading...</Text> : (
                         sorted.map((e) => (
                             <Group key={e.id} gap="sm" wrap="nowrap">
-                                <Text size="sm" w={80} fw={700} c="cyan.3">
+                                <Text size="sm" inline w={80} fw={700} c="cyan.3">
                                     {e.hasTime === false ? "All day" : (e.startUtc && fmtTime(e.startUtc)) || ""}
                                 </Text>
-                                <Text size="sm" c="white">{e.title}</Text>
+                                <Group justify="space-between" w="100%">
+                                    <Text size="sm" inline c="white">{e.title}</Text>
+                                    <div onClick={() => handleDeleteEvent(e.id)} className="delete-event-btn"><DeleteRoundedIcon /></div>
+                                </Group>
                             </Group>
                         ))
                     )}

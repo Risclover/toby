@@ -73,11 +73,37 @@ export const eventSlice = apiSlice
                 query: ({ householdId }) => `/events/households/${householdId}/events?all=1`, keepUnusedDataFor: 3600,
                 providesTags: (_r, _e, a) => [{ type: "Calendar", id: `HOUSEHOLD_${a.householdId}_ALL` }],
             }),
+
+            deleteEvent: b.mutation<void, { id: number; householdId: number }>({
+                query: ({ id, householdId }) => ({
+                    url: `/events/households/${householdId}/events/${id}`,
+                    method: "DELETE",
+                }),
+                // optimistic update (optional)
+                async onQueryStarted({ id, householdId }, { dispatch, queryFulfilled }) {
+                    const patch = dispatch(
+                        eventSlice.util.updateQueryData(
+                            "getAllHouseholdEvents",
+                            { householdId },
+                            (draft) => {
+                                const idx = draft.findIndex((e) => e.id === id);
+                                if (idx !== -1) draft.splice(idx, 1);
+                            }
+                        )
+                    );
+                    try { await queryFulfilled; } catch { patch.undo(); }
+                },
+                invalidatesTags: (_res, _err, { householdId }) => [
+                    { type: "Calendar", id: `HOUSEHOLD_${householdId}` },
+                    { type: "Calendar", id: `HOUSEHOLD_${householdId}_ALL` },
+                ],
+            })
         }),
     })
 
 export const {
     useGetHouseholdEventsQuery,
     useCreateEventMutation,
-    useGetAllHouseholdEventsQuery
+    useGetAllHouseholdEventsQuery,
+    useDeleteEventMutation
 } = eventSlice;

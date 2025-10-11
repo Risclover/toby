@@ -29,3 +29,16 @@
 .quick-add-event-events {
     color: white;
 }
+
+.delete-event-btn {
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.delete-event-btn svg {
+    font-size: 1rem;
+}
+
+.delete-event-btn:hover {
+    color: var(--accent-color);
+}

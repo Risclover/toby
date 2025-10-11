@@ -103,3 +103,14 @@ def create_event_for_household(hid: int):
     db.session.add(ev)
     db.session.commit()
     return jsonify(ev.to_dict()), 201
+
+@event_routes.route("/households/<int:hid>/events/<int:event_id>", methods=["DELETE"])
+def delete_event(hid: int, event_id: int):
+    Household.query.get_or_404(hid)
+
+    ev = Event.query.filter_by(id=event_id, household_id=hid).first_or_404()
+
+    db.session.delete(ev)
+    db.session.commit()
+
+    return ("", 204)
