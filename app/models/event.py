@@ -9,31 +9,33 @@ class Event(db.Model):
     title = db.Column(db.String(120), nullable=False)
     start_utc = db.Column(db.DateTime(timezone=True), nullable=True)
     end_utc = db.Column(db.DateTime(timezone=True), nullable=True)
+    has_time = db.Column(db.Boolean, nullable=False, default=False)  # <-- NEW
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    tzid = db.Column(db.String(64), nullable=False) # e.g. "America/Los_Angeles"
+    tzid = db.Column(db.String(64), nullable=False)  # e.g. "America/Los_Angeles"
     household = db.relationship('Household', backref=db.backref('events', lazy='dynamic'))
 
     def to_dict(self):
         def to_utc_z(dt):
-            # If dt is naive (no tzinfo), assume it's already UTC, then mark it
+            if dt is None:
+                return None                           # <-- handle nulls safely
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
-            # Normalize to UTC and emit Z-suffixed ISO
             return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
         return {
-            'id': self.id,
-            'householdId': self.household_id,
-            'title': self.title,
-            'startUtc': to_utc_z(self.start_utc),
-            'endUtc': to_utc_z(self.end_utc),
-            'tzid': self.tzid,
+            "id": self.id,
+            "householdId": self.household_id,
+            "title": self.title,
+            "startUtc": to_utc_z(self.start_utc),
+            "endUtc": to_utc_z(self.end_utc),
+            "tzid": self.tzid,
+            "hasTime": bool(self.has_time),           # <-- include it
             "createdAt": to_utc_z(self.created_at),
         }
 
     def __repr__(self):
-        return f"Event {id}: {title}"
+        return f"Event {self.id}: {self.title}"

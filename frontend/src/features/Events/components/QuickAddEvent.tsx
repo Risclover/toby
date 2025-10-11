@@ -4,6 +4,7 @@ import { Modal, Button, TextInput, Group } from "@mantine/core";
 import { DateInput, DatePickerInput, TimeInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useCreateEventMutation } from "@/store/eventSlice";
+import "../styles/QuickAddEvent.css"
 
 function combineLocalFromStrings(dateStr: string, timeStr: string) {
     // dateStr: "YYYY-MM-DD", timeStr: "HH:mm"
@@ -25,44 +26,78 @@ export function QuickAddEvent({
 }) {
     const [title, setTitle] = useState("");
     const [dateStr, setDateStr] = useState<string>(dayjs(initialDate).format("YYYY-MM-DD"));
-    const [timeStr, setTimeStr] = useState<string>("09:00");
+    const [timeStr, setTimeStr] = useState<string>("10:00");
     const [createEvent, { isLoading }] = useCreateEventMutation();
+    const [titleError, setTitleError] = useState<string>("");
+    const [dateError, setDateError] = useState<string>("");
+
+    const handleClose = () => {
+        onClose();
+        setTitleError("");
+    }
 
     // Reset fields whenever modal opens or the clicked day changes
     useEffect(() => {
         if (opened) {
             setTitle("");
             setDateStr(dayjs(initialDate).format("YYYY-MM-DD"));
-            setTimeStr("09:00");
+            setTimeStr("");
         }
     }, [opened, initialDate]);
 
     const handleSave = async () => {
-        if (!title.trim() || !dateStr || !timeStr) return;
+        setTitleError("");
+        setDateError("");
 
-        const startLocal = combineLocalFromStrings(dateStr, timeStr);
-        const endLocal = dayjs(startLocal).add(1, "hour").toDate();
+        if (!title.trim()) setTitleError("Title required");
+        if (!dateStr) setDateError("Date required");
+        if (!title.trim() || !dateStr) return;
+
         const tzid = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const hasTime = Boolean(timeStr && timeStr.trim()); // <- user provided a time?
 
-        await createEvent({
-            householdId,
-            title: title.trim(),
-            startUtc: startLocal.toISOString(),
-            endUtc: endLocal.toISOString(),
-            tzid,
-        });
+        try {
+            if (hasTime) {
+                // Timed event -> send startUtc/endUtc
+                const startLocal = combineLocalFromStrings(dateStr, timeStr);
+                const endLocal = dayjs(startLocal).add(1, "hour").toDate();
 
-        onClose();
+                await createEvent({
+                    householdId,
+                    title: title.trim(),
+                    startUtc: startLocal.toISOString(),
+                    endUtc: endLocal.toISOString(),
+                    tzid,
+                }).unwrap();
+            } else {
+                // Date-only event -> send date only
+                await createEvent({
+                    householdId,
+                    title: title.trim(),
+                    date: dateStr,  // "YYYY-MM-DD"
+                    tzid,
+                } as any).unwrap();
+                // ^ if your mutation input is typed as a discriminated union, `as any`
+                //   won’t be needed. (See prior message for the CreateEventInput union.)
+            }
+
+            onClose();
+        } catch (e) {
+            // optional: surface an error toast/message
+            console.error(e);
+        }
     };
 
     return (
-        <Modal opened={opened} onClose={onClose} title="Add event" centered>
+        <Modal opened={opened} onClose={handleClose} title="Add event" centered>
             <TextInput
                 label="Title"
                 placeholder="Dentist"
                 value={title}
                 onChange={(e) => setTitle(e.currentTarget.value)}
                 required
+                error={titleError}
+                withErrorStyles
             />
             <Group grow mt="md">
                 <DatePickerInput
@@ -83,10 +118,11 @@ export function QuickAddEvent({
                         weekday: { color: "var(--sub-text)" },
                         placeholder: { color: "var(--sub-text)" }
                     }}
+                    error={dateError}
                 />
                 <TimeInput
                     label="Time"
-                    value={timeStr}                         // <-- string
+                    value={timeStr}
                     onChange={(e) => setTimeStr(e.currentTarget.value)}
                     styles={{
                         wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },

@@ -1,0 +1,27 @@
+.event-error {
+    color: var(--mantine-color-error);
+    font-size: 0.8rem;
+}
+
+.mantine-InputWrapper-error {
+    border-color: var(--mantine-color-error) !important;
+}
+
+.mc-has-events {
+    position: relative;
+}
+
+/* The dot itself */
+.mc-has-events::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 3px;
+    /* adjust for your theme */
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--mantine-color-cyan-5);
+    pointer-events: none;
+}

@@ -19,6 +19,9 @@
 
 .mantine-TextInput-input {
     background: var(--input-background) !important;
+}
+
+.mantine-TextInput-input:where(:not([data-error])) {
     border-color: var(--input-border) !important;
 }
 
@@ -176,4 +179,9 @@
 
 .p-speeddial-list svg {
     font-size: 1.5rem;
+}
+
+.m_99d16a4:hover:where(:not([data-disabled], [data-selected])),
+.m_14c23465:hover:where(:not([data-disabled])) {
+    background-color: var(--input-background);
 }

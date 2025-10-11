@@ -1,107 +1,115 @@
-// src/features/calendar/WeekStrip.tsx (rolling week: today + 6)
-import { useMemo, useState } from "react";
-import { Group, Paper, Text, Indicator, UnstyledButton } from "@mantine/core";
+import { useMemo, useState, useEffect } from "react";
+import { MiniCalendar } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useGetHouseholdEventsQuery } from "@/store/eventSlice";
-import { QuickAddEvent } from "./QuickAddEvent";
+import { useGetHouseholdEventsQuery, calendarApi } from "@/store/eventSlice";
 
-function startOfToday(d = new Date()) {
-    const t = new Date(d);
-    t.setHours(0, 0, 0, 0);
-    return t;
+const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+// Build a local Date (midnight local) from "YYYY-MM-DD" safely
+function localMidnightFromYmd(ymd: string) {
+    const [y, m, d] = ymd.split("-").map(Number);
+    return new Date(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0); // local time
 }
-function endOfDay(d: Date) {
-    const e = new Date(d);
-    e.setHours(23, 59, 59, 999);
-    return e;
+
+// Given a visible start ymd and numberOfDays, return ISO range (UTC) for the query
+function isoRangeFromView(ymd: string, numberOfDays: number) {
+    const startLocal = localMidnightFromYmd(ymd);
+    const endLocal = new Date(startLocal);
+    endLocal.setDate(endLocal.getDate() + numberOfDays - 1);
+    endLocal.setHours(23, 59, 59, 999);
+    return { startIso: startLocal.toISOString(), endIso: endLocal.toISOString() };
 }
-function rangeTodayPlus6() {
-    const start = startOfToday(new Date());
-    const end = endOfDay(new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000));
-    return { start, end };
+
+// Increment/decrement a "YYYY-MM-DD" by N days
+function shiftYmd(ymd: string, days: number) {
+    const d = localMidnightFromYmd(ymd);
+    d.setDate(d.getDate() + days);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const da = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${da}`;
 }
-const iso = (d: Date) => d.toISOString();
 
 export function WeekStrip({ householdId }: { householdId: number }) {
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [open, setOpen] = useState(false);
+    const numberOfDays = 7;
 
-    // rolling range: today .. today+6
-    const { start, end } = useMemo(rangeTodayPlus6, []);
-    const { data: events = [] } = useGetHouseholdEventsQuery({
-        householdId,
-        startIso: iso(start),
-        endIso: iso(end),
-    });
+    // visible interval start (controls the built-in arrows)
+    const [viewYmd, setViewYmd] = useState<string>(dayjs().format("YYYY-MM-DD"));
 
-    // event counts per day (by start date)
+    // selected day (when the user clicks a day)
+    const [valueYmd, setValueYmd] = useState<string | null>(null);
+
+    // fetch window follows the visible week
+    const { startIso, endIso } = useMemo(
+        () => isoRangeFromView(viewYmd, numberOfDays),
+        [viewYmd]
+    );
+
+    const args = { householdId, startIso, endIso };
+    const { data: events = [] } = useGetHouseholdEventsQuery(args, { skip: !householdId });
+
+    // OPTIONAL: prefetch next/prev weeks so dots feel instant
+    const prefetch = calendarApi.usePrefetch("getHouseholdEvents");
+    useEffect(() => {
+        const nextView = shiftYmd(viewYmd, numberOfDays);
+        const prevView = shiftYmd(viewYmd, -numberOfDays);
+
+        const n = isoRangeFromView(nextView, numberOfDays);
+        const p = isoRangeFromView(prevView, numberOfDays);
+
+        prefetch({ householdId, ...n });
+        prefetch({ householdId, ...p });
+    }, [viewYmd, householdId, prefetch]);
+
+    // Build counts keyed by user's local Y-M-D (using Intl to be safe with TZ)
     const counts = useMemo(() => {
         const map: Record<string, number> = {};
+        const fmt = new Intl.DateTimeFormat("en-CA", {
+            timeZone: userTz,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        });
         for (const e of events) {
-            const key = dayjs(e.startUtc).format("YYYY-MM-DD");
+            if (!e.startUtc) continue; // skip unscheduled
+            const d = new Date(e.startUtc);
+            const parts = fmt.formatToParts(d);
+            const y = parts.find(p => p.type === "year")!.value;
+            const m = parts.find(p => p.type === "month")!.value;
+            const da = parts.find(p => p.type === "day")!.value;
+            const key = `${y}-${m}-${da}`;
             map[key] = (map[key] ?? 0) + 1;
         }
         return map;
     }, [events]);
 
-    // build 7 rolling days starting from today
-    const days = useMemo(
-        () =>
-            Array.from({ length: 7 }, (_, i) => {
-                const d = new Date(start);
-                d.setDate(d.getDate() + i);
-                return d;
-            }),
-        [start]
-    );
-
     return (
-        <>
-            <Group gap="xs" wrap="nowrap">
-                {days.map((d) => {
-                    const key = dayjs(d).format("YYYY-MM-DD");
-                    const has = !!counts[key];
-                    const isToday = dayjs(d).isSame(new Date(), "day");
+        <MiniCalendar
+            numberOfDays={numberOfDays}
 
-                    return (
-                        <UnstyledButton
-                            key={key}
-                            onClick={() => {
-                                setSelectedDate(d);
-                                setOpen(true);
-                            }}
-                            aria-label={`Add on ${dayjs(d).format("ddd, MMM D")}`}
-                            style={{ flex: 1 }}
-                        >
-                            <Indicator size={6} disabled={!has}>
-                                <Paper
-                                    withBorder
-                                    radius="md"
-                                    p="sm"
-                                    style={{
-                                        textAlign: "center",
-                                        borderColor: isToday ? "var(--mantine-color-primary-6)" : undefined,
-                                    }}
-                                >
-                                    <Text size="xs" c="dimmed">
-                                        {dayjs(d).format("ddd")}
-                                    </Text>
-                                    <Text size="lg" fw={600}>
-                                        {dayjs(d).date()}
-                                    </Text>
-                                </Paper>
-                            </Indicator>
-                        </UnstyledButton>
-                    );
-                })}
-            </Group>
+            // CONTROL the visible interval start; built-in arrows will use these:
+            date={viewYmd}
+            onNext={() => setViewYmd(shiftYmd(viewYmd, numberOfDays))}
+            onPrevious={() => setViewYmd(shiftYmd(viewYmd, -numberOfDays))}
+            onDateChange={(ymd) => setViewYmd(ymd)} // in case component changes internal start
 
-            <QuickAddEvent
-                householdId={householdId}
-                opened={open}
-                initialDate={selectedDate}
-                onClose={() => setOpen(false)}
-            />
-        </>
+            // Selected day (when a user clicks a cell)
+            value={valueYmd}
+            onChange={(ymd) => {
+                setValueYmd(ymd);
+                // optionally open your QuickAdd here using localMidnightFromYmd(ymd)
+            }}
+
+            // Add dots & today highlight — note: getDayProps(date) passes a STRING
+            getDayProps={(ymd) => {
+                const count = counts[ymd] ?? 0;
+                const isToday = ymd === dayjs().format("YYYY-MM-DD");
+                return {
+                    className: count > 0 ? "mc-has-events" : undefined,
+                    title: count ? `${count} event${count > 1 ? "s" : ""}` : undefined,
+                    style: { color: isToday ? "var(--mantine-color-cyan-3)" : undefined },
+                };
+            }}
+        />
     );
 }
