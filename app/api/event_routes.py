@@ -20,27 +20,34 @@ def parse_iso8601(value: str) -> datetime:
 
 
 @event_routes.get('/households/<int:hid>/events')
-def get_events_for_household(hid: int):
+def get_household_events(hid: int):
     Household.query.get_or_404(hid)
 
-    start_s = request.args.get('start')
-    end_s = request.args.get('end')
-    if not start_s or not end_s:
-        abort(400, description='start and end query params are required')
+    start_s    = request.args.get('start')
+    end_s      = request.args.get('end')
+    fetch_all  = request.args.get('all') == '1'
 
-    start = parse_iso8601(start_s)
-    end = parse_iso8601(end_s)
-    if start >= end:
-        abort(400, description='start must be before end')
+    q = Event.query.filter(Event.household_id == hid)
 
-    q = (
-        Event.query
-        .filter(Event.household_id == hid)
-        .filter(and_(Event.start_utc < end, Event.end_utc > start))
-        .order_by(Event.start_utc.asc())
-    )
+    if fetch_all:
+        # all scheduled events
+        q = q.filter(Event.start_utc.isnot(None), Event.end_utc.isnot(None))
 
-    return jsonify([e.to_dict() for e in q.all()])
+    else:
+        if not start_s or not end_s:
+            abort(400, description='start and end query params are required (or pass all=1)')
+        start = parse_iso8601(start_s)
+        end   = parse_iso8601(end_s)
+        if start >= end:
+            abort(400, description='start must be before end')
+
+        q = q.filter(
+            Event.start_utc < end,   # starts before window end
+            Event.end_utc > start,   # ends after window start (strict!)
+        )
+
+    events = q.order_by(Event.start_utc.asc()).all()
+    return jsonify([e.to_dict() for e in events]), 200
 
 
 @event_routes.post('/households/<int:hid>/events')

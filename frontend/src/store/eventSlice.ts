@@ -32,6 +32,8 @@ type FloatingEventInput = {
     // no time/date fields
 };
 
+type AllArgs = { householdId: number };
+
 type CreateEventInput =
     { householdId: number } & (TimedEventInput | DateOnlyEventInput | FloatingEventInput);
 
@@ -39,11 +41,7 @@ export const eventSlice = apiSlice
     .enhanceEndpoints({ addTagTypes: ["Calendar"] })
     .injectEndpoints({
         endpoints: (b) => ({
-            // GET /api/households/:hid/events?start=...&end=...
-            getHouseholdEvents: b.query<
-                CalendarEvent[],
-                { householdId: number; startIso: string; endIso: string }
-            >({
+            getHouseholdEvents: b.query<CalendarEvent[], { householdId: number; startIso: string; endIso: string }>({
                 query: ({ householdId, startIso, endIso }) =>
                     `/events/households/${householdId}/events?start=${encodeURIComponent(
                         startIso
@@ -54,7 +52,6 @@ export const eventSlice = apiSlice
                 ],
             }),
 
-            // POST /api/households/:hid/events
             createEvent: b.mutation<CalendarEvent, CreateEventInput>({
                 query: ({ householdId, ...body }) => {
                     // Strip out any undefined fields so we only send what the user provided.
@@ -71,7 +68,16 @@ export const eventSlice = apiSlice
                     { type: "Calendar", id: `HOUSEHOLD_${body.householdId}` },
                 ],
             }),
-        }),
-    });
 
-export const { useGetHouseholdEventsQuery, useCreateEventMutation } = eventSlice;
+            getAllHouseholdEvents: b.query<CalendarEvent[], AllArgs>({
+                query: ({ householdId }) => `/events/households/${householdId}/events?all=1`, keepUnusedDataFor: 3600,
+                providesTags: (_r, _e, a) => [{ type: "Calendar", id: `HOUSEHOLD_${a.householdId}_ALL` }],
+            }),
+        }),
+    })
+
+export const {
+    useGetHouseholdEventsQuery,
+    useCreateEventMutation,
+    useGetAllHouseholdEventsQuery
+} = eventSlice;

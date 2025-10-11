@@ -25,3 +25,7 @@
     background: var(--mantine-color-cyan-5);
     pointer-events: none;
 }
+
+.quick-add-event-events {
+    color: white;
+}
