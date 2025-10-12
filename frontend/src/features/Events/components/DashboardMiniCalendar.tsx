@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState, type SetStateAction } from "react";
 import { Group, Paper, Text, Indicator, UnstyledButton } from "@mantine/core";
 import dayjs from "dayjs";
 import { useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery } from "@/store/eventSlice";
@@ -37,11 +37,8 @@ function expandSpanToLocalDays(startIso: string, endIso: string, tz = userTz): s
 }
 
 
-export function WeekStrip({ householdId }: { householdId: number }) {
+export function WeekStrip({ householdId, showAddEvent, setShowAddEvent }: { householdId: number, showAddEvent: boolean, setShowAddEvent: React.Dispatch<SetStateAction<boolean>> }) {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [open, setOpen] = useState(false);
-    const [viewYmd, setViewYmd] = useState(dayjs().format("YYYY-MM-DD"));
-    const [valueYmd, setValueYmd] = useState<string | null>(null);
     const { data: allEvents = [], isLoading: loading } = useGetAllHouseholdEventsQuery({ householdId }, { skip: !householdId });
     const daysWithEvents = useMemo(() => {
         const set = new Set<string>();
@@ -55,7 +52,7 @@ export function WeekStrip({ householdId }: { householdId: number }) {
 
     const handleCalendarClick = (ymd: string) => {
         setSelectedDate(dateFromYmd(ymd));  // <-- now a real Date
-        setOpen(true);
+        setShowAddEvent(true);
     };
 
     console.log('allEvents', allEvents.length, allEvents);
@@ -81,9 +78,9 @@ export function WeekStrip({ householdId }: { householdId: number }) {
             />
             <QuickAddEvent
                 householdId={householdId}
-                opened={open}
+                opened={showAddEvent}
                 initialDate={selectedDate}
-                onClose={() => setOpen(false)}
+                onClose={() => setShowAddEvent(false)}
             />
         </>
     );

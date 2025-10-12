@@ -169,10 +169,10 @@ export function QuickAddEvent({
             </Group>
             <Stack mt="lg" gap="xs">
                 <Text fw={400} c="white" styles={{ root: { fontFamily: "Alan Sans, sans-serif" } }}>Events</Text>
-                <Text c="white" inline size="xs">To edit an event, go to the <Anchor underline="always" href="" target="_blank" c="cyan.3">Events</Anchor> page.</Text>
+                {sorted.length > 0 && <Text c="white" inline size="xs">To edit an event, go to the <Anchor underline="always" href="" target="_blank" c="cyan.3">Events</Anchor> page.</Text>}
                 <ScrollArea scrollbars="y" type="always" viewportProps={{ style: { maxHeight: 200 } }}>
                     {sorted.length === 0 ? (
-                        <Text c="dimmed">No events for this date.</Text>
+                        <Text c="dimmed" size="sm">No events for this date.</Text>
                     ) : loading ? <Text size="sm" c="white">Loading...</Text> : (
                         sorted.map((e) => (
                             <Group key={e.id} gap="sm" wrap="nowrap">

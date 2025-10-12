@@ -3,7 +3,7 @@ import { skipToken } from "@reduxjs/toolkit/query"; // ⬅️ add this
 import { useAuthenticateQuery, useLogoutMutation } from "@/store/authSlice";
 import { useGetHouseholdQuery, useGetHouseholdShoppingListsQuery } from "@/store/householdSlice";
 import "../assets/styles/Dashboard.css";
-import { Button } from "@mantine/core";
+import { Button, ButtonGroup, Flex } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { CreateAnnouncement } from "@/features/Announcements/components/CreateAnnouncement";
 import { Announcements } from "@/features/Announcements/components/Announcements";
@@ -47,6 +47,7 @@ export const Dashboard = () => {
     const [logout] = useLogoutMutation()
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
+    const [showAddEvent, setShowAddEvent] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
     const [checkInToday, { isLoading: checkingIn }] = useCheckInTodayMutation();
 
@@ -102,7 +103,7 @@ export const Dashboard = () => {
         {
             label: "+ Event",
             icon: <FaCalendarPlus />,
-            command: () => console.log("Event")
+            command: () => setShowAddEvent(true)
         },
     ]
 
@@ -116,18 +117,19 @@ export const Dashboard = () => {
             <div className="dashboard-titlebar">
                 <h1>{household?.name ?? (authFetching || householdFetching ? "…" : "")}</h1>
                 <div className="dashboard-titlebar-right">
-
-                    <Button color="cyan" onClick={() => setShowCreateAnnouncement(true)}>Add Announcement</Button>
-                    <Button color="cyan" onClick={() => setShowInviteModal(true)}>Invite</Button>
-                    <CheckInButton />
-                    {!user?.email ? <Button variant="filled" color="cyan" onClick={handleSignIn}>Sign In</Button> : <Button variant="filled" color="cyan" onClick={handleLogout}>Log Out</Button>}
+                    <Flex gap="xs" wrap="wrap" direction="row">
+                        <Button color="cyan" onClick={() => setShowCreateAnnouncement(true)}>Add Announcement</Button>
+                        <Button color="cyan" onClick={() => setShowInviteModal(true)}>Invite</Button>
+                        <CheckInButton />
+                        {!user?.email ? <Button variant="filled" color="cyan" onClick={handleSignIn}>Sign In</Button> : <Button variant="filled" color="cyan" onClick={handleLogout}>Log Out</Button>}
+                    </Flex>
                 </div>
             </div>
             <Announcements householdId={household?.id} />
             <div className="dashboard-grid">
                 <section>
                     <h2>This week</h2>
-                    <WeekStrip householdId={householdId} />
+                    <WeekStrip setShowAddEvent={setShowAddEvent} showAddEvent={showAddEvent} householdId={householdId} />
                 </section>
                 <section>
                     <h2>Upcoming</h2>

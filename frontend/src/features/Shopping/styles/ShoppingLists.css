@@ -104,9 +104,25 @@
 .household-tasklist-page-task {
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 1rem;
 }
 
+
+.household-tasklist-page-title button {
+    overflow: unset;
+    padding: 0.1rem 0.5rem;
+    margin-right: .3rem;
+    color: white;
+}
+
+.household-tasklist-page-title button:last-of-type:hover svg {
+    fill: var(--accent-color-light);
+}
+
+.household-tasklist-page-title button:last-of-type svg {
+    fill: white;
+    height: 1.5rem;
+
+}
 
 @media (width >=40rem) {
     .shopping-lists-grid {

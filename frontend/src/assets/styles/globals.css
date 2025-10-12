@@ -24,7 +24,7 @@
     --t: 260ms cubic-bezier(.22, .61, .36, 1);
     --accent-color: #15aabf;
     --accent-color-hover: #1098ad;
-    --accent-color-light: rgba(121, 196, 212, 1);
+    --accent-color-light: #66d9e8;
 }
 
 * {

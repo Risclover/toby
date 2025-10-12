@@ -1,12 +1,14 @@
 import { EditableTitle } from '@/component/EditableTitle'
 import type { ShoppingList } from '@/store/householdSlice'
 import { useEditShoppingListMutation, useGetShoppingItemsQuery } from '@/store/shoppingSlice'
-import { Progress, Select } from '@mantine/core'
+import { Button, Progress, Select, Tooltip } from '@mantine/core'
 import { skipToken } from '@reduxjs/toolkit/query'
 import React, { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import TrendingFlatRoundedIcon from '@mui/icons-material/TrendingFlatRounded';
+import { ManageCategoriesIcon } from '@/assets/icons/ManageCategoriesIcon'
+import { FaTags } from "react-icons/fa";
 
 type Props = {
     list: ShoppingList;
@@ -91,7 +93,18 @@ export const ShoppingListHeader = ({ list }: Props) => {
                     />
 
                 </div>
-                <SettingsRoundedIcon />
+                <Tooltip.Group openDelay={500} closeDelay={100}>
+                    <Tooltip arrowOffset={50} arrowSize={8} label="Settings" withArrow>
+                        <Button color="cyan.3" variant="transparent">
+                            <SettingsRoundedIcon />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip arrowOffset={50} arrowSize={8} label="Manage categories" withArrow>
+                        <Button color="cyan.3" variant="transparent">
+                            <ManageCategoriesIcon />
+                        </Button>
+                    </Tooltip>
+                </Tooltip.Group>
             </div>
 
             <div className="household-tasklist-page-progress">
