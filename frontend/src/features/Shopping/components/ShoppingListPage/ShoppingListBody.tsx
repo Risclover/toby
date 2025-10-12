@@ -6,8 +6,8 @@ export const ShoppingListBody = forwardRef<HTMLDivElement, Props>(({ children },
     return (
         <div className="household-tasklist-page-list">
             <div className="household-tasklist-page-tasks">
-                <ul className="tasklist">{children} <li ref={ref} aria-hidden /></ul>
+                {children}
             </div>
-        </div>
+        </div >
     );
 });

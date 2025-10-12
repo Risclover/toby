@@ -10,11 +10,15 @@ import TrendingFlatRoundedIcon from '@mui/icons-material/TrendingFlatRounded';
 import { ManageCategoriesIcon } from '@/assets/icons/ManageCategoriesIcon'
 import { FaTags } from "react-icons/fa";
 
+type ViewMode = "flat" | "category";
+
 type Props = {
     list: ShoppingList;
+    viewMode: ViewMode;                     // <-- add
+    onChangeViewMode: (v: ViewMode) => void; // <-- add
 }
 
-export const ShoppingListHeader = ({ list }: Props) => {
+export const ShoppingListHeader = ({ list, viewMode, onChangeViewMode }: Props) => {
     const navigate = useNavigate();
     const { listId } = useParams();
     const [updateShoppingList] = useEditShoppingListMutation();
@@ -36,6 +40,9 @@ export const ShoppingListHeader = ({ list }: Props) => {
         await updateShoppingList({ listId: list.id, title: next }).unwrap();
     };
 
+    const viewToLabel = (v: ViewMode) => (v === "flat" ? "Flat" : "By Category");
+    const labelToView = (s: string | null): ViewMode => (s === "By Category" ? "category" : "flat");
+
     return (
         <div className="shopping-list-header">
             <div onClick={() => navigate(-1)}>&lt; Back</div>
@@ -49,7 +56,9 @@ export const ShoppingListHeader = ({ list }: Props) => {
                     View
                     <Select
                         placeholder="Pick value"
-                        data={['Flat', 'By Category']}
+                        value={viewToLabel(viewMode)}               // <-- controlled value
+                        onChange={(val) => onChangeViewMode(labelToView(val))} // <-- lift state up
+                        data={["Flat", "By Category"]}
                         styles={{
                             wrapper: { width: "100%", minWidth: "150px", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
                             input: {

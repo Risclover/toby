@@ -1,6 +1,7 @@
 // AddCategoryModal.tsx
 import { useCreateShoppingCategoryMutation } from "@/store/categorySlice"; // ensure correct file
 import { Button, Group, Modal, Space, TextInput } from "@mantine/core";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import React, { useState, type SetStateAction } from "react";
 
 type Props = {

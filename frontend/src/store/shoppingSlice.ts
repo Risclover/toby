@@ -10,6 +10,7 @@ export type ShoppingItem = {
     purchased: boolean;
     // Frontend helpers; backend sends category as string (or nested object if you choose)
     category?: string | null;
+    categoryId?: number;
     categoryName?: string | null;
     notes?: string | null;
 };

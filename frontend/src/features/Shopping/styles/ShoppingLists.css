@@ -121,8 +121,19 @@
 .household-tasklist-page-title button:last-of-type svg {
     fill: white;
     height: 1.5rem;
-
 }
+
+.category-header {
+    background: var(--bg);
+    padding: 0.8rem 1rem;
+    /* border-bottom: 1px solid var(--input-border); */
+    border-radius: inherit;
+    font-size: 1rem;
+    font-family: 'Alan Sans', sans-serif;
+    line-height: 1.5;
+}
+
+
 
 @media (width >=40rem) {
     .shopping-lists-grid {

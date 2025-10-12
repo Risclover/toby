@@ -135,7 +135,8 @@ textarea.editable-title.is-editing {
     padding-left: 0.8rem;
 }
 
-.task:not(:nth-last-child(2)) {
+.task:not(:nth-last-child(2)),
+.category-section .task {
     border-bottom: 1px solid var(--main-border);
 }
 

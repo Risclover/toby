@@ -8,7 +8,7 @@ type Props = {
 export const ShoppingListCategorySection = ({ itemId }: Props) => {
     const { data: itemCategory } = useGetShoppingItemCategoryQuery(itemId);
 
-    console.log('data: itemCategory:', itemCategory.data.error)
+    console.log('data: itemCategory:', itemCategory)
     return (
         <div className="category-section">
             {itemCategory?.name}
