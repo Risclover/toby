@@ -10,7 +10,7 @@ type Item = {
     name: string;
     quantity: number;
     purchased: boolean;
-    categoryId: number | null;       // <-- use id on the item
+    categoryId: number | undefined;       // <-- use id on the item
     categoryName?: string | null;
 };
 

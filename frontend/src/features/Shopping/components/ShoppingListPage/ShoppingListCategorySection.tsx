@@ -1,4 +1,4 @@
-import { useGetShoppingItemCategoryQuery } from "@/store/shoppingSlice"
+import { useGetShoppingItemCategoryQuery, type ShoppingItem } from "@/store/shoppingSlice"
 import { ShoppingListItem } from "../ShoppingListItem";
 
 type Props = {
@@ -12,7 +12,7 @@ export const ShoppingListCategorySection = ({ itemId }: Props) => {
     return (
         <div className="category-section">
             {itemCategory?.name}
-            {itemCategory?.items.map(item => <ShoppingListItem key={item.id} item={item} />)}
+            {itemCategory?.items.map((item: ShoppingItem) => <ShoppingListItem key={item.id} item={item} />)}
         </div>
     )
 }

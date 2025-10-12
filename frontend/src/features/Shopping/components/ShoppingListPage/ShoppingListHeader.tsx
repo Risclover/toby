@@ -3,22 +3,27 @@ import type { ShoppingList } from '@/store/householdSlice'
 import { useEditShoppingListMutation, useGetShoppingItemsQuery } from '@/store/shoppingSlice'
 import { Button, Progress, Select, Tooltip } from '@mantine/core'
 import { skipToken } from '@reduxjs/toolkit/query'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import TrendingFlatRoundedIcon from '@mui/icons-material/TrendingFlatRounded';
 import { ManageCategoriesIcon } from '@/assets/icons/ManageCategoriesIcon'
-import { FaTags } from "react-icons/fa";
 
 type ViewMode = "flat" | "category";
+
+type SortMode =
+    | "name-asc" | "name-desc"
+    | "qty-asc" | "qty-desc"
+    | "cat-asc" | "cat-desc";
 
 type Props = {
     list: ShoppingList;
     viewMode: ViewMode;                     // <-- add
     onChangeViewMode: (v: ViewMode) => void; // <-- add
+    sortMode: SortMode | null;
+    onChangeSortMode: (v: SortMode | null) => void;
 }
 
-export const ShoppingListHeader = ({ list, viewMode, onChangeViewMode }: Props) => {
+export const ShoppingListHeader = ({ list, viewMode, onChangeViewMode, sortMode, onChangeSortMode }: Props) => {
     const navigate = useNavigate();
     const { listId } = useParams();
     const [updateShoppingList] = useEditShoppingListMutation();
@@ -42,6 +47,32 @@ export const ShoppingListHeader = ({ list, viewMode, onChangeViewMode }: Props) 
 
     const viewToLabel = (v: ViewMode) => (v === "flat" ? "Flat" : "By Category");
     const labelToView = (s: string | null): ViewMode => (s === "By Category" ? "category" : "flat");
+
+    const sortToLabel = (s: SortMode | null) => {
+        switch (s) {
+            case "name-asc": return "A → Z";
+            case "name-desc": return "Z → A";
+            case "qty-asc": return "Qty ↑";
+            case "qty-desc": return "Qty ↓";
+            case "cat-asc": return "Category A → Z";
+            case "cat-desc": return "Category Z → A";
+            default: return null; // default/original order
+        }
+    };
+
+    const labelToSort = (s: string | null): SortMode | null => {
+        switch (s) {
+            case "A → Z": return "name-asc";
+            case "Z → A": return "name-desc";
+            case "Qty ↑": return "qty-asc";
+            case "Qty ↓": return "qty-desc";
+            case "Category A → Z": return "cat-asc";
+            case "Category Z → A": return "cat-desc";
+            default: return null; // cleared
+        }
+    };
+
+
 
     return (
         <div className="shopping-list-header">
@@ -81,7 +112,10 @@ export const ShoppingListHeader = ({ list, viewMode, onChangeViewMode }: Props) 
                 <div className="list-header-select" style={{ marginLeft: '1rem', marginRight: '1rem' }}>
                     Sort
                     <Select
+                        allowDeselect
                         placeholder="Pick value"
+                        value={sortToLabel(sortMode)}
+                        onChange={(val) => onChangeSortMode(labelToSort(val))}
                         data={['A → Z', 'Z → A', 'Qty ↑', 'Qty ↓', 'Category A → Z', 'Category Z → A']}
                         styles={{
                             wrapper: { width: "100%", minWidth: "150px", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },

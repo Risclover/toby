@@ -60,7 +60,7 @@ export const ListItem = ({ item, listId, uncompleted }: Props) => {
                             <Button color="cyan" variant="transparent" onClick={() => setShowExpanded((prev) => !prev)}>
                                 {showExpanded ? <ArrowDropUpRoundedIcon /> : <ArrowDropDownRoundedIcon />}
                             </Button>
-                            <Button color="cyan" variant="transparent" onClick={() => setShowDeleteConfirmation(true)}>
+                            <Button color="white" variant="transparent" onClick={() => setShowDeleteConfirmation(true)}>
                                 <DeleteRoundedIcon />
                             </Button>
                         </div>
