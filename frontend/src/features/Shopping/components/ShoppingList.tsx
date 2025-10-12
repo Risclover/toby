@@ -2,6 +2,7 @@ import { Card, Divider, Progress } from "@mantine/core";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShoppingListItem } from "./ShoppingListItem";
+import { ShoppingListCategorySection } from "./ShoppingListPage/ShoppingListCategorySection";
 
 type Props = {
     list: { id: number; title: string; items: any[] };
@@ -45,7 +46,8 @@ export const ShoppingList = ({ list }: Props) => {
             </div>
 
             {unpurchased?.slice(0, 3).map((todo: any) => (
-                <ShoppingListItem key={todo.id} item={todo} />
+                <ShoppingListCategorySection key={todo.id} itemId={todo.id} />
+                // <ShoppingListItem key={todo.id} item={todo} />
             ))}
 
             {remainingCount > 0 && <Divider my="md" />}

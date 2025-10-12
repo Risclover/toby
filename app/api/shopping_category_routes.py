@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
-from app.models import ShoppingCategory
+from app.models import ShoppingCategory, ShoppingList
 from app.extensions import db
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 
 shopping_category_routes = Blueprint("shopping_categories", __name__)
 
@@ -25,6 +27,18 @@ def create_shopping_category():
 
     if not name or not list_id:
         return jsonify({"error": "Name and shoppingListId are required"}), 400
+
+    duplicate = (
+        ShoppingCategory.query
+        .filter(
+            ShoppingCategory.list_id == list_id,
+            func.lower(func.trim(ShoppingCategory.name)) == func.lower(func.trim(name)),
+        )
+        .first()
+    )
+    
+    if duplicate:
+        return jsonify({"error": "Category already exists"}), 409
 
     category = ShoppingCategory(
         name=name,
