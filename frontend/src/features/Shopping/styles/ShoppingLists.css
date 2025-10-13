@@ -101,6 +101,15 @@
     font-size: 2rem;
 }
 
+.task-right button:hover svg {
+    color: var(--accent-color);
+}
+
+.task-right {
+    gap: 1rem;
+    margin-right: 0.8rem;
+}
+
 .household-tasklist-page-task {
     align-items: center;
     justify-content: space-between;
