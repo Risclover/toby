@@ -172,6 +172,31 @@
     border: 1px solid var(--mantine-color-red-5);
 }
 
+.edit-category-input {
+    border: 1px solid transparent;
+    padding: 0.3rem;
+}
+
+.edit-category-input:focus {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid var(--accent-color);
+    padding: 0;
+}
+
+.edit-category-input-name {
+    border: 1px solid transparent;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+}
+
+.no-categories-msg {
+    color: var(--sub-text);
+    font-size: 0.9rem;
+    line-height: 1.1;
+    margin-top: 0.3rem;
+}
+
 @media (width >=40rem) {
     .shopping-lists-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr))

@@ -131,6 +131,39 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
                 { type: "ShoppingCategory", id: `LIST_${listId}` },
             ],
         }),
+
+        editShoppingCategory: builder.mutation({
+            query: ({ categoryId, name }) => ({
+                url: `/shopping_categories/${categoryId}`,
+                method: "PUT",
+                body: { name }
+            }),
+            async onQueryStarted({ categoryId, name }, { dispatch, queryFulfilled }) {
+                const patch = dispatch(
+                    shoppingCategorySlice.util.updateQueryData("getShoppingCategories", categoryId, (draft) => {
+                        const cat = draft.find((c) => c.id === categoryId);
+                        if (cat) {
+                            cat.name = name;
+                        }
+                    })
+                )
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(
+                        shoppingCategorySlice.util.updateQueryData("getShoppingCategories", categoryId, (draft) => {
+                            const i = draft.findIndex((c) => c.id === categoryId);
+                            if (i !== -1) draft[i] = data;
+                        })
+                    )
+                } catch {
+                    patch.undo();
+                }
+            },
+            invalidatesTags: (_r, _e, { categoryId, listId }) => [
+                { type: "ShoppingCategory" as const, id: categoryId },
+                { type: "ShoppingCategory" as const, id: `LIST_${listId}` },
+            ],
+        })
     }),
     overrideExisting: false,
 });
@@ -140,4 +173,5 @@ export const {
     useGetShoppingCategoriesQuery,
     useCreateShoppingCategoryMutation,
     useDeleteShoppingCategoryMutation,
+    useEditShoppingCategoryMutation
 } = shoppingCategorySlice;
