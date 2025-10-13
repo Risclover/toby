@@ -25,9 +25,9 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
                 result
                     ? [
                         ...result.map((c) => ({ type: "ShoppingCategory" as const, id: c.id })),
-                        { type: "ShoppingCategory" as const, id: `LIST-${listId}` },
+                        { type: "ShoppingCategory" as const, id: `LIST_${listId}` }, // underscore
                     ]
-                    : [{ type: "ShoppingCategory" as const, id: `LIST-${listId}` }],
+                    : [{ type: "ShoppingCategory" as const, id: `LIST_${listId}` }],
         }),
 
         // POST "" — body: { name, shoppingListId }
@@ -94,7 +94,6 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
             ],
         }),
 
-        // DELETE "/<id>"
         deleteShoppingCategory: builder.mutation<
             { message: string },
             { id: number; listId: number }
@@ -103,13 +102,12 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
                 url: `/shopping_categories/${id}`,
                 method: "DELETE",
             }),
-            // optimistic remove
             async onQueryStarted({ id, listId }, { dispatch, queryFulfilled }) {
                 const patch = dispatch(
                     shoppingCategorySlice.util.updateQueryData(
                         "getShoppingCategories",
                         listId,
-                        (draft) => {
+                        (draft: ShoppingCategory[]) => {
                             const i = draft.findIndex((c) => c.id === id);
                             if (i !== -1) draft.splice(i, 1);
                         }
@@ -117,12 +115,20 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
                 );
                 try {
                     await queryFulfilled;
+                    // refresh the UI’s list
+                    dispatch(
+                        shoppingSlice.endpoints.getShoppingListCategories.initiate(listId, {
+                            forceRefetch: true,
+                        })
+                    );
+                    // or: dispatch(shoppingSlice.util.invalidateTags([{ type: 'ShoppingCategory', id: `LIST_${listId}` }]))
                 } catch {
                     patch.undo();
                 }
             },
+            // IMPORTANT: use the same tag id format everywhere (underscore here)
             invalidatesTags: (_res, _err, { listId }) => [
-                { type: "ShoppingCategory", id: `LIST-${listId}` },
+                { type: "ShoppingCategory", id: `LIST_${listId}` },
             ],
         }),
     }),

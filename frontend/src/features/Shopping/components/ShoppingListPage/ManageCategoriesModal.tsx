@@ -1,5 +1,5 @@
 import { ManageCategoriesIcon } from "@/assets/icons/ManageCategoriesIcon";
-import { useCreateShoppingCategoryMutation } from "@/store/categorySlice";
+import { useCreateShoppingCategoryMutation, useDeleteShoppingCategoryMutation, type ShoppingCategory } from "@/store/categorySlice";
 import { useGetShoppingListCategoriesQuery } from "@/store/shoppingSlice";
 import { Button, Group, Modal, Table, Text, TextInput, Tooltip } from "@mantine/core"
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -32,6 +32,8 @@ export const ManageCategoriesModal = ({ opened, close, open, listId }: Props) =>
     const [category, setCategory] = useState("");
     const [createShoppingCategory, { isLoading: loading }] = useCreateShoppingCategoryMutation();
     const [error, setError] = useState("");
+
+    const [deleteCategory] = useDeleteShoppingCategoryMutation();
 
     const handleAddCategory = async () => {
         const name = category.trim();
@@ -72,13 +74,19 @@ export const ManageCategoriesModal = ({ opened, close, open, listId }: Props) =>
             <Table.Td>
                 <Group gap="sm" justify="flex-end">
                     <Button size="xs" color="cyan"><EditRoundedIcon style={{ fontSize: "1.1rem" }} /></Button>
-                    <Button size="xs" color="red"><DeleteRoundedIcon style={{ fontSize: "1.1rem" }} /></Button>
+                    <Button size="xs" color="red" onClick={() => handleDeleteCategory(category)}><DeleteRoundedIcon style={{ fontSize: "1.1rem" }} /></Button>
                 </Group>
             </Table.Td>
         </Table.Tr>)
 
+    const handleDeleteCategory = async (category: ShoppingCategory) => {
+        const data = await deleteCategory({ id: category.id, listId: listId }).unwrap();
+        console.log('data:', data);
+
+    }
+
     return <>
-        {opened && <Modal opened={opened} onClose={close} size="md" centered title="Manage Categories">
+        {opened && <Modal opened={opened} onClose={close} size="xs" centered title="Manage Categories">
             <div className="add-category-container">
                 <TextInput
                     value={category}
