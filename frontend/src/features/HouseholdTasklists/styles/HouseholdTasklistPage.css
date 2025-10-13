@@ -151,7 +151,6 @@ textarea.editable-title.is-editing {
     box-shadow: var(--mantine-shadow-sm);
     position: sticky;
     bottom: 0;
-
 }
 
 .add-task input {

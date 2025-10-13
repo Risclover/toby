@@ -1,12 +1,13 @@
 import { EditableTitle } from '@/component/EditableTitle'
 import type { ShoppingList } from '@/store/householdSlice'
-import { useEditShoppingListMutation, useGetShoppingItemsQuery } from '@/store/shoppingSlice'
+import { useEditShoppingItemCategoryMutation, useEditShoppingListMutation, useGetShoppingItemsQuery } from '@/store/shoppingSlice'
 import { Button, Progress, Select, Tooltip } from '@mantine/core'
 import { skipToken } from '@reduxjs/toolkit/query'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { ManageCategoriesIcon } from '@/assets/icons/ManageCategoriesIcon'
+import { ManageCategoriesModal } from './ManageCategoriesModal'
 
 type ViewMode = "flat" | "category";
 
@@ -27,6 +28,8 @@ export const ShoppingListHeader = ({ list, viewMode, onChangeViewMode, sortMode,
     const navigate = useNavigate();
     const { listId } = useParams();
     const [updateShoppingList] = useEditShoppingListMutation();
+    const [editItemCategory] = useEditShoppingItemCategoryMutation();
+    const [showCategoriesModal, setShowCategoriesModal] = useState(false);
 
     const { data: items = [] } = useGetShoppingItemsQuery(
         Number(listId) ? listId : (skipToken as any)
@@ -142,11 +145,12 @@ export const ShoppingListHeader = ({ list, viewMode, onChangeViewMode, sortMode,
                             <SettingsRoundedIcon />
                         </Button>
                     </Tooltip>
-                    <Tooltip arrowOffset={50} arrowSize={8} label="Manage categories" withArrow>
-                        <Button color="cyan.3" variant="transparent">
-                            <ManageCategoriesIcon />
-                        </Button>
-                    </Tooltip>
+                    <ManageCategoriesModal
+                        open={() => setShowCategoriesModal(true)}
+                        opened={showCategoriesModal}
+                        close={() => setShowCategoriesModal(false)}
+                        listId={Number(listId)}
+                    />
                 </Tooltip.Group>
             </div>
 

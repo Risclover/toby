@@ -1,5 +1,6 @@
 // src/store/shoppingCategorySlice.ts
 import { apiSlice } from "./apiSlice";
+import { shoppingSlice } from "./shoppingSlice";
 
 export type ShoppingCategory = {
     id: number;
@@ -59,24 +60,6 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
                     )
                 );
 
-                // 2) Also optimistically add to the OTHER query your UI uses:
-                //    getShoppingListCategories(listId) (defined in shoppingSlice)
-                const patchB = dispatch(
-                    apiSlice.util.updateQueryData(
-                        "getShoppingListCategories",
-                        listId,
-                        (draft: any[]) => {
-                            draft.push({
-                                id: tempId,
-                                listId,
-                                name,
-                                createdAt: new Date().toISOString(),
-                                updatedAt: new Date().toISOString(),
-                            });
-                        }
-                    )
-                );
-
                 try {
                     const { data } = await queryFulfilled;
 
@@ -92,7 +75,7 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
                         )
                     );
                     dispatch(
-                        apiSlice.util.updateQueryData(
+                        shoppingSlice.util.updateQueryData(
                             "getShoppingListCategories",
                             listId,
                             (draft: any[]) => {
@@ -104,7 +87,6 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
                 } catch {
                     // Undo both if the request fails
                     patchA.undo();
-                    patchB.undo();
                 }
             },
             invalidatesTags: (_res, _err, { listId }) => [
