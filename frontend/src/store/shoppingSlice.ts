@@ -274,9 +274,7 @@ export const shoppingSlice = apiSlice
 
             getShoppingListCategories: builder.query<any[], number>({
                 query: (listId) => `/shopping_lists/${listId}/categories`,
-                providesTags: (_res, _err, listId) => [
-                    { type: "ShoppingCategory", id: `LIST_${listId}` }, // underscore matches!
-                ],
+                providesTags: (_res, _err, listId) => [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
             }),
 
             getShoppingItemCategory: builder.query<any, number>({

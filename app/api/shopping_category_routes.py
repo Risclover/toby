@@ -9,12 +9,12 @@ shopping_category_routes = Blueprint("shopping_categories", __name__)
 @shopping_category_routes.route("")
 def get_list_categories():
     data = request.get_json()
-    list_id = data.get("shoppingListId")
+    list_id = data.get("listId")
 
     if not list_id:
-        return jsonify({"error": "shoppingListId is required"}), 400
+        return jsonify({"error": "listId is required"}), 400
 
-    categories = ShoppingCategory.query.filter_by(shopping_list_id=list_id).all()
+    categories = ShoppingCategory.query.filter_by(list_id=list_id).all()
 
     return jsonify([category.to_dict() for category in categories]), 200
 
@@ -23,10 +23,10 @@ def get_list_categories():
 def create_shopping_category():
     data = request.get_json()
     name = data.get("name")
-    list_id = data.get("shoppingListId")
+    list_id = data.get("listId")
 
     if not name or not list_id:
-        return jsonify({"error": "Name and shoppingListId are required"}), 400
+        return jsonify({"error": "Name and listId are required"}), 400
 
     duplicate = (
         ShoppingCategory.query
@@ -63,34 +63,17 @@ def delete_shopping_category(id):
     return jsonify({"message": "Shopping category deleted"}), 200
 
 
-@shopping_category_routes.route("/<int:id>", methods=["PUT", "PATCH"])
-def edit_category(id: int):
-    # 404 if not found
-    category = ShoppingCategory.query.get_or_404(id)
+@shopping_category_routes.route("/<int:id>", methods=["PUT"])
+def edit_category(id):
+    category = ShoppingCategory.query.get(id)
 
-    data = request.get_json(silent=True) or {}
-    name = (data.get("name") or "").strip()
+    if not category:
+        return jsonify({"error": "Shopping category not found"}), 404
 
-    # basic validation
-    if not name:
-        return jsonify({"error": "Name is required"}), 400
+    data = request.get_json()
+    name = data["name"]
 
-    # no-op: same name
-    if name == category.name:
-        return jsonify(category.to_dict()), 200
-
-    # optional: enforce uniqueness within the same list
-    dup = (
-        ShoppingCategory.query
-        .filter(ShoppingCategory.list_id == category.list_id,
-                ShoppingCategory.name == name,
-                ShoppingCategory.id != id)
-        .first()
-    )
-    if dup:
-        return jsonify({"error": "A category with that name already exists"}), 409
-
-    # update + return the new resource
-    category.name = name
+    category.name = name 
     db.session.commit()
-    return jsonify(category.to_dict()), 200
+
+    return jsonify({"message": "Shopping category edited successfully"}), 200

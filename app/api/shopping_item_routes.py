@@ -63,7 +63,7 @@ def get_shopping_item_category(id):
 
     return jsonify(item.category.to_dict()), 200
 
-
+# /shopping_items/2/category
 @shopping_item_routes.route("/<int:id>/category", methods=["PUT"])
 def update_shopping_item_category(id):
     item = ShoppingItem.query.get(id)
@@ -72,15 +72,16 @@ def update_shopping_item_category(id):
         return jsonify({"error": "Shopping item not found"}), 404
 
     data = request.get_json()
-    category_name = data.get("category")
+    category_id = data.get("categoryId")
 
-    if category_name is None:
+    if category_id is None:
         item.category = None
-    else:
+    else
         from app.models import ShoppingCategory
-        category = ShoppingCategory.query.filter_by(name=category_name, list_id=item.shopping_list_id).first()
+        category = ShoppingCategory.query.filter_by(id=category_id, list_id=item.list_id).first()
         if not category:
             return jsonify({"error": "Category not found in this shopping list"}), 404
+        item.category_id = category.id
         item.category = category
 
     db.session.commit()

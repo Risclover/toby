@@ -18,16 +18,12 @@ type Props = {
     onCancel?: (id: number) => void;
 };
 
-// helper: focus input and put caret at end
+// focus helper
 function focusCaretAtEnd(el: HTMLInputElement | null) {
     if (!el) return;
     el.focus({ preventScroll: true });
     const end = el.value.length;
-    try {
-        el.setSelectionRange(end, end);
-    } catch {
-        // some input types won't allow setSelectionRange; ignore
-    }
+    try { el.setSelectionRange(end, end); } catch { }
 }
 
 export const ManageCategoryItem = forwardRef<ManageCategoryItemHandle, Props>(
@@ -36,28 +32,36 @@ export const ManageCategoryItem = forwardRef<ManageCategoryItemHandle, Props>(
         const [value, setValue] = useState(categoryName);
         const inputRef = useRef<HTMLInputElement | null>(null);
 
+        // Remember the last prop we saw so we only resync on real prop changes
+        const lastPropNameRef = useRef(categoryName);
+
         useEffect(() => {
-            if (!editing) setValue(categoryName);
+            // If prop changed externally (not our own commit), adopt it when not editing
+            if (!editing && categoryName !== lastPropNameRef.current) {
+                lastPropNameRef.current = categoryName;
+                setValue(categoryName);
+            }
         }, [categoryName, editing]);
 
         useImperativeHandle(ref, () => ({
             startEdit: () => {
                 if (!editing) setEditing(true);
-                // ensure input is mounted before focusing
                 requestAnimationFrame(() => focusCaretAtEnd(inputRef.current));
             },
-            focus: () => {
-                focusCaretAtEnd(inputRef.current);
-            },
+            focus: () => focusCaretAtEnd(inputRef.current),
         }));
 
         const commit = () => {
+            const next = value?.trim();
             setEditing(false);
-            onSave?.(categoryId, value.trim());
+            // Do NOT overwrite local value from prop; we already show `value` below
+            onSave?.(categoryId, next);
+            // When server/cache updates `categoryName`, effect above will sync if it truly changed
         };
 
         const cancel = () => {
-            setValue(categoryName);
+            // revert local value to the last known prop
+            setValue(lastPropNameRef.current);
             setEditing(false);
             onCancel?.(categoryId);
         };
@@ -65,11 +69,8 @@ export const ManageCategoryItem = forwardRef<ManageCategoryItemHandle, Props>(
         return (
             <div className="edit-category-item">
                 {!editing && (
-                    <div
-                        className="edit-category-item-name"
-
-                    >
-                        {categoryName}
+                    <div className="edit-category-item-name">
+                        {value /* ← show local value to avoid snap-back */}
                     </div>
                 )}
 
@@ -80,14 +81,11 @@ export const ManageCategoryItem = forwardRef<ManageCategoryItemHandle, Props>(
                         className="edit-category-input"
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
-                        onFocus={(e) => {
-                            // guard against browsers that auto-select on focus
-                            focusCaretAtEnd(e.currentTarget);
-                        }}
+                        onFocus={(e) => focusCaretAtEnd(e.currentTarget)}
                         onBlur={commit}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
-                                inputRef.current?.blur(); // triggers commit
+                                inputRef.current?.blur(); // triggers commit()
                             } else if (e.key === "Escape") {
                                 e.preventDefault();
                                 cancel();

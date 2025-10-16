@@ -3,6 +3,7 @@ import { apiSlice } from "./apiSlice";
 export type Household = { id: number; name: string };
 export type TodoList = { id: number; title: string; createdAt: string; memberIds: number[] };
 type TodoListTag = { type: "TodoList"; id: number | string };
+export type ShoppingCategory = { id: number; listId: number; name: string; createdAt: string; updatedAt: string };
 
 export type ShoppingList = {
     id: number;
@@ -10,7 +11,7 @@ export type ShoppingList = {
     title: string;
     createdAt?: string;
     items: any[];
-    categories: string[];
+    categories: ShoppingCategory[];
 };
 
 // arg type for this query

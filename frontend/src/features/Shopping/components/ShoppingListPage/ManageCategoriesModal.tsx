@@ -6,12 +6,13 @@ import {
     type ShoppingCategory,
 } from "@/store/categorySlice";
 import { useGetShoppingListCategoriesQuery } from "@/store/shoppingSlice";
-import { Button, Group, Modal, Table, TextInput, Tooltip } from "@mantine/core";
+import { Button, Group, Modal, Popover, Stack, Table, Text, TextInput, Tooltip } from "@mantine/core";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import React, { useRef, useState } from "react";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { ManageCategoryItem, type ManageCategoryItemHandle } from "./ManageCategoryItem";
+import { DeleteCategoryPopover } from "./DeleteCategoryPopover";
 
 type Props = {
     opened: boolean;
@@ -39,7 +40,7 @@ export const ManageCategoriesModal = ({ opened, close, open, listId }: Props) =>
     const [category, setCategory] = useState("");
     const [createShoppingCategory] = useCreateShoppingCategoryMutation();
     const [error, setError] = useState("");
-
+    const [showPopover, setShowPopover] = useState(false);
     const [deleteCategory] = useDeleteShoppingCategoryMutation();
     const [editShoppingCategory] = useEditShoppingCategoryMutation();
     const handleAddCategory = async () => {
@@ -55,6 +56,7 @@ export const ManageCategoriesModal = ({ opened, close, open, listId }: Props) =>
 
             console.log("created:", created);
             setCategory("");
+            setError("")
         } catch (err) {
             const message = getErrorMessage(err);
             console.log("create failed:", message);
@@ -105,9 +107,7 @@ export const ManageCategoriesModal = ({ opened, close, open, listId }: Props) =>
                     <Button size="xs" color="cyan" onClick={() => handleEditClick(cat.id)}>
                         <EditRoundedIcon style={{ fontSize: "1.1rem" }} />
                     </Button>
-                    <Button size="xs" color="red" onClick={() => handleDeleteCategory(cat)}>
-                        <DeleteRoundedIcon style={{ fontSize: "1.1rem" }} />
-                    </Button>
+                    <DeleteCategoryPopover cat={cat} listId={listId} />
                 </Group>
             </Table.Td>
         </Table.Tr>
@@ -122,6 +122,7 @@ export const ManageCategoriesModal = ({ opened, close, open, listId }: Props) =>
                             value={category}
                             onChange={handleAddInputChange}
                             placeholder="Add a new category"
+                            title="Add a new category"
                             required
                             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                                 if ((e as any).nativeEvent?.isComposing) return;

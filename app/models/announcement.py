@@ -10,7 +10,7 @@ class Announcement(db.Model):
     
     text = db.Column(db.String(120), nullable=False)
     is_pinned = db.Column(db.Boolean, default=False, nullable=False)
-
+    
     created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
     

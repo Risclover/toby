@@ -7,8 +7,8 @@ class ShoppingItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # FKs
-    shopping_list_id = db.Column(db.Integer, db.ForeignKey("shopping_lists.id"), nullable=False, index=True)
-    shopping_category_id = db.Column(db.Integer, db.ForeignKey("shopping_categories.id"), nullable=True, index=True)
+    list_id = db.Column(db.Integer, db.ForeignKey("shopping_lists.id"), nullable=False, index=True)
+    category_id = db.Column(db.Integer, db.ForeignKey("shopping_categories.id", ondelete="SET NULL"), nullable=True, index=True)
 
     # Fields
     name = db.Column(db.String(200), nullable=False)
@@ -24,8 +24,8 @@ class ShoppingItem(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "shoppingListId": self.shopping_list_id,
-            "categoryId": self.shopping_category_id,
+            "listId": self.list_id,
+            "categoryId": self.category_id,
             "category": self.category.name if self.category else None,
             "name": self.name,
             "quantity": self.quantity,

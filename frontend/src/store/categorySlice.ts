@@ -113,6 +113,7 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
                         }
                     )
                 );
+
                 try {
                     await queryFulfilled;
                     // refresh the UI’s list
@@ -132,38 +133,71 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
             ],
         }),
 
-        editShoppingCategory: builder.mutation({
+        editShoppingCategory: builder.mutation<
+            ShoppingCategory,
+            { categoryId: number; listId: number; name: string }
+        >({
             query: ({ categoryId, name }) => ({
                 url: `/shopping_categories/${categoryId}`,
                 method: "PUT",
-                body: { name }
+                body: { name },
             }),
-            async onQueryStarted({ categoryId, name }, { dispatch, queryFulfilled }) {
-                const patch = dispatch(
-                    shoppingCategorySlice.util.updateQueryData("getShoppingCategories", categoryId, (draft) => {
-                        const cat = draft.find((c) => c.id === categoryId);
-                        if (cat) {
-                            cat.name = name;
+            async onQueryStarted({ categoryId, listId, name }, { dispatch, queryFulfilled }) {
+                // Optimistically patch BOTH caches that may be on screen
+                const patchA = dispatch(
+                    shoppingCategorySlice.util.updateQueryData(
+                        "getShoppingCategories",
+                        categoryId,                                 // ✅ key is listId
+                        (draft) => {
+                            const c = draft.find((x) => x.id === categoryId);
+                            if (c) c.name = name;
                         }
-                    })
-                )
+                    )
+                );
+
+                const patchB = dispatch(
+                    // ✅ this is the source your modal renders
+                    shoppingSlice.util.updateQueryData(
+                        "getShoppingListCategories",
+                        listId,
+                        (draft: ShoppingCategory[]) => {
+                            const c = draft.find((x) => x.id === categoryId);
+                            if (c) c.name = name;
+                        }
+                    )
+                );
+
                 try {
                     const { data } = await queryFulfilled;
+
+                    // Reconcile both caches with server response
                     dispatch(
-                        shoppingCategorySlice.util.updateQueryData("getShoppingCategories", categoryId, (draft) => {
-                            const i = draft.findIndex((c) => c.id === categoryId);
-                            if (i !== -1) draft[i] = data;
-                        })
-                    )
+                        shoppingCategorySlice.util.updateQueryData(
+                            "getShoppingCategories",
+                            listId,
+                            (draft) => {
+                                const i = draft.findIndex((x) => x.id === categoryId);
+                                if (i !== -1) draft[i] = data;
+                            }
+                        )
+                    );
+                    dispatch(
+                        shoppingSlice.util.updateQueryData(
+                            "getShoppingListCategories",
+                            listId,
+                            (draft: ShoppingCategory[]) => {
+                                const i = draft.findIndex((x) => x.id === categoryId);
+                                if (i !== -1) draft[i] = data as any;
+                            }
+                        )
+                    );
                 } catch {
-                    patch.undo();
+                    patchA.undo();
+                    patchB.undo();
                 }
             },
-            invalidatesTags: (_r, _e, { categoryId, listId }) => [
-                { type: "ShoppingCategory" as const, id: categoryId },
-                { type: "ShoppingCategory" as const, id: `LIST_${listId}` },
-            ],
-        })
+
+        }),
     }),
     overrideExisting: false,
 });

@@ -62,7 +62,7 @@ def delete_shopping_list(id):
 def add_item_to_shopping_list(id):
     data = request.get_json() or {}
     name = (data.get("name") or "").strip()
-    category = (data.get("category") or "").strip() or None
+    category_id = (data.get("categoryId") or NULL)
     quantity = int(data.get("quantity") or 1)
     purchased = bool(data.get("purchased") or False)
 
@@ -76,10 +76,10 @@ def add_item_to_shopping_list(id):
 
     item = ShoppingItem(
         name=name,
-        category=category,
+        category_id=category_id,
         quantity=quantity,
         purchased=purchased,
-        shopping_list_id=id,  # this alone is enough
+        list_id=id,  # this alone is enough
     )
 
     db.session.add(item)
