@@ -36,6 +36,7 @@ function Harness() {
     )
 }
 
+// regression #2 - event dot didn't appear after create
 describe("DashboardMiniCalendar - dot appears after event creation", () => {
     it("sets data-has-events='true' for today after creation", async () => {
         const today = dayjs().format("YYYY-MM-DD");
