@@ -49,7 +49,7 @@ function startOfWeekSunday(d: Date): Date {
     return js;
 }
 
-export function WeekStrip({
+export function DashboardMiniCalendar({
     householdId,
     showAddEvent,
     setShowAddEvent,
@@ -122,6 +122,8 @@ export function WeekStrip({
                     const isToday = ymd === dayjs().format("YYYY-MM-DD");
                     const has = daysWithEvents.has(ymd);
                     return {
+                        "data-testid": `cal-day-${ymd}`,
+                        "data-has-events": has ? true : false,
                         className: has ? "mc-has-events" : undefined,
                         style: { color: isToday ? "var(--mantine-color-cyan-3)" : undefined },
                         title: has ? "Has events" : undefined,

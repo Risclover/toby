@@ -190,7 +190,7 @@ export function QuickAddEvent({
             </Stack>
             <Group justify="flex-end" mt="lg">
                 <Button color="cyan" variant="outline" onClick={onClose}>Cancel</Button>
-                <Button color="cyan" loading={isLoading} onClick={handleSave}>Save</Button>
+                <Button color="cyan" loading={isLoading} onClick={handleSave} data-test="quickadd-submit">Save</Button>
             </Group>
         </Modal>
     );
