@@ -26,7 +26,7 @@ export const InviteLink = ({ opened, close }: Props) => {
     }
 
     return (
-        <Modal opened={opened} onClose={close} title="Invite people to your household" centered>
+        <Modal opened={opened} onClose={close} title="Invite people to your household" centered className="invite-member-modal" styles={{ root: { color: "white" } }}>
             <Text size="sm">Joining your household is as easy as following an invite link!</Text>
             <Space h="lg" />
             <TextInput value={inviteCode !== "" ? `localhost:5173/join/${inviteCode}` : ""} rightSection={<CopyButton value={inviteCode !== "" ? `localhost:5173/join/${inviteCode}` : ""} timeout={2000}>

@@ -16,7 +16,7 @@ type UserMoodResponse = {
     profileImg?: string | null;
 };
 
-export const userSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["User"] }).injectEndpoints({
+export const userSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getUser: builder.query({
             query: (userId) => `/users/${userId}`,

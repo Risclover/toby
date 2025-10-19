@@ -1,7 +1,7 @@
 .mantine-Modal-header,
 .mantine-Modal-content {
     background: var(--main-background) !important;
-    color: white;
+    color: white !important;
 }
 
 .mantine-Modal-content {

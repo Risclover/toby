@@ -25,7 +25,7 @@ export function getCsrfTokenFromCookie(): string {
     return match ? match[1] : "";
 }
 
-export const authSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["Session"] }).injectEndpoints({
+export const authSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         authenticate: builder.query<any, void>({
             query: () => ({

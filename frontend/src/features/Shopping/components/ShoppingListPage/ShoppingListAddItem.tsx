@@ -16,7 +16,7 @@ export const ShoppingListAddItem = ({ listId }: Props) => {
     }
 
     const handleAddItem = async () => {
-        await addShoppingItem({ name: inputValue, listId: listId });
+        await addShoppingItem({ name: inputValue, listId: listId, categoryId: null });
         setInputValue("");
         inputRef.current?.focus();
     }

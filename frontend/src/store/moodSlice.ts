@@ -11,7 +11,6 @@ export type MyMood =
     | { userId: number; mood: null; };
 
 export const moodApi = apiSlice
-    .enhanceEndpoints({ addTagTypes: ["Mood"] })
     .injectEndpoints({
         endpoints: (builder) => ({
             getMyMood: builder.query<MyMood, void>({

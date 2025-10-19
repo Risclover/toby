@@ -76,13 +76,13 @@ def update_shopping_item_category(id):
 
     if category_id is None:
         item.category = None
-    else
+    else:
         from app.models import ShoppingCategory
         category = ShoppingCategory.query.filter_by(id=category_id, list_id=item.list_id).first()
         if not category:
             return jsonify({"error": "Category not found in this shopping list"}), 404
         item.category_id = category.id
-        item.category = category
+        item.categoryName = category
 
     db.session.commit()
     return jsonify(item.to_dict()), 200

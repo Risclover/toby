@@ -224,3 +224,7 @@ form {
 .is-disabled {
     pointer-events: none;
 }
+
+.invite-member-modal p {
+    color: white !important;
+}

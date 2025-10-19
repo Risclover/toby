@@ -6,13 +6,9 @@ export type ShoppingCategory = {
     id: number;
     listId: number;
     name: string;
-    createdAt: string;
-    updatedAt: string;
 };
 
-export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
-    addTagTypes: ["ShoppingCategory"]
-}).injectEndpoints({
+export const shoppingCategorySlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         // GET ""  — your Flask endpoint expects JSON in the request body with { shoppingListId }
         getShoppingCategories: builder.query<ShoppingCategory[], number>({
@@ -38,7 +34,7 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
             query: ({ listId, name }) => ({
                 url: `/shopping_categories`,
                 method: "POST",
-                body: { name, shoppingListId: listId },
+                body: { name, listId },
             }),
             async onQueryStarted({ listId, name }, { dispatch, queryFulfilled }) {
                 const tempId = Math.floor(Math.random() * -1e9);
@@ -53,8 +49,6 @@ export const shoppingCategorySlice = apiSlice.enhanceEndpoints({
                                 id: tempId,
                                 listId,
                                 name,
-                                createdAt: new Date().toISOString(),
-                                updatedAt: new Date().toISOString(),
                             });
                         }
                     )

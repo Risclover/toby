@@ -10,7 +10,7 @@ type CheckinsResponse = {
 
 type CheckInTodayResponse = { checkedInToday: boolean; localDate: string };
 
-export const checkinApi = apiSlice.enhanceEndpoints({ addTagTypes: ["Checkins"] }).injectEndpoints({
+export const checkinApi = apiSlice.injectEndpoints({
     endpoints: (b) => ({
         getUserCheckins: b.query<CheckinsResponse, { userId: number; from?: string; to?: string }>({
             query: ({ userId, from, to }) => {

@@ -31,7 +31,7 @@ export type UpdateAnnouncementRequest = {
 
 type AnnouncementTag = { type: "Announcement"; id: number | "LIST" };
 
-export const announcementApi = apiSlice.enhanceEndpoints({ addTagTypes: ["Announcement"] }).injectEndpoints({
+export const announcementApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         // GET /announcements/:id
         getAnnouncements: builder.query<Announcement[], { householdId: number }>({

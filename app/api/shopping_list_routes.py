@@ -62,7 +62,7 @@ def delete_shopping_list(id):
 def add_item_to_shopping_list(id):
     data = request.get_json() or {}
     name = (data.get("name") or "").strip()
-    category_id = (data.get("categoryId") or NULL)
+    category_id = (data.get("categoryId") or None)
     quantity = int(data.get("quantity") or 1)
     purchased = bool(data.get("purchased") or False)
 

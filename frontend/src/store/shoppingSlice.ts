@@ -4,19 +4,17 @@ import { apiSlice } from "./apiSlice";
 /** Shared types you can expand as needed */
 export type ShoppingItem = {
     id: number;
-    shoppingListId: number;
+    listId: number;
     name: string;
     quantity: number;
     purchased: boolean;
     // Frontend helpers; backend sends category as string (or nested object if you choose)
     category?: string | null;
-    categoryId: number;
-    categoryName?: string | null;
+    categoryId?: number | null;
     notes?: string | null;
 };
 
 export const shoppingSlice = apiSlice
-    .enhanceEndpoints({ addTagTypes: ["ShoppingList", "ShoppingItem", "ShoppingCategory"] })
     .injectEndpoints({
         endpoints: (builder) => ({
             /* -------------------- Lists -------------------- */
@@ -67,25 +65,26 @@ export const shoppingSlice = apiSlice
             // Align to backend: POST expects { name, category (string|null), quantity, purchased }
             addShoppingItem: builder.mutation<
                 ShoppingItem,
-                { listId: number; name: string; category?: string | null; quantity?: number; purchased?: boolean }
+                { listId: number; name: string; categoryId: number | null; quantity?: number; purchased?: boolean }
             >({
-                query: ({ listId, name, category = null, quantity = 1, purchased = false }) => ({
+                query: ({ listId, name, categoryId, quantity = 1, purchased = false }) => ({
                     url: `/shopping_lists/${listId}/items`,
                     method: "POST",
-                    body: { name, category, quantity, purchased },
+                    body: { name, categoryId, quantity, purchased },
                 }),
-                async onQueryStarted({ listId, name, category = null, quantity = 1 }, { dispatch, queryFulfilled }) {
+                async onQueryStarted({ listId, name, categoryId = null, quantity = 1 }, { dispatch, queryFulfilled }) {
                     const tempId = Math.floor(Math.random() * -1e9);
                     const patch = dispatch(
                         shoppingSlice.util.updateQueryData("getShoppingItems", listId, (draft) => {
                             draft.push({
                                 id: tempId,
-                                shoppingListId: listId,
+                                listId,                 // <-- was shoppingListId
                                 name,
                                 quantity,
                                 purchased: false,
-                                category,
-                                categoryName: category ?? null,
+                                categoryId,
+                                // optional: make UI snappy/consistent
+                                category: null,
                             });
                         })
                     );
@@ -100,8 +99,7 @@ export const shoppingSlice = apiSlice
                     } catch {
                         patch.undo();
                     }
-                },
-                invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
+                }
             }),
 
             // Fetch a single item (useful after edits if you want to re-sync)
@@ -193,7 +191,6 @@ export const shoppingSlice = apiSlice
                             const it = draft.find((i) => i.id === itemId);
                             if (it) {
                                 it.category = category;
-                                it.categoryName = category;
                             }
                         })
                     );

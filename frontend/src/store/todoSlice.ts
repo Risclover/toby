@@ -97,7 +97,7 @@ type UpdateTodoPatch = Partial<
 
 type TodoListTag = { type: "TodoList"; id: number | string };
 
-export const todoSlice = apiSlice.enhanceEndpoints({ addTagTypes: ["TodoList", "Todo"] }).injectEndpoints({
+export const todoSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getTodo: builder.query({
             query: (todoId) => `/todos/${todoId}`,

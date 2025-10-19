@@ -7,7 +7,7 @@ from .shopping_category import ShoppingCategory
 from .todo_list import TodoList 
 from .todo import Todo 
 from .todo_list_member import TodoListMember
-from .announcement import Announcement
+from .announcement import Announcement, AnnouncementSeen
 from .event import Event
 from .checkin import Checkin
 from .mood import Mood

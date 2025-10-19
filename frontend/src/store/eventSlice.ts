@@ -38,7 +38,6 @@ type CreateEventInput =
     { householdId: number } & (TimedEventInput | DateOnlyEventInput | FloatingEventInput);
 
 export const eventSlice = apiSlice
-    .enhanceEndpoints({ addTagTypes: ["Calendar"] })
     .injectEndpoints({
         endpoints: (b) => ({
             getHouseholdEvents: b.query<CalendarEvent[], { householdId: number; startIso: string; endIso: string }>({

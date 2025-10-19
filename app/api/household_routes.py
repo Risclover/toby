@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Household, TodoList, TodoListMember
+from app.models import Household, TodoList, TodoListMember, Announcement, AnnouncementSeen
 
 
 household_routes = Blueprint('households', __name__)
@@ -84,3 +84,100 @@ def get_household_shopping_list(household_id, shopping_list_id):
         return jsonify({"error": "Shopping list not found in this household"}), 404
 
     return jsonify(shopping_list.to_dict()), 200
+
+
+# --------------------
+# ANNOUNCEMENTS
+# --------------------
+@household_routes.route("/<int:household_id>/announcements", methods=["POST"])
+def create_announcement(household_id: int):
+    household = Household.query.get_or_404(household_id)
+
+    payload = request.get_json(silent=True) or {}
+    body_text = (payload.get("body") or "").strip()
+    if not body_text:
+        abort(400, description="Body is required")
+    if len(body_text) > 500:
+        abort(400, description="Body must be ≤ 500 characters")
+
+    now_utc = datetime.now(timezone.utc)
+    expires_at = compute_expires_at(
+        created_at_utc=now_utc,
+        ttl_mode=getattr(household, "announcements_ttl_mode", "rolling"),
+        household_tzid=getattr(household, "tzid", "America/Los_Angeles"),
+        ttl_hours=int(getattr(household, "announcements_ttl_hours", 24)),
+    )
+
+    author_id = int(current_user.get_id()) if hasattr(current_user, "get_id") else current_user.id
+    announcement = Announcement(
+        household_id=household.id,
+        author_id=author_id,
+        body=body_text,
+        expires_at=expires_at,
+    )
+
+    db.session.add(announcement)
+    db.session.commit()
+
+    return jsonify(announcement.to_dict(current_user_id=author_id)), 201
+
+
+@household_routes.route("/<int:household_id>/announcements")
+def list_announcements(household_id: int):
+    # Optional: ensure the current user is a member of this household
+    Household.query.get_or_404(household_id)
+
+    scope = (request.args.get("scope") or "active").lower()
+
+    base_query = select(Announcement).where(Announcement.household_id == household_id)
+
+    if scope == "active":
+        user_id = int(current_user.get_id())  # ← important
+        seen_exists = (
+            select(AnnouncementSeen.id)
+            .where(
+                and_(
+                    AnnouncementSeen.announcement_id == Announcement.id,
+                    AnnouncementSeen.user_id == user_id,
+                )
+            )
+            .exists()
+        )
+        query = base_query.where(
+            Announcement.archived_at.is_(None),
+            or_(
+                Announcement.pinned.is_(True),
+                func.now() < Announcement.expires_at,
+                ~seen_exists,
+            ),
+        )
+        # No pagination: just order and return all active
+        query = query.order_by(
+            Announcement.pinned.desc(),
+            Announcement.pinned_at.desc().nulls_last(),
+            Announcement.created_at.desc(),
+            Announcement.id.desc(),
+        )
+        rows = db.session.execute(query).scalars().all()
+        items = [row.to_dict(current_user_id=user_id) for row in rows]
+        return jsonify({"items": items})
+
+    elif scope == "history":
+        # You can add pagination here later if you need it
+        query = base_query.where(
+            or_(
+                Announcement.archived_at.is_not(None),
+                Announcement.expires_at <= func.now(),
+            )
+        ).order_by(
+            func.coalesce(
+                Announcement.archived_at, Announcement.expires_at, Announcement.created_at
+            ).desc(),
+            Announcement.id.desc(),
+        )
+        rows = db.session.execute(query).scalars().all()
+        items = [row.to_dict(current_user_id=int(current_user.get_id())) for row in rows]
+        return jsonify({"items": items})
+
+    else:
+        abort(400, description="scope must be active|history")
