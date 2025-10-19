@@ -65,6 +65,7 @@ export const eventSlice = apiSlice
                 },
                 invalidatesTags: (_res, _err, body) => [
                     { type: "Calendar", id: `HOUSEHOLD_${body.householdId}` },
+                    { type: "Calendar", id: `HOUSEHOLD_${body.householdId}_ALL` }
                 ],
             }),
 
