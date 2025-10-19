@@ -3,7 +3,7 @@ import { skipToken } from "@reduxjs/toolkit/query"; // ⬅️ add this
 import { useAuthenticateQuery, useLogoutMutation } from "@/store/authSlice";
 import { useGetHouseholdQuery, useGetHouseholdShoppingListsQuery } from "@/store/householdSlice";
 import "../assets/styles/Dashboard.css";
-import { Button, ButtonGroup, Flex } from "@mantine/core";
+import { Button, Flex } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { CreateAnnouncement } from "@/features/Announcements/components/CreateAnnouncement";
 import { Announcements } from "@/features/Announcements/components/Announcements";
@@ -12,25 +12,12 @@ import { UpcomingThisWeek } from "@/features/Events/components/UpcomingThisWeek"
 import HouseholdCheckinsMini from "@/features/Checkins/components/HouseholdCheckinsMini";
 import { CheckInButton } from "@/features/Checkins/components/CheckInButton";
 import { InviteLink } from "@/component/InviteLink";
-import { useGetUserMoodQuery } from "@/store/userSlice";
 import { MemberMood } from "@/features/Mood/components/MemberMood";
 import { Tooltip } from "primereact/tooltip";
 import { SpeedDial } from "primereact/speeddial";
-import { FaUserCheck, FaUserPlus } from "react-icons/fa";
-import { BsJournalCheck } from "react-icons/bs";
 import { MdNotificationsActive } from "react-icons/md";
 import { RiMegaphoneFill } from "react-icons/ri";
-import { FaClipboardList } from "react-icons/fa";
 import { FaCalendarPlus } from "react-icons/fa6";
-import { FaSackDollar } from "react-icons/fa6";
-import { BsCashStack } from "react-icons/bs";
-import { HiUserGroup } from "react-icons/hi2";
-import { TbUsersPlus } from "react-icons/tb";
-import { MdGroupAdd } from "react-icons/md";
-import { AiOutlineUsergroupAdd } from "react-icons/ai";
-import { FaUsers } from "react-icons/fa6";
-import { PiUsersThreeFill } from "react-icons/pi";
-import { LuNotebookPen } from "react-icons/lu";
 import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
 
 
@@ -103,7 +90,12 @@ export const Dashboard = () => {
         {
             label: "+ Event",
             icon: <FaCalendarPlus />,
-            command: () => setShowAddEvent(true)
+            command: () => setShowAddEvent(true),
+            pt: {
+                action: {
+                    "data-test": "quickadd-open"
+                }
+            }
         },
     ]
 

@@ -122,6 +122,7 @@ export function WeekStrip({
                     const isToday = ymd === dayjs().format("YYYY-MM-DD");
                     const has = daysWithEvents.has(ymd);
                     return {
+                        "data-test": `cal-day-${ymd}`,
                         className: has ? "mc-has-events" : undefined,
                         style: { color: isToday ? "var(--mantine-color-cyan-3)" : undefined },
                         title: has ? "Has events" : undefined,
