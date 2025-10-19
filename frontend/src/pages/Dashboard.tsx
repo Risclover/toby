@@ -7,7 +7,7 @@ import { Button, Flex } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { CreateAnnouncement } from "@/features/Announcements/components/CreateAnnouncement";
 import { Announcements } from "@/features/Announcements/components/Announcements";
-import { WeekStrip } from "@/features/Events/components/DashboardMiniCalendar";
+import { DashboardMiniCalendar } from "@/features/Events/components/DashboardMiniCalendar";
 import { UpcomingThisWeek } from "@/features/Events/components/UpcomingThisWeek";
 import HouseholdCheckinsMini from "@/features/Checkins/components/HouseholdCheckinsMini";
 import { CheckInButton } from "@/features/Checkins/components/CheckInButton";
@@ -121,7 +121,7 @@ export const Dashboard = () => {
             <div className="dashboard-grid">
                 <section>
                     <h2>This week</h2>
-                    <WeekStrip setShowAddEvent={setShowAddEvent} showAddEvent={showAddEvent} householdId={householdId} />
+                    <DashboardMiniCalendar setShowAddEvent={setShowAddEvent} showAddEvent={showAddEvent} householdId={householdId} />
                 </section>
                 <section>
                     <h2>Upcoming</h2>
