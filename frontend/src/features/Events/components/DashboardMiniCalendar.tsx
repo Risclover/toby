@@ -5,6 +5,7 @@ import { useGetAllHouseholdEventsQuery } from "@/store/eventSlice";
 import { QuickAddEvent } from "./QuickAddEvent";
 import { MiniCalendar } from "@mantine/dates";
 import "../styles/QuickAddEvent.css"; // or a global index.css
+import "../styles/DashboardMiniCalendar.css";
 
 const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -105,10 +106,10 @@ export function DashboardMiniCalendar({
         setStartDate((d) => dayjs(d).add(numberOfDays, "day").toDate()); // stays on Sundays
 
     return (
-        <>
+        <div className="events-calendar">
             {/* Centered dominant-month title; MiniCalendar keeps its own arrows */}
-            <Group justify="center" mb="xs">
-                <Text fw={600} fz="sm">{headerTitle}</Text>
+            <Group justify="center" className="events-calendar-header">
+                <Text fw={500} fz="lg" c="white">{headerTitle}</Text>
             </Group>
 
             <MiniCalendar
@@ -144,6 +145,6 @@ export function DashboardMiniCalendar({
                 initialDate={selectedDate}
                 onClose={() => setShowAddEvent(false)}
             />
-        </>
+        </div>
     );
 }

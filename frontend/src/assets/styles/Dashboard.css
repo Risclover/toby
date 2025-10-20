@@ -15,3 +15,13 @@
     font-family: "Alan Sans", sans-serif;
     font-weight: 600;
 }
+
+.dashboard-grid.dashboard-events {
+    width: min-content;
+    border-radius: 0.5rem;
+    border: 1px solid var(--input-border);
+    overflow: hidden;
+    padding: 1rem;
+    margin: 1rem;
+    /* background: var(--main-background) */
+}
