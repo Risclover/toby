@@ -1,0 +1,40 @@
+.upcoming-events div {
+    background: none;
+}
+
+.upcoming-event {
+    display: flex;
+    padding: 1rem;
+    background: var(--main-background) !important;
+}
+
+.upcoming-event-date {
+    border-right: 1px solid var(--input-border);
+    height: 100%;
+    padding: 0.5rem;
+    padding-right: 1rem;
+    font-family: "Alan Sans", sans-serif;
+    text-align: center;
+}
+
+.upcoming-event-date p {
+    line-height: 1.2;
+    color: white;
+}
+
+.upcoming-events p:first-of-type {
+    font-family: "Alan Sans", sans-serif;
+}
+
+.upcoming-events-header p:first-of-type {
+    font-family: "Alan Sans", sans-serif;
+}
+
+.upcoming-events-header a {
+    display: flex;
+    align-items: center;
+}
+
+.upcoming-events-header a svg {
+    font-size: 1.1rem !important;
+}

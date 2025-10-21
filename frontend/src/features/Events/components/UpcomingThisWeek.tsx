@@ -1,7 +1,9 @@
 // src/features/calendar/UpcomingNext7Days.tsx
-import { Card, Stack, Text } from "@mantine/core";
+import { Anchor, Button, Card, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
-import { useGetHouseholdEventsQuery } from "@/store/eventSlice"; // <- ensure this points to the file that defines getHouseholdEvents
+import { useGetHouseholdEventsQuery } from "@/store/eventSlice";
+import "../styles/UpcomingThisWeek.css"
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 
 function startOfToday(d = new Date()) {
     const t = new Date(d);
@@ -22,11 +24,15 @@ const iso = (d: Date) => d.toISOString();
 
 function formatDate(isoUtc: string) {
     const d = new Date(isoUtc);
-    return d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" }); // e.g., Fri, Sep 19
+    return (
+        <div className="upcoming-event-date">
+            <Text fz="xs" c="var(--sub-text)">{d.toLocaleDateString([], { month: "short" })}</Text>
+            <Text>{d.toLocaleDateString([], { day: "numeric" })}</Text>
+        </div>)
 }
 function formatTime(isoUtc: string) {
     const d = new Date(isoUtc);
-    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); // e.g., 3:30 PM
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
 }
 
 export function UpcomingThisWeek({ householdId }: { householdId: number }) {
@@ -54,22 +60,36 @@ export function UpcomingThisWeek({ householdId }: { householdId: number }) {
     if (!upcoming.length) return <Text c="dimmed">Nothing in the next 7 days — add one.</Text>;
 
     return (
-        <Stack>
-            {upcoming.map((e) => {
-                // Defensive: e.startUtc is defined due to the filter; cast for TS
-                const startIso = e.startUtc as string;
+        <div>
+            <Group justify="space-between" className="upcoming-events-header">
+                <Text fz="xl" c="white" fw={500}>Upcoming</Text>
+                <Anchor c="cyan.4">View all<ChevronRightRoundedIcon /></Anchor>
+            </Group>
+            <ScrollArea.Autosize mah={229}>
+                <Stack className="upcoming-events" gap="xs">
+                    {upcoming.map((e) => {
+                        // Defensive: e.startUtc is defined due to the filter; cast for TS
+                        const startIso = e.startUtc as string;
 
-                const left = e.hasTime ? `${formatDate(startIso)} · ${formatTime(startIso)}`
-                    : `${formatDate(startIso)}`;
+                        const left = e.hasTime ? formatDate(startIso)
+                            : formatDate(startIso);
 
-                return (
-                    <Card key={e.id} withBorder padding="sm" radius="md">
-                        <Text fw={600}>
-                            {left} — {e.title}
-                        </Text>
-                    </Card>
-                );
-            })}
-        </Stack>
+                        return (
+                            <Card key={e.id} padding="xs" radius="md" className="upcoming-event">
+                                <Group>
+                                    {left}
+                                    <Stack gap={0}>
+                                        <Text fw={600} c="white" fz="sm">
+                                            {e.title}
+                                        </Text>
+                                        <Text fz="xs" c="var(--sub-text)">{formatTime(startIso)}</Text>
+                                    </Stack>
+                                </Group>
+                            </Card>
+                        );
+                    })}
+                </Stack>
+            </ScrollArea.Autosize>
+        </div>
     );
-}
+} 

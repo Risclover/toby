@@ -118,13 +118,11 @@ export const Dashboard = () => {
                 </div>
             </div>
             <Announcements householdId={household?.id} />
-            <div className="dashboard-grid">
+            <div className="dashboard-grid dashboard-events">
                 <section>
-                    <h2>This week</h2>
                     <DashboardMiniCalendar setShowAddEvent={setShowAddEvent} showAddEvent={showAddEvent} householdId={householdId} />
                 </section>
                 <section>
-                    <h2>Upcoming</h2>
                     <UpcomingThisWeek householdId={householdId} />
                 </section>
             </div>
