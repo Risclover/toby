@@ -1,5 +1,5 @@
 // src/features/calendar/UpcomingNext7Days.tsx
-import { Anchor, Button, Card, Group, Stack, Text } from "@mantine/core";
+import { Anchor, Button, Card, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { useGetHouseholdEventsQuery } from "@/store/eventSlice";
 import "../styles/UpcomingThisWeek.css"
@@ -63,31 +63,33 @@ export function UpcomingThisWeek({ householdId }: { householdId: number }) {
         <div>
             <Group justify="space-between" className="upcoming-events-header">
                 <Text fz="xl" c="white" fw={500}>Upcoming</Text>
-                <Anchor c="cyan.5">View all<ChevronRightRoundedIcon /></Anchor>
+                <Anchor c="cyan.4">View all<ChevronRightRoundedIcon /></Anchor>
             </Group>
-            <Stack className="upcoming-events" gap="xs">
-                {upcoming.map((e) => {
-                    // Defensive: e.startUtc is defined due to the filter; cast for TS
-                    const startIso = e.startUtc as string;
+            <ScrollArea.Autosize mah={229}>
+                <Stack className="upcoming-events" gap="xs">
+                    {upcoming.map((e) => {
+                        // Defensive: e.startUtc is defined due to the filter; cast for TS
+                        const startIso = e.startUtc as string;
 
-                    const left = e.hasTime ? formatDate(startIso)
-                        : formatDate(startIso);
+                        const left = e.hasTime ? formatDate(startIso)
+                            : formatDate(startIso);
 
-                    return (
-                        <Card key={e.id} padding="xs" radius="md" className="upcoming-event">
-                            <Group>
-                                {left}
-                                <Stack gap={0}>
-                                    <Text fw={600} c="white" fz="sm">
-                                        {e.title}
-                                    </Text>
-                                    <Text fz="xs" c="var(--sub-text)">{formatTime(startIso)}</Text>
-                                </Stack>
-                            </Group>
-                        </Card>
-                    );
-                })}
-            </Stack>
+                        return (
+                            <Card key={e.id} padding="xs" radius="md" className="upcoming-event">
+                                <Group>
+                                    {left}
+                                    <Stack gap={0}>
+                                        <Text fw={600} c="white" fz="sm">
+                                            {e.title}
+                                        </Text>
+                                        <Text fz="xs" c="var(--sub-text)">{formatTime(startIso)}</Text>
+                                    </Stack>
+                                </Group>
+                            </Card>
+                        );
+                    })}
+                </Stack>
+            </ScrollArea.Autosize>
         </div>
     );
-}
+} 
