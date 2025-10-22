@@ -144,6 +144,7 @@ export function DashboardMiniCalendar({
                 opened={showAddEvent}
                 initialDate={selectedDate}
                 onClose={() => setShowAddEvent(false)}
+                edit={false}
             />
         </div>
     );

@@ -30,11 +30,13 @@ export function QuickAddEvent({
     opened,
     initialDate,
     onClose,
+    edit
 }: {
     householdId: number;
     opened: boolean;
     initialDate: Date;
     onClose: () => void;
+    edit: boolean;
 }) {
     const [title, setTitle] = useState("");
     const [dateStr, setDateStr] = useState<string>(dayjs(initialDate).format("YYYY-MM-DD"));
@@ -126,7 +128,7 @@ export function QuickAddEvent({
     };
 
     return (
-        <Modal opened={opened} onClose={handleClose} title="Add event" centered>
+        <Modal opened={opened} onClose={handleClose} title={edit ? "Edit event" : "Add event"} centered>
             <TextInput
                 label="Title"
                 placeholder="Dentist"
@@ -170,7 +172,7 @@ export function QuickAddEvent({
             <Stack mt="lg" gap="xs">
                 <Text fw={400} c="white" styles={{ root: { fontFamily: "Alan Sans, sans-serif" } }}>Events</Text>
                 {sorted.length > 0 && <Text c="white" inline size="xs">To edit an event, go to the <Anchor underline="always" href="" target="_blank" c="cyan.3">Events</Anchor> page.</Text>}
-                <ScrollArea scrollbars="y" type="always" viewportProps={{ style: { maxHeight: 200 } }}>
+                <ScrollArea scrollbars="y" viewportProps={{ style: { maxHeight: 185 } }}>
                     {sorted.length === 0 ? (
                         <Text c="dimmed" size="sm">No events for this date.</Text>
                     ) : loading ? <Text size="sm" c="white">Loading...</Text> : (

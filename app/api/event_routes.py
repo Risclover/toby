@@ -58,7 +58,7 @@ def create_event_for_household(hid: int):
     title = (data.get('title') or '').strip()
     start_s = data.get('startUtc')
     end_s   = data.get('endUtc')
-    date_s  = data.get('date')      # "YYYY-MM-DD"
+    date_s  = data.get('date')
     tzid    = data.get('tzid') or 'UTC'
 
     if not title:
@@ -98,7 +98,7 @@ def create_event_for_household(hid: int):
         start_utc=start,
         end_utc=end,
         tzid=tzid,
-        has_time=has_time,   # <-- keep only if you added the column
+        has_time=has_time,
     )
     db.session.add(ev)
     db.session.commit()
@@ -114,3 +114,103 @@ def delete_event(hid: int, event_id: int):
     db.session.commit()
 
     return ("", 204)
+
+@event_routes.route("/households/<int:hid>/events/<int:event_id>", methods=["PATCH", "PUT"])
+def update_event(hid: int, event_id: int):
+    Household.query.get_or_404(hid)
+    event = Event.query.filter_by(id=event_id, household_id=hid).first_or_404()
+    data = request.get_json(silent=True) or {}
+
+    if "title" in data:
+        title = (data.get("title") or "").strip()
+        if not title:
+            abort(400, description="Title cannot be empty")
+        event.title = title
+
+    tzid_in = data.get('tzid')
+    schedule_keys = {'startUtc', 'endUtc', 'date'}
+    touched_schedule = any(key in data for key in schedule_keys)
+
+    if touched_schedule:
+        # Case A: timed (startUtc/endUtc) present -> both required
+        if ('startUtc' in data) or ('endUtc' in data):
+            start_s = data.get('startUtc')
+            end_s = data.get('endUtc')
+
+            if not (start_s and end_s):
+                abort(400, description='Provide both startUtc and endUtc, or neither.')
+
+            try:
+                start = parse_iso8601(start_s)
+                end   = parse_iso8601(end_s)
+            except Exception:
+                abort(400, description='Invalid ISO8601 for startUtc/endUtc')
+
+            if start >= end:
+                abort(400, description='startUtc must be before endUtc')
+
+            # Timed updates: keep UTC instants as provided
+            event.start_utc = start
+            event.end_utc   = end
+            event.has_time  = True
+
+            # tzid is metadata for timed events; if provided, store it
+            if tzid_in:
+                # ensure valid tz
+                try:
+                    ZoneInfo(tzid_in)
+                except Exception:
+                    abort(400, description='Invalid tzid')
+                event.tzid = tzid_in
+
+        # Case B: all-day (date) present → recompute day bounds in given/existing tz
+        elif 'date' in data:
+            date_s = data.get('date')
+            try:
+                d = datetime.strptime(date_s, "%Y-%m-%d").date()
+            except Exception:
+                abort(400, description='date must be YYYY-MM-DD')
+
+            tzid_use = tzid_in or event.tzid or 'UTC'
+            try:
+                tz = ZoneInfo(tzid_use)
+            except Exception:
+                abort(400, description='Invalid tzid')
+
+            local_start = datetime(d.year, d.month, d.day, 0, 0, 0, tzinfo=tz)
+            local_end   = local_start + timedelta(days=1)
+            event.start_utc = local_start.astimezone(ZoneInfo("UTC"))
+            event.end_utc   = local_end.astimezone(ZoneInfo("UTC"))
+            event.has_time  = False
+            event.tzid      = tzid_use
+
+    else:
+        # No explicit schedule change, but tzid might still be provided.
+        if tzid_in:
+            try:
+                new_tz = ZoneInfo(tzid_in)
+            except Exception:
+                abort(400, description='Invalid tzid')
+
+            if event.has_time:
+                # Timed events: change tz metadata only; keep UTC instants
+                event.tzid = tzid_in
+            else:
+                # All-day events: keep the *local date* the same but recompute UTC bounds in the new tz.
+                # Derive the current local date in old tz, then rebuild day bounds under new tz.
+                old_tz = ZoneInfo(event.tzid or 'UTC')
+                local_start_old = event.start_utc.astimezone(old_tz)
+                local_date = local_start_old.date()
+
+                new_local_start = datetime(
+                    local_date.year, local_date.month, local_date.day, 0, 0, 0, tzinfo=new_tz
+                )
+                new_local_end = new_local_start + timedelta(days=1)
+
+                event.start_utc = new_local_start.astimezone(ZoneInfo("UTC"))
+                event.end_utc   = new_local_end.astimezone(ZoneInfo("UTC"))
+                event.tzid      = tzid_in
+                event.has_time  = False  # stays all-day
+
+    db.session.commit()
+    return jsonify(ev.to_dict()), 200
