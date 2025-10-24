@@ -1,9 +1,9 @@
 // QuickAddEvent.tsx (string-based DateInput + TimeInput)
 import { useEffect, useMemo, useState } from "react";
-import { Modal, Button, TextInput, Group, Stack, Text, Loader, Anchor, ScrollArea } from "@mantine/core";
-import { DateInput, DatePickerInput, TimeInput } from "@mantine/dates";
+import { Modal, Button, TextInput, Group, Stack, Text, Anchor, ScrollArea } from "@mantine/core";
+import { DatePickerInput, TimeInput } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useCreateEventMutation, useDeleteEventMutation, useGetHouseholdEventsQuery } from "@/store/eventSlice";
+import { useCreateEventMutation, useDeleteEventMutation, useGetHouseholdEventsQuery, useUpdateEventMutation, type CalendarEvent } from "@/store/eventSlice";
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import "../styles/QuickAddEvent.css"
 
@@ -25,27 +25,61 @@ function combineLocalFromStrings(dateStr: string, timeStr: string) {
 const fmtTime = (iso: string) =>
     new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
+const ymdFromIso = (iso?: string | null, fallback = new Date()) =>
+    dayjs(iso ?? fallback).format("YYYY-MM-DD");
+
+const hmFromIso = (iso?: string | null) =>
+    iso ? dayjs(iso).format("HH:mm") : "";
+
 export function QuickAddEvent({
     householdId,
     opened,
     initialDate,
     onClose,
-    edit
+    edit,
+    event
 }: {
     householdId: number;
     opened: boolean;
     initialDate: Date;
     onClose: () => void;
     edit: boolean;
+    event?: CalendarEvent;
 }) {
-    const [title, setTitle] = useState("");
-    const [dateStr, setDateStr] = useState<string>(dayjs(initialDate).format("YYYY-MM-DD"));
-    const [timeStr, setTimeStr] = useState<string>("10:00");
-    const [createEvent, { isLoading }] = useCreateEventMutation();
-    const [titleError, setTitleError] = useState<string>("");
-    const [dateError, setDateError] = useState<string>("");
-
+    const [createEvent, { isLoading: creating }] = useCreateEventMutation();
+    const [updateEvent, { isLoading: updating }] = useUpdateEventMutation();
     const [deleteEvent] = useDeleteEventMutation();
+
+    const isSaving = creating || updating;
+
+    const [title, setTitle] = useState(event?.title ?? "");
+    const [dateStr, setDateStr] = useState(() =>
+        event ? ymdFromIso(event.startUtc ?? undefined) : dayjs(initialDate).format("YYYY-MM-DD")
+    );
+    const [timeStr, setTimeStr] = useState<string>(() =>
+        event ? (event.hasTime === false ? "" : hmFromIso(event.startUtc)) : ""
+    );
+    const [titleError, setTitleError] = useState("");
+    const [dateError, setDateError] = useState("");
+
+    useEffect(() => {
+        if (!opened) return;
+
+        if (event?.id) {
+            // editing a specific event
+            setTitle(event.title);
+            setDateStr(ymdFromIso(event.startUtc ?? undefined));
+            setTimeStr(event.hasTime === false ? "" : hmFromIso(event.startUtc));
+        } else {
+            // add flow
+            setTitle("");
+            setDateStr(dayjs(initialDate).format("YYYY-MM-DD"));
+            setTimeStr("");
+        }
+        setTitleError("");
+        setDateError("");
+        // only open/close & event id should trigger reseed
+    }, [opened, event?.id]);
 
     const handleDeleteEvent = async (eventId: number) => {
         await deleteEvent({ id: eventId, householdId }).unwrap()
@@ -55,6 +89,7 @@ export function QuickAddEvent({
         onClose();
         setTitleError("");
     }
+
     const { startIso, endIso } = useMemo(
         () => (dateStr ? startEndIsoForLocalDay(dateStr) : { startIso: "", endIso: "" }),
         [dateStr]
@@ -64,14 +99,6 @@ export function QuickAddEvent({
         { householdId, startIso, endIso },
         { skip: !householdId || !dateStr }
     );
-
-    useEffect(() => {
-        if (opened) {
-            setTitle("");
-            setDateStr(dayjs(initialDate).format("YYYY-MM-DD"));
-            setTimeStr("");
-        }
-    }, [opened, initialDate]);
 
     const sorted = useMemo(() => {
         return [...dayEvents].sort((a, b) => {
@@ -94,41 +121,69 @@ export function QuickAddEvent({
         if (!title.trim() || !dateStr) return;
 
         const tzid = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const hasTime = Boolean(timeStr && timeStr.trim()); // <- user provided a time?
+        const hasTime = Boolean(timeStr && timeStr.trim());
 
         try {
-            if (hasTime) {
-                // Timed event -> send startUtc/endUtc
-                const startLocal = combineLocalFromStrings(dateStr, timeStr);
-                const endLocal = dayjs(startLocal).add(1, "hour").toDate();
+            if (edit && event) {
+                // ----- EDIT (PATCH) -----
+                if (hasTime) {
+                    // Timed: send BOTH startUtc and endUtc, and DO NOT send `date`
+                    const startLocal = combineLocalFromStrings(dateStr, timeStr);
+                    const endLocal = dayjs(startLocal).add(1, "hour").toDate();
 
-                await createEvent({
-                    householdId,
-                    title: title.trim(),
-                    startUtc: startLocal.toISOString(),
-                    endUtc: endLocal.toISOString(),
-                    tzid,
-                }).unwrap();
+                    const res = await updateEvent({
+                        id: event.id,
+                        householdId,
+                        title: title.trim(),
+                        tzid, // optional, but fine to include
+                        startUtc: startLocal.toISOString(),
+                        endUtc: endLocal.toISOString(),
+                        // ❌ no `date` key here
+                    }).unwrap();
+                    setTitle(res.title);
+                } else {
+                    // All-day: send ONLY `date` (no startUtc/endUtc at all)
+                    const res = await updateEvent({
+                        id: event.id,
+                        householdId,
+                        title: title.trim(),
+                        tzid,    // optional
+                        date: dateStr, // "YYYY-MM-DD"
+                        // ❌ do NOT include startUtc/endUtc (not even null/undefined)
+                    }).unwrap();
+                    setTitle(res.title);
+                }
             } else {
-                // Date-only event -> send date only
-                await createEvent({
-                    householdId,
-                    title: title.trim(),
-                    date: dateStr,  // "YYYY-MM-DD"
-                    tzid,
-                } as any).unwrap();
-                // ^ if your mutation input is typed as a discriminated union, `as any`
-                //   won’t be needed. (See prior message for the CreateEventInput union.)
+                // ----- CREATE (your existing logic is fine) -----
+                if (hasTime) {
+                    const startLocal = combineLocalFromStrings(dateStr, timeStr);
+                    const endLocal = dayjs(startLocal).add(1, "hour").toDate();
+
+                    await createEvent({
+                        householdId,
+                        title: title.trim(),
+                        startUtc: startLocal.toISOString(),
+                        endUtc: endLocal.toISOString(),
+                        tzid,
+                    }).unwrap();
+                } else {
+                    await createEvent({
+                        householdId,
+                        title: title.trim(),
+                        date: dateStr,
+                        tzid,
+                    } as any).unwrap();
+                }
             }
             onClose();
+            return;
         } catch (e) {
-            // optional: surface an error toast/message
             console.error(e);
         }
     };
 
     return (
-        <Modal opened={opened} onClose={handleClose} title={edit ? "Edit event" : "Add event"} centered>
+        <Modal opened={opened} onClose={handleClose} title={edit ? "Edit event" : "Add event"} centered keepMounted={false}>
             <TextInput
                 label="Title"
                 placeholder="Dentist"
@@ -192,7 +247,9 @@ export function QuickAddEvent({
             </Stack>
             <Group justify="flex-end" mt="lg">
                 <Button color="cyan" variant="outline" onClick={onClose}>Cancel</Button>
-                <Button color="cyan" loading={isLoading} onClick={handleSave} data-test="quickadd-submit">Save</Button>
+                <Button color="cyan" loading={isSaving} onClick={handleSave} data-test="quickadd-submit">
+                    Save
+                </Button>
             </Group>
         </Modal>
     );

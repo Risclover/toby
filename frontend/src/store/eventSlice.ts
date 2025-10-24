@@ -42,9 +42,10 @@ type UpdateEventBase = {
 type UpdateEventPayload = UpdateEventBase & Partial<{
     title: string;
     tzid: string;
-    startUtc: string;        // if present without endUtc, it's a start-only timed update
+    startUtc: string | null;        // if present without endUtc, it's a start-only timed update
     endUtc: string | null;   // explicitly null if you want to “clear” end (instant)
     date: string;            // all-day switch/update (YYYY-MM-DD)
+    hasTime: boolean;
 }>;
 
 type GetRangeArgs = { householdId: number; startIso: string; endIso: string };
@@ -93,8 +94,6 @@ export const eventSlice = apiSlice.injectEndpoints({
             // Optimistic update: merge changed fields into caches that likely contain the event
             async onQueryStarted({ id, householdId, ...patch }, { dispatch, queryFulfilled }) {
                 const patches: { undo: () => void }[] = [];
-
-                // 1) Update the "all events" cache
                 patches.push(
                     dispatch(
                         eventSlice.util.updateQueryData("getAllHouseholdEvents", { householdId }, (draft) => {
@@ -105,13 +104,6 @@ export const eventSlice = apiSlice.injectEndpoints({
                         })
                     )
                 );
-
-                // 2) Update any known range caches.
-                // If you track active ranges, loop through them. If not, you can skip this
-                // and rely on invalidation below.
-                // Example if you have a local list of known ranges:
-                // for (const key of knownRangesForHousehold[householdId] ?? []) { ...updateQueryData(...) }
-
                 try {
                     await queryFulfilled;
                 } catch {

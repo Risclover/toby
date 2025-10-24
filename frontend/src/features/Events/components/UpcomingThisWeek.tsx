@@ -1,9 +1,12 @@
 // src/features/calendar/UpcomingNext7Days.tsx
 import { Anchor, Button, Card, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { useMemo } from "react";
-import { useGetHouseholdEventsQuery } from "@/store/eventSlice";
-import "../styles/UpcomingThisWeek.css"
+import { useCallback, useMemo, useState } from "react";
+import { useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery, type CalendarEvent } from "@/store/eventSlice";
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import DeleteRounded from '@mui/icons-material/Delete';
+import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
+import "../styles/UpcomingThisWeek.css"
+import { QuickAddEvent } from "./QuickAddEvent";
 
 function startOfToday(d = new Date()) {
     const t = new Date(d);
@@ -36,14 +39,30 @@ function formatTime(isoUtc: string) {
 }
 
 export function UpcomingThisWeek({ householdId }: { householdId: number }) {
+    const [editOpen, setEditOpen] = useState(false);
+    const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+
+    const openEdit = (evt: CalendarEvent) => {
+        setSelectedEventId(evt.id);
+        setEditOpen(true);
+    };
+    const closeEdit = useCallback(() => {
+        setEditOpen(false);
+        setTimeout(() => setSelectedEventId(null), 250);
+    }, []);
+
     const { start, end } = useMemo(rangeTodayPlus6, []);
     const args = { householdId, startIso: iso(start), endIso: iso(end) };
 
     // Keep hook call unconditional; skip if householdId is falsy
-    const { data: events = [] } = useGetHouseholdEventsQuery(args, { skip: !householdId });
+    const { data: weekEvents = [] } = useGetHouseholdEventsQuery(args, { skip: !householdId });
+    const { data: allEvents = [] } = useGetAllHouseholdEventsQuery({ householdId }, { skip: !householdId });
+
+    const selectedEvent =
+        selectedEventId != null ? allEvents.find(e => e.id === selectedEventId) : undefined;
 
     const upcoming = useMemo(() => {
-        return events
+        return weekEvents
             .filter((e) => {
                 // Only events with a startUtc belong in this date window
                 if (!e.startUtc) return false;
@@ -55,7 +74,7 @@ export function UpcomingThisWeek({ householdId }: { householdId: number }) {
                 const sb = b.startUtc ? +new Date(b.startUtc) : Number.POSITIVE_INFINITY;
                 return sa - sb;
             });
-    }, [events, start, end]);
+    }, [weekEvents, start, end]);
 
     if (!upcoming.length) return <Text c="dimmed">Nothing in the next 7 days — add one.</Text>;
 
@@ -74,22 +93,46 @@ export function UpcomingThisWeek({ householdId }: { householdId: number }) {
                         const left = e.hasTime ? formatDate(startIso)
                             : formatDate(startIso);
 
+                        const right = e.hasTime ? formatTime(startIso) : "All Day"
+
                         return (
                             <Card key={e.id} padding="xs" radius="md" className="upcoming-event">
-                                <Group>
-                                    {left}
-                                    <Stack gap={0}>
-                                        <Text fw={600} c="white" fz="sm">
-                                            {e.title}
-                                        </Text>
-                                        <Text fz="xs" c="var(--sub-text)">{formatTime(startIso)}</Text>
-                                    </Stack>
+                                <Group justify="space-between">
+                                    <Group>
+                                        {left}
+                                        <Stack gap={0}>
+                                            <Text fw={600} c="white" fz="sm">
+                                                {e.title}
+                                            </Text>
+                                            <Text fz="xs" c="var(--sub-text)">{right}</Text>
+                                        </Stack>
+                                    </Group>
+                                    <div className="upcoming-event-btns">
+                                        <button
+                                            className="upcoming-event-btn"
+                                            onClick={() => openEdit(e)}
+                                            aria-label={`Edit ${e.title}`}
+                                        >
+                                            <BorderColorRoundedIcon />
+                                        </button>
+                                        <button className="upcoming-event-btn"><DeleteRounded /></button>
+                                    </div>
                                 </Group>
                             </Card>
                         );
                     })}
                 </Stack>
             </ScrollArea.Autosize>
+
+            <QuickAddEvent
+                householdId={householdId}
+                opened={editOpen}
+                onClose={closeEdit}
+                edit={Boolean(selectedEvent)}
+                event={selectedEvent}
+                initialDate={selectedEvent?.startUtc ? new Date(selectedEvent.startUtc) : new Date()}
+            />
+
         </div>
     );
 } 
