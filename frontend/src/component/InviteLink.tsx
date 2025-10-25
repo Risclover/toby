@@ -54,8 +54,9 @@ export const InviteLink = ({ opened, close }: Props) => {
             <TextInput
                 value={inviteUrl}
                 readOnly
+                aria-label="Household invite link"
                 rightSection={
-                    <CopyButton value={inviteUrl} timeout={2000}>
+                    <CopyButton value={inviteUrl} timeout={2000} aria-label="Copy invite link">
                         {({ copied, copy }) => (
                             <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right" events={{ hover: true, focus: true, touch: true }}>
                                 <ActionIcon
