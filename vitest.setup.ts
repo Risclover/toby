@@ -1,5 +1,15 @@
 import '@testing-library/jest-dom/vitest'; // <-- adds matchers to Vitest's expect  
 import './frontend/src/test/setup';
+import { ResizeObserver as RO } from '@juggle/resize-observer';
+
+// ResizeObserver (for Mantine ScrollArea)
+if (!('ResizeObserver' in globalThis)) {
+    Object.defineProperty(globalThis, 'ResizeObserver', {
+        configurable: true,
+        writable: true,
+        value: RO,
+    });
+}
 
 if (!window.matchMedia) {
     Object.defineProperty(window, 'matchMedia', {

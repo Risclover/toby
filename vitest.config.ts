@@ -1,9 +1,5 @@
 import { defineConfig } from 'vitest/config';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { resolve } from 'path';
 
 export default defineConfig({
     test: {
@@ -11,15 +7,14 @@ export default defineConfig({
         setupFiles: ['./vitest.setup.ts'],
         globals: true,
         include: ['frontend/src/**/*.spec.{ts,tsx}', 'frontend/src/**/*.test.{ts,tsx}'],
-
+        css: true
     },
     define: {
-        // 👇 inject the same value you use in your app
         'import.meta.env.VITE_BACKEND_URL': JSON.stringify('http://localhost:5000/api'),
     },
     resolve: {
         alias: {
-            '@': resolve(__dirname, './frontend/src'), // maps @ -> frontend/src
+            '@': resolve(process.cwd(), 'frontend/src'),
         },
     },
 });
