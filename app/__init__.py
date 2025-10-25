@@ -20,6 +20,7 @@ from sqlalchemy.engine import Engine
 import time, logging
 from dotenv import load_dotenv 
 import os
+
 print("FLASK_ENV =", os.getenv("FLASK_ENV"))
 print("S3_BUCKET =", os.environ.get("S3_BUCKET"))
 # --------------------------------------------------------------------------- #

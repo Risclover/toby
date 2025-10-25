@@ -25,3 +25,7 @@
     margin: 1rem;
     /* background: var(--main-background) */
 }
+
+.invite-member-modal p {
+    line-height: 1.3;
+}

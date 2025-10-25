@@ -127,8 +127,8 @@ export const Dashboard = () => {
                 </section>
             </div>
             <HouseholdCheckinsMini members={household?.members} />
-            {showCreateAnnouncement && <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />}
-            {showInviteModal && <InviteLink opened={showInviteModal} close={() => setShowInviteModal(false)} />}
+            <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />
+            <InviteLink opened={showInviteModal} close={() => setShowInviteModal(false)} />
             <div className="dashboard-body">
                 {error ? <p>Couldn’t load household.</p> : null}
             </div>
