@@ -85,7 +85,7 @@ export interface DeleteListRequest {
 }
 
 export interface CompleteTodoRequest {
-    todoId: number;
+    todoId?: number;
     listId: number;
     completed: boolean;
     householdId?: number;

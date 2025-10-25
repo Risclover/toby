@@ -1,5 +1,4 @@
-import { EditableTitle } from "@/component/EditableTitle";
-import { useCompleteTodoMutation, useGetTodoListQuery, useUpdateTodoMutation, type Todo } from "@/store/todoSlice";
+import { useCompleteTodoMutation, useGetTodoListQuery } from "@/store/todoSlice";
 import { Checkbox } from "@mantine/core";
 import { useEffect, useState, type ChangeEvent } from "react";
 import DeleteRounded from '@mui/icons-material/Delete';
@@ -25,7 +24,6 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
     const [showTaskDetails, setShowTaskDetails] = useState(false);
     const [checked, setChecked] = useState(task?.status === "completed");
     const [completeTodo, { isLoading }] = useCompleteTodoMutation();
-    const [updateTodoTitle] = useUpdateTodoMutation();
 
     // keep local state in sync if task.status changes externally
     useEffect(() => {
@@ -35,25 +33,19 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
     const onChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const nextChecked = e.currentTarget.checked;
 
-        // optimistic UI
         setChecked(nextChecked);
 
         try {
             await completeTodo({
-                todoId: task.id,
+                todoId: task?.id,
                 listId,
                 completed: nextChecked,
                 householdId: householdId
             }).unwrap();
         } catch (err) {
-            // rollback if request fails
             setChecked((prev) => !prev);
             console.error("Failed to toggle todo:", err);
         }
-    };
-
-    const handleUpdateTitle = async (next: string) => {
-        await updateTodoTitle({ todoId: task?.id, title: next, listId, householdId }).unwrap();
     };
 
     console.log('task:', task)
