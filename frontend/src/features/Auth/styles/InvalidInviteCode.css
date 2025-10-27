@@ -1,0 +1,23 @@
+.invalid-invite-code-page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.invalid-invite-code-text {
+    text-align: center;
+}
+
+.invalid-invite-code-text h1 {
+    font-size: 4rem;
+    font-weight: 600;
+}
+
+.invalid-invite-code-text p {
+    font-size: 1.3rem;
+}
+
+/* .invalid-invite-code-text svg {
+    font-size: 1rem;
+} */

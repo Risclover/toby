@@ -6,7 +6,7 @@ class Household(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    invite_code = db.Column(db.String, unique=True, nullable=True)
+    invite_code = db.Column(db.String(64), unique=True, nullable=True, index=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     
     tzid = db.Column(db.String(64), nullable=False, default="America/Los_Angeles")

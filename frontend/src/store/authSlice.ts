@@ -86,6 +86,9 @@ export const authSlice = apiSlice.injectEndpoints({
                 credentials: "include"
             }),
         }),
+        validateInvite: builder.query({
+            query: (code) => `/auth/join/${code}`
+        }),
         checkEmail: builder.mutation<{ Message: boolean }, { email: string }>({
             query: ({ email }) => ({
                 url: `/auth/signup/check-email/${email}`,
@@ -105,5 +108,6 @@ export const {
     useSignupMutation,
     useJoinHouseholdMutation,
     useGenerateInviteMutation,
-    useCheckEmailMutation
+    useCheckEmailMutation,
+    useValidateInviteQuery
 } = authSlice;
