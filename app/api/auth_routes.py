@@ -140,6 +140,18 @@ def join_household(invite_code):
         "household": household.to_dict()
     }), 201
 
+@auth_routes.route("/join/<string:invite_code>", methods=["GET"])
+def validate_invite(invite_code):
+    household = Household.query.filter_by(invite_code=invite_code).first() 
+
+    if not household:
+        return jsonify({"error": "Invalid invite code"}), 404
+        
+    return jsonify({
+        "householdId": household.id,
+        "householdName": household.name,
+    }), 200
+
 @auth_routes.route("/households/<int:household_id>/invite", methods=["POST"])
 @login_required
 def generate_invite(household_id):

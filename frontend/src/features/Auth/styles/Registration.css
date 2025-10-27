@@ -109,3 +109,11 @@
 .reg-page-two button {
     width: 100%;
 }
+
+.reg-loader {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

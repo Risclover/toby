@@ -1,19 +1,31 @@
 import React, { useState } from "react"
 import { RegistrationPageOne } from "./RegistrationPageOne";
 import { RegistrationPageTwo } from "./RegistrationPageTwo";
-import { useCheckEmailMutation, useJoinHouseholdMutation, useSignupMutation } from "@/store/authSlice";
+import { useCheckEmailMutation, useJoinHouseholdMutation, useSignupMutation, useValidateInviteQuery } from "@/store/authSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/Registration.css";
+import { InvalidInviteCode } from "./InvalidInviteCode";
+import { Loader } from "@mantine/core";
 
 type Props = {
     createHousehold: boolean;
-}
+};
 
 export const Registration = ({ createHousehold }: Props) => {
     const navigate = useNavigate();
     const [signup] = useSignupMutation();
     const [joinHousehold] = useJoinHouseholdMutation();
     const { inviteCode } = useParams();
+
+    const {
+        isLoading: isInviteLoading,
+        isFetching: isInviteFetching,
+        isError: isInviteError,
+        error: inviteError,
+    } = useValidateInviteQuery(inviteCode as string, {
+        skip: createHousehold || !inviteCode,
+        refetchOnMountOrArgChange: true,
+    });
 
     const [page, setPage] = useState(1);
     const [name, setName] = useState("");
@@ -29,46 +41,34 @@ export const Registration = ({ createHousehold }: Props) => {
     const [checkEmail] = useCheckEmailMutation();
 
     const validateName = () => {
-        if (name.trim().length === 0) {
-            setNameError("Please enter your name.")
-        } else {
-            setNameError("");
-        }
-    }
+        if (name.trim().length === 0) setNameError("Please enter your name.");
+        else setNameError("");
+    };
 
     const validateEmail = async () => {
-        const emailTaken = await checkEmail({ email })
-        if (emailTaken.data?.Message) {
-            setEmailError("Email already in use.")
-        } else if (email.trim().length === 0) {
-            setEmailError("Please enter your email address.")
-        } else {
-            setEmailError("")
-        }
-        return emailTaken.data?.Message;
+        const res: any = await checkEmail({ email });
+        if (res?.data?.Message) setEmailError("Email already in use.");
+        else if (email.trim().length === 0) setEmailError("Please enter your email address.");
+        else setEmailError("");
+        return res?.data?.Message;
     };
 
     const validatePassword = () => {
-        if (password.length < 8) {
-            setPasswordError("Password must be 8 characters or longer.")
-        } else {
-            setPasswordError("");
-        }
-
+        if (password.length < 8) setPasswordError("Password must be 8 characters or longer.");
+        else setPasswordError("");
         return passwordError;
-    }
+    };
 
     const validateRepeatPassword = () => {
         if (repeatPassword.trim().length === 0 && password.trim().length >= 8) {
-            setRepeatPasswordError("Please confirm your password.")
+            setRepeatPasswordError("Please confirm your password.");
         } else if (password !== repeatPassword && password.trim().length > 0) {
-            setRepeatPasswordError("Passwords don't match. Please try again.")
+            setRepeatPasswordError("Passwords don't match. Please try again.");
         } else {
             setRepeatPasswordError("");
         }
-
         return repeatPasswordError;
-    }
+    };
 
     const inputProps = [
         {
@@ -80,7 +80,7 @@ export const Registration = ({ createHousehold }: Props) => {
             inputValue: name,
             setInputValue: setName,
             error: nameError,
-            onBlur: validateName
+            onBlur: validateName,
         },
         {
             inputType: "email",
@@ -91,7 +91,7 @@ export const Registration = ({ createHousehold }: Props) => {
             inputValue: email,
             setInputValue: setEmail,
             error: emailError,
-            onBlur: validateEmail
+            onBlur: validateEmail,
         },
         {
             inputType: "password",
@@ -102,7 +102,7 @@ export const Registration = ({ createHousehold }: Props) => {
             inputValue: password,
             setInputValue: setPassword,
             error: passwordError,
-            onBlur: validatePassword
+            onBlur: validatePassword,
         },
         {
             inputType: "password",
@@ -113,9 +113,9 @@ export const Registration = ({ createHousehold }: Props) => {
             inputValue: repeatPassword,
             setInputValue: setRepeatPassword,
             error: repeatPasswordError,
-            onBlur: validateRepeatPassword
+            onBlur: validateRepeatPassword,
         },
-    ]
+    ];
 
     const secondPageInputProps = [
         {
@@ -125,30 +125,23 @@ export const Registration = ({ createHousehold }: Props) => {
             subLabel: "",
             placeholder: "The Bob Family",
             inputValue: householdName,
-            setInputValue: setHouseholdName
-        }
-    ]
+            setInputValue: setHouseholdName,
+        },
+    ];
 
     const handleContinue = async (e: React.FormEvent) => {
-        validateEmail();
+        await validateEmail();
         validatePassword();
         validateRepeatPassword();
         validateName();
 
-        if (nameError !== "" || emailError !== "" || passwordError !== "" || repeatPasswordError !== "") {
-            return;
-        } else {
-            if (createHousehold) {
-                setPage(2);
-            } else {
-                handleJoin(e);
-            }
-        }
-    }
+        if (nameError || emailError || passwordError || repeatPasswordError) return;
 
-    const handleBack = () => {
-        setPage(1);
-    }
+        if (createHousehold) setPage(2);
+        else handleJoin(e);
+    };
+
+    const handleBack = () => setPage(1);
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -159,23 +152,50 @@ export const Registration = ({ createHousehold }: Props) => {
         setPassword("");
         setRepeatPassword("");
         setHouseholdName("");
-    }
-
+    };
 
     const handleJoin = async (e: React.FormEvent) => {
         e.preventDefault();
-        await joinHousehold({ email, name, password, inviteCode });
+        const res: any = await joinHousehold({ email, name, password, inviteCode });
+        if ("error" in res) {
+            return;
+        }
         navigate("/");
         setEmail("");
         setName("");
         setPassword("");
         setRepeatPassword("");
+    };
+
+    if (!createHousehold && inviteCode) {
+        if (isInviteLoading || isInviteFetching) {
+            return <div className="reg-loader"><Loader color="cyan.5" /></div>;
+        }
+
+        if (isInviteError) {
+            const status = (inviteError as any)?.status;
+            if (status === 404) return <InvalidInviteCode />;
+            return <p>Something went wrong. Please try again.</p>;
+        }
     }
+    // ----------------------------------------------------
 
     return (
         <div className="registration">
-            {page === 1 && <RegistrationPageOne onClick={handleContinue} inputProps={inputProps} createHousehold={createHousehold} />}
-            {page === 2 && <RegistrationPageTwo handleBack={handleBack} onClick={handleSignup} inputProps={secondPageInputProps} />}
+            {page === 1 && (
+                <RegistrationPageOne
+                    onClick={handleContinue}
+                    inputProps={inputProps}
+                    createHousehold={createHousehold}
+                />
+            )}
+            {page === 2 && (
+                <RegistrationPageTwo
+                    handleBack={handleBack}
+                    onClick={handleSignup}
+                    inputProps={secondPageInputProps}
+                />
+            )}
         </div>
-    )
-}
+    );
+};
