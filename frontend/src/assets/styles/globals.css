@@ -25,6 +25,12 @@
     --accent-color: #15aabf;
     --accent-color-hover: #1098ad;
     --accent-color-light: #66d9e8;
+    --offset: 1.5rem;
+    --gutter: 1rem;
+    --row-size: 0.5rem;
+    --fitted-col: calc(100% - 2 * var(--offset) - (var(--columns) - 1) * var(--gutter)) / var(--columns);
+    --col: var(--fitted-col);
+    --columns: 12;
 }
 
 * {
@@ -56,7 +62,7 @@ body {
 }
 
 main {
-    max-width: 80rem;
+    width: 100%;
     margin: 0 auto;
     background: #111827;
     font-family: "Nunito Sans", sans-serif;

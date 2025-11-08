@@ -1,12 +1,16 @@
 import { AppRoutes } from "@/routes"
 import Sidebar from "@/layout/Sidebar"
 import { useMantineColorScheme } from "@mantine/core";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SpeedDial } from 'primereact/speeddial';
 import { Tooltip } from "primereact/tooltip";
 
 export const Layout = () => {
     const { setColorScheme } = useMantineColorScheme();
+    const [sidebarExpanded, setSidebarExpanded] = useState(() => {
+        try { return localStorage.getItem("sidebar-collapsed") === "1"; }
+        catch { return false; }
+    });
 
     useEffect(() => {
         setColorScheme('light');
@@ -20,11 +24,11 @@ export const Layout = () => {
         }
     ]
     return (
-        <>
-            <Sidebar />
-            <main className="flex flex-1 flex-col gap-4 pt-0">
+        <div className="flex flex-1 gap-4 pt-0 w-full">
+            <Sidebar setSidebarExpanded={setSidebarExpanded} sidebarExpanded={sidebarExpanded} />
+            <main className="w-full">
                 <AppRoutes />
             </main>
-        </ >
+        </div>
     )
 }
