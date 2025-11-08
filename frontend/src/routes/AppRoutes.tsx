@@ -12,6 +12,7 @@ import { ShoppingLists } from "@/features/Shopping/components/ShoppingLists";
 import { ShoppingListsPage } from "@/pages/ShoppingListsPage";
 import { ShoppingList } from "@/features/Shopping/components/ShoppingList";
 import { ShoppingListPage } from "@/pages/ShoppingListPage";
+import { DashboardGrid } from "@/component/DashboardGrid";
 
 export const AppRoutes = () => {
     return (

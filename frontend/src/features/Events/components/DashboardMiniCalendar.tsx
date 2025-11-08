@@ -1,5 +1,5 @@
 import React, { useMemo, useState, type SetStateAction } from "react";
-import { Group, Text } from "@mantine/core";
+import { Flex, Group, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { useGetAllHouseholdEventsQuery } from "@/store/eventSlice";
 import { QuickAddEvent } from "./QuickAddEvent";
@@ -138,7 +138,6 @@ export function DashboardMiniCalendar({
                     control: { color: "white" },
                 }}
             />
-
             <QuickAddEvent
                 householdId={householdId}
                 opened={showAddEvent}

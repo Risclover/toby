@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from "react";
+import { useEffect, useState, type Dispatch, type JSX, type SetStateAction } from "react";
 import { TobyIcon } from "@/assets/icons/TobyIcon";
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
@@ -70,24 +70,26 @@ const items: Item[] = [
     // },
 ];
 
-export default function Sidebar() {
+type Props = {
+    sidebarExpanded: boolean;
+    setSidebarExpanded: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function Sidebar({ sidebarExpanded, setSidebarExpanded }: Props) {
     const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId)
-    const [collapsed, setCollapsed] = useState<boolean>(() => {
-        try { return localStorage.getItem("sidebar-collapsed") === "1"; }
-        catch { return false; }
-    });
+
 
     // Keep <html> class in sync with state (so reloads are right even if JS loads late)
     useEffect(() => {
         const root = document.documentElement;
-        if (collapsed) root.classList.add("prefers-collapsed");
+        if (sidebarExpanded) root.classList.add("prefers-collapsed");
         else root.classList.remove("prefers-collapsed");
-    }, [collapsed]);
+    }, [sidebarExpanded]);
 
     const toggle = () => {
-        setCollapsed(c => {
+        setSidebarExpanded(c => {
             const next = !c;
             try { localStorage.setItem("sidebar-collapsed", next ? "1" : "0"); } catch { }
             return next;
@@ -95,7 +97,7 @@ export default function Sidebar() {
     };
 
     return (
-        <nav className={`sidebar${collapsed ? " collapsed" : ""}`} aria-label="Primary">
+        <nav className={`sidebar${sidebarExpanded ? " collapsed" : ""}`} aria-label="Primary">
             <div className="sidebar-top-section">
                 <div className="brand">
                     <TobyIcon />
@@ -104,8 +106,8 @@ export default function Sidebar() {
                 <button
                     className="collapse-btn"
                     onClick={toggle}
-                    aria-expanded={!collapsed}
-                    aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    aria-expanded={!sidebarExpanded}
+                    aria-label={sidebarExpanded ? "Expand sidebar" : "Collapse sidebar"}
                 >
                     <svg className="chevron" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

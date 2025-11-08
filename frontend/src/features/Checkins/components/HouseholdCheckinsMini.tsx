@@ -68,9 +68,9 @@ function MemberRow({
                     <Avatar
                         src={member.profileImg || undefined}
                         radius="xl"
-                        size="xs"
+                        size="md"
                         onClick={() => navigate(`/users/${member.id}`)}
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: "pointer", border: "1px solid var(--input-border)", padding: "5px", marginRight: "10px" }}
                     >
                         {!member.profileImg}
                     </Avatar>
@@ -84,7 +84,7 @@ function MemberRow({
                         <div
                             key={d.iso}
                             className={[
-                                "rounded",
+                                "rounded-md",
                                 isLoading
                                     ? "animate-pulse bg-gray-200"
                                     : filled
@@ -106,8 +106,8 @@ function MemberRow({
 
 export default function HouseholdCheckinsMini({
     members,
-    size = 16,               // a little bigger
-    gap = 6,                 // tight spacing
+    size = 32,               // a little bigger
+    gap = 8,                 // tight spacing
     nameColWidthClass = "w-20", // keep header + rows aligned
 }: {
     members: Member[];
@@ -118,46 +118,48 @@ export default function HouseholdCheckinsMini({
     const { days, from, to } = useMemo(makeWindow, []);
 
     return (
-        <div className="household-checkins-mini">
-            <div className="checkins-header-row">
-                <div className="checkins-header-spacer"></div>
-                <div className="checkins-header">
-                    {days.map((day) => (
-                        <div
-                            className="checkins-header-day"
-                            key={day.iso}
-                            title={day.label}
-                        >
-                            {day.label.slice(0, 1)}
-                        </div>
+        <div className="household-checkins-mini-container">
+            <h2>Daily Checkins History</h2>
+            <div className="household-checkins-mini">
+                <div className="checkins-header-row">
+                    <div className="checkins-header-spacer"></div>
+                    <div className="checkins-header">
+                        {days.map((day) => (
+                            <div
+                                className="checkins-header-day"
+                                key={day.iso}
+                                title={day.label}
+                            >
+                                {day.label.slice(0, 1)}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="checkins-member-rows">
+                    {members?.map((member) => (
+                        <MemberRow
+                            key={member.id}
+                            member={member}
+                            days={days}
+                            from={from}
+                            to={to}
+                            size={size}
+                            gap={gap}
+                            nameColClass={nameColWidthClass}
+                            className="checkins-member-row"
+                        />
                     ))}
                 </div>
-            </div>
-            <div className="checkins-member-rows">
-                {members?.map((member) => (
-                    <MemberRow
-                        key={member.id}
-                        member={member}
-                        days={days}
-                        from={from}
-                        to={to}
-                        size={size}
-                        gap={gap}
-                        nameColClass={nameColWidthClass}
-                        className="checkins-member-row"
-                    />
-                ))}
-            </div>
-            <div className="checkins-legend">
-                <div className="checkins-header-spacer"></div>
-                <span className="checkins-legend-item">
-                    <i className="checkins-legend-icon icon-checked" />
-                    Checked
-                </span>
-                <span className="checkins-legend-item">
-                    <i className="checkins-legend-icon icon-none" />
-                    None
-                </span>
+                <div className="checkins-legend">
+                    <span className="checkins-legend-item">
+                        <i className="checkins-legend-icon icon-checked" />
+                        Checked
+                    </span>
+                    <span className="checkins-legend-item">
+                        <i className="checkins-legend-icon icon-none" />
+                        None
+                    </span>
+                </div>
             </div>
         </div>
     );

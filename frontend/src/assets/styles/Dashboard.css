@@ -1,14 +1,21 @@
+.dashboard-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
 .dashboard {
     padding: 3rem;
     width: 100%;
 }
 
-.dashboard h1 {
+.dashboard-header h1 {
     font-size: 2.25rem;
     line-height: 1;
 }
 
-.dashboard-titlebar {
+.dashboard-header {
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -28,4 +35,110 @@
 
 .invite-member-modal p {
     line-height: 1.3;
+}
+
+.dashboard-grid-container {
+    /* width: 100vw; */
+    /* height: 100vh; */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    transition: grid-template-columns 260ms cubic-bezier(.22, .61, .36, 1);
+}
+
+/* .dashboard-grid-container[data-layout="expanded"] {
+    --sidebar-width: 12.43rem;
+}
+
+.dashboard-grid-container[data-layout="collapsed"] {
+    --sidebar-width: 6.1875rem;
+} */
+
+.dashboard-grid {
+    width: 100%;
+    padding: 1rem var(--offset);
+    columns: 4 400px;
+    height: 100%;
+    /* display: grid;
+    gap: var(--gutter);
+    grid-auto-flow: row dense;
+    grid-template-columns: repeat(var(--columns), minmax(0, var(--col)));
+    overflow: auto; */
+    /* max-width: 1440px; */
+
+}
+
+.dash-grid-item {
+    /* background: #9ea3b3; */
+    border: 1px solid #222432;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    /* width: 100%; */
+    /* height: 100%; */
+    break-inside: avoid;
+    margin-bottom: 1rem;
+}
+
+.item-1 {
+    grid-row: span 1;
+    grid-column: 1 / span 12;
+    width: 100%;
+}
+
+
+.dash-grid-item.item-1 {
+    padding: 0;
+    border: none;
+    display: flex;
+    align-items: center;
+}
+
+.item-2 {
+    grid-row: span 2;
+    grid-column: 1 / span 4;
+}
+
+.item-3 {
+    grid-row: span 2;
+    grid-column: 5 / span 1;
+}
+
+.item-4 {
+    grid-row: span 4;
+    grid-column: 6 / span 1;
+}
+
+
+.item-5 {
+    grid-row: span 2;
+    grid-column: 1 / span 4;
+}
+
+.item-6 {
+    grid-row: span 2;
+    grid-column: 5 / span 4;
+}
+
+.item-7 {
+    grid-row: span 2;
+    grid-column: 1 / span 4;
+}
+
+.item-8 {
+    grid-row: span 2;
+    grid-column: 5 / span 4;
+}
+
+.item-9 {
+    grid-row: span 2;
+    grid-column: 9 / span 4;
+}
+
+@media (min-width: 1200px) {
+    .dashboard-grid {
+        --columns: 12;
+    }
+
+    .dashboard-grid-container {
+        grid-template-columns: var(--sidebar-width) 1fr;
+    }
 }
