@@ -56,7 +56,7 @@
 .dashboard-grid {
     width: 100%;
     padding: 1rem var(--offset);
-    columns: 4 400px;
+    columns: 4;
     height: 100%;
     /* display: grid;
     gap: var(--gutter);

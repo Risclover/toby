@@ -14,6 +14,7 @@ import { FaCalendarPlus } from "react-icons/fa6";
 import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
 import { useCheckInTodayMutation, useGetUserCheckinsQuery } from "@/store/checkinSlice";
 import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
+import { Tooltip } from "primereact/tooltip";
 
 const toISO = (d: Date) => d.toISOString().slice(0, 10); // "YYYY-MM-DD"
 
@@ -108,6 +109,7 @@ export function DashboardGrid() {
                 <div className="dash-grid-item item-8"><HouseholdCheckinsMini members={household?.members} /></div>
                 <div className="dash-grid-item item-9"><HouseholdCheckinsMini members={household?.members} /></div>
             </div>
+            <Tooltip target=".speeddial-bottom-right .p-speeddial-action" position="left" />
             <SpeedDial model={items} direction="up" className="speeddial-bottom-right right-10 bottom-10" buttonClassName="p-button-cyan" />
         </div>
     )
