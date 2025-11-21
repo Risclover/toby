@@ -1,6 +1,7 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetMyMoodQuery, useSetMyMoodMutation } from "@/store/moodSlice";
 import React, { useMemo, useState } from "react";
+import { ChooseMood } from "./ChooseMood";
 
 // keep your single source of truth
 const MOODS = [
@@ -42,6 +43,7 @@ export const SetMood = () => {
                 ))}
             </select>
             Mood: {myMood?.mood}
+            <ChooseMood />
         </div>
     );
 };

@@ -13,8 +13,14 @@ import { ShoppingListsPage } from "@/pages/ShoppingListsPage";
 import { ShoppingList } from "@/features/Shopping/components/ShoppingList";
 import { ShoppingListPage } from "@/pages/ShoppingListPage";
 import { DashboardGrid } from "@/component/DashboardGrid";
+import { MobileHome } from "@/pages/MobileHome";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 
 export const AppRoutes = () => {
+    const isMobile = useIsMobile();
+    const isSmallScreen = useIsSmallScreen();
+
     return (
         <Routes>
             <Route path="/join/:inviteCode" element={<Registration createHousehold={false} />} />
@@ -25,7 +31,7 @@ export const AppRoutes = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/shopping" element={<ShoppingListsPage />} />
             <Route path="/shopping/:listId" element={<ShoppingListPage />} />
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={(isMobile || isSmallScreen) ? <MobileHome /> : <Dashboard />} />
         </Routes>
     )
 }

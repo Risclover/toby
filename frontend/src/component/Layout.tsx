@@ -4,8 +4,12 @@ import { useMantineColorScheme } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { SpeedDial } from 'primereact/speeddial';
 import { Tooltip } from "primereact/tooltip";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 
 export const Layout = () => {
+    const isMobile = useIsMobile();
+    const isSmallScreen = useIsSmallScreen();
     const { setColorScheme } = useMantineColorScheme();
     const [sidebarExpanded, setSidebarExpanded] = useState(() => {
         try { return localStorage.getItem("sidebar-collapsed") === "1"; }
@@ -25,7 +29,7 @@ export const Layout = () => {
     ]
     return (
         <div className="flex flex-1 gap-4 pt-0 w-full">
-            <Sidebar setSidebarExpanded={setSidebarExpanded} sidebarExpanded={sidebarExpanded} />
+            {(!isMobile && !isSmallScreen) && <Sidebar setSidebarExpanded={setSidebarExpanded} sidebarExpanded={sidebarExpanded} />}
             <main className="w-full">
                 <AppRoutes />
             </main>

@@ -233,3 +233,8 @@ form {
 .invite-member-modal p {
     color: white !important;
 }
+
+.mobile-home-container {
+    display: flex;
+    flex-direction: column;
+}
