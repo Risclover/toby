@@ -1,14 +1,28 @@
+import { MobileHomeFamilyTitle } from "@/component/MobileHomeFamilyTitle"
+import { MobileHeader } from "@/component/MobileHomeHeader"
+import "@/assets/styles/mobile.css";
+import { MobileHomeCalendar } from "@/component/MobileHomeCalendar";
+import { MobileHomeCheckinReminder } from "@/component/MobileHomeCheckinReminder";
+import { MobileHomeNavGrid } from "@/component/MobileHomeNavGrid";
+import { MobileHomeNoticeBoard } from "@/component/MobileHomeNoticeBoard";
+import { MobileHomeDailyCheckins } from "@/component/MobileHomeDailyCheckins";
+import { MobileHomeRecentActivity } from "@/component/MobileHomeRecentActivity";
 
 export const MobileHome = () => {
-
     return (
         <div className="mobile-home-container">
-            <div className="mobile-home-calendar">Calendar</div>
-            <div className="mobile-home-announcements">Announcements</div>
-            <div className="mobile-home-reminders">Reminders</div>
-            <div className="mobile-home-daily-checkins">Daily Checkins</div>
-            <div className="mobile-home-recent-activity">Recent Activity</div>
-            <div className="mobile-home-checkin-action">Checkin Action</div>
+            <MobileHeader />
+            <div className="mobile-home-container-top">
+                <MobileHomeNavGrid />
+                <MobileHomeFamilyTitle />
+                <MobileHomeCheckinReminder />
+                {/* <MobileHomeCalendar /> */}
+                <MobileHomeNoticeBoard />
+            </div>
+            <div className="mobile-home-container-bottom">
+                <MobileHomeDailyCheckins />
+                <MobileHomeRecentActivity />
+            </div>
         </div>
     )
 }

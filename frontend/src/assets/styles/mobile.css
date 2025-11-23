@@ -1,0 +1,216 @@
+.mobile-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: hsl(189, 55%, 30%);
+    color: white;
+    /* border-bottom: 1px solid lightgrey; */
+}
+
+.mobile-header-container .brand svg {
+    height: 1.5rem;
+    width: 1.5rem;
+    fill: white;
+}
+
+.mobile-header-container .brand {
+    height: auto;
+    margin: 0;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.mobile-header-container .title {
+    font-size: 1.5rem;
+}
+
+.mobile-header-left,
+.mobile-header-right {
+    display: flex;
+    align-items: center;
+}
+
+.mobile-header-left {
+    gap: 0.5rem;
+}
+
+.mobile-header-right svg {
+    font-size: 1.5rem;
+}
+
+.mobile-header-right svg {
+    /* color: hsl(240, 50%, 50%); */
+}
+
+.mobile-header-separator {
+    height: 1.75rem;
+    width: 1px;
+    background: lightgrey;
+    margin: 0 1rem;
+}
+
+.mobile-header-user {
+    border: 1px solid lightgrey;
+    border-radius: 999px;
+    height: 2rem;
+    width: 2rem;
+    background: hsl(189, 73%, 14%);
+}
+
+.mobile-header-icon-btns {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.mobile-home-family-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: "Alan Sans", sans-serif;
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 2rem 1rem;
+
+}
+
+.mobile-home-calendar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 1rem;
+    background: hsl(240, 67%, 12%);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    color: white;
+}
+
+.mobile-home-checkin-reminder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    /* border: 1px solid lightgrey; */
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 1rem 3rem;
+    /* width: fit-content; */
+    background: white;
+    color: black;
+    font-weight: 500;
+    gap: 1rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+.mobile-home-checkin-reminder button {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    /* border: 1px solid black; */
+    border-radius: 999px;
+    padding: .5rem 2rem;
+    background: hsl(189, 80%, 21%);
+    color: white;
+}
+
+.mobile-home-nav-grid {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-evenly;
+    margin: 1rem;
+    margin-top: 0;
+}
+
+.mobile-home-nav-grid-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: "Alan Sans", sans-serif;
+    border-radius: 12px;
+    background: white;
+    color: black;
+    height: 4rem;
+    width: 4rem;
+    font-size: 0.8rem;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+.mobile-home-nav-grid-btn span {
+    font-size: 1rem;
+}
+
+.mobile-home-notice-board {
+    margin: 1rem;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+.mobile-home-notice-board-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    /* width: 100%; */
+    padding: 1rem 0;
+    background: white;
+    color: black;
+    /* box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; */
+    margin-bottom: 10px;
+    border-bottom: 1px solid lightgrey;
+}
+
+.notice-board-btn {
+    display: flex;
+    align-items: baseline;
+    line-height: 1.2;
+    font-family: "Alan Sans", sans-serif;
+}
+
+.mobile-home-notice-board-container {
+    /* background: white; */
+    color: black;
+    border-radius: 8px;
+    padding: 1rem;
+    padding-top: 0;
+}
+
+.mobile-home-notice-board-container h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.mobile-home-notice-board-content {
+    padding: 1rem;
+    /* background: lightyellow; */
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    background: white;
+    color: black;
+}
+
+.mobile-home-container-top {
+    background: hsl(189, 55%, 30%);
+    color: white;
+}
+
+.mobile-home-daily-checkins,
+.mobile-home-recent-activity {
+    border-radius: 16px;
+    padding: 1rem;
+    margin: 1rem;
+    background: hsl(189, 55%, 30%);
+    color: white;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+.mobile-home-daily-checkins h2,
+.mobile-home-recent-activity h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    font-family: "Alan Sans", sans-serif;
+}

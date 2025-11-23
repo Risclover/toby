@@ -1,16 +1,16 @@
 import { useEffect, useState, type Dispatch, type JSX, type SetStateAction } from "react";
-import { TobyIcon } from "@/assets/icons/TobyIcon";
+import { useNavigate } from "react-router-dom";
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import EditCalendarRoundedIcon from '@mui/icons-material/EditCalendarRounded';
-import "./Sidebar.css";
-import { Avatar, Tooltip } from "@mantine/core";
+import { Avatar } from "@mantine/core";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useNavigate } from "react-router-dom";
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import { TobyIcon } from "@/assets/icons/TobyIcon";
+import "./Sidebar.css";
 
 type Item = {
     href: string;
