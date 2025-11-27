@@ -11,17 +11,17 @@ import { MobileHomeRecentActivity } from "@/component/MobileHomeRecentActivity";
 export const MobileHome = () => {
     return (
         <div className="mobile-home-container">
-            <MobileHeader />
             <div className="mobile-home-container-top">
-                <MobileHomeNavGrid />
+                <MobileHeader />
                 <MobileHomeFamilyTitle />
+            </div>
+            <div className="mobile-home-container-bottom">
+                <MobileHomeNavGrid />
                 <MobileHomeCheckinReminder />
                 {/* <MobileHomeCalendar /> */}
                 <MobileHomeNoticeBoard />
-            </div>
-            <div className="mobile-home-container-bottom">
-                <MobileHomeDailyCheckins />
-                <MobileHomeRecentActivity />
+                {/* <MobileHomeDailyCheckins />
+                <MobileHomeRecentActivity /> */}
             </div>
         </div>
     )
