@@ -17,7 +17,7 @@ export const MobileHome = () => {
             </div>
             <div className="mobile-home-container-bottom">
                 <MobileHomeNavGrid />
-                <MobileHomeCheckinReminder />
+                {/* <MobileHomeCheckinReminder /> */}
                 {/* <MobileHomeCalendar /> */}
                 <MobileHomeNoticeBoard />
                 {/* <MobileHomeDailyCheckins />

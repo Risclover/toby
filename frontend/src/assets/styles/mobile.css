@@ -191,22 +191,24 @@
     margin: 1rem;
     background: white;
     border-radius: 16px;
-    /* border: 1px solid lightgrey; */
+    border: 1px solid lightgrey;
     /* background: lightcyan; */
     overflow: hidden;
     /* box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; */
 }
 
 .mobile-home-notice-board-header {
-    display: flex;
+    /* display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between; */
     /* width: 100%; */
-    padding: 1rem 0;
-    background: white;
+    padding: 0.25rem;
+    /* background: white; */
     color: black;
     /* box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; */
     /* margin-bottom: 10px; */
+    /* border-bottom: 1px solid lightgrey; */
+    /* border: 1px solid lightgrey; */
     /* border-bottom: 1px solid lightgrey; */
 }
 
@@ -225,9 +227,8 @@
     /* background: white; */
     color: black;
     /* border-radius: 8px; */
-    padding: 1rem;
+    padding: 0.5rem 1rem;
     padding-top: 0;
-    box-shadow: inset 2px 2px hsla(0, 0%, 0%, 0.1), 0 -2px 0 hsla(0, 0%, 100%, .15);
 }
 
 .mobile-home-notice-board-container h2 {
@@ -236,11 +237,12 @@
 }
 
 .mobile-home-notice-board-content {
+    background: white;
+    box-shadow: inset 2px 2px hsla(0, 0%, 0%, 0.1), 0 -2px 0 hsla(0, 0%, 100%, .15);
     padding: 1rem;
     /* background: lightyellow; */
     /* border-radius: 8px; */
     /* margin-top: 0.5rem; */
-    /* background: lightcyan; */
     color: black;
 }
 
@@ -287,4 +289,34 @@
 
 .mobile-home-nav-grid-btn.active {
     border-bottom-color: currentColor;
+}
+
+.mobile-home-notice-board-header .list {
+    position: relative;
+    /* margin-bottom: 0.5rem; */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.mobile-home-notice-board-header .indicator {
+    background-color: rgb(5, 5, 73);
+    border-radius: 8px;
+    border: 1px solid lightgrey;
+    box-shadow: var(--mantine-shadow-sm);
+}
+
+.mobile-home-notice-board-header .tab {
+    font-family: "Alan Sans", sans-serif;
+    /* font-weight: 500; */
+    z-index: 1;
+    transition: color 100ms ease;
+    font-size: 1rem;
+    width: fit-content;
+    color: black;
+}
+
+.mobile-home-notice-board-header .tab[data-active] {
+    color: white;
 }
