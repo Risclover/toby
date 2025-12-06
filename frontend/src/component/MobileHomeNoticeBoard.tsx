@@ -19,8 +19,8 @@ export const MobileHomeNoticeBoard = () => {
             <div className="mobile-home-notice-board-header">
                 <Tabs variant="none" value={value} onChange={setValue}>
                     <Tabs.List className="list" ref={setRoofRef}>
-                        <Tabs.Tab className="tab" value="announcements" ref={setControlRef("announcements")} onClick={() => setShowAnnouncements(true)}>Announcements</Tabs.Tab>
                         <Tabs.Tab className="tab" value="reminders" ref={setControlRef("reminders")} onClick={() => setShowAnnouncements(false)}>Reminders</Tabs.Tab>
+                        <Tabs.Tab className="tab" value="announcements" ref={setControlRef("announcements")} onClick={() => setShowAnnouncements(true)}>Announcements</Tabs.Tab>
                         <FloatingIndicator className="indicator" target={value ? controlsRef[value] : null} parent={roofRef} />
                     </Tabs.List>
                 </Tabs>
