@@ -8,10 +8,9 @@ class Household(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     invite_code = db.Column(db.String(64), unique=True, nullable=True, index=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
-    
     tzid = db.Column(db.String(64), nullable=False, default="America/Los_Angeles")
-    announcements_ttl_mode = db.Column(db.Enum("rolling", "midnight", name="ann_ttl_mode"), nullable=False, server_default="rolling")
-    announcements_ttl_hours = db.Column(db.Integer, nullable=False, server_default="24")
+
+    announcements = db.relationship("Announcement", back_populates="household", cascade="all, delete-orphan")
 
     # Relationships
     members = db.relationship(
@@ -34,7 +33,7 @@ class Household(db.Model):
             "members": [member.to_dict() for member in self.members],
             "inviteCode": self.invite_code,
             "creatorId": self.creator_id,
-            "tzid": self.tzid 
+            "tzid": self.tzid
         }
 
     def __repr__(self):

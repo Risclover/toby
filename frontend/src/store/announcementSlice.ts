@@ -1,120 +1,103 @@
-// src/store/announcementSlice.ts
 import { apiSlice } from "./apiSlice";
 
 export type Announcement = {
     id: number;
     userId: number;
     householdId: number;
-    text: string;
-    isPinned?: boolean;
+    message: string;
+    isImportant: boolean;
     createdAt?: string | null;
-    updatedAt?: string | null;
-    publishedAt?: string | null;
-    expiresAt?: string | null;
-};
+    seenByCurrent?: boolean; // Add this to track seen status
+}
 
-export type CreateAnnouncementRequest = {
-    householdId: number;
-    text: string;
-    isPinned?: boolean;
-    publishedAt?: string | null; // ISO string or null
-    expiresAt?: string | null;   // ISO string or null
-};
-
-export type UpdateAnnouncementRequest = {
-    id: number;
-    text?: string;
-    isPinned?: boolean;
-    publishedAt?: string | null;
-    expiresAt?: string | null;
-};
-
-type AnnouncementTag = { type: "Announcement"; id: number | "LIST" };
+export type AnnouncementSeenResponse = {
+    announcementId: number;
+    seenByCurrent: boolean;
+    seenAt: string | null;
+}
 
 export const announcementApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        // GET /announcements/:id
+        // GET all announcements for a household
         getAnnouncements: builder.query<Announcement[], { householdId: number }>({
-            query: ({ householdId }) => ({
-                url: "/announcements",
-                params: { householdId },
-            }),
-            providesTags: (result) =>
+            query: ({ householdId }) => `/announcements?householdId=${householdId}`,
+            providesTags: (result, _error, { householdId }) =>
                 result
                     ? [
-                        ...result.map((a) => ({ type: "Announcement" as const, id: a.id })),
-                        { type: "Announcement", id: "LIST" },
+                        ...result.map(({ id }) => ({ type: 'Announcement' as const, id })),
+                        { type: 'Announcement', id: `HOUSEHOLD_${householdId}` },
                     ]
-                    : [{ type: "Announcement", id: "LIST" }],
-        }),
-        getAnnouncement: builder.query<Announcement, number>({
-            query: (id) => `/announcements/${id}`,
-            providesTags: (result, _err, id): AnnouncementTag[] =>
-                result ? [{ type: "Announcement", id }] : [],
+                    : [{ type: 'Announcement', id: `HOUSEHOLD_${householdId}` }],
         }),
 
-        // POST /announcements/
-        createAnnouncement: builder.mutation<Announcement, CreateAnnouncementRequest>({
-            query: (body) => ({
-                url: `/announcements/`,
+        createAnnouncement: builder.mutation<Announcement, { householdId: number; message: string; isImportant: boolean }>({
+            query: ({ householdId, message, isImportant }) => ({
+                url: `/announcements`,
                 method: "POST",
-                body,
+                body: { householdId, message, isImportant },
             }),
-            invalidatesTags: (_res): AnnouncementTag[] => [
-                // If you later add a list endpoint, this will trigger it to refetch.
-                { type: "Announcement", id: "LIST" },
+            invalidatesTags: (_res, _err, { householdId }) => [
+                { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
             ],
         }),
 
-        // PATCH /announcements/:id
-        updateAnnouncement: builder.mutation<Announcement, UpdateAnnouncementRequest>({
-            query: ({ id, ...patch }) => ({
-                url: `/announcements/${id}`,
-                method: "PATCH",
-                body: patch,
+        updateAnnouncementIsImportant: builder.mutation<Announcement, { announcementId: number; isImportant: boolean }>({
+            query: ({ announcementId, isImportant }) => ({
+                url: `/announcements/${announcementId}`,
+                method: "PUT",
+                body: { isImportant },
             }),
-            invalidatesTags: (res): AnnouncementTag[] =>
-                res
-                    ? [
-                        { type: "Announcement", id: res.id },
-                        { type: "Announcement", id: "LIST" },
-                    ]
-                    : [{ type: "Announcement", id: "LIST" }],
+            invalidatesTags: (res) =>
+                res ? [{ type: "Announcement", id: res.id }] : [],
         }),
 
-        // DELETE /announcements/:id
-        deleteAnnouncement: builder.mutation<void, number>({
-            query: (id) => ({
-                url: `/announcements/${id}`,
+        deleteAnnouncement: builder.mutation<void, { announcementId: number; householdId: number }>({
+            query: ({ announcementId }) => ({
+                url: `/announcements/${announcementId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (_res, _err, id): AnnouncementTag[] => [
-                { type: "Announcement", id },
-                { type: "Announcement", id: "LIST" },
+            invalidatesTags: (_res, _err, { householdId }) => [
+                { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
             ],
         }),
 
-        // If/when you add GET /announcements?householdId=123, uncomment this:
-        // listAnnouncements: builder.query<Announcement[], { householdId: number; active?: boolean; pinnedOnly?: boolean; limit?: number; offset?: number }>({
-        //   query: ({ householdId, active = true, pinnedOnly = false, limit = 20, offset = 0 }) =>
-        //     `/announcements?householdId=${householdId}&active=${active ? 1 : 0}&pinnedOnly=${pinnedOnly ? 1 : 0}&limit=${limit}&offset=${offset}`,
-        //   providesTags: (result): AnnouncementTag[] =>
-        //     result
-        //       ? [
-        //           ...result.map((a) => ({ type: "Announcement" as const, id: a.id })),
-        //           { type: "Announcement", id: "LIST" },
-        //         ]
-        //       : [{ type: "Announcement", id: "LIST" }],
-        // }),
-    }),
-    overrideExisting: false,
-});
+        markAnnouncementSeen: builder.mutation<AnnouncementSeenResponse, { announcementId: number; householdId: number }>({
+            query: ({ announcementId }) => ({
+                url: `/announcements/${announcementId}/seen`,
+                method: "POST",
+            }),
+            invalidatesTags: (_res, _err, { announcementId, householdId }) => [
+                { type: "Announcement", id: announcementId },
+                { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
+            ],
+        }),
+
+        markAnnouncementUnseen: builder.mutation<void, { announcementId: number; householdId: number }>({
+            query: ({ announcementId }) => ({
+                url: `/announcements/${announcementId}/seen`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (_res, _err, { announcementId, householdId }) => [
+                { type: "Announcement", id: announcementId },
+                { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
+            ],
+        }),
+
+        checkAnnouncementSeen: builder.query<AnnouncementSeenResponse, { announcementId: number }>({
+            query: ({ announcementId }) => `/announcements/${announcementId}/seen`,
+            providesTags: (_result, _error, { announcementId }) => [
+                { type: "Announcement", id: announcementId },
+            ],
+        }),
+    })
+})
 
 export const {
     useGetAnnouncementsQuery,
-    useGetAnnouncementQuery,
     useCreateAnnouncementMutation,
-    useUpdateAnnouncementMutation,
+    useUpdateAnnouncementIsImportantMutation,
     useDeleteAnnouncementMutation,
-    // useListAnnouncementsQuery, // when you add the GET collection route
+    useMarkAnnouncementSeenMutation,
+    useMarkAnnouncementUnseenMutation,
+    useCheckAnnouncementSeenQuery, // Changed from Mutation to Query
 } = announcementApi;
