@@ -85,16 +85,16 @@ export const householdSlice = apiSlice.injectEndpoints({
             providesTags: (_result, _err, { listId }) => [{ type: "ShoppingList", id: listId }],
         }),
 
-        getAnnouncements: builder.query<Announcement[], { householdId: number }>({
-            query: ({ householdId }) => `households/${householdId}/announcements`,
-            providesTags: (result, _err, { householdId }) =>
-                result?.length
-                    ? [
-                        ...result.map((a) => ({ type: "Announcement" as const, id: a.id })),
-                        { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
-                    ]
-                    : [{ type: "Announcement", id: `HOUSEHOLD_${householdId}` }],
-        })
+        // getAnnouncements: builder.query<Announcement[], { householdId: number }>({
+        //     query: ({ householdId }) => `households/${householdId}/announcements`,
+        //     providesTags: (result, _err, { householdId }) =>
+        //         result?.length
+        //             ? [
+        //                 ...result.map((a) => ({ type: "Announcement" as const, id: a.id })),
+        //                 { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
+        //             ]
+        //             : [{ type: "Announcement", id: `HOUSEHOLD_${householdId}` }],
+        // })
     })
 })
 

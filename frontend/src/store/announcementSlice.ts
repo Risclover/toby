@@ -8,6 +8,11 @@ export type Announcement = {
     isImportant: boolean;
     createdAt?: string | null;
     seenByCurrent?: boolean; // Add this to track seen status
+    creator: {
+        id: number;
+        name: string;
+        profileImg: string;
+    }
 }
 
 export type AnnouncementSeenResponse = {
@@ -20,7 +25,7 @@ export const announcementApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         // GET all announcements for a household
         getAnnouncements: builder.query<Announcement[], { householdId: number }>({
-            query: ({ householdId }) => `/announcements?householdId=${householdId}`,
+            query: ({ householdId }) => `/households/${householdId}/announcements`,
             providesTags: (result, _error, { householdId }) =>
                 result
                     ? [
