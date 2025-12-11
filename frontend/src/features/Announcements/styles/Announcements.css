@@ -40,8 +40,10 @@
 .single-announcement-header {
     display: flex;
     align-items: flex-start;
+    justify-content: space-between;
     margin-bottom: 0.5rem;
     font-size: 12px;
+    width: 100%;
 }
 
 .single-announcement-header-info {
@@ -81,7 +83,6 @@
     border-radius: 999px;
     padding: 2px 6px;
     border: 1px solid rgb(230, 176, 2);
-    line-height: 1;
     text-transform: uppercase;
     background: rgb(255, 255, 255);
     font-family: "Alan Sans", sans-serif;
@@ -90,4 +91,18 @@
 .single-announcement-importance-label svg {
     font-size: 12px;
     margin-right: 4px;
+}
+
+.single-announcement-header-right {
+    display: flex;
+}
+
+.announcement-menu-btn {
+    color: #aeb2bb;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 0.5rem;
+
 }

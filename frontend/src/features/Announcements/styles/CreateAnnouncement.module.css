@@ -1,0 +1,5 @@
+.input:focus,
+.input:focus-within,
+.input:focus-visible {
+    border-color: inherit;
+}

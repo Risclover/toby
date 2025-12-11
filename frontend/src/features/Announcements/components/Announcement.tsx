@@ -1,5 +1,9 @@
 import { formatAnnouncementTimestamp } from "../utils/formatAnnouncementTimestamp";
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import { Button } from "@mantine/core";
+import { IoEllipsisVerticalSharp } from "react-icons/io5";
+
 
 type Props = {
     creator: {
@@ -27,9 +31,12 @@ export const Announcement = ({ creator, announcement }: Props) => {
                         })()}</span>
                     </div>
                 </div>
-                {announcement.isImportant && <div className="single-announcement-importance-label">
-                    <WarningAmberRoundedIcon /> Important
-                </div>}
+                <div className="single-announcement-header-right">
+                    {announcement.isImportant && <div className="single-announcement-importance-label">
+                        <WarningAmberRoundedIcon /> Important
+                    </div>}
+                    <button className="announcement-menu-btn"><IoEllipsisVerticalSharp /></button>
+                </div>
             </div>
 
             {announcement.message}

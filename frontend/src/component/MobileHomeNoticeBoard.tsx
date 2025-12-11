@@ -1,4 +1,5 @@
 import { Announcements } from "@/features/Announcements/components/Announcements";
+import { CreateAnnouncement } from "@/features/Announcements/components/CreateAnnouncement";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { Button, FloatingIndicator, Tabs } from "@mantine/core";
@@ -52,6 +53,8 @@ export const MobileHomeNoticeBoard = () => {
                 <Button className="add-announcement-btn" radius="xl" variant="filled" size="compact-sm" color="rgb(5, 5, 73)" onClick={() => setShowCreateAnnouncement(true)}>+ Add announcement</Button>
                 <Button color="rgb(5, 5, 73)" radius="xl" variant="transparent" size="compact-sm">View all →</Button>
             </div>
+
+            {showCreateAnnouncement && <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />}
         </div>
     )
 }

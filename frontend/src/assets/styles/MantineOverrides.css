@@ -185,3 +185,7 @@
 .m_14c23465:hover:where(:not([data-disabled])) {
     background-color: var(--input-background);
 }
+
+.announcement-modal-textarea {
+    font-size: 3rem;
+}
