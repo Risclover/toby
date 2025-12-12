@@ -1,4 +1,5 @@
 import { Announcements } from "@/features/Announcements/components/Announcements";
+import AnnouncementsTabOptimistic from "@/features/Announcements/components/AnnouncementsTabOptimistic";
 import { CreateAnnouncement } from "@/features/Announcements/components/CreateAnnouncement";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
@@ -38,7 +39,7 @@ export const MobileHomeNoticeBoard = () => {
                 {showAnnouncements && <div className="mobile-home-notice-board-container">
                     {/* <h2>Announcements</h2> */}
                     <div className="mobile-home-notice-board-content">
-                        <Announcements householdId={user.householdId} />
+                        <AnnouncementsTabOptimistic householdId={user.householdId} active={true} />
                     </div>
                 </div>}
                 {!showAnnouncements && <div className="mobile-home-notice-board-container">

@@ -26,7 +26,7 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
     }
 
     return <Modal radius="lg" className="announcement-modal" opened={opened} onClose={close} title="Add announcement" centered>
-        <Textarea classNames={{ input }} styles={{ input: { background: "transparent", color: "white" } }} radius="md" autosize minRows={2} maxRows={4} placeholder="Ex: Eat your peas" value={message} onChange={(e) => setMessage(e.target.value)} />
+        <Textarea classNames={{ input }} styles={{ input: { background: "transparent", color: "white" } }} radius="md" autosize minRows={2} maxRows={5} maxLength={500} placeholder="Ex: Eat your peas" value={message} onChange={(e) => setMessage(e.target.value)} />
         <Space h="md" />
         <Checkbox size="xs" color="cyan" radius="xs" label="Mark as important" description="Important announcements are highlighted." checked={isImportant} onChange={(e) => setIsImportant(e.currentTarget.checked)} styles={{ label: { fontSize: "1rem" }, description: { color: "var(--sub-text)", fontSize: "0.8rem" } }} />
         <Space h="md" />

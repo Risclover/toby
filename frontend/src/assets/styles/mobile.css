@@ -193,7 +193,6 @@
     border-radius: 12px;
     border: 1px solid transparent;
     background: rgb(239, 240, 247);
-    overflow: hidden;
     /* box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; */
 }
 
@@ -226,11 +225,6 @@
     /* border-radius: 8px; */
     padding: 0.5rem;
     padding-top: 0;
-    overflow: hidden;
-}
-
-.mobile-home-notice-board-content-container {
-    overflow: hidden;
 }
 
 .mobile-home-notice-board-footer {
@@ -262,7 +256,6 @@
 }
 
 .mobile-home-notice-board-content {
-    overflow: hidden;
     background: white;
     box-shadow: inset 2px 2px hsla(0, 0%, 0%, 0.1), 0 -2px 0 hsla(0, 0%, 100%, .15);
     /* padding: 1rem; */

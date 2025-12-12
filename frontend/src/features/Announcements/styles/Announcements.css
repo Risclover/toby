@@ -39,11 +39,12 @@
 
 .single-announcement-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     margin-bottom: 0.5rem;
     font-size: 12px;
     width: 100%;
+    position: relative;
 }
 
 .single-announcement-header-info {
@@ -95,6 +96,7 @@
 
 .single-announcement-header-right {
     display: flex;
+    position: relative;
 }
 
 .announcement-menu-btn {
@@ -105,4 +107,29 @@
     padding: 0;
     margin-left: 0.5rem;
 
+}
+
+.announcement-menu {
+    position: absolute;
+    top: 20px;
+    right: 2px;
+    border-radius: 0.5rem;
+    background: white;
+    /* border: 1px solid rgb(238, 237, 237); */
+    padding: 0.5rem 0.75rem;
+    box-shadow: rgba(14, 63, 126, 0.06) 0px 0px 0px 1px, rgba(42, 51, 70, 0.03) 0px 1px 1px -0.5px, rgba(42, 51, 70, 0.04) 0px 2px 2px -1px, rgba(42, 51, 70, 0.04) 0px 3px 3px -1.5px, rgba(42, 51, 70, 0.03) 0px 5px 5px -2.5px, rgba(42, 51, 70, 0.03) 0px 10px 10px -5px, rgba(42, 51, 70, 0.03) 0px 24px 24px -8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    width: 175px;
+    z-index: 90;
+}
+
+.announcement-menu button {
+    font-size: 0.9rem;
+}
+
+.announcement-menu button:last-child {
+    color: red;
 }

@@ -155,7 +155,7 @@ def mark_announcement_unseen(announcement_id: int):
     announcement = db.session.query(Announcement).get(announcement_id)
 
     if not announcement:
-        abort(404, description="Announcement not found")
+        abort(404, description="Announcement not found")d
 
     user_id = int(current_user.get_id())
 
