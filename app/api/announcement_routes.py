@@ -7,6 +7,7 @@ from app.models import Announcement, AnnouncementSeen, Household
 from datetime import datetime, timedelta, timezone
 import base64
 import pytz
+from sqlalchemy.dialects.postgresql import insert
 
 announcement_routes = Blueprint("announcements", __name__)
 
@@ -37,6 +38,14 @@ def create_announcement():
     )
 
     db.session.add(announcement)
+    db.session.flush()  # Flush to get the announcement.id
+    
+    # Auto-mark as seen for creator
+    seen_record = AnnouncementSeen(
+        announcement_id=announcement.id,
+        user_id=user_id
+    )
+    db.session.add(seen_record)
     db.session.commit()
 
     return jsonify(announcement.to_dict()), 201
@@ -155,7 +164,7 @@ def mark_announcement_unseen(announcement_id: int):
     announcement = db.session.query(Announcement).get(announcement_id)
 
     if not announcement:
-        abort(404, description="Announcement not found")d
+        abort(404, description="Announcement not found")
 
     user_id = int(current_user.get_id())
 
@@ -168,3 +177,29 @@ def mark_announcement_unseen(announcement_id: int):
     db.session.commit()
 
     return ("", 204)
+
+
+@announcement_routes.route("/seen", methods=["POST"])
+def mark_announcements_seen_bulk():
+    """
+    Expect JSON: { "announcementIds": [1,2,3] }
+    Marks those announcements as seen by current user (creates AnnouncementSeen rows).
+    """
+    data = request.get_json() or {}
+    ids = data.get("announcementIds", [])
+    if not isinstance(ids, list) or not ids:
+        return jsonify({"error": "announcementIds required"}), 400
+
+    user_id = int(current_user.get_id())
+
+    try:
+        rows = [{"announcement_id": int(aid), "user_id": user_id} for aid in ids]
+        stmt = insert(AnnouncementSeen).values(rows).on_conflict_do_nothing(
+            index_elements=["announcement_id", "user_id"]
+        )
+        db.session.execute(stmt)
+        db.session.commit()
+        return jsonify({"marked": len(rows)}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "failed to mark seen", "details": str(e)}), 500

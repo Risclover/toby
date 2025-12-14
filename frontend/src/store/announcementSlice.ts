@@ -94,6 +94,21 @@ export const announcementApi = apiSlice.injectEndpoints({
                 { type: "Announcement", id: announcementId },
             ],
         }),
+
+        markAnnouncementsSeenBulk: builder.mutation<{ marked: number }, { householdId: number; announcementIds: number[] }>({
+            query: ({ announcementIds }) => ({
+                url: `/announcements/seen`,
+                method: "POST",
+                body: { announcementIds },
+            }),
+            invalidatesTags: (_res, _err, { householdId, announcementIds }) => {
+                const tags: Array<{ type: "Announcement"; id: number | string }> = [
+                    { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
+                ];
+                announcementIds.forEach((id) => tags.push({ type: "Announcement", id }));
+                return tags;
+            },
+        }),
     })
 })
 
@@ -105,4 +120,5 @@ export const {
     useMarkAnnouncementSeenMutation,
     useMarkAnnouncementUnseenMutation,
     useCheckAnnouncementSeenQuery, // Changed from Mutation to Query
+    useMarkAnnouncementsSeenBulkMutation
 } = announcementApi;

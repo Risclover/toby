@@ -15,6 +15,7 @@ import { useCheckInTodayMutation, useGetUserCheckinsQuery } from "@/store/checki
 import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { DashboardHeader } from "@/component/DashboardHeader";
 import { DashboardGrid } from "@/component/DashboardGrid";
+import { InviteLink } from "@/component/InviteLink";
 
 
 const toISO = (d: Date) => d.toISOString().slice(0, 10); // "YYYY-MM-DD"
@@ -83,6 +84,7 @@ export const Dashboard = () => {
             </header>
             <DashboardGrid />
             <SpeedDial model={items} direction="up" className="speeddial-bottom-right right-10 bottom-10" buttonClassName="p-button-cyan" />
+            <InviteLink opened={showInviteModal} close={() => setShowInviteModal(false)} />
         </div>
     )
 }

@@ -1,6 +1,7 @@
 import { Announcements } from "@/features/Announcements/components/Announcements";
 import AnnouncementsTabOptimistic from "@/features/Announcements/components/AnnouncementsTabOptimistic";
 import { CreateAnnouncement } from "@/features/Announcements/components/CreateAnnouncement";
+import { useGetAnnouncementsQuery } from "@/store/announcementSlice";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { Button, FloatingIndicator, Tabs } from "@mantine/core";
@@ -10,10 +11,11 @@ export const MobileHomeNoticeBoard = () => {
     const [showAnnouncements, setShowAnnouncements] = useState(false);
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
     const [roofRef, setRoofRef] = useState<HTMLDivElement | null>(null);
-    const [value, setValue] = useState<string>("reminders");
+    const [value, setValue] = useState<string | null>("reminders");
 
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: announcements } = useGetAnnouncementsQuery({ householdId: user?.householdId! });
 
     const [controlsRef, setControlsRef] = useState<Record<string, HTMLButtonElement | null>>({});
 
@@ -37,13 +39,11 @@ export const MobileHomeNoticeBoard = () => {
             </div>
             <div className="mobile-home-notice-board-content-container">
                 {showAnnouncements && <div className="mobile-home-notice-board-container">
-                    {/* <h2>Announcements</h2> */}
                     <div className="mobile-home-notice-board-content">
-                        <AnnouncementsTabOptimistic householdId={user.householdId} active={true} />
+                        <Announcements householdId={user.householdId} activeTab={value} />
                     </div>
                 </div>}
                 {!showAnnouncements && <div className="mobile-home-notice-board-container">
-                    {/* <h2>Reminders</h2> */}
                     <div className="mobile-home-notice-board-content">
                         <p>No new reminders.</p>
                     </div>
@@ -52,7 +52,7 @@ export const MobileHomeNoticeBoard = () => {
 
             <div className="mobile-home-notice-board-footer">
                 <Button className="add-announcement-btn" radius="xl" variant="filled" size="compact-sm" color="rgb(5, 5, 73)" onClick={() => setShowCreateAnnouncement(true)}>+ Add announcement</Button>
-                <Button color="rgb(5, 5, 73)" radius="xl" variant="transparent" size="compact-sm">View all →</Button>
+                {announcements && announcements.length > 0 && <Button color="rgb(5, 5, 73)" radius="xl" variant="transparent" size="compact-sm">View all →</Button>}
             </div>
 
             {showCreateAnnouncement && <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />}

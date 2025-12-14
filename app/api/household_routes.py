@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models import Household, TodoList, TodoListMember, Announcement, AnnouncementSeen
+from sqlalchemy.orm import aliased
+from sqlalchemy import outerjoin
 
 
 household_routes = Blueprint('households', __name__)
@@ -104,21 +106,27 @@ def list_announcements(household_id: int):
         return jsonify({"error": "Household not found"}), 404
 
     user_id = int(current_user.get_id())
-    
-    announcements = household.announcements if household else []
-    
+
+    # Join announcements to announcements_seen for current user
+    # Left join such that seen_by may be None
+    seen_alias = aliased(AnnouncementSeen)
+    q = (
+        db.session.query(Announcement, seen_alias.seen_at.label("seen_at"))
+        .outerjoin(
+            seen_alias,
+            (Announcement.id == seen_alias.announcement_id) & (seen_alias.user_id == user_id)
+        )
+        .filter(Announcement.household_id == household_id)
+        .order_by(Announcement.created_at.desc())
+    )
+        
     # Add seen status for current user
     result = []
-    for announcement in announcements:
-        ann_dict = announcement.to_dict()
-        
-        # Check if current user has seen it
-        seen_record = db.session.query(AnnouncementSeen).filter_by(
-            announcement_id=announcement.id,
-            user_id=user_id
-        ).first()
-        
-        ann_dict['seenByCurrent'] = seen_record is not None
-        result.append(ann_dict)
     
+    for ann, seen_at in q.all():
+        ann_dict = ann.to_dict()
+        ann_dict["seenByCurrent"] = seen_at is not None
+        ann_dict["seenAt"] = seen_at.isoformat() if seen_at else None 
+        result.append(ann_dict)
+
     return jsonify(result)

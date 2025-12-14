@@ -7,7 +7,8 @@ export function formatAnnouncementTimestamp(iso?: string | null): { day: string;
     if (isNaN(date.getTime())) return "";
 
     const now = new Date();
-
+    console.log('now:', now);
+    console.log('date:', date);
     // How many whole calendar days between "now" and "date"
     const diffDays = differenceInCalendarDays(
         now, date
