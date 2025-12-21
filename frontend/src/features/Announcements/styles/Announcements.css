@@ -57,10 +57,15 @@
     align-items: center;
 }
 
+.single-announcement-header-left img {
+    cursor: pointer;
+}
+
 .single-announcement-creator {
     font-weight: 700;
     /* line-height: 1.1; */
     /* color: gray; */
+    cursor: pointer;
 }
 
 .single-announcement-timestamp {
@@ -72,6 +77,9 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
+}
+
+.single-announcement-header-left a {
     margin-right: 6px;
 }
 

@@ -7,7 +7,6 @@ from app.models import Announcement, AnnouncementSeen, Household
 from datetime import datetime, timedelta, timezone
 import base64
 import pytz
-from sqlalchemy.dialects.postgresql import insert
 
 announcement_routes = Blueprint("announcements", __name__)
 

@@ -6,10 +6,12 @@ import { IoEllipsisVerticalSharp } from "react-icons/io5";
 import { AnnouncementMenu } from "./AnnouncementMenu";
 import { useRef, useState } from "react";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { Link, useNavigate } from "react-router-dom";
 
 
 type Props = {
     creator: {
+        id: number;
         name: string;
         profileImg: string;
     };
@@ -26,6 +28,7 @@ type Props = {
 };
 
 export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, onCloseMenu }: Props) => {
+    const navigate = useNavigate();
     const wrapperRef = useRef(null);
     const [showAnnouncementMenu, setShowAnnouncementMenu] = useState(false);
 
@@ -37,9 +40,9 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
         <div className={`single-announcement${announcement?.isImportant ? " important-announcement" : ""}`}>
             <div className="single-announcement-header">
                 <div className="single-announcement-header-left">
-                    <img src={creator?.profileImg} />
+                    <Link target="_blank" to={`/users/${creator?.id}`}><img src={creator?.profileImg} /></Link>
                     <div className="single-announcement-header-info">
-                        <span className="single-announcement-creator">{creator?.name}</span>
+                        <Link target="_blank" to={`/users/${creator?.id}`} className="single-announcement-creator">{creator?.name}</Link>
                         <span className="single-announcement-timestamp">{(() => {
                             const ts = formatAnnouncementTimestamp(announcement.createdAt ?? null);
                             return typeof ts === "string" ? ts : `${ts?.day} · ${ts?.time}`;
