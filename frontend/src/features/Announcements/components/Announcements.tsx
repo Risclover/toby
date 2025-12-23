@@ -101,12 +101,6 @@ export const Announcements = ({ householdId, activeTab }: Props) => {
 
     const visibleAnnouncements = unseenAnnouncements && unseenAnnouncements.length > MAX_ANNOUNCEMENTS_DISPLAYED ? unseenAnnouncements : [...unseenAnnouncements, ...seenAnnouncements].slice(0, MAX_ANNOUNCEMENTS_DISPLAYED);
 
-    useEffect(() => {
-        if (activeTab === "announcements") {
-            console.log('annoucnements tab active');
-        }
-    }, [activeTab]);
-
     return <div className="announcements-container">
         {announcements?.length === 0 && <div>No announcements.</div>}
         {/* sort options dropdown (A-Z, Z-A, date ^, date v, importance) */}

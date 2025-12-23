@@ -7,7 +7,7 @@ import { AnnouncementMenu } from "./AnnouncementMenu";
 import { useRef, useState } from "react";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useAuthenticateQuery } from "@/store/authSlice";
 
 type Props = {
     creator: {
@@ -32,6 +32,8 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
     const wrapperRef = useRef(null);
     const [showAnnouncementMenu, setShowAnnouncementMenu] = useState(false);
 
+    const { data: user } = useAuthenticateQuery();
+
     useOutsideClick(wrapperRef, () => onCloseMenu(), isMenuOpen);
 
     console.log("announcement:", announcement);
@@ -53,12 +55,12 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
                     {announcement?.isImportant && <div className="single-announcement-importance-label">
                         <WarningAmberRoundedIcon /> Important
                     </div>}
-                    <button data-outside-ignore className="announcement-menu-btn" onClick={onToggleMenu}>
+                    {user.id === creator.id && <button data-outside-ignore className="announcement-menu-btn" onClick={onToggleMenu}>
                         <IoEllipsisVerticalSharp />
-                    </button>
+                    </button>}
                 </div>
                 {!announcement.seenByCurrent && <div className="announcement-unseen-indicator">(New)</div>}
-                {isMenuOpen && <AnnouncementMenu ref={wrapperRef} announcement={announcement} />}
+                {isMenuOpen && <AnnouncementMenu ref={wrapperRef} announcement={announcement} onCloseMenu={onCloseMenu} />}
             </div>
 
             {announcement?.message}

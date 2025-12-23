@@ -109,6 +109,18 @@ export const announcementApi = apiSlice.injectEndpoints({
                 return tags;
             },
         }),
+
+        toggleAnnouncementImportance: builder.mutation<Announcement, { announcementId: number; isImportant: boolean; householdId: number }>({
+            query: ({ announcementId, isImportant }) => ({
+                url: `/announcements/${announcementId}/importance`,
+                method: "PUT",
+                body: { isImportant },
+            }),
+            invalidatesTags: (_res, _err, { announcementId, householdId }) => [
+                { type: "Announcement", id: announcementId },
+                { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
+            ],
+        })
     })
 })
 
@@ -120,5 +132,6 @@ export const {
     useMarkAnnouncementSeenMutation,
     useMarkAnnouncementUnseenMutation,
     useCheckAnnouncementSeenQuery, // Changed from Mutation to Query
-    useMarkAnnouncementsSeenBulkMutation
+    useMarkAnnouncementsSeenBulkMutation,
+    useToggleAnnouncementImportanceMutation
 } = announcementApi;

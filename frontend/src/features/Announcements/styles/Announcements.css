@@ -25,6 +25,7 @@
     background: white;
     color: black;
     /* font-weight: 10 */
+    overflow-wrap: break-word;
 }
 
 .single-announcement:not(:last-child) {
@@ -139,5 +140,23 @@
 }
 
 .announcement-menu button:last-child {
+    color: red;
+}
+
+.create-announcement-error {
+    font-size: 0.8rem;
+    color: var(--mantine-color-red-5);
+}
+
+.create-announcement-subtext {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.8rem;
+    padding-top: 5px;
+}
+
+.create-announcement-remaining.remaining-none {
     color: red;
 }

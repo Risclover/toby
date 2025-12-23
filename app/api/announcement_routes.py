@@ -202,3 +202,21 @@ def mark_announcements_seen_bulk():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "failed to mark seen", "details": str(e)}), 500
+
+@announcement_routes.route("/<int:id>/importance", methods=["PUT"])
+def toggle_importance(id):
+    """
+    Toggle the importance of an announcement
+    """
+    announcement = Announcement.query.get(id)
+    if not announcement:
+        abort(404, description="Announcement not found")
+    
+    user_id = int(current_user.get_id())
+
+    if announcement.user_id != user_id:
+        abort(403, description="Only the creator can toggle importance")
+    
+    announcement.is_important = not announcement.is_important
+    db.session.commit()
+    return jsonify(announcement.to_dict())
