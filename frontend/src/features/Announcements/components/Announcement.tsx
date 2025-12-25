@@ -1,13 +1,12 @@
 import { formatAnnouncementTimestamp } from "../utils/formatAnnouncementTimestamp";
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import { Button } from "@mantine/core";
 import { IoEllipsisVerticalSharp } from "react-icons/io5";
 import { AnnouncementMenu } from "./AnnouncementMenu";
 import { useRef, useState } from "react";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuthenticateQuery } from "@/store/authSlice";
+import { AnnouncementDeleteConfirmation } from "./AnnouncementDeleteConfirmation";
 
 type Props = {
     creator: {
@@ -16,7 +15,8 @@ type Props = {
         profileImg: string;
     };
     announcement: {
-        id: number; // make sure you have this
+        id: number;
+        householdId: number;
         message: string;
         createdAt?: string | null | undefined;
         isImportant: boolean;
@@ -28,15 +28,10 @@ type Props = {
 };
 
 export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, onCloseMenu }: Props) => {
-    const navigate = useNavigate();
-    const wrapperRef = useRef(null);
-    const [showAnnouncementMenu, setShowAnnouncementMenu] = useState(false);
-
+    const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement | null>(null);
     const { data: user } = useAuthenticateQuery();
-
     useOutsideClick(wrapperRef, () => onCloseMenu(), isMenuOpen);
-
-    console.log("announcement:", announcement);
 
     return (
         <div className={`single-announcement${announcement?.isImportant ? " important-announcement" : ""}`}>
@@ -60,7 +55,8 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
                     </button>}
                 </div>
                 {!announcement.seenByCurrent && <div className="announcement-unseen-indicator">(New)</div>}
-                {isMenuOpen && <AnnouncementMenu ref={wrapperRef} announcement={announcement} onCloseMenu={onCloseMenu} />}
+                {isMenuOpen && <AnnouncementMenu ref={wrapperRef} announcement={announcement} onCloseMenu={onCloseMenu} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
+                {openDeleteConfirmation && <AnnouncementDeleteConfirmation announcement={announcement} openDeleteConfirmation={openDeleteConfirmation} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
             </div>
 
             {announcement?.message}
