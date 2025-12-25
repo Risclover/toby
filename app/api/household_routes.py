@@ -3,10 +3,23 @@ from flask_login import login_required, current_user
 from app.extensions import db
 from app.models import Household, TodoList, TodoListMember, Announcement, AnnouncementSeen
 from sqlalchemy.orm import aliased
-from sqlalchemy import outerjoin
-
+from sqlalchemy import outerjoin, or_, and_
+import base64
+from datetime import datetime
+import json
 
 household_routes = Blueprint('households', __name__)
+
+def encode_cursor(payload: dict) -> str:
+    raw = json.dumps(payload).encode("utf-8")
+    return base64.urlsafe_b64encode(raw).decode("utf-8")
+
+def decode_cursor(cursor: str) -> dict:
+    try:
+        decoded_bytes = base64.urlsafe_b64decode(cursor.encode("utf-8"))
+        return json.loads(decoded_bytes.decode("utf-8"))
+    except Exception:
+        raise ValueError("Invalid cursor")
 
 @household_routes.route("/<int:id>")
 def get_household(id):
@@ -102,14 +115,10 @@ def list_announcements(household_id: int):
         return jsonify({"error": "Household not found"}), 404
 
     user_id = int(current_user.get_id())
+    limit = int(request.args.get("limit", 10))
+    page = int(request.args.get("page", 1))  # <-- page number
 
-    # Params
-    limit = min(int(request.args.get("limit", 10)), 50)
-    cursor = request.args.get("cursor")
-    sort = request.args.get("sort", "newest")
-    important_only = request.args.get("important_only") == "true"
-    creator_id = request.args.get("creator_id")
-    seen_filter = request.args.get("seen")  # seen | unseen | None
+    offset = (page - 1) * limit
 
     seen_alias = aliased(AnnouncementSeen)
 
@@ -124,104 +133,29 @@ def list_announcements(household_id: int):
             & (seen_alias.user_id == user_id)
         )
         .filter(Announcement.household_id == household_id)
+        .order_by(
+            Announcement.created_at.desc(),
+            Announcement.id.desc()
+        )
+        .offset(offset)
+        .limit(limit)
     )
 
-    # Filters
-    if important_only:
-        q = q.filter(Announcement.is_important.is_(True))
+    rows = q.all()
 
-    if creator_id:
-        q = q.filter(Announcement.user_id == int(creator_id))
-
-    if seen_filter == "seen":
-        q = q.filter(seen_alias.seen_at.isnot(None))
-    elif seen_filter == "unseen":
-        q = q.filter(seen_alias.seen_at.is_(None))
-
-    # Cursor parsing
-    if cursor:
-        cursor_ts, cursor_id = cursor.split("|")
-        cursor_dt = datetime.fromisoformat(cursor_ts)
-        cursor_id = int(cursor_id)
-
-    # Sorting + cursor logic
-    if sort == "important":
-        q = q.order_by(
-            Announcement.is_important.desc(),
-            Announcement.created_at.desc(),
-            Announcement.id.desc()
-        )
-
-        if cursor:
-            q = q.filter(
-                or_(
-                    Announcement.is_important < True,
-                    and_(
-                        Announcement.is_important == True,
-                        or_(
-                            Announcement.created_at < cursor_dt,
-                            and_(
-                                Announcement.created_at == cursor_dt,
-                                Announcement.id < cursor_id
-                            )
-                        )
-                    )
-                )
-            )
-
-    elif sort == "oldest":
-        q = q.order_by(
-            Announcement.created_at.asc(),
-            Announcement.id.asc()
-        )
-
-        if cursor:
-            q = q.filter(
-                or_(
-                    Announcement.created_at > cursor_dt,
-                    and_(
-                        Announcement.created_at == cursor_dt,
-                        Announcement.id > cursor_id
-                    )
-                )
-            )
-
-    else:  # newest
-        q = q.order_by(
-            Announcement.created_at.desc(),
-            Announcement.id.desc()
-        )
-
-        if cursor:
-            q = q.filter(
-                or_(
-                    Announcement.created_at < cursor_dt,
-                    and_(
-                        Announcement.created_at == cursor_dt,
-                        Announcement.id < cursor_id
-                    )
-                )
-            )
-
-    rows = q.limit(limit + 1).all()
-    has_next_page = len(rows) > limit
-    rows = rows[:limit]
-
-    result = []
-    next_cursor = None
-
+    items = []
     for ann, seen_at in rows:
-        ann_dict = ann.to_dict()
-        ann_dict["seenByCurrent"] = seen_at is not None
-        ann_dict["seenAt"] = seen_at.isoformat() if seen_at else None
-        result.append(ann_dict)
+        data = ann.to_dict()
+        data["seenByCurrent"] = seen_at is not None
+        data["seenAt"] = seen_at.isoformat() if seen_at else None
+        items.append(data)
 
-    if has_next_page:
-        last = rows[-1][0]
-        next_cursor = f"{last.created_at.isoformat()}|{last.id}"
+    total_count = Announcement.query.filter_by(household_id=household_id).count()
+    total_pages = (total_count + limit - 1) // limit
 
     return jsonify({
-        "items": result,
-        "nextCursor": next_cursor,
-        "hasNextPage": has_next_page
+        "items": items,
+        "page": page,
+        "totalPages": total_pages,
+        "hasNextPage": page < total_pages
     })

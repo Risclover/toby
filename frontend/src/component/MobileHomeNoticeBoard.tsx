@@ -42,7 +42,7 @@ export const MobileHomeNoticeBoard = () => {
             <div className="mobile-home-notice-board-content-container">
                 {showAnnouncements && <div className="mobile-home-notice-board-container">
                     <div className="mobile-home-notice-board-content">
-                        <Announcements householdId={user.householdId} activeTab={value} />
+                        <Announcements householdId={user.householdId} activeTab={value} maxDisplayed={4} fullPage={false} />
                     </div>
                 </div>}
                 {!showAnnouncements && <div className="mobile-home-notice-board-container">

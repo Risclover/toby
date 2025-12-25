@@ -1,119 +1,110 @@
-import { useGetAnnouncementsQuery, useMarkAnnouncementsSeenBulkMutation } from "@/store/announcementSlice"
-import "../styles/Announcements.css"
-import { Button, Modal } from "@mantine/core";
-import { act, useEffect, useMemo, useRef, useState } from "react";
+import { useGetAnnouncementsQuery, useMarkAnnouncementsSeenBulkMutation } from "@/store/announcementSlice";
+import "../styles/Announcements.css";
+import { Button } from "@mantine/core";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CreateAnnouncement } from "./CreateAnnouncement";
-import { formatAnnouncementTimestamp } from "../utils/formatAnnouncementTimestamp";
 import { Announcement } from "./Announcement";
-import AnnouncementsTabOptimistic from "./AnnouncementsTabOptimistic";
 
 type Props = {
     householdId: number;
-    activeTab: string | null;
-}
+    activeTab?: string | null;
+    maxDisplayed?: number; // Only used in homepage mode
+    fullPage?: boolean; // Toggle between full page or homepage view
+};
 
-type Announcement = {
-    id: number;
-    message: string;
-    householdId: number;
-    isImportant: boolean;
-    createdAt?: string | null | undefined;
-    seenByCurrent?: boolean | undefined;
-}
-
-export const Announcements = ({ householdId, activeTab }: Props) => {
+export const Announcements = ({ householdId, activeTab = null, maxDisplayed = 4, fullPage = false }: Props) => {
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
-
+    const [page, setPage] = useState(1);
     const [openMenuAnnouncementId, setOpenMenuAnnouncementId] = useState<number | null>(null);
 
-    const {
-        data,
-        isFetching,
-        refetch,
-    } = useGetAnnouncementsQuery({ householdId }, {
-        skip: activeTab !== "announcements",
-        refetchOnMountOrArgChange: true,
-    });
+    // Determine limit for query
+    const queryLimit = fullPage ? 10 : 50; // 50 for homepage to slice visibleAnnouncements
+
+    const { data, isFetching } = useGetAnnouncementsQuery(
+        { householdId, limit: queryLimit, page: fullPage ? page : undefined },
+        { skip: activeTab !== null && activeTab !== "announcements", refetchOnMountOrArgChange: true }
+    );
 
     const [markSeen] = useMarkAnnouncementsSeenBulkMutation();
-
-    /**
-     * Guard so we only mark seen ONCE per tab entry
-     * Prevents re-marking on re-renders
-     */
     const hasMarkedSeenRef = useRef(false);
 
-    /**
-     * Reset guard whenever user leaves Announcements tab
-     */
+    // Reset seen guard if leaving tab
     useEffect(() => {
         if (activeTab !== "announcements") {
             hasMarkedSeenRef.current = false;
         }
     }, [activeTab]);
 
-    /**
-     * Mark unseen announcements as seen
-     * ONLY when:
-     * - Announcements tab is active
-     * - Data is loaded
-     * - We haven't already done it for this tab entry
-     */
+    // Mark unseen announcements as seen
     useEffect(() => {
-        if (activeTab !== "announcements") return;
-        if (hasMarkedSeenRef.current) return;
-        if (!data?.items.length) return;
+        if (activeTab !== "announcements" || hasMarkedSeenRef.current || !data?.items?.length) return;
 
-        const unseenIds = data?.items
-            .filter((a) => !a.seenByCurrent)
-            .map((a) => a.id);
-
+        const unseenIds = data.items.filter(a => !a.seenByCurrent).map(a => a.id);
         if (unseenIds.length === 0) {
             hasMarkedSeenRef.current = true;
             return;
         }
 
         hasMarkedSeenRef.current = true;
-
-        // Fire and forget — optimistic update is handled in the mutation
         markSeen({ householdId, announcementIds: unseenIds });
     }, [activeTab, data?.items, householdId, markSeen]);
 
-    /**
-     * Sort by:
-     * - date
-     * - alphabet
-     * - important first
-     * - unseen first
-     */
-
+    // Sort announcements by newest first
     const sortedAnnouncements = useMemo(() => (data?.items ?? []).slice().sort((a, b) => {
         const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-
-        // Newest first
         return bTime - aTime;
     }), [data?.items]);
 
-    const announcements = data?.items ?? [];
-    const MAX_ANNOUNCEMENTS_DISPLAYED = 4;
-    const unseenAnnouncements = announcements.filter(a => !a.seenByCurrent);
-    const seenAnnouncements = announcements.filter(a => a.seenByCurrent);
+    // Determine visible announcements
+    let visibleAnnouncements = sortedAnnouncements;
 
-    const visibleAnnouncements = unseenAnnouncements && unseenAnnouncements.length > MAX_ANNOUNCEMENTS_DISPLAYED ? unseenAnnouncements : [...unseenAnnouncements, ...seenAnnouncements].slice(0, MAX_ANNOUNCEMENTS_DISPLAYED);
+    if (!fullPage) {
+        const unseenAnnouncements = sortedAnnouncements.filter(a => !a.seenByCurrent);
+        const seenAnnouncements = sortedAnnouncements.filter(a => a.seenByCurrent);
 
-    return <div className="announcements-container">
-        {data?.items.length === 0 && <div>No announcements.</div>}
-        {/* sort options dropdown (A-Z, Z-A, date ^, date v, importance) */}
-        {visibleAnnouncements.map(announcement => <Announcement key={announcement?.id} creator={announcement?.creator} announcement={announcement} isMenuOpen={openMenuAnnouncementId === announcement?.id}
-            onToggleMenu={() =>
-                setOpenMenuAnnouncementId((prev) => (prev === announcement?.id ? null : announcement.id))
+        visibleAnnouncements =
+            unseenAnnouncements.length >= maxDisplayed
+                ? unseenAnnouncements.slice(0, maxDisplayed)
+                : [...unseenAnnouncements, ...seenAnnouncements].slice(0, maxDisplayed);
+    }
+
+    // Pagination handlers (only for fullPage)
+    const loadNextPage = () => { if (data?.hasNextPage) setPage(prev => prev + 1); };
+    const loadPrevPage = () => { if (page > 1) setPage(prev => prev - 1); };
+
+    return (
+        <div className="announcements-container">
+            {fullPage && (
+                <div className="pagination-buttons" style={{ marginBottom: "1rem" }}>
+                    <Button onClick={loadPrevPage} disabled={page === 1 || isFetching} style={{ marginRight: "0.5rem" }}>
+                        Previous Page
+                    </Button>
+                    <Button onClick={loadNextPage} disabled={!data?.hasNextPage || isFetching}>
+                        Next Page
+                    </Button>
+                    <span style={{ marginLeft: "1rem" }}>
+                        Page {page} {data?.totalPages ? `of ${data.totalPages}` : ""}
+                    </span>
+                </div>
+            )}
+
+            {visibleAnnouncements.length === 0 && <div>No announcements.</div>}
+
+            {visibleAnnouncements.map(a => (
+                <Announcement
+                    key={a.id}
+                    creator={a.creator}
+                    announcement={a}
+                    isMenuOpen={openMenuAnnouncementId === a.id}
+                    onToggleMenu={() => setOpenMenuAnnouncementId(prev => (prev === a.id ? null : a.id))}
+                    onCloseMenu={() => setOpenMenuAnnouncementId(null)}
+                />
+            ))}
+
+            {showCreateAnnouncement &&
+                <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />
             }
-            onCloseMenu={() => setOpenMenuAnnouncementId(null)} />
-        )}
-        {/* <Button onClick={() => setShowCreateAnnouncement(true)}>Add announcement</Button> */}
-        {showCreateAnnouncement &&
-            <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />
-        }
-    </div >
-}
+        </div>
+    );
+};

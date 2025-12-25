@@ -1,3 +1,4 @@
+import { MobileAnnouncementsFull } from "@/component/MobileAnnouncementsFull";
 import { MobileAnnouncementsHeader } from "@/component/MobileAnnouncementsHeader";
 import { MobileLayout } from "@/layout/MobileLayout"
 import { Button } from "@mantine/core";
@@ -14,6 +15,7 @@ export const MobileAnnouncements = () => {
     return (
         <MobileLayout titleComponent={title}>
             <MobileAnnouncementsHeader />
+            <MobileAnnouncementsFull />
         </MobileLayout>
     )
 }
