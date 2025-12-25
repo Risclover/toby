@@ -32,21 +32,20 @@ export const announcementApi = apiSlice.injectEndpoints({
         // GET all announcements for a household
         getAnnouncements: builder.query<
             AnnouncementsResponse,
-            { householdId: number; limit?: number; page?: number; search?: string }
+            { householdId: number; limit?: number; page?: number; search?: string; sort?: string }
         >({
-            query: ({ householdId, limit = 10, page = 1, search }) => ({
+            query: ({ householdId, limit = 10, page = 1, search, sort }) => ({
                 url: `/households/${householdId}/announcements`,
-                params: { limit, page, search },
+                params: { limit, page, search, sort },
             }),
             serializeQueryArgs: ({ endpointName, queryArgs }) => {
-                const { page, search, ...rest } = queryArgs;
-                return `${endpointName}-${JSON.stringify(rest)}-page${page}-search${search || ""}`;
+                const { page, search, sort, ...rest } = queryArgs;
+                return `${endpointName}-${JSON.stringify(rest)}-page${page}-search${search || ""}-sort${sort || ""}`;
             },
             providesTags: (result, _error, { householdId }) => {
                 if (!result || !Array.isArray(result.items)) {
                     return [{ type: "Announcement", id: `HOUSEHOLD_${householdId}` }];
                 }
-
                 return [
                     ...result.items.map(({ id }) => ({ type: "Announcement" as const, id })),
                     { type: "Announcement", id: `HOUSEHOLD_${householdId}` },

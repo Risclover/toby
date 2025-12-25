@@ -116,8 +116,9 @@ def list_announcements(household_id: int):
 
     user_id = int(current_user.get_id())
     limit = int(request.args.get("limit", 10))
-    page = int(request.args.get("page", 1))  # for page-based pagination
+    page = int(request.args.get("page", 1))
     search = (request.args.get("search") or "").strip()
+    sort = request.args.get("sort", "")
 
     seen_alias = aliased(AnnouncementSeen)
 
@@ -128,20 +129,26 @@ def list_announcements(household_id: int):
         )
         .outerjoin(
             seen_alias,
-            (Announcement.id == seen_alias.announcement_id)
-            & (seen_alias.user_id == user_id)
+            (Announcement.id == seen_alias.announcement_id) & (seen_alias.user_id == user_id)
         )
         .filter(Announcement.household_id == household_id)
     )
 
-    # Apply search filter
+    # Search filter
     if search:
         q = q.filter(Announcement.message.ilike(f"%{search}%"))
 
-    # Order by newest first
-    q = q.order_by(Announcement.created_at.desc(), Announcement.id.desc())
+    # Sort
+    if sort == "Newest":
+        q = q.order_by(Announcement.created_at.desc(), Announcement.id.desc())
+    elif sort == "Oldest":
+        q = q.order_by(Announcement.created_at.asc(), Announcement.id.asc())
+    elif sort == "Important first":
+        q = q.order_by(Announcement.is_important.desc(), Announcement.created_at.desc(), Announcement.id.desc())
+    else:  # default newest
+        q = q.order_by(Announcement.created_at.desc(), Announcement.id.desc())
 
-    # Pagination logic
+    # Pagination
     total_count = q.count()
     total_pages = (total_count + limit - 1) // limit
     offset = (page - 1) * limit

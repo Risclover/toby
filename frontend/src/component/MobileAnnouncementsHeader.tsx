@@ -6,8 +6,10 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 type Props = {
     searchValue: string;
     setSearchValue: React.Dispatch<SetStateAction<string>>;
+    sortOption: "Newest" | "Oldest" | "Important first" | null;
+    setSortOption: React.Dispatch<SetStateAction<"Newest" | "Oldest" | "Important first" | null>>;
 }
-export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue }: Props) => {
+export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue, sortOption, setSortOption }: Props) => {
     const combobox = useCombobox();
 
     const [value, setValue] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue }: Props
                 }
             />
             <Combobox size="xs" store={combobox} onOptionSubmit={(val) => {
-                setValue(val);
+                setSortOption(val as any);
                 combobox.closeDropdown();
             }}
             >
@@ -48,11 +50,11 @@ export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue }: Props
                         type="button"
                         pointer
                         rightSection={
-                            value !== null ? (
+                            sortOption ? (
                                 <CloseButton
                                     size="sm"
                                     onMouseDown={(event) => event.preventDefault()}
-                                    onClick={() => setValue(null)}
+                                    onClick={() => setSortOption(null)}
                                     aria-label="Clear value"
                                 />
                             ) : (
@@ -60,9 +62,9 @@ export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue }: Props
                             )
                         }
                         onClick={() => combobox.toggleDropdown()}
-                        rightSectionPointerEvents={value === null ? 'none' : 'all'}
+                        rightSectionPointerEvents={sortOption === null ? 'none' : 'all'}
                     >
-                        {value || <Input.Placeholder>Sort by</Input.Placeholder>}
+                        {sortOption || <Input.Placeholder>Sort by</Input.Placeholder>}
                     </InputBase>
                 </Combobox.Target>
                 <Combobox.Dropdown>
