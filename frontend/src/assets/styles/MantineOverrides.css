@@ -17,7 +17,7 @@
     background: var(--input-background) !important;
 }
 
-.mantine-TextInput-input {
+/* .mantine-TextInput-input {
     background: var(--input-background) !important;
 }
 
@@ -112,7 +112,6 @@
     width: 100%;
 }
 
-/* (Optional) keep avatar size consistent */
 .nav-profile .mantine-Avatar-root {
     width: 36px;
     height: 36px;
@@ -188,4 +187,4 @@
 
 .announcement-modal-textarea {
     font-size: 3rem;
-}
+} */

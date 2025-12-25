@@ -76,7 +76,15 @@
     font-weight: 500;
     margin: 1.5rem 1rem;
     line-height: 1;
+}
 
+.title-announcements {
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.title-announcements button {
+    padding: 0;
 }
 
 .mobile-home-calendar-container {
@@ -120,7 +128,8 @@
     color: white;
 }
 
-.mobile-home-nav-grid {
+.mobile-home-nav-grid,
+.mobile-announcements-header {
     display: flex;
     /* gap: 1.5rem; */
     align-items: center;
@@ -130,6 +139,13 @@
     margin-bottom: 1rem;
     flex-wrap: wrap;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+.mobile-announcements-header {
+    justify-content: center;
+    gap: .5rem;
+    padding: 0.8rem 1rem !important;
+    flex-wrap: nowrap;
 }
 
 /* .mobile-home-nav-grid-btn {
@@ -196,7 +212,8 @@
     /* box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; */
 }
 
-.mobile-home-notice-board-header {
+.mobile-home-notice-board-header,
+.mobile-announcements-header {
     /* display: flex;
     align-items: center;
     justify-content: space-between; */
@@ -343,4 +360,17 @@
 
 .mobile-home-notice-board-header .tab[data-active] {
     color: white;
+}
+
+.announcements-sort {
+    min-width: 120px;
+}
+
+.mobile-announcements-header .mantine-Input-input {
+    font-family: "Alan Sans", sans-serif;
+}
+
+.mantine-Combobox-options {
+    width: 100%;
+    font-family: "Alan Sans", sans-serif;
 }

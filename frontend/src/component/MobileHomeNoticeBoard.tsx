@@ -6,8 +6,10 @@ import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { Button, FloatingIndicator, Tabs } from "@mantine/core";
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 export const MobileHomeNoticeBoard = () => {
+    const navigate = useNavigate();
     const [showAnnouncements, setShowAnnouncements] = useState(false);
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
     const [roofRef, setRoofRef] = useState<HTMLDivElement | null>(null);
@@ -15,7 +17,7 @@ export const MobileHomeNoticeBoard = () => {
 
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
-    const { data: announcements } = useGetAnnouncementsQuery({ householdId: user?.householdId! });
+    const { data } = useGetAnnouncementsQuery({ householdId: user?.householdId! });
 
     const [controlsRef, setControlsRef] = useState<Record<string, HTMLButtonElement | null>>({});
 
@@ -52,7 +54,7 @@ export const MobileHomeNoticeBoard = () => {
 
             <div className="mobile-home-notice-board-footer">
                 <Button className="add-announcement-btn" radius="xl" variant="filled" size="compact-sm" color="rgb(5, 5, 73)" onClick={() => setShowCreateAnnouncement(true)}>+ Add announcement</Button>
-                {announcements && announcements.length > 0 && <Button color="rgb(5, 5, 73)" radius="xl" variant="transparent" size="compact-sm">View all →</Button>}
+                {data?.items && data?.items.length > 0 && <Button color="rgb(5, 5, 73)" radius="xl" variant="transparent" size="compact-sm" onClick={() => navigate("/announcements")}>View all →</Button>}
             </div>
 
             {showCreateAnnouncement && <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />}

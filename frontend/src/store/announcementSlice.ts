@@ -21,18 +21,65 @@ export type AnnouncementSeenResponse = {
     seenAt: string | null;
 }
 
+export type AnnouncementsResponse = {
+    items: Announcement[];
+    nextCursor: string | null;
+    hasNextPage: boolean;
+};
+
 export const announcementApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         // GET all announcements for a household
-        getAnnouncements: builder.query<Announcement[], { householdId: number }>({
-            query: ({ householdId }) => `/households/${householdId}/announcements`,
-            providesTags: (result, _error, { householdId }) =>
-                result
-                    ? [
-                        ...result.map(({ id }) => ({ type: 'Announcement' as const, id })),
-                        { type: 'Announcement', id: `HOUSEHOLD_${householdId}` },
-                    ]
-                    : [{ type: 'Announcement', id: `HOUSEHOLD_${householdId}` }],
+        getAnnouncements: builder.query<
+            AnnouncementsResponse,
+            {
+                householdId: number;
+                limit?: number;
+                cursor?: string | null;
+                sort?: "newest" | "oldest" | "important";
+                importantOnly?: boolean;
+                creatorId?: number;
+                seen?: "seen" | "unseen";
+            }
+        >({
+            query: ({
+                householdId,
+                limit = 10,
+                cursor,
+                sort = "newest",
+                importantOnly,
+                creatorId,
+                seen
+            }) => ({
+                url: `/households/${householdId}/announcements`,
+                params: {
+                    limit,
+                    cursor,
+                    sort,
+                    important_only: importantOnly,
+                    creator_id: creatorId,
+                    seen
+                }
+            }),
+
+            serializeQueryArgs: ({ endpointName, queryArgs }) => {
+                const { cursor, ...rest } = queryArgs;
+                return `${endpointName}-${JSON.stringify(rest)}`;
+            },
+
+            merge: (currentCache, newData) => {
+                currentCache.items.push(...newData.items);
+                currentCache.nextCursor = newData.nextCursor;
+                currentCache.hasNextPage = newData.hasNextPage;
+            },
+
+            forceRefetch({ currentArg, previousArg }) {
+                return currentArg?.cursor !== previousArg?.cursor;
+            },
+
+            providesTags: (_res, _err, { householdId }) => [
+                { type: "Announcement", id: `HOUSEHOLD_${householdId}` }
+            ]
         }),
 
         createAnnouncement: builder.mutation<Announcement, { householdId: number; message: string; isImportant: boolean }>({

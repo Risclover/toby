@@ -97,36 +97,131 @@ def get_household_shopping_list(household_id, shopping_list_id):
 # --------------------
 @household_routes.route("/<int:household_id>/announcements")
 def list_announcements(household_id: int):
-    """
-    List announcements for a given household with seen status for current user
-    """
     household = Household.query.get(household_id)
-
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
     user_id = int(current_user.get_id())
 
-    # Join announcements to announcements_seen for current user
-    # Left join such that seen_by may be None
+    # Params
+    limit = min(int(request.args.get("limit", 10)), 50)
+    cursor = request.args.get("cursor")
+    sort = request.args.get("sort", "newest")
+    important_only = request.args.get("important_only") == "true"
+    creator_id = request.args.get("creator_id")
+    seen_filter = request.args.get("seen")  # seen | unseen | None
+
     seen_alias = aliased(AnnouncementSeen)
+
     q = (
-        db.session.query(Announcement, seen_alias.seen_at.label("seen_at"))
+        db.session.query(
+            Announcement,
+            seen_alias.seen_at.label("seen_at")
+        )
         .outerjoin(
             seen_alias,
-            (Announcement.id == seen_alias.announcement_id) & (seen_alias.user_id == user_id)
+            (Announcement.id == seen_alias.announcement_id)
+            & (seen_alias.user_id == user_id)
         )
         .filter(Announcement.household_id == household_id)
-        .order_by(Announcement.created_at.desc())
     )
-        
-    # Add seen status for current user
+
+    # Filters
+    if important_only:
+        q = q.filter(Announcement.is_important.is_(True))
+
+    if creator_id:
+        q = q.filter(Announcement.user_id == int(creator_id))
+
+    if seen_filter == "seen":
+        q = q.filter(seen_alias.seen_at.isnot(None))
+    elif seen_filter == "unseen":
+        q = q.filter(seen_alias.seen_at.is_(None))
+
+    # Cursor parsing
+    if cursor:
+        cursor_ts, cursor_id = cursor.split("|")
+        cursor_dt = datetime.fromisoformat(cursor_ts)
+        cursor_id = int(cursor_id)
+
+    # Sorting + cursor logic
+    if sort == "important":
+        q = q.order_by(
+            Announcement.is_important.desc(),
+            Announcement.created_at.desc(),
+            Announcement.id.desc()
+        )
+
+        if cursor:
+            q = q.filter(
+                or_(
+                    Announcement.is_important < True,
+                    and_(
+                        Announcement.is_important == True,
+                        or_(
+                            Announcement.created_at < cursor_dt,
+                            and_(
+                                Announcement.created_at == cursor_dt,
+                                Announcement.id < cursor_id
+                            )
+                        )
+                    )
+                )
+            )
+
+    elif sort == "oldest":
+        q = q.order_by(
+            Announcement.created_at.asc(),
+            Announcement.id.asc()
+        )
+
+        if cursor:
+            q = q.filter(
+                or_(
+                    Announcement.created_at > cursor_dt,
+                    and_(
+                        Announcement.created_at == cursor_dt,
+                        Announcement.id > cursor_id
+                    )
+                )
+            )
+
+    else:  # newest
+        q = q.order_by(
+            Announcement.created_at.desc(),
+            Announcement.id.desc()
+        )
+
+        if cursor:
+            q = q.filter(
+                or_(
+                    Announcement.created_at < cursor_dt,
+                    and_(
+                        Announcement.created_at == cursor_dt,
+                        Announcement.id < cursor_id
+                    )
+                )
+            )
+
+    rows = q.limit(limit + 1).all()
+    has_next_page = len(rows) > limit
+    rows = rows[:limit]
+
     result = []
-    
-    for ann, seen_at in q.all():
+    next_cursor = None
+
+    for ann, seen_at in rows:
         ann_dict = ann.to_dict()
         ann_dict["seenByCurrent"] = seen_at is not None
-        ann_dict["seenAt"] = seen_at.isoformat() if seen_at else None 
+        ann_dict["seenAt"] = seen_at.isoformat() if seen_at else None
         result.append(ann_dict)
 
-    return jsonify(result)
+    if has_next_page:
+        last = rows[-1][0]
+        next_cursor = f"{last.created_at.isoformat()}|{last.id}"
+
+    return jsonify({
+        "items": result,
+        "nextCursor": next_cursor,
+        "hasNextPage": has_next_page
+    })

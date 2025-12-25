@@ -27,7 +27,7 @@ export const Announcements = ({ householdId, activeTab }: Props) => {
     const [openMenuAnnouncementId, setOpenMenuAnnouncementId] = useState<number | null>(null);
 
     const {
-        data: announcements = [],
+        data,
         isFetching,
         refetch,
     } = useGetAnnouncementsQuery({ householdId }, {
@@ -62,9 +62,9 @@ export const Announcements = ({ householdId, activeTab }: Props) => {
     useEffect(() => {
         if (activeTab !== "announcements") return;
         if (hasMarkedSeenRef.current) return;
-        if (!announcements.length) return;
+        if (!data?.items.length) return;
 
-        const unseenIds = announcements
+        const unseenIds = data?.items
             .filter((a) => !a.seenByCurrent)
             .map((a) => a.id);
 
@@ -77,7 +77,7 @@ export const Announcements = ({ householdId, activeTab }: Props) => {
 
         // Fire and forget — optimistic update is handled in the mutation
         markSeen({ householdId, announcementIds: unseenIds });
-    }, [activeTab, announcements, householdId, markSeen]);
+    }, [activeTab, data?.items, householdId, markSeen]);
 
     /**
      * Sort by:
@@ -87,22 +87,23 @@ export const Announcements = ({ householdId, activeTab }: Props) => {
      * - unseen first
      */
 
-    const sortedAnnouncements = useMemo(() => (announcements ?? []).slice().sort((a, b) => {
+    const sortedAnnouncements = useMemo(() => (data?.items ?? []).slice().sort((a, b) => {
         const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
 
         // Newest first
         return bTime - aTime;
-    }), [announcements]);
+    }), [data?.items]);
 
+    const announcements = data?.items ?? [];
     const MAX_ANNOUNCEMENTS_DISPLAYED = 4;
-    const unseenAnnouncements = announcements?.filter(a => !a.seenByCurrent);
-    const seenAnnouncements = announcements?.filter(a => a.seenByCurrent);
+    const unseenAnnouncements = announcements.filter(a => !a.seenByCurrent);
+    const seenAnnouncements = announcements.filter(a => a.seenByCurrent);
 
     const visibleAnnouncements = unseenAnnouncements && unseenAnnouncements.length > MAX_ANNOUNCEMENTS_DISPLAYED ? unseenAnnouncements : [...unseenAnnouncements, ...seenAnnouncements].slice(0, MAX_ANNOUNCEMENTS_DISPLAYED);
 
     return <div className="announcements-container">
-        {announcements?.length === 0 && <div>No announcements.</div>}
+        {data?.items.length === 0 && <div>No announcements.</div>}
         {/* sort options dropdown (A-Z, Z-A, date ^, date v, importance) */}
         {visibleAnnouncements.map(announcement => <Announcement key={announcement?.id} creator={announcement?.creator} announcement={announcement} isMenuOpen={openMenuAnnouncementId === announcement?.id}
             onToggleMenu={() =>

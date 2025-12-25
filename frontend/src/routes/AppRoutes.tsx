@@ -16,6 +16,7 @@ import { DashboardGrid } from "@/component/DashboardGrid";
 import { MobileHome } from "@/pages/MobileHome";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import { MobileAnnouncements } from "@/pages/MobileAnnouncements";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
@@ -32,6 +33,7 @@ export const AppRoutes = () => {
             <Route path="/shopping" element={<ShoppingListsPage />} />
             <Route path="/shopping/:listId" element={<ShoppingListPage />} />
             <Route path="/" element={(isMobile || isSmallScreen) ? <MobileHome /> : <Dashboard />} />
+            <Route path="/announcements" element={<MobileAnnouncements />} />
         </Routes>
     )
 }
