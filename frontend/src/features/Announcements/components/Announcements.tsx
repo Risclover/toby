@@ -10,34 +10,50 @@ type Props = {
     activeTab?: string | null;
     maxDisplayed?: number; // Only used in homepage mode
     fullPage?: boolean; // Toggle between full page or homepage view
+    searchValue?: string; // Only used in fullPage mode
 };
 
-export const Announcements = ({ householdId, activeTab = null, maxDisplayed = 4, fullPage = false }: Props) => {
+export const Announcements = ({
+    householdId,
+    activeTab = null,
+    maxDisplayed = 4,
+    fullPage = false,
+    searchValue = "",
+}: Props) => {
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
     const [page, setPage] = useState(1);
     const [openMenuAnnouncementId, setOpenMenuAnnouncementId] = useState<number | null>(null);
 
-    // Determine limit for query
-    const queryLimit = fullPage ? 10 : 50; // 50 for homepage to slice visibleAnnouncements
+    const queryLimit = fullPage ? 10 : 50;
+
+    const shouldSkip = !fullPage && activeTab !== "announcements";
 
     const { data, isFetching } = useGetAnnouncementsQuery(
-        { householdId, limit: queryLimit, page: fullPage ? page : undefined },
-        { skip: activeTab !== null && activeTab !== "announcements", refetchOnMountOrArgChange: true }
+        { householdId, limit: queryLimit, page, search: fullPage ? searchValue.trim() || undefined : undefined },
+        { skip: shouldSkip, refetchOnMountOrArgChange: true }
     );
 
     const [markSeen] = useMarkAnnouncementsSeenBulkMutation();
     const hasMarkedSeenRef = useRef(false);
 
+    // Reset page when search changes
+    useEffect(() => {
+        if (fullPage) setPage(1);
+    }, [searchValue, fullPage]);
+
     // Reset seen guard if leaving tab
     useEffect(() => {
-        if (activeTab !== "announcements") {
-            hasMarkedSeenRef.current = false;
-        }
+        if (activeTab !== "announcements") hasMarkedSeenRef.current = false;
     }, [activeTab]);
 
     // Mark unseen announcements as seen
     useEffect(() => {
-        if (activeTab !== "announcements" || hasMarkedSeenRef.current || !data?.items?.length) return;
+        if (
+            activeTab !== "announcements" ||
+            hasMarkedSeenRef.current ||
+            !data?.items?.length
+        )
+            return;
 
         const unseenIds = data.items.filter(a => !a.seenByCurrent).map(a => a.id);
         if (unseenIds.length === 0) {
@@ -69,7 +85,7 @@ export const Announcements = ({ householdId, activeTab = null, maxDisplayed = 4,
                 : [...unseenAnnouncements, ...seenAnnouncements].slice(0, maxDisplayed);
     }
 
-    // Pagination handlers (only for fullPage)
+    // Pagination handlers (fullPage only)
     const loadNextPage = () => { if (data?.hasNextPage) setPage(prev => prev + 1); };
     const loadPrevPage = () => { if (page > 1) setPage(prev => prev - 1); };
 
@@ -77,10 +93,10 @@ export const Announcements = ({ householdId, activeTab = null, maxDisplayed = 4,
         <div className="announcements-container">
             {fullPage && (
                 <div className="pagination-buttons" style={{ marginBottom: "1rem" }}>
-                    <Button onClick={loadPrevPage} disabled={page === 1 || isFetching} style={{ marginRight: "0.5rem" }}>
+                    <Button onClick={loadPrevPage} disabled={page === 1} style={{ marginRight: "0.5rem" }}>
                         Previous Page
                     </Button>
-                    <Button onClick={loadNextPage} disabled={!data?.hasNextPage || isFetching}>
+                    <Button onClick={loadNextPage} disabled={!data?.hasNextPage}>
                         Next Page
                     </Button>
                     <span style={{ marginLeft: "1rem" }}>
@@ -102,9 +118,9 @@ export const Announcements = ({ householdId, activeTab = null, maxDisplayed = 4,
                 />
             ))}
 
-            {showCreateAnnouncement &&
+            {showCreateAnnouncement && (
                 <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />
-            }
+            )}
         </div>
     );
 };

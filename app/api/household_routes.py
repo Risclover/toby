@@ -116,9 +116,8 @@ def list_announcements(household_id: int):
 
     user_id = int(current_user.get_id())
     limit = int(request.args.get("limit", 10))
-    page = int(request.args.get("page", 1))  # <-- page number
-
-    offset = (page - 1) * limit
+    page = int(request.args.get("page", 1))  # for page-based pagination
+    search = (request.args.get("search") or "").strip()
 
     seen_alias = aliased(AnnouncementSeen)
 
@@ -133,15 +132,20 @@ def list_announcements(household_id: int):
             & (seen_alias.user_id == user_id)
         )
         .filter(Announcement.household_id == household_id)
-        .order_by(
-            Announcement.created_at.desc(),
-            Announcement.id.desc()
-        )
-        .offset(offset)
-        .limit(limit)
     )
 
-    rows = q.all()
+    # Apply search filter
+    if search:
+        q = q.filter(Announcement.message.ilike(f"%{search}%"))
+
+    # Order by newest first
+    q = q.order_by(Announcement.created_at.desc(), Announcement.id.desc())
+
+    # Pagination logic
+    total_count = q.count()
+    total_pages = (total_count + limit - 1) // limit
+    offset = (page - 1) * limit
+    rows = q.offset(offset).limit(limit).all()
 
     items = []
     for ann, seen_at in rows:
@@ -150,12 +154,11 @@ def list_announcements(household_id: int):
         data["seenAt"] = seen_at.isoformat() if seen_at else None
         items.append(data)
 
-    total_count = Announcement.query.filter_by(household_id=household_id).count()
-    total_pages = (total_count + limit - 1) // limit
-
     return jsonify({
         "items": items,
         "page": page,
         "totalPages": total_pages,
-        "hasNextPage": page < total_pages
+        "hasNextPage": page < total_pages,
+        "hasPrevPage": page > 1,
+        "totalCount": total_count,
     })

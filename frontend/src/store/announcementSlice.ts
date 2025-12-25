@@ -32,33 +32,21 @@ export const announcementApi = apiSlice.injectEndpoints({
         // GET all announcements for a household
         getAnnouncements: builder.query<
             AnnouncementsResponse,
-            { householdId: number; limit?: number; page?: number }
+            { householdId: number; limit?: number; page?: number; search?: string }
         >({
-            query: ({ householdId, limit = 10, page = 1 }) => ({
+            query: ({ householdId, limit = 10, page = 1, search }) => ({
                 url: `/households/${householdId}/announcements`,
-                params: { limit, page },
+                params: { limit, page, search },
             }),
-
             serializeQueryArgs: ({ endpointName, queryArgs }) => {
-                const { page, ...rest } = queryArgs;
-                return `${endpointName}-${JSON.stringify(rest)}-page${page}`;
+                const { page, search, ...rest } = queryArgs;
+                return `${endpointName}-${JSON.stringify(rest)}-page${page}-search${search || ""}`;
             },
-
-            merge: (currentCache, newData) => {
-                // Optional: replace or merge depending on design
-                currentCache.items = newData.items;
-                currentCache.page = newData.page;
-                currentCache.hasNextPage = newData.hasNextPage;
-            },
-
-            forceRefetch({ currentArg, previousArg }) {
-                return currentArg?.page !== previousArg?.page;
-            },
-
             providesTags: (result, _error, { householdId }) => {
                 if (!result || !Array.isArray(result.items)) {
                     return [{ type: "Announcement", id: `HOUSEHOLD_${householdId}` }];
                 }
+
                 return [
                     ...result.items.map(({ id }) => ({ type: "Announcement" as const, id })),
                     { type: "Announcement", id: `HOUSEHOLD_${householdId}` },

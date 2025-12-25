@@ -1,12 +1,15 @@
 import { Button, CloseButton, Combobox, Input, InputBase, TextInput, useCombobox } from '@mantine/core';
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
-import { useState } from 'react';
+import React, { useState, type SetStateAction } from 'react';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
-export const MobileAnnouncementsHeader = () => {
+type Props = {
+    searchValue: string;
+    setSearchValue: React.Dispatch<SetStateAction<string>>;
+}
+export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue }: Props) => {
     const combobox = useCombobox();
 
-    const [searchValue, setSearchValue] = useState<string | number | undefined>("");
     const [value, setValue] = useState<string | null>(null);
 
     const optionsList = ["Newest", "Oldest", "Important first"];
