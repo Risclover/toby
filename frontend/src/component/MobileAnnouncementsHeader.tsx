@@ -2,17 +2,33 @@ import { Button, CloseButton, Combobox, Input, InputBase, TextInput, useCombobox
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
 import React, { useState, type SetStateAction } from 'react';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import { MobileAnnouncementsFilterDrawer } from './MobileAnnouncementsFilterDrawer';
+import { useDisclosure } from '@mantine/hooks';
+import { useGetHouseholdQuery } from '@/store/householdSlice';
+import { useAuthenticateQuery } from '@/store/authSlice';
 
 type Props = {
     searchValue: string;
     setSearchValue: React.Dispatch<SetStateAction<string>>;
     sortOption: "Newest" | "Oldest" | "Important first" | null;
     setSortOption: React.Dispatch<SetStateAction<"Newest" | "Oldest" | "Important first" | null>>;
+    filters: {
+        importance: "all" | "important";
+        creatorId: number | null;
+        time: "today" | "7days" | "30days" | "all";
+    };
+    setFilters: React.Dispatch<SetStateAction<{
+        importance: "all" | "important";
+        creatorId: number | null;
+        time: "today" | "7days" | "30days" | "all";
+    }>>;
 }
-export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue, sortOption, setSortOption }: Props) => {
+export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue, sortOption, setSortOption, filters, setFilters }: Props) => {
     const combobox = useCombobox();
-
+    const [opened, { open, close }] = useDisclosure(false);
     const [value, setValue] = useState<string | null>(null);
+    const { data: user } = useAuthenticateQuery();
+    const { data: household } = useGetHouseholdQuery(user?.householdId)
 
     const optionsList = ["Newest", "Oldest", "Important first"];
     const options = optionsList.map(item => <Combobox.Option value={item} key={item}>{item}</Combobox.Option>)
@@ -71,7 +87,14 @@ export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue, sortOpt
                     <Combobox.Options>{options}</Combobox.Options>
                 </Combobox.Dropdown>
             </Combobox>
-            <Button styles={{ root: { minWidth: "54px" } }} variant="light" size="xs" color="rgb(5, 5, 73)"><FilterAltRoundedIcon /></Button>
+            <Button onClick={open} styles={{ root: { minWidth: "54px" } }} variant="light" size="xs" color="rgb(5, 5, 73)"><FilterAltRoundedIcon /></Button>
+            <MobileAnnouncementsFilterDrawer
+                opened={opened}
+                close={close}
+                householdMembers={household?.members}
+                filters={filters}
+                setFilters={setFilters}
+            />
         </div>
     )
 }

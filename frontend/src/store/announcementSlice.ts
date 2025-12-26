@@ -1,5 +1,11 @@
 import { apiSlice } from "./apiSlice";
 
+export type AnnouncementSeenResponse = {
+    announcementId: number;
+    seenByCurrent: boolean;
+    seenAt: string | null;
+}
+
 export type Announcement = {
     id: number;
     userId: number;
@@ -7,24 +13,17 @@ export type Announcement = {
     message: string;
     isImportant: boolean;
     createdAt?: string | null;
-    seenByCurrent?: boolean; // Add this to track seen status
-    creator: {
-        id: number;
-        name: string;
-        profileImg: string;
-    }
-}
-
-export type AnnouncementSeenResponse = {
-    announcementId: number;
-    seenByCurrent: boolean;
-    seenAt: string | null;
-}
+    seenByCurrent?: boolean;
+    creator: { id: number; name: string; profileImg: string };
+};
 
 export type AnnouncementsResponse = {
     items: Announcement[];
+    page: number;
     totalPages: number;
     hasNextPage: boolean;
+    hasPrevPage: boolean;
+    totalCount: number;
 };
 
 export const announcementApi = apiSlice.injectEndpoints({
@@ -32,20 +31,44 @@ export const announcementApi = apiSlice.injectEndpoints({
         // GET all announcements for a household
         getAnnouncements: builder.query<
             AnnouncementsResponse,
-            { householdId: number; limit?: number; page?: number; search?: string; sort?: string }
+            {
+                householdId: number;
+                limit?: number;
+                page?: number;
+                search?: string;
+                sort?: string;
+                importance?: "all" | "important";
+                creatorId?: number;
+                time?: "today" | "7days" | "30days" | "all";
+            }
         >({
-            query: ({ householdId, limit = 10, page = 1, search, sort }) => ({
+            query: ({ householdId, limit = 10, page = 1, search, sort, importance, creatorId, time }) => ({
                 url: `/households/${householdId}/announcements`,
-                params: { limit, page, search, sort },
+                params: {
+                    limit,
+                    page,
+                    search,
+                    sort,
+                    important: importance === "important" ? "true" : undefined,
+                    creator_id: creatorId ?? undefined,
+                    time: time === "all" ? undefined : time,
+                },
             }),
             serializeQueryArgs: ({ endpointName, queryArgs }) => {
-                const { page, search, sort, ...rest } = queryArgs;
-                return `${endpointName}-${JSON.stringify(rest)}-page${page}-search${search || ""}-sort${sort || ""}`;
+                const {
+                    householdId,
+                    page = 1,
+                    limit = 10,
+                    search = "",
+                    sort = "",
+                    importance = "all",
+                    creatorId,
+                    time = "all",
+                } = queryArgs;
+                return `${endpointName}-household${householdId}-page${page}-limit${limit}-search${search}-sort${sort}-importance${importance}-creator${creatorId ?? ""}-time${time}`;
             },
             providesTags: (result, _error, { householdId }) => {
-                if (!result || !Array.isArray(result.items)) {
-                    return [{ type: "Announcement", id: `HOUSEHOLD_${householdId}` }];
-                }
+                if (!result || !Array.isArray(result.items)) return [{ type: "Announcement", id: `HOUSEHOLD_${householdId}` }];
                 return [
                     ...result.items.map(({ id }) => ({ type: "Announcement" as const, id })),
                     { type: "Announcement", id: `HOUSEHOLD_${householdId}` },

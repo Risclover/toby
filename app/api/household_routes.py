@@ -5,7 +5,7 @@ from app.models import Household, TodoList, TodoListMember, Announcement, Announ
 from sqlalchemy.orm import aliased
 from sqlalchemy import outerjoin, or_, and_
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 household_routes = Blueprint('households', __name__)
@@ -119,6 +119,9 @@ def list_announcements(household_id: int):
     page = int(request.args.get("page", 1))
     search = (request.args.get("search") or "").strip()
     sort = request.args.get("sort", "")
+    importance = request.args.get("important")  # "true" or None
+    creator_id = request.args.get("creator_id")
+    time_filter = request.args.get("time")  # "today", "7days", "30days", "all"
 
     seen_alias = aliased(AnnouncementSeen)
 
@@ -137,6 +140,25 @@ def list_announcements(household_id: int):
     # Search filter
     if search:
         q = q.filter(Announcement.message.ilike(f"%{search}%"))
+
+    # Importance filter
+    if importance == "true":
+        q = q.filter(Announcement.is_important == True)
+
+    # Creator filter
+    if creator_id:
+        q = q.filter(Announcement.user_id == int(creator_id))
+
+    # Time filter
+    if time_filter and time_filter != "all":
+        now = datetime.utcnow()
+        if time_filter == "today":
+            start_time = datetime(now.year, now.month, now.day)
+        elif time_filter == "7days":
+            start_time = now - timedelta(days=7)
+        elif time_filter == "30days":
+            start_time = now - timedelta(days=30)
+        q = q.filter(Announcement.created_at >= start_time)
 
     # Sort
     if sort == "Newest":
