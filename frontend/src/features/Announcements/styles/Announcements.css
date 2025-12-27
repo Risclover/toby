@@ -189,6 +189,15 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    margin-top: 1rem;
+}
+
+.pagination-buttons span {
+    font-size: .9rem;
+    font-family: "Alan Sans", sans-serif;
+}
+
+.pagination-buttons.mobile {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -197,11 +206,6 @@
     z-index: 99;
     padding: 1rem;
     border-top: 1px solid rgba(148, 163, 184, 0.35);
-}
-
-.pagination-buttons span {
-    font-size: .9rem;
-    font-family: "Alan Sans", sans-serif;
 }
 
 .mobile-announcements-filter-drawer button {

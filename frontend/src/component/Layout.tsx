@@ -4,10 +4,12 @@ import { useMantineColorScheme } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 export const Layout = () => {
     const isMobile = useIsMobile();
     const isSmallScreen = useIsSmallScreen();
+    useScrollToTop();
     const { setColorScheme } = useMantineColorScheme();
     const [sidebarExpanded, setSidebarExpanded] = useState(() => {
         try { return localStorage.getItem("sidebar-collapsed") === "1"; }

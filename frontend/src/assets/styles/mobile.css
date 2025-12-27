@@ -317,6 +317,8 @@
     background: white;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
+    overflow-y: auto;
+    max-height: 1060px;
     /* background-color:  */
 
 }

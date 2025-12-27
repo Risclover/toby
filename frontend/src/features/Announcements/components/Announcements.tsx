@@ -8,6 +8,7 @@ import { Announcement } from "./Announcement";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 export type FiltersType = {
     importance: "all" | "important";
     creatorId: number | null;
@@ -37,6 +38,7 @@ export const Announcements = ({
     const [requestedPage, setRequestedPage] = useState(1);
     const [openMenuAnnouncementId, setOpenMenuAnnouncementId] = useState<number | null>(null);
     const hasMarkedSeenRef = useRef(false);
+    const isSmall = useIsSmallScreen();
 
     const queryLimit = fullPage ? 10 : 50;
     const shouldSkip = !fullPage && activeTab !== "announcements";
@@ -103,20 +105,6 @@ export const Announcements = ({
 
     return (
         <div className="announcements-container">
-            {fullPage && visibleAnnouncements.length > 0 && (
-                <div className="pagination-buttons">
-                    <Button color="rgb(5, 5, 73)" onClick={loadPrevPage} disabled={displayedPage === 1} size="compact-xs" style={{ marginRight: "0.5rem" }}>
-                        <ChevronLeftRoundedIcon />
-                    </Button>
-                    <span>
-                        Page {displayedPage} {data?.totalPages ? `of ${data.totalPages}` : ""}
-                    </span>
-                    <Button color="rgb(5, 5, 73)" size="compact-xs" onClick={loadNextPage} disabled={displayedPage === (data?.totalPages ?? displayedPage)}>
-                        <ChevronRightRoundedIcon />
-                    </Button>
-                </div>
-            )}
-
             {isFetching && !data?.items?.length ? (
                 <div>Loading...</div>
             ) : visibleAnnouncements.length === 0 ? (
@@ -132,6 +120,19 @@ export const Announcements = ({
                         onCloseMenu={() => setOpenMenuAnnouncementId(null)}
                     />
                 ))
+            )}
+            {fullPage && visibleAnnouncements.length > 0 && (
+                <div className={`pagination-buttons${isSmall ? " mobile" : ""}`}>
+                    <Button color="rgb(5, 5, 73)" onClick={loadPrevPage} disabled={displayedPage === 1} size="compact-xs" style={{ marginRight: "0.5rem" }}>
+                        <ChevronLeftRoundedIcon />
+                    </Button>
+                    <span>
+                        Page {displayedPage} {data?.totalPages ? `of ${data.totalPages}` : ""}
+                    </span>
+                    <Button color="rgb(5, 5, 73)" size="compact-xs" onClick={loadNextPage} disabled={displayedPage === (data?.totalPages ?? displayedPage)}>
+                        <ChevronRightRoundedIcon />
+                    </Button>
+                </div>
             )}
         </div>
     );
