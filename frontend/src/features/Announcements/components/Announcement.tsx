@@ -7,6 +7,7 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { Link } from "react-router-dom";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { AnnouncementDeleteConfirmation } from "./AnnouncementDeleteConfirmation";
+import { Avatar } from "@mantine/core";
 
 type Props = {
     creator: {
@@ -37,7 +38,7 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
         <div className={`single-announcement${announcement?.isImportant ? " important-announcement" : ""}`}>
             <div className="single-announcement-header">
                 <div className="single-announcement-header-left">
-                    <Link target="_blank" to={`/users/${creator?.id}`}><img src={creator?.profileImg} /></Link>
+                    <Avatar component={Link} to={`/users/${creator?.id}`} target="_blank" src={creator?.profileImg} radius="xl" size="sm" />
                     <div className="single-announcement-header-info">
                         <Link target="_blank" to={`/users/${creator?.id}`} className="single-announcement-creator">{creator?.name}</Link>
                         <span className="single-announcement-timestamp">{(() => {

@@ -103,21 +103,19 @@ export const Announcements = ({
 
     return (
         <div className="announcements-container">
-            <div className="announcements-top-bar">
-                {fullPage && visibleAnnouncements.length > 0 && (
-                    <div className="pagination-buttons">
-                        <Button color="rgb(5, 5, 73)" onClick={loadPrevPage} disabled={displayedPage === 1} size="compact-xs" style={{ marginRight: "0.5rem" }}>
-                            <ChevronLeftRoundedIcon />
-                        </Button>
-                        <Button color="rgb(5, 5, 73)" size="compact-xs" onClick={loadNextPage} disabled={displayedPage === (data?.totalPages ?? displayedPage)}>
-                            <ChevronRightRoundedIcon />
-                        </Button>
-                        <span style={{ marginLeft: "1rem" }}>
-                            Page {displayedPage} {data?.totalPages ? `of ${data.totalPages}` : ""}
-                        </span>
-                    </div>
-                )}
-            </div>
+            {fullPage && visibleAnnouncements.length > 0 && (
+                <div className="pagination-buttons">
+                    <Button color="rgb(5, 5, 73)" onClick={loadPrevPage} disabled={displayedPage === 1} size="compact-xs" style={{ marginRight: "0.5rem" }}>
+                        <ChevronLeftRoundedIcon />
+                    </Button>
+                    <span>
+                        Page {displayedPage} {data?.totalPages ? `of ${data.totalPages}` : ""}
+                    </span>
+                    <Button color="rgb(5, 5, 73)" size="compact-xs" onClick={loadNextPage} disabled={displayedPage === (data?.totalPages ?? displayedPage)}>
+                        <ChevronRightRoundedIcon />
+                    </Button>
+                </div>
+            )}
 
             {isFetching && !data?.items?.length ? (
                 <div>Loading...</div>
