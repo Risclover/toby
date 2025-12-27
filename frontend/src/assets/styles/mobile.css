@@ -154,6 +154,12 @@
     gap: .5rem;
     padding: 0.8rem 1rem !important;
     flex-wrap: nowrap;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 99;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
 }
 
 /* .mobile-home-nav-grid-btn {
