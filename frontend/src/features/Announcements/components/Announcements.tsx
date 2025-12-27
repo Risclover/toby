@@ -117,7 +117,6 @@ export const Announcements = ({
                         </span>
                     </div>
                 )}
-                <Button color="rgb(5, 5, 73)" variant="light" size="compact-xs">+ Add</Button>
             </div>
 
             {isFetching && !data?.items?.length ? (
@@ -135,10 +134,6 @@ export const Announcements = ({
                         onCloseMenu={() => setOpenMenuAnnouncementId(null)}
                     />
                 ))
-            )}
-
-            {showCreateAnnouncement && (
-                <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />
             )}
         </div>
     );

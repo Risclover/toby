@@ -78,6 +78,14 @@
     line-height: 1;
 }
 
+.mobile-home-family-title .add-announcement {
+    color: rgb(5, 5, 73);
+}
+
+.mobile-home-family-title .add-announcement:hover {
+    background-color: rgba(5, 5, 73, 0.1);
+}
+
 .title-announcements {
     justify-content: flex-start;
     align-items: center;
