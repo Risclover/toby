@@ -1,10 +1,13 @@
+// Announcements.tsx
 import { useGetAnnouncementsQuery, useMarkAnnouncementsSeenBulkMutation } from "@/store/announcementSlice";
 import "../styles/Announcements.css";
 import { Button } from "@mantine/core";
 import React, { useEffect, useRef, useState } from "react";
 import { CreateAnnouncement } from "./CreateAnnouncement";
 import { Announcement } from "./Announcement";
-
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
 export type FiltersType = {
     importance: "all" | "important";
     creatorId: number | null;
@@ -31,7 +34,7 @@ export const Announcements = ({
     filters = { importance: "all", creatorId: null, time: "all" }, // default filters
 }: Props) => {
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
-    const [page, setPage] = useState(1);
+    const [requestedPage, setRequestedPage] = useState(1);
     const [openMenuAnnouncementId, setOpenMenuAnnouncementId] = useState<number | null>(null);
     const hasMarkedSeenRef = useRef(false);
 
@@ -42,7 +45,7 @@ export const Announcements = ({
     const queryArgs = {
         householdId,
         limit: queryLimit,
-        page,
+        page: requestedPage,
         search: searchValue.trim() || undefined,
         sort: sortOption || undefined,
         importance: filters.importance !== "all" ? filters.importance : undefined,
@@ -58,8 +61,9 @@ export const Announcements = ({
         if (activeTab !== "announcements") hasMarkedSeenRef.current = false;
     }, [activeTab]);
 
+    // Reset requestedPage when filters/search/sort change
     useEffect(() => {
-        if (fullPage) setPage(1);
+        if (fullPage) setRequestedPage(1);
     }, [searchValue, fullPage, sortOption, filters]);
 
     // Mark unseen announcements as seen
@@ -84,29 +88,42 @@ export const Announcements = ({
             : [...unseen, ...seen].slice(0, maxDisplayed);
     }
 
-    const loadNextPage = () => { if (data?.hasNextPage) setPage(prev => prev + 1); };
-    const loadPrevPage = () => { if (page > 1) setPage(prev => prev - 1); };
+    // Pagination handlers with clamping
+    const loadNextPage = () => {
+        if (!data?.totalPages) return;
+        setRequestedPage(prev => Math.min(prev + 1, data.totalPages));
+    };
+
+    const loadPrevPage = () => {
+        setRequestedPage(prev => Math.max(prev - 1, 1));
+    };
+
+    // Displayed page should never exceed totalPages
+    const displayedPage = Math.min(requestedPage, data?.totalPages ?? requestedPage);
 
     return (
         <div className="announcements-container">
-            {fullPage && (
-                <div className="pagination-buttons" style={{ marginBottom: "1rem" }}>
-                    <Button onClick={loadPrevPage} disabled={page === 1} style={{ marginRight: "0.5rem" }}>
-                        Previous Page
-                    </Button>
-                    <Button onClick={loadNextPage} disabled={!data?.hasNextPage}>
-                        Next Page
-                    </Button>
-                    <span style={{ marginLeft: "1rem" }}>
-                        Page {page} {data?.totalPages ? `of ${data.totalPages}` : ""}
-                    </span>
-                </div>
-            )}
+            <div className="announcements-top-bar">
+                {fullPage && visibleAnnouncements.length > 0 && (
+                    <div className="pagination-buttons">
+                        <Button color="rgb(5, 5, 73)" onClick={loadPrevPage} disabled={displayedPage === 1} size="compact-xs" style={{ marginRight: "0.5rem" }}>
+                            <ChevronLeftRoundedIcon />
+                        </Button>
+                        <Button color="rgb(5, 5, 73)" size="compact-xs" onClick={loadNextPage} disabled={displayedPage === (data?.totalPages ?? displayedPage)}>
+                            <ChevronRightRoundedIcon />
+                        </Button>
+                        <span style={{ marginLeft: "1rem" }}>
+                            Page {displayedPage} {data?.totalPages ? `of ${data.totalPages}` : ""}
+                        </span>
+                    </div>
+                )}
+                <Button color="rgb(5, 5, 73)" variant="light" size="compact-xs">+ Add</Button>
+            </div>
 
             {isFetching && !data?.items?.length ? (
                 <div>Loading...</div>
             ) : visibleAnnouncements.length === 0 ? (
-                <div>No announcements.</div>
+                <div>No results found.</div>
             ) : (
                 visibleAnnouncements.map(a => (
                     <Announcement
