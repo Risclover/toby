@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 type InputProps = {
     inputType: string;
     inputName: string;
-    label: string;
+    label?: string;
     subLabel: string;
     placeholder: string;
     inputValue: string;
@@ -27,11 +27,12 @@ export const RegistrationPageOne = ({ onClick, inputProps, createHousehold }: Pr
             <h2>Sign Up</h2>
             <ScrollArea h={345} offsetScrollbars overscrollBehavior="contain" style={{ paddingLeft: "1rem" }}>
                 <Stack gap="xs">
+                    <span className="fake-input-label">What should we call you?</span>
                     {inputProps.map((props) =>
                         <FormInput
                             inputType={props.inputType}
                             inputName={props.inputName}
-                            label={props.label}
+                            label={props?.label}
                             subLabel={props.subLabel}
                             placeholder={props.placeholder}
                             inputValue={props.inputValue}

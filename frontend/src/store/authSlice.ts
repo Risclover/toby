@@ -3,7 +3,8 @@ import { apiSlice } from "./apiSlice";
 
 export interface User {
     id: number;
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     displayName?: string;
     createdAt: string;
@@ -58,24 +59,24 @@ export const authSlice = apiSlice.injectEndpoints({
         }),
         signup: builder.mutation<
             { user: User; household?: Household },
-            { name: string; email: string; password: string; household_name?: string }>({
-                query: ({ name, email, password, household_name }) => ({
+            { firstName: string; lastName: string; email: string; password: string; household_name?: string }>({
+                query: ({ firstName, lastName, email, password, household_name }) => ({
                     url: "/auth/signup",
                     method: "POST",
                     credentials: "include",
-                    body: { name, email, password, household_name }
+                    body: { firstName, lastName, email, password, household_name }
                 }),
                 invalidatesTags: ["Session"],
             }),
         joinHousehold: builder.mutation<
             { user: User; household: Household },
-            { name: string; email: string; password: string; inviteCode: string | undefined }
+            { firstName: string; lastName: string; email: string; password: string; inviteCode: string | undefined }
         >({
-            query: ({ name, email, password, inviteCode }) => ({
+            query: ({ firstName, lastName, email, password, inviteCode }) => ({
                 url: `/auth/join/${inviteCode}`,
                 method: "POST",
                 credentials: "include",
-                body: { name, email, password }
+                body: { firstName, lastName, email, password }
             }),
             invalidatesTags: ["Session"],
         }),

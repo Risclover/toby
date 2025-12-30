@@ -5,13 +5,14 @@ from app.models.todo_list_member import TodoListMember
 from sqlalchemy import Index
 
 def default_display(context):
-    return context.get_current_parameters()['name']
+    return context.get_current_parameters()['first_name']
 
 class User(db.Model, UserMixin):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), nullable=False)
+    first_name = db.Column(db.String(20), nullable=False)
+    last_name = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     hashed_password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -67,7 +68,8 @@ class User(db.Model, UserMixin):
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.name,
+            "firstName": self.first_name,
+            "lastName": self.last_name,
             "email": self.email,
             "createdAt": self.created_at,
             "displayName": self.display_name,
@@ -83,10 +85,10 @@ class User(db.Model, UserMixin):
     def to_dict_with_mood(self):
         return {
             "userId": self.id,
-            "name": self.name,
+            "firstName": self.first_name,
             "profileImg": self.profile_img,
             "mood": (str(self.user_mood.mood) if self.user_mood else None),
         }
 
     def __repr__(self):
-        return f"<User {self.id}: {self.name}>"
+        return f"<User {self.id}: {self.first_name}>"

@@ -2,7 +2,7 @@ import type { SetStateAction } from "react";
 
 type Props = {
     inputName: string;
-    label: string;
+    label?: string;
     subLabel?: string | undefined;
     inputType: string;
     placeholder: string;
@@ -12,13 +12,12 @@ type Props = {
     onBlur?: () => void;
 }
 
-export const FormInput = ({ inputName, label, subLabel, inputType, placeholder, inputValue, setInputValue, error = null, onBlur }: Props) => {
+export const FormInput = ({ inputName, label = "", subLabel = "", inputType, placeholder, inputValue, setInputValue, error = null, onBlur }: Props) => {
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value);
     }
 
-    console.log('error:', error)
     return (
         <div className="form-input-container">
             <label htmlFor={inputName}>

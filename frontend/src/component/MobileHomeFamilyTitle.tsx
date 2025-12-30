@@ -1,11 +1,15 @@
 import { useAuthenticateQuery } from "@/store/authSlice"
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { Avatar, Tooltip } from "@mantine/core"
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { MembersModal } from "./MembersModal";
 
 export const MobileHomeFamilyTitle = () => {
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
+
+    const [showMembersModal, setShowMembersModal] = useState(false);
 
     const additionalMembers = household?.members.length - 3;
     return (
@@ -13,11 +17,12 @@ export const MobileHomeFamilyTitle = () => {
             {household?.name}
 
             <Avatar.Group spacing="xs">
-                {household?.members.map(member => <Tooltip label={member.name} withArrow>
-                    <Avatar component={Link} to={`/users/${member.id}`} target="_blank" src={member.profileImg} alt={member.name} radius="xl" size={26} />
+                {household?.members.map(member => <Tooltip label={member.firstName} withArrow>
+                    <Avatar component={Link} to={`/users/${member.id}`} target="_blank" src={member.profileImg} alt={member.firstName} radius="xl" size={26} />
                 </Tooltip>).slice(0, 3)}
-                {additionalMembers > 0 && <Avatar size={26}>+{additionalMembers}</Avatar>}
+                {additionalMembers > 0 && <Avatar onClick={() => setShowMembersModal(true)} size={26}>+{additionalMembers}</Avatar>}
             </Avatar.Group>
+            <MembersModal opened={showMembersModal} onClose={() => setShowMembersModal(false)} household={household} />
         </div>
     )
 }

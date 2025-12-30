@@ -7,7 +7,7 @@ export const MemberMood = ({ member }: any) => {
     console.log(Moods.map(mood => mood.name));
 
     return (
-        <div>{member.name}: {data?.mood}</div>
+        <div>{member.firstName}: {data?.mood}</div>
     )
 
 }

@@ -25,7 +25,7 @@ class Announcement(db.Model):
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "creator": {
                 "id": self.creator.id,
-                "name": self.creator.name,
+                "firstName": self.creator.first_name,
                 "profileImg": self.creator.profile_img,
             } if self.creator else None,
         }

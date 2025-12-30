@@ -7,11 +7,11 @@ export const SignUp = () => {
     const [signup] = useSignupMutation();
 
     const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
     const [householdName, setHouseholdName] = useState("");
     const [emailError, setEmailError] = useState<string | null>(null);
-    const [usernameError, setUsernameError] = useState<string | null>(null);
 
     const [checkEmail] = useCheckEmailMutation();
 
@@ -33,10 +33,11 @@ export const SignUp = () => {
 
         if (emailInUse) return;
 
-        await signup({ email, password, name, household_name: householdName });
+        await signup({ email, password, firstName, lastName, household_name: householdName });
         navigate("/");
         setEmail("");
-        setName("");
+        setFirstName("");
+        setLastName("");
         setPassword("");
         setHouseholdName("");
 
@@ -49,8 +50,8 @@ export const SignUp = () => {
                 <form className="form" onSubmit={handleSignup}>
                     <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
                     {emailError}
-                    <input type="username" id="username" name="username" value={name} onChange={(e) => setName(e.target.value)} placeholder="Username" />
-                    {usernameError}
+                    <input type="first" id="first" name="first" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name" />
+                    <input type="last" id="last" name="last" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" />
                     <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
                     <input type="text" id="householdName" name="householdName" value={householdName} onChange={(e) => setHouseholdName(e.target.value)} placeholder="Household Name" />
 

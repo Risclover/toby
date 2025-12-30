@@ -103,6 +103,19 @@
     margin-right: 4px;
 }
 
+.single-announcement-importance-label {
+    color: rgb(230, 176, 2);
+    border: 1px solid rgb(230, 176, 2);
+}
+
+.single-announcement-new-label svg {
+    /* color: rgb(2, 230, 124); */
+    color: rgb(2, 230, 124);
+    font-size: .7rem;
+    font-weight: 700;
+    margin-left: .5rem;
+}
+
 .single-announcement-header-right {
     display: flex;
     position: relative;
@@ -234,4 +247,9 @@
 .announcements-top-bar button:last-child {
     /* border-radius: 999px; */
     /* padding: 0; */
+}
+
+.new-announcement {
+    font-weight: 700 !important;
+    font-family: "Nunito Sans", sans-serif;
 }

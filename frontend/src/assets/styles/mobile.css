@@ -400,3 +400,13 @@
     border-top-right-radius: 1rem;
     overflow: hidden;
 }
+
+.members-modal-member {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.members-modal-member div:first-of-type {
+    background: white;
+}

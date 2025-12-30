@@ -8,11 +8,12 @@ import { Link } from "react-router-dom";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { AnnouncementDeleteConfirmation } from "./AnnouncementDeleteConfirmation";
 import { Avatar } from "@mantine/core";
-
+import StarRoundedIcon from '@mui/icons-material/StarRounded';
+import Brightness1RoundedIcon from '@mui/icons-material/Brightness1Rounded';
 type Props = {
     creator: {
         id: number;
-        name: string;
+        firstName: string;
         profileImg: string;
     };
     announcement: {
@@ -40,7 +41,7 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
                 <div className="single-announcement-header-left">
                     <Avatar component={Link} to={`/users/${creator?.id}`} target="_blank" src={creator?.profileImg} radius="xl" size="sm" />
                     <div className="single-announcement-header-info">
-                        <Link target="_blank" to={`/users/${creator?.id}`} className="single-announcement-creator">{creator?.name}</Link>
+                        <Link target="_blank" to={`/users/${creator?.id}`} className="single-announcement-creator">{creator?.firstName}</Link>
                         <span className="single-announcement-timestamp">{(() => {
                             const ts = formatAnnouncementTimestamp(announcement.createdAt ?? null);
                             return typeof ts === "string" ? ts : `${ts?.day} · ${ts?.time}`;
@@ -51,16 +52,16 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
                     {announcement?.isImportant && <div className="single-announcement-importance-label">
                         <WarningAmberRoundedIcon /> Important
                     </div>}
+                    {!announcement.seenByCurrent && <div className="single-announcement-new-label"><Brightness1RoundedIcon /></div>}
                     {user.id === creator.id && <button data-outside-ignore className="announcement-menu-btn" onClick={onToggleMenu}>
                         <IoEllipsisVerticalSharp />
                     </button>}
                 </div>
-                {!announcement.seenByCurrent && <div className="announcement-unseen-indicator">(New)</div>}
                 {isMenuOpen && <AnnouncementMenu ref={wrapperRef} announcement={announcement} onCloseMenu={onCloseMenu} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
                 {openDeleteConfirmation && <AnnouncementDeleteConfirmation announcement={announcement} openDeleteConfirmation={openDeleteConfirmation} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
             </div>
 
-            {announcement?.message}
+            <span className={`announcement-message${!announcement.seenByCurrent ? " new-announcement" : ""}`}>{announcement?.message}</span>
         </div>
     )
 }

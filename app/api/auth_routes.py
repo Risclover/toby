@@ -75,13 +75,14 @@ def sign_up():
     Signup a new user. Optionally create a household.
     """
     data = request.get_json()
-    name = data.get("name")
+    first_name = data.get("firstName")
+    last_name = data.get("lastName")
     email = data.get("email")
     password = data.get("password")
     household_name = data.get("household_name")  # optional
 
     # Create user first
-    user = User(name=name, email=email, password=password)
+    user = User(first_name=first_name, last_name=last_name, email=email, password=password)
     db.session.add(user)
     db.session.flush()  # flush to get user.id
 
@@ -116,7 +117,8 @@ def join_household(invite_code):
     Join a household using an invite code.
     """
     data = request.get_json()
-    name = data.get("name")
+    first_name = data.get("firstName")
+    last_name = data.get("lastName")
     email = data.get("email")
     password = data.get("password")
 
@@ -126,7 +128,8 @@ def join_household(invite_code):
 
     # Create user and assign to household
     user = User(
-        name=name,
+        first_name=first_name,
+        last_name=last_name,
         email=email,
         password=password,
         household_id=household.id

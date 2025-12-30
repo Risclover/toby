@@ -61,11 +61,11 @@ function MemberMiniRow({
                             />
                         ) : (
                             <div className="h-5 w-5 rounded-full bg-gray-300 grid place-items-center text-[10px] shrink-0">
-                                {member.name.slice(0, 1).toUpperCase()}
+                                {member.firstName.slice(0, 1).toUpperCase()}
                             </div>
                         ))}
                     {showNames && (
-                        <span className="truncate text-xs text-gray-700">{member.name}</span>
+                        <span className="truncate text-xs text-gray-700">{member.firstName}</span>
                     )}
                 </div>
             )}
@@ -86,9 +86,9 @@ function MemberMiniRow({
                                 d.isToday ? "outline outline-2 outline-indigo-500 outline-offset-1" : "",
                             ].join(" ")}
                             style={{ width: size, height: size }}
-                            title={`${member.name} • ${d.iso} • ${filled ? "Checked in" : "No check-in"}`}
+                            title={`${member.firstName} • ${d.iso} • ${filled ? "Checked in" : "No check-in"}`}
                             role="img"
-                            aria-label={`${member.name} ${d.iso} ${filled ? "checked in" : "no check-in"}`}
+                            aria-label={`${member.firstName} ${d.iso} ${filled ? "checked in" : "no check-in"}`}
                         />
                     );
                 })}

@@ -29,6 +29,8 @@ export const Registration = ({ createHousehold }: Props) => {
 
     const [page, setPage] = useState(1);
     const [name, setName] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
@@ -37,13 +39,20 @@ export const Registration = ({ createHousehold }: Props) => {
     const [passwordError, setPasswordError] = useState("");
     const [repeatPasswordError, setRepeatPasswordError] = useState("");
     const [nameError, setNameError] = useState("");
+    const [firstNameError, setFirstNameError] = useState("");
+    const [lastNameError, setLastNameError] = useState("");
 
     const [checkEmail] = useCheckEmailMutation();
 
-    const validateName = () => {
-        if (name.trim().length === 0) setNameError("Please enter your name.");
-        else setNameError("");
-    };
+    const validateFirstName = () => {
+        if (firstName.trim().length === 0) setFirstNameError("Please enter your first name.");
+        else setFirstNameError("");
+    }
+
+    const validateLastName = () => {
+        if (lastName.trim().length === 0) setLastNameError("Please enter your last name.");
+        else setLastNameError("");
+    }
 
     const validateEmail = async () => {
         const res: any = await checkEmail({ email });
@@ -73,14 +82,24 @@ export const Registration = ({ createHousehold }: Props) => {
     const inputProps = [
         {
             inputType: "text",
-            inputName: "name",
-            label: "What should we call you?",
-            subLabel: "",
+            inputName: "first",
+            subLabel: "First name",
             placeholder: "e.g. Bob",
-            inputValue: name,
-            setInputValue: setName,
-            error: nameError,
-            onBlur: validateName,
+            inputValue: firstName,
+            setInputValue: setFirstName,
+            error: firstNameError,
+            onBlur: validateFirstName,
+        },
+        {
+            inputType: "text",
+            inputName: "last",
+            label: "",
+            subLabel: "Last name",
+            placeholder: "e.g. Smith",
+            inputValue: lastName,
+            setInputValue: setLastName,
+            error: lastNameError,
+            onBlur: validateLastName,
         },
         {
             inputType: "email",
@@ -133,9 +152,10 @@ export const Registration = ({ createHousehold }: Props) => {
         await validateEmail();
         validatePassword();
         validateRepeatPassword();
-        validateName();
+        validateFirstName();
+        validateLastName();
 
-        if (nameError || emailError || passwordError || repeatPasswordError) return;
+        if (firstNameError || lastNameError || emailError || passwordError || repeatPasswordError) return;
 
         if (createHousehold) setPage(2);
         else handleJoin(e);
@@ -145,10 +165,11 @@ export const Registration = ({ createHousehold }: Props) => {
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
-        await signup({ email, password, name, household_name: householdName });
+        await signup({ email, password, firstName, lastName, household_name: householdName });
         navigate("/");
         setEmail("");
-        setName("");
+        setFirstName("");
+        setLastName("");
         setPassword("");
         setRepeatPassword("");
         setHouseholdName("");
@@ -156,13 +177,14 @@ export const Registration = ({ createHousehold }: Props) => {
 
     const handleJoin = async (e: React.FormEvent) => {
         e.preventDefault();
-        const res: any = await joinHousehold({ email, name, password, inviteCode });
+        const res: any = await joinHousehold({ email, firstName, lastName, password, inviteCode });
         if ("error" in res) {
             return;
         }
         navigate("/");
         setEmail("");
-        setName("");
+        setFirstName("");
+        setLastName("");
         setPassword("");
         setRepeatPassword("");
     };

@@ -4,7 +4,7 @@ export type AnnouncementSeenResponse = {
     announcementId: number;
     seenByCurrent: boolean;
     seenAt: string | null;
-}
+};
 
 export type Announcement = {
     id: number;
@@ -14,7 +14,7 @@ export type Announcement = {
     isImportant: boolean;
     createdAt?: string | null;
     seenByCurrent?: boolean;
-    creator: { id: number; name: string; profileImg: string };
+    creator: { id: number; firstName: string; profileImg: string };
 };
 
 export type AnnouncementsResponse = {
@@ -68,14 +68,20 @@ export const announcementApi = apiSlice.injectEndpoints({
                 return `${endpointName}-household${householdId}-page${page}-limit${limit}-search${search}-sort${sort}-importance${importance}-creator${creatorId ?? ""}-time${time}`;
             },
             providesTags: (result, _error, { householdId }) => {
-                if (!result || !Array.isArray(result.items)) return [{ type: "Announcement", id: `HOUSEHOLD_${householdId}` }];
+                if (!result || !Array.isArray(result.items)) {
+                    return [{ type: "Announcement" as const, id: `HOUSEHOLD_${householdId}` }];
+                }
                 return [
                     ...result.items.map(({ id }) => ({ type: "Announcement" as const, id })),
-                    { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
+                    { type: "Announcement" as const, id: `HOUSEHOLD_${householdId}` },
                 ];
             },
         }),
-        createAnnouncement: builder.mutation<Announcement, { householdId: number; message: string; isImportant: boolean }>({
+
+        createAnnouncement: builder.mutation<
+            Announcement,
+            { householdId: number; message: string; isImportant: boolean }
+        >({
             query: ({ householdId, message, isImportant }) => ({
                 url: `/announcements`,
                 method: "POST",
@@ -86,7 +92,10 @@ export const announcementApi = apiSlice.injectEndpoints({
             ],
         }),
 
-        updateAnnouncementIsImportant: builder.mutation<Announcement, { announcementId: number; isImportant: boolean }>({
+        updateAnnouncementIsImportant: builder.mutation<
+            Announcement,
+            { announcementId: number; isImportant: boolean }
+        >({
             query: ({ announcementId, isImportant }) => ({
                 url: `/announcements/${announcementId}`,
                 method: "PUT",
@@ -96,7 +105,10 @@ export const announcementApi = apiSlice.injectEndpoints({
                 res ? [{ type: "Announcement", id: res.id }] : [],
         }),
 
-        deleteAnnouncement: builder.mutation<void, { announcementId: number; householdId: number }>({
+        deleteAnnouncement: builder.mutation<
+            void,
+            { announcementId: number; householdId: number }
+        >({
             query: ({ announcementId }) => ({
                 url: `/announcements/${announcementId}`,
                 method: "DELETE",
@@ -106,7 +118,10 @@ export const announcementApi = apiSlice.injectEndpoints({
             ],
         }),
 
-        markAnnouncementSeen: builder.mutation<AnnouncementSeenResponse, { announcementId: number; householdId: number }>({
+        markAnnouncementSeen: builder.mutation<
+            AnnouncementSeenResponse,
+            { announcementId: number; householdId: number }
+        >({
             query: ({ announcementId }) => ({
                 url: `/announcements/${announcementId}/seen`,
                 method: "POST",
@@ -117,7 +132,10 @@ export const announcementApi = apiSlice.injectEndpoints({
             ],
         }),
 
-        markAnnouncementUnseen: builder.mutation<void, { announcementId: number; householdId: number }>({
+        markAnnouncementUnseen: builder.mutation<
+            void,
+            { announcementId: number; householdId: number }
+        >({
             query: ({ announcementId }) => ({
                 url: `/announcements/${announcementId}/seen`,
                 method: "DELETE",
@@ -128,29 +146,34 @@ export const announcementApi = apiSlice.injectEndpoints({
             ],
         }),
 
-        checkAnnouncementSeen: builder.query<AnnouncementSeenResponse, { announcementId: number }>({
+        checkAnnouncementSeen: builder.query<
+            AnnouncementSeenResponse,
+            { announcementId: number }
+        >({
             query: ({ announcementId }) => `/announcements/${announcementId}/seen`,
             providesTags: (_result, _error, { announcementId }) => [
                 { type: "Announcement", id: announcementId },
             ],
         }),
 
-        markAnnouncementsSeenBulk: builder.mutation<{ marked: number }, { householdId: number; announcementIds: number[] }>({
+        // BULK SEEN: do NOT invalidate tags so the UI doesn't refetch immediately
+        markAnnouncementsSeenBulk: builder.mutation<
+            { marked: number },
+            { householdId: number; announcementIds: number[] }
+        >({
             query: ({ announcementIds }) => ({
                 url: `/announcements/seen`,
                 method: "POST",
                 body: { announcementIds },
             }),
-            invalidatesTags: (_res, _err, { householdId, announcementIds }) => {
-                const tags: Array<{ type: "Announcement"; id: number | string }> = [
-                    { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
-                ];
-                announcementIds.forEach((id) => tags.push({ type: "Announcement", id }));
-                return tags;
-            },
+            // No automatic invalidation here; UI stays as-is for this session
+            invalidatesTags: () => [],
         }),
 
-        toggleAnnouncementImportance: builder.mutation<Announcement, { announcementId: number; isImportant: boolean; householdId: number }>({
+        toggleAnnouncementImportance: builder.mutation<
+            Announcement,
+            { announcementId: number; isImportant: boolean; householdId: number }
+        >({
             query: ({ announcementId, isImportant }) => ({
                 url: `/announcements/${announcementId}/importance`,
                 method: "PUT",
@@ -160,9 +183,9 @@ export const announcementApi = apiSlice.injectEndpoints({
                 { type: "Announcement", id: announcementId },
                 { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
             ],
-        })
-    })
-})
+        }),
+    }),
+});
 
 export const {
     useGetAnnouncementsQuery,
@@ -171,7 +194,7 @@ export const {
     useDeleteAnnouncementMutation,
     useMarkAnnouncementSeenMutation,
     useMarkAnnouncementUnseenMutation,
-    useCheckAnnouncementSeenQuery, // Changed from Mutation to Query
+    useCheckAnnouncementSeenQuery,
     useMarkAnnouncementsSeenBulkMutation,
-    useToggleAnnouncementImportanceMutation
+    useToggleAnnouncementImportanceMutation,
 } = announcementApi;

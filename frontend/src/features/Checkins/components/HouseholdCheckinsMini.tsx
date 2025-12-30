@@ -64,7 +64,7 @@ function MemberRow({
                         member.name?.slice(0, 1).toUpperCase()
                     )}
                 </div> */}
-                <Tooltip key={member.id} label={member.name} withArrow>
+                <Tooltip key={member.id} label={member.firstName} withArrow>
                     <Avatar
                         src={member.profileImg || undefined}
                         radius="xl"
@@ -93,9 +93,9 @@ function MemberRow({
 
                             ].join(" ")}
                             style={{ width: size, height: size }}
-                            title={`${member.name} • ${d.iso} • ${filled ? "Checked in" : "No check-in"}`}
+                            title={`${member.firstName} • ${d.iso} • ${filled ? "Checked in" : "No check-in"}`}
                             role="img"
-                            aria-label={`${member.name} ${d.iso} ${filled ? "checked in" : "no check-in"}`}
+                            aria-label={`${member.firstName} ${d.iso} ${filled ? "checked in" : "no check-in"}`}
                         />
                     );
                 })}

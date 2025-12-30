@@ -9,6 +9,7 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+
 export type FiltersType = {
     importance: "all" | "important";
     creatorId: number | null;
@@ -63,31 +64,45 @@ export const Announcements = ({
         if (activeTab !== "announcements") hasMarkedSeenRef.current = false;
     }, [activeTab]);
 
-    // Reset requestedPage when filters/search/sort change
+    // Reset requestedPage when filters/search/sort change on full page
     useEffect(() => {
         if (fullPage) setRequestedPage(1);
     }, [searchValue, fullPage, sortOption, filters]);
 
-    // Mark unseen announcements as seen
+    // Mark unseen announcements as seen shortly after tab is opened
     useEffect(() => {
         if (activeTab !== "announcements" || hasMarkedSeenRef.current || !data?.items?.length) return;
+
         const unseenIds = data.items.filter(a => !a.seenByCurrent).map(a => a.id);
         if (unseenIds.length === 0) {
             hasMarkedSeenRef.current = true;
             return;
         }
-        hasMarkedSeenRef.current = true;
-        markSeen({ householdId, announcementIds: unseenIds });
+
+        // Small delay so "New" state is actually visible for a moment
+        const timeoutId = window.setTimeout(() => {
+            hasMarkedSeenRef.current = true;
+            markSeen({ householdId, announcementIds: unseenIds });
+        }, 500);
+
+        return () => window.clearTimeout(timeoutId);
     }, [activeTab, data?.items, householdId, markSeen]);
 
-    // Determine visible announcements (slice only for homepage cards)
+    // Determine visible announcements
     let visibleAnnouncements = data?.items ?? [];
+
+    // Homepage behavior (not full page)
     if (!fullPage) {
         const unseen = visibleAnnouncements.filter(a => !a.seenByCurrent);
         const seen = visibleAnnouncements.filter(a => a.seenByCurrent);
-        visibleAnnouncements = unseen.length >= maxDisplayed
-            ? unseen.slice(0, maxDisplayed)
-            : [...unseen, ...seen].slice(0, maxDisplayed);
+
+        if (unseen.length > maxDisplayed) {
+            // If there are more unseen than maxDisplayed, show ALL unseen so none are missed
+            visibleAnnouncements = unseen;
+        } else {
+            // Otherwise show up to maxDisplayed, unseen first then seen
+            visibleAnnouncements = [...unseen, ...seen].slice(0, maxDisplayed);
+        }
     }
 
     // Pagination handlers with clamping
@@ -121,15 +136,27 @@ export const Announcements = ({
                     />
                 ))
             )}
+
             {fullPage && visibleAnnouncements.length > 0 && (
                 <div className={`pagination-buttons${isSmall ? " mobile" : ""}`}>
-                    <Button color="rgb(5, 5, 73)" onClick={loadPrevPage} disabled={displayedPage === 1} size="compact-xs" style={{ marginRight: "0.5rem" }}>
+                    <Button
+                        color="rgb(5, 5, 73)"
+                        onClick={loadPrevPage}
+                        disabled={displayedPage === 1}
+                        size="compact-xs"
+                        style={{ marginRight: "0.5rem" }}
+                    >
                         <ChevronLeftRoundedIcon />
                     </Button>
                     <span>
                         Page {displayedPage} {data?.totalPages ? `of ${data.totalPages}` : ""}
                     </span>
-                    <Button color="rgb(5, 5, 73)" size="compact-xs" onClick={loadNextPage} disabled={displayedPage === (data?.totalPages ?? displayedPage)}>
+                    <Button
+                        color="rgb(5, 5, 73)"
+                        size="compact-xs"
+                        onClick={loadNextPage}
+                        disabled={displayedPage === (data?.totalPages ?? displayedPage)}
+                    >
                         <ChevronRightRoundedIcon />
                     </Button>
                 </div>
