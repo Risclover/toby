@@ -49,7 +49,7 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
 
                 {/* Creator */}
                 <Stack className="filter-drawer-avatars">
-                    <Text size="sm">Creator</Text>
+                    <Text size="sm">Member</Text>
                     <Group>
                         {householdMembers?.map((member) => (
                             <Button

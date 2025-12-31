@@ -10,6 +10,7 @@ import { AnnouncementDeleteConfirmation } from "./AnnouncementDeleteConfirmation
 import { Avatar } from "@mantine/core";
 import StarRoundedIcon from '@mui/icons-material/StarRounded';
 import Brightness1RoundedIcon from '@mui/icons-material/Brightness1Rounded';
+
 type Props = {
     creator: {
         id: number;
@@ -50,7 +51,7 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
                 </div>
                 <div className="single-announcement-header-right">
                     {announcement?.isImportant && <div className="single-announcement-importance-label">
-                        <WarningAmberRoundedIcon /> Important
+                        <StarRoundedIcon />
                     </div>}
                     {!announcement.seenByCurrent && <div className="single-announcement-new-label"><Brightness1RoundedIcon /></div>}
                     {user.id === creator.id && <button data-outside-ignore className="announcement-menu-btn" onClick={onToggleMenu}>

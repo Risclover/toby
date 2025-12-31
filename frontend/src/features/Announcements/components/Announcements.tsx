@@ -56,13 +56,16 @@ export const Announcements = ({
         time: filters.time !== "all" ? filters.time : undefined,
     };
 
-    const { data, isFetching } = useGetAnnouncementsQuery(queryArgs, { skip: shouldSkip });
+    const { data, isFetching, refetch } = useGetAnnouncementsQuery(queryArgs, { skip: shouldSkip });
     const [markSeen] = useMarkAnnouncementsSeenBulkMutation();
 
-    // Reset seen guard if leaving tab
+    // Refetch and reset seen guard when entering the announcements tab
     useEffect(() => {
-        if (activeTab !== "announcements") hasMarkedSeenRef.current = false;
-    }, [activeTab]);
+        if (activeTab === "announcements" && !shouldSkip) {
+            hasMarkedSeenRef.current = false; // Reset flag when entering tab
+            refetch(); // Fetch latest data
+        }
+    }, [activeTab, refetch, shouldSkip]);
 
     // Reset requestedPage when filters/search/sort change on full page
     useEffect(() => {
@@ -71,7 +74,8 @@ export const Announcements = ({
 
     // Mark unseen announcements as seen shortly after tab is opened
     useEffect(() => {
-        if (activeTab !== "announcements" || hasMarkedSeenRef.current || !data?.items?.length) return;
+        // Wait for refetch to complete before marking as seen
+        if (activeTab !== "announcements" || isFetching || hasMarkedSeenRef.current || !data?.items?.length) return;
 
         const unseenIds = data.items.filter(a => !a.seenByCurrent).map(a => a.id);
         if (unseenIds.length === 0) {
@@ -86,7 +90,7 @@ export const Announcements = ({
         }, 500);
 
         return () => window.clearTimeout(timeoutId);
-    }, [activeTab, data?.items, householdId, markSeen]);
+    }, [activeTab, data?.items, householdId, markSeen, isFetching]);
 
     // Determine visible announcements
     let visibleAnnouncements = data?.items ?? [];
