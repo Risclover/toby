@@ -14,23 +14,54 @@
     /* focus ring */
     --sidebar-w: 200px;
     --sidebar-w-collapsed: 100px;
-    --main-border: #374151;
-    --main-background: rgb(1, 1, 19);
-    --sub-text: #9caabe;
     --bg: #111827;
-    --input-background: #374151;
-    --input-border: #4b5563;
     /* smoother & nicer easing */
     --t: 260ms cubic-bezier(.22, .61, .36, 1);
     --accent-color: #15aabf;
-    --accent-color-hover: #1098ad;
-    --accent-color-light: #66d9e8;
     --offset: 1.5rem;
     --gutter: 1rem;
     --row-size: 0.5rem;
     --fitted-col: calc(100% - 2 * var(--offset) - (var(--columns) - 1) * var(--gutter)) / var(--columns);
     --col: var(--fitted-col);
     --columns: 12;
+
+    /* Font system */
+    /* 12px */
+    --text-xs: 0.75rem;
+    /* 14px */
+    --text-sm: 0.875rem;
+    /* 16px */
+    --text-base: 1rem;
+    /* 18px */
+    --text-lg: 1.125rem;
+    /* 20px */
+    --text-xl: 1.25rem;
+    /* 24px */
+    --text-2xl: 1.5rem;
+    /* 30px */
+    --text-3xl: 1.875rem;
+    /* 36px */
+    --text-4xl: 2.25rem;
+    /* 48px */
+    --text-5xl: 3rem;
+    /* 60px */
+    --text-6xl: 3.75rem;
+    /* 72px */
+    --text-7xl: 4.5rem;
+
+    /* Color system */
+    --primary: rgb(5, 5, 73);
+    --important: rgb(230, 176, 2);
+    --input-grey: rgb(239, 240, 247);
+    --main-accent: #1098ad;
+    --accent-hover: #1098ad;
+    --accent-light: #66d9e8;
+    --input-background: #374151;
+    --input-border: #4b5563;
+    --sub-text: #9caabe;
+    --main-border: #374151;
+    --main-background: rgb(1, 1, 19);
+    --main-error: #ff6b6b;
 }
 
 * {
