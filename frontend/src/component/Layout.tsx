@@ -20,14 +20,6 @@ export const Layout = () => {
         setColorScheme('light');
     }, [])
 
-    let items = [
-        {
-            label: "Hello",
-            icon: "",
-            command: () => console.log("hey")
-        }
-    ]
-
     return (
         <div className="flex flex-1 gap-4 pt-0 w-full">
             {(!isMobile && !isSmallScreen) &&

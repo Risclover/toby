@@ -1,6 +1,7 @@
 import AssignmentTurnedInRoundedIcon from "@mui/icons-material/AssignmentTurnedInRounded";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import EditCalendarRoundedIcon from "@mui/icons-material/EditCalendarRounded";
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import { useState, type JSX } from "react";
 
 type Item = {
@@ -14,7 +15,7 @@ export const MobileHomeNavGrid = () => {
     const [activeIndex, setActiveIndex] = useState(0);
 
     const items: Item[] = [
-        { href: "/tasklists", label: "Home", ariaLabel: "Home", icon: <AssignmentTurnedInRoundedIcon /> },
+        { href: "/tasklists", label: "Home", ariaLabel: "Home", icon: <HomeRoundedIcon /> },
         { href: "/tasklists", label: "Tasks", ariaLabel: "Tasks", icon: <AssignmentTurnedInRoundedIcon /> },
         { href: "#", label: "Calendar", ariaLabel: "Calendar", icon: <EditCalendarRoundedIcon /> },
         { href: "/shopping", label: "Shopping", ariaLabel: "Shopping Lists", icon: <ShoppingCartRoundedIcon /> },

@@ -9,6 +9,7 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 export type FiltersType = {
     importance: "all" | "important";
@@ -40,6 +41,8 @@ export const Announcements = ({
     const [openMenuAnnouncementId, setOpenMenuAnnouncementId] = useState<number | null>(null);
     const hasMarkedSeenRef = useRef(false);
     const isSmall = useIsSmallScreen();
+    const prevPageRef = useRef(requestedPage);
+
 
     const queryLimit = fullPage ? 10 : 50;
     const shouldSkip = !fullPage && activeTab !== "announcements";
@@ -58,6 +61,7 @@ export const Announcements = ({
 
     const { data, isFetching, refetch } = useGetAnnouncementsQuery(queryArgs, { skip: shouldSkip });
     const [markSeen] = useMarkAnnouncementsSeenBulkMutation();
+
 
     // Refetch and reset seen guard when entering the announcements tab
     useEffect(() => {
@@ -121,6 +125,16 @@ export const Announcements = ({
 
     // Displayed page should never exceed totalPages
     const displayedPage = Math.min(requestedPage, data?.totalPages ?? requestedPage);
+
+    useEffect(() => {
+        // Only scroll if the page has explicitly changed since the last render
+        if (prevPageRef.current !== requestedPage) {
+            window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+
+            // Update the ref to the new current page
+            prevPageRef.current = requestedPage;
+        }
+    }, [requestedPage]);
 
     return (
         <div className="announcements-container">
