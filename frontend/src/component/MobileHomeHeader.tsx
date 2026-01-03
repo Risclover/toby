@@ -16,7 +16,6 @@ export const MobileHeader = () => {
                 <MenuRoundedIcon />
                 <div className="brand">
                     <TobyIcon />
-                    <div className="title">Toby</div>
                 </div>
             </div>
             <div className="mobile-header-right">

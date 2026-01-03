@@ -1,0 +1,7 @@
+.tasklist-settings-btn svg {
+    font-size: var(--text-2xl);
+}
+
+.tasklist-settings-btn:hover svg {
+    color: var(--accent-color);
+}

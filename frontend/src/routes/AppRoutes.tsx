@@ -17,6 +17,7 @@ import { MobileHome } from "@/pages/MobileHome";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { MobileAnnouncements } from "@/pages/MobileAnnouncements";
+import { MobileTasklist } from "@/features/HouseholdTasklists/components/MobileTasklist/MobileTasklist";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
@@ -28,7 +29,7 @@ export const AppRoutes = () => {
             <Route path="/signup" element={<Registration createHousehold={true} />} />
             <Route path="/users/:userId" element={<UserPage />} />
             <Route path="/tasklists" element={<HouseholdTasklists />} />
-            <Route path="/tasklists/:tasklistId" element={<HouseholdTasklistPage />} />
+            <Route path="/tasklists/:tasklistId" element={<MobileTasklist />} />
             <Route path="/login" element={<Login />} />
             <Route path="/shopping" element={<ShoppingListsPage />} />
             <Route path="/shopping/:listId" element={<ShoppingListPage />} />
