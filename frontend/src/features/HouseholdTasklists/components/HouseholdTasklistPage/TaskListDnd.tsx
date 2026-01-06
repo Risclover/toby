@@ -24,52 +24,80 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import { Button } from "@mantine/core";
+
 type Props = {
     listId: number;
-    tasks: Todo[]; // fetched via RTK Query
+    tasks: Todo[];
 };
 
 export function TaskListDnd({ listId, tasks }: Props) {
-    // Keep a local sorted copy for instant UI moves
-    const initial = useMemo(
+    // 1. Sort incoming props to ensure we start with the correct server order
+    const sortedTasks = useMemo(
         () => [...tasks].sort((a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0)),
         [tasks]
     );
-    const [local, setLocal] = useState<Todo[]>(initial);
 
+    const [local, setLocal] = useState<Todo[]>(sortedTasks);
+
+    // 2. Sync local state with props ONLY when the task IDs actually change
+    //    (e.g., a new task was added or one was deleted), NOT on every re-render.
     useEffect(() => {
-        const a = initial.map(t => t.id).join(",");
-        const b = local.map(t => t.id).join(",");
-        if (a !== b) setLocal(initial);
-    }, [initial, local]);
+        const propIds = sortedTasks.map(t => t.id).join(',');
+        const localIds = local.map(t => t.id).join(',');
+
+        // Only reset if the structural composition of the list changes
+        if (propIds !== localIds) {
+            setLocal(sortedTasks);
+        }
+    }, [sortedTasks]);
 
     const [reorderTodos] = useReorderTodosMutation();
 
     const sensors = useSensors(
-        // Require a small pointer movement to avoid accidental drags from clicks
         useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
     );
 
-    const handleDragEnd = async (event: DragEndEvent) => {
+    // Helper to persist changes
+    const executeReorder = async (newOrder: Todo[]) => {
+        // Optimistically update UI
+        setLocal(newOrder);
+
+        const orderedIds = newOrder.map((t) => t.id);
+
+        try {
+            // Send new order to server
+            await reorderTodos({ listId, orderedIds }).unwrap();
+        } catch (err) {
+            console.error("Failed to reorder:", err);
+            // Revert to server state on failure
+            setLocal(sortedTasks);
+        }
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
         if (!over || active.id === over.id) return;
 
         const oldIndex = local.findIndex((t) => t.id === Number(active.id));
         const newIndex = local.findIndex((t) => t.id === Number(over.id));
-        if (oldIndex === -1 || newIndex === -1) return;
 
-        const next = arrayMove(local, oldIndex, newIndex);
-        setLocal(next); // optimistic UI
-
-        const orderedIds = next.map((t) => t.id);
-        try {
-            await reorderTodos({ listId, orderedIds }).unwrap();
-            // list query invalidates/refetches elsewhere
-        } catch {
-            // rollback on failure
-            setLocal(local);
+        if (oldIndex !== -1 && newIndex !== -1) {
+            const next = arrayMove(local, oldIndex, newIndex);
+            executeReorder(next);
         }
+    };
+
+    const handleManualMove = (taskId: number, direction: 'up' | 'down') => {
+        const currentIndex = local.findIndex((t) => t.id === taskId);
+        if (currentIndex === -1) return;
+
+        const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+        if (newIndex < 0 || newIndex >= local.length) return;
+
+        const next = arrayMove(local, currentIndex, newIndex);
+        executeReorder(next);
     };
 
     return (
@@ -83,8 +111,15 @@ export function TaskListDnd({ listId, tasks }: Props) {
                 strategy={verticalListSortingStrategy}
             >
                 <ul className="tasklist">
-                    {local.map((task) => (
-                        <SortableTaskItem key={task.id} task={task} />
+                    {local.map((task, index) => (
+                        <SortableTaskItem
+                            tasks={tasks}
+                            key={task.id}
+                            task={task}
+                            isFirst={index === 0}
+                            isLast={index === local.length - 1}
+                            onMove={handleManualMove}
+                        />
                     ))}
                 </ul>
             </SortableContext>
@@ -92,44 +127,74 @@ export function TaskListDnd({ listId, tasks }: Props) {
     );
 }
 
-function SortableTaskItem({ task }: { task: Todo }) {
+// ... (SortableTaskItem remains exactly the same as the previous correct version)
+type SortableTaskItemProps = {
+    task: Todo;
+    tasks: Todo[] | undefined;
+    isFirst: boolean;
+    isLast: boolean;
+    onMove: (id: number, direction: 'up' | 'down') => void;
+};
+
+function SortableTaskItem({ task, tasks, isFirst, isLast, onMove }: SortableTaskItemProps) {
     const isSmall = useIsSmallScreen();
     const {
         attributes,
         listeners,
         setNodeRef,
-        setActivatorNodeRef, // IMPORTANT: use this for the handle
+        setActivatorNodeRef,
         transform,
         transition,
         isDragging,
     } = useSortable({ id: task.id });
-    const { data: user } = useAuthenticateQuery()
+    const { data: user } = useAuthenticateQuery();
 
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.6 : 1,
-        userSelect: "none",
     };
 
     return (
         <li ref={setNodeRef} style={style} className="task">
             <div className="task-row">
-                {/* Drag handle — the ONLY activator */}
-                {!isSmall && <span
-                    className="drag-handle"
-                    ref={setActivatorNodeRef}
-                    {...listeners}
-                    {...attributes}
-                    tabIndex={0}
-                    aria-label="Drag handle"
-                    style={{ cursor: "grab" }}
-                >
-                    <DragIndicatorIcon />
-                </span>}
-
-                <HouseholdTasklistPageTask taskId={task.id} listId={task.listId} householdId={user?.householdId} />
-                {/* right-side actions, due date, etc. */}
+                <div className="task-row-left">
+                    {!isSmall && (
+                        <span
+                            className="drag-handle"
+                            ref={setActivatorNodeRef}
+                            {...listeners}
+                            {...attributes}
+                            tabIndex={0}
+                            style={{ cursor: "grab" }}
+                        >
+                            <DragIndicatorIcon />
+                        </span>
+                    )}
+                    <HouseholdTasklistPageTask taskId={task.id} listId={task.listId} householdId={user?.householdId} />
+                </div>
+                {isSmall && tasks?.length > 1 && (
+                    <div className="task-row-right">
+                        <Button
+                            variant="subtle"
+                            size="sm"
+                            color="cyan"
+                            disabled={isFirst}
+                            onClick={() => onMove(task.id, 'up')}
+                        >
+                            <ExpandLessRoundedIcon />
+                        </Button>
+                        <Button
+                            variant="transparent"
+                            size="sm"
+                            color="cyan"
+                            disabled={isLast}
+                            onClick={() => onMove(task.id, 'down')}
+                        >
+                            <ExpandMoreRoundedIcon />
+                        </Button>
+                    </div>
+                )}
             </div>
         </li>
     );

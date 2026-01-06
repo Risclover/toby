@@ -132,7 +132,7 @@ textarea.editable-title.is-editing {
     display: flex;
     align-items: center;
     width: 100%;
-    padding-left: 0.8rem;
+    padding: 0.5rem 0.8rem
 }
 
 .tasklist>li.task:has(+ li.task) {

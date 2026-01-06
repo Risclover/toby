@@ -56,3 +56,25 @@
 .tasklist-head-progress {
     margin-bottom: 0.5rem;
 }
+
+.task-row {
+    justify-content: space-between;
+}
+
+.task-row-right {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-direction: column;
+}
+
+.task-row-right button {
+    padding: 0;
+
+}
+
+.task-row-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}

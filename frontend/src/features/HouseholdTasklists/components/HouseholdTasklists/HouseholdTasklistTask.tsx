@@ -4,6 +4,7 @@ import { Checkbox } from "@mantine/core";
 
 type Props = {
     task: Todo;
+    moveTask?: (dragIndex: number, hoverIndex: number) => void;
 }
 
 export const HouseholdTasklistTask = ({ task }: Props) => {

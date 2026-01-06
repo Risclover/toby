@@ -8,17 +8,17 @@ import { CreateTodoList } from "./CreateTodoList";
 export const HouseholdTasklists = () => {
     const { data: user, isLoading: authLoading } = useAuthenticateQuery();
 
-    // Gate the lists query until we have an ID
     const householdId = user?.householdId ?? skipToken;
 
     const {
         data: lists = [],
-        isLoading,     // true only for the *first* load
-        isFetching,    // true for background refetches
+        isLoading,
+        isFetching,
     } = useGetHouseholdTodoListsQuery(householdId, {
-        // Optional: reduce surprise refetches
         refetchOnFocus: false,
         refetchOnReconnect: false,
+        // ADDED: This ensures you get fresh data every time you navigate back to this page
+        refetchOnMountOrArgChange: true,
     });
 
     if (authLoading || isLoading) return <div>Loading...</div>;
@@ -33,13 +33,24 @@ export const HouseholdTasklists = () => {
                 <CreateTodoList householdId={householdId} />
             </div>
 
-            {/* If you want, show a tiny non-blocking hint */}
             {isFetching && <div className="subtle-loading">Refreshing…</div>}
 
             <div className="household-tasklists-grid">
-                {lists.map(list => (
-                    <HouseholdTasklist key={list.id} list={list} />
-                ))}
+                {lists.map(list => {
+                    // ADDED: Create a simple hash of the order. 
+                    // This forces the 'HouseholdTasklist' component to completely reset 
+                    // (and update its internal 'useMobileTasklist' hook) whenever the order changes.
+                    const orderSignature = list.todos
+                        ?.map((t) => t.id)
+                        .join("-");
+
+                    return (
+                        <HouseholdTasklist
+                            key={`${list.id}-${orderSignature}`}
+                            list={list}
+                        />
+                    );
+                })}
             </div>
 
         </div>

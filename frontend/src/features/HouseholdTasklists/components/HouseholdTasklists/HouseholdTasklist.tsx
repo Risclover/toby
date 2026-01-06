@@ -6,12 +6,32 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklistTask } from "./HouseholdTasklistTask";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMobileTasklist } from "../../hooks/useMobileTasklist";
 
 type HouseholdTasklistProps = {
     list: TodoListType;
 };
 
-export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
+/**
+ * Wrapper Component:
+ * Detects changes in the task order (via IDs and sortIndex) and forces
+ * the content to remount. This ensures useMobileTasklist picks up the new order.
+ */
+export function HouseholdTasklist(props: HouseholdTasklistProps) {
+    const todos = props.list.todos ?? [];
+
+    // Create a unique signature for the current order
+    const orderSignature = useMemo(() => {
+        return todos.map((t: any) => `${t.id}_${t.sortIndex ?? 0}`).join('|');
+    }, [todos]);
+
+    // The 'key' prop forces React to destroy and recreate the Content component
+    // whenever the orderSignature changes.
+    return <HouseholdTasklistContent key={orderSignature} {...props} />;
+}
+
+// This contains your original logic, renamed to 'Content'
+function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(
         user?.householdId ?? skipToken
@@ -32,7 +52,6 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
 
     // Uncompleted from the sorted array
     const uncompletedTodos = useMemo(() => {
-        // If you specifically want only "in_progress" change predicate accordingly.
         return todosSorted.filter((t: any) => t.status !== "completed");
     }, [todosSorted]);
 
@@ -62,15 +81,16 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
         navigate(`/tasklists/${list.id}`);
     };
 
+    // Now initializes fresh whenever the parent wrapper changes the key
+    const { tasks, moveTask } = useMobileTasklist({ initialTasks: todosSorted });
+
     if (!list?.memberIds?.includes(user?.id)) return null;
 
     const remainingCount = Math.max(0, (uncompletedTodos?.length ?? 0) - 3);
 
-    const firstTwoMembers = visible.slice(0, 2);
-    console.log('firstTwoMembers:', firstTwoMembers);
-
     return (
-        <div className="mobile-home-notice-board mobile-tasklist-card"
+        <div
+            className="mobile-home-notice-board mobile-tasklist-card"
             onClick={navigateToTasklistPage}
         >
             <div className="tasklist-head">
@@ -116,8 +136,12 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
             </div>
 
             <div className="mobile-home-notice-board-content">
-                {uncompletedTodos?.slice(0, 3).map((todo: any) => (
-                    <HouseholdTasklistTask key={todo.id} task={todo} />
+                {tasks?.slice(0, 3).map((todo: any) => (
+                    <HouseholdTasklistTask
+                        key={todo.id}
+                        task={todo}
+                        moveTask={moveTask}
+                    />
                 ))}
 
                 {remainingCount > 0 && <Divider my="xs" />}
