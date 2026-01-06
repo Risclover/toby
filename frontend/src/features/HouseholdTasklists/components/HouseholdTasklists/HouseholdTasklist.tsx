@@ -70,12 +70,7 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
     console.log('firstTwoMembers:', firstTwoMembers);
 
     return (
-        <Card
-            className="household-tasklist"
-            shadow="sm"
-            padding="lg"
-            radius="md"
-            withBorder
+        <div className="mobile-home-notice-board mobile-tasklist-card"
             onClick={navigateToTasklistPage}
         >
             <div className="tasklist-head">
@@ -113,25 +108,26 @@ export function HouseholdTasklist({ list }: HouseholdTasklistProps) {
                     </Avatar.Group>
                 </Tooltip.Group>
             </div>
-
-            <div className="progress">
+            <div className="tasklist-head-progress progress">
                 <div className="progress-left">
                     <Progress color="cyan" value={percent} />
                 </div>
                 {percent}%
             </div>
 
-            {uncompletedTodos?.slice(0, 3).map((todo: any) => (
-                <HouseholdTasklistTask key={todo.id} task={todo} />
-            ))}
+            <div className="mobile-home-notice-board-content">
+                {uncompletedTodos?.slice(0, 3).map((todo: any) => (
+                    <HouseholdTasklistTask key={todo.id} task={todo} />
+                ))}
 
-            {remainingCount > 0 && <Divider my="md" />}
+                {remainingCount > 0 && <Divider my="xs" />}
 
-            {remainingCount > 0 && (
-                <div className="household-tasklist-bottom">
-                    + {remainingCount} more task{remainingCount > 1 && "s"}
-                </div>
-            )}
-        </Card>
+                {remainingCount > 0 && (
+                    <div className="household-tasklist-bottom">
+                        + {remainingCount} more task{remainingCount > 1 && "s"}
+                    </div>
+                )}
+            </div>
+        </div>
     );
 }

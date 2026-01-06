@@ -10,10 +10,12 @@ import AddIcon from '@mui/icons-material/Add';
 
 type CreateTodoList = {
     householdId: number
+    open: () => void;
+    close: () => void;
+    opened: boolean;
 }
 
-export const CreateTodoList = ({ householdId }: { householdId: number }) => {
-    const [opened, { open, close }] = useDisclosure(false);
+export const CreateTodoList = ({ householdId, opened, open, close }: Props) => {
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const [title, setTitle] = useState("");
@@ -77,10 +79,6 @@ export const CreateTodoList = ({ householdId }: { householdId: number }) => {
                     </Button>
                 </Stack>
             </Modal>
-
-            <Button variant="filled" color="cyan" onClick={open}>
-                <AddIcon />
-            </Button>
         </div>
     );
 };

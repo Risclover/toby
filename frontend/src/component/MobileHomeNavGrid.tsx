@@ -2,7 +2,8 @@ import AssignmentTurnedInRoundedIcon from "@mui/icons-material/AssignmentTurnedI
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import EditCalendarRoundedIcon from "@mui/icons-material/EditCalendarRounded";
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import { useState, type JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Item = {
     href: string;
@@ -11,12 +12,20 @@ type Item = {
     ariaLabel?: string;
 };
 
-export const MobileHomeNavGrid = () => {
+type Props = {
+    activeTab?: number;
+}
+
+export const MobileHomeNavGrid = ({ activeTab }: Props) => {
     const [activeIndex, setActiveIndex] = useState(0);
 
+    useEffect(() => {
+        setActiveIndex(activeTab ?? 0);
+    }, [activeTab])
+
     const items: Item[] = [
-        { href: "/tasklists", label: "Home", ariaLabel: "Home", icon: <HomeRoundedIcon /> },
-        { href: "/tasklists", label: "Tasks", ariaLabel: "Tasks", icon: <AssignmentTurnedInRoundedIcon /> },
+        { href: "/", label: "Home", ariaLabel: "Home", icon: <HomeRoundedIcon /> },
+        { href: "/tasklists", label: "Tasklists", ariaLabel: "Tasklists", icon: <AssignmentTurnedInRoundedIcon /> },
         { href: "#", label: "Calendar", ariaLabel: "Calendar", icon: <EditCalendarRoundedIcon /> },
         { href: "/shopping", label: "Shopping", ariaLabel: "Shopping Lists", icon: <ShoppingCartRoundedIcon /> },
     ];
@@ -45,6 +54,7 @@ type BtnProps = {
 
 const MobileHomeNavGridBtn = ({ btn, index, activeIndex, setActiveIndex }: BtnProps) => {
     const isActive = activeIndex === index;
+    const navigate = useNavigate();
 
     return (
         <div
@@ -55,8 +65,7 @@ const MobileHomeNavGridBtn = ({ btn, index, activeIndex, setActiveIndex }: BtnPr
             aria-current={isActive ? "page" : undefined}
             onClick={() => {
                 setActiveIndex(index);
-                // optionally navigate:
-                // window.location.href = btn.href;
+                navigate(btn.href)
             }}
             onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {

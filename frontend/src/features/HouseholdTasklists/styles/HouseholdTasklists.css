@@ -37,7 +37,7 @@
     /* align-items: center; */
     justify-content: space-between;
     line-height: 1.2;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
     font-weight: 500;
     font-size: 1.2rem;
 }
@@ -56,12 +56,15 @@
 }
 
 .household-tasklist-task {
-    margin-top: 0.825rem;
     display: flex;
     align-items: flex-start;
     gap: 0.5rem;
     line-height: 1;
     font-size: 0.9rem;
+}
+
+.household-tasklist-task:not(:first-child) {
+    margin-top: 0.825rem;
 }
 
 .household-tasklist-task:first-child {
@@ -89,11 +92,15 @@
 
 .household-tasklist {
     cursor: pointer;
-    background: var(--main-background) !important;
-    color: white !important;
-    border: 1px solid var(--main-border) !important;
+    background: var(--input-grey) !important;
+    border: 0 !important;
+    box-shadow: none !important;
     border-radius: 8px;
     padding: 10px;
+}
+
+.list-is-for {
+    background-color: transparent !important;
 }
 
 .list-is-for .list-members {

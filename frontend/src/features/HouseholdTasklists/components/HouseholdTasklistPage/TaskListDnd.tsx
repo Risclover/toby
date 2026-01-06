@@ -21,7 +21,9 @@ import { useReorderTodosMutation, type Todo } from "@/store/todoSlice";
 import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 type Props = {
     listId: number;
     tasks: Todo[]; // fetched via RTK Query
@@ -91,6 +93,7 @@ export function TaskListDnd({ listId, tasks }: Props) {
 }
 
 function SortableTaskItem({ task }: { task: Todo }) {
+    const isSmall = useIsSmallScreen();
     const {
         attributes,
         listeners,
@@ -113,7 +116,7 @@ function SortableTaskItem({ task }: { task: Todo }) {
         <li ref={setNodeRef} style={style} className="task">
             <div className="task-row">
                 {/* Drag handle — the ONLY activator */}
-                <span
+                {!isSmall && <span
                     className="drag-handle"
                     ref={setActivatorNodeRef}
                     {...listeners}
@@ -123,7 +126,7 @@ function SortableTaskItem({ task }: { task: Todo }) {
                     style={{ cursor: "grab" }}
                 >
                     <DragIndicatorIcon />
-                </span>
+                </span>}
 
                 <HouseholdTasklistPageTask taskId={task.id} listId={task.listId} householdId={user?.householdId} />
                 {/* right-side actions, due date, etc. */}

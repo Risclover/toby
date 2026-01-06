@@ -19,5 +19,5 @@ export const HouseholdTasklistPageList = ({ tasklist }: Props) => {
         <div className="household-tasklist-page-tasks panel-body">
             {tasklist && <TaskListDnd tasks={uncompleted} listId={tasklist.id} />}
         </div>
-    </div >
+    </div>
 }

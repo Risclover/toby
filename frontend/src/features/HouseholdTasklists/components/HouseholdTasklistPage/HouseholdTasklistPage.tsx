@@ -64,8 +64,19 @@ export const HouseholdTasklistPage = () => {
                 </div>
             </header>
             <div className="sections">
-                {uncompleted && uncompleted.length > 0 && <HouseholdTasklistPageList tasklist={tasklist} />}
-                {completed && completed?.length > 0 && <HouseholdTasklistPageCompleted tasklist={tasklist} completed={completed} showCompleted={showCompleted} setShowCompleted={setShowCompleted} />}
+                {uncompleted && uncompleted.length > 0 &&
+                    <HouseholdTasklistPageList
+                        tasklist={tasklist}
+                    />
+                }
+                {completed && completed?.length > 0 &&
+                    <HouseholdTasklistPageCompleted
+                        tasklist={tasklist}
+                        completed={completed}
+                        showCompleted={showCompleted}
+                        setShowCompleted={setShowCompleted}
+                    />
+                }
             </div>
             <HouseholdTasklistPageAddTask listId={tasklist?.id} /> {/* number, not undefined */}
         </div >
