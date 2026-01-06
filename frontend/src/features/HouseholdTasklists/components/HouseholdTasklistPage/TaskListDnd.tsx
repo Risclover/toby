@@ -159,7 +159,7 @@ function SortableTaskItem({ task, tasks, isFirst, isLast, onMove }: SortableTask
         <li ref={setNodeRef} style={style} className="task">
             <div className="task-row">
                 <div className="task-row-left">
-                    {!isSmall && (
+                    {tasks && !isSmall && tasks?.length > 1 && (
                         <span
                             className="drag-handle"
                             ref={setActivatorNodeRef}
@@ -173,11 +173,11 @@ function SortableTaskItem({ task, tasks, isFirst, isLast, onMove }: SortableTask
                     )}
                     <HouseholdTasklistPageTask taskId={task.id} listId={task.listId} householdId={user?.householdId} />
                 </div>
-                {isSmall && tasks?.length > 1 && (
+                {tasks && isSmall && tasks?.length > 1 && (
                     <div className="task-row-right">
                         <Button
                             variant="subtle"
-                            size="sm"
+                            size="xs"
                             color="cyan"
                             disabled={isFirst}
                             onClick={() => onMove(task.id, 'up')}
@@ -185,8 +185,8 @@ function SortableTaskItem({ task, tasks, isFirst, isLast, onMove }: SortableTask
                             <ExpandLessRoundedIcon />
                         </Button>
                         <Button
-                            variant="transparent"
-                            size="sm"
+                            variant="subtle"
+                            size="xs"
                             color="cyan"
                             disabled={isLast}
                             onClick={() => onMove(task.id, 'down')}

@@ -52,37 +52,38 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
     if (!task) return null;
 
     return (
-        <div className="household-tasklist-page-task">
-            <div className="task-check">
-                <Checkbox
-                    radius="xl"
-                    color="cyan"
-                    checked={checked}
-                    onChange={onChange}
-                    disabled={isLoading}
-                />
+        <div className="task">
+            <div className="household-tasklist-page-task">
+                <div className="task-check">
+                    <Checkbox
+                        radius="xl"
+                        color="cyan"
+                        checked={checked}
+                        onChange={onChange}
+                    />
+                </div>
+                <div className="task-main">
+                    {checked ? (
+                        <div className="completed-task">{task?.title}</div>
+                    ) : (
+                        <div>{task?.title}</div>
+                    )}
+                    {!checked && <TaskExtra todo={task} listId={listId} householdId={householdId} />}
+                </div>
+                {!checked && <div className="household-tasklist-page-btns">
+                    <BorderColorRoundedIcon onClick={() => setShowTaskDetails(true)} />
+                    <DeleteRounded onClick={() => setShowDeleteConfirmation(true)} />
+                </div>}
+                {showDeleteConfirmation &&
+                    <TaskDeletionConfirmation
+                        title={task.title}
+                        onClose={() => setShowDeleteConfirmation(false)}
+                        opened={showDeleteConfirmation}
+                        listId={task.listId}
+                        todoId={task.id}
+                    />}
+                {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={householdId} />}
             </div>
-            <div className="task-main">
-                {checked ? (
-                    <div className="completed-task">{task?.title}</div>
-                ) : (
-                    <div>{task?.title}</div>
-                )}
-                {!checked && <TaskExtra todo={task} listId={listId} householdId={householdId} />}
-            </div>
-            {!checked && <div className="household-tasklist-page-btns">
-                <BorderColorRoundedIcon onClick={() => setShowTaskDetails(true)} />
-                <DeleteRounded onClick={() => setShowDeleteConfirmation(true)} />
-            </div>}
-            {showDeleteConfirmation &&
-                <TaskDeletionConfirmation
-                    title={task.title}
-                    onClose={() => setShowDeleteConfirmation(false)}
-                    opened={showDeleteConfirmation}
-                    listId={task.listId}
-                    todoId={task.id}
-                />}
-            {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={householdId} />}
         </div>
     );
 }

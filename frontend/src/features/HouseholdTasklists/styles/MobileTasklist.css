@@ -30,6 +30,7 @@
     padding: 0 1rem;
     position: relative;
     height: 100%;
+    padding-top: 1rem;
 }
 
 .mobile-add-tasklist-btn {
@@ -63,18 +64,29 @@
 
 .task-row-right {
     display: flex;
-    gap: 0.5rem;
     align-items: center;
     flex-direction: column;
 }
 
 .task-row-right button {
     padding: 0;
-
+    height: auto;
 }
 
 .task-row-left {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+}
+
+.task-row-right button:disabled {
+    background: transparent;
+    color: rgb(91, 113, 117);
+}
+
+.mobile-tasklist-content {
+    padding: 0 1rem;
+    padding-bottom: 80px;
+    background: var(--input-grey);
+    height: 100%;
+    padding-top: 1rem;
 }

@@ -23,7 +23,14 @@ export const ShoppingListAddItem = ({ listId }: Props) => {
 
     return (
         <div className="add-task-container"><div className="add-task shell-footer">
-            <input value={inputValue} onKeyDown={(e) => { if (e.key === "Enter") { handleAddItem() } }} ref={inputRef} onChange={handleValue} type="text" placeholder="Add an item and press Enter" />
+            <input
+                value={inputValue}
+                onKeyDown={(e) => { if (e.key === "Enter") { handleAddItem() } }}
+                ref={inputRef}
+                onChange={handleValue}
+                type="text"
+                placeholder="Add an item and press Enter"
+            />
             <Button color="cyan" loading={loading} onClick={handleAddItem}>Add</Button>
         </div>
         </div>

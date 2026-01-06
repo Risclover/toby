@@ -47,12 +47,16 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    font-size: 0.75rem;
+    font-size: var(--text-sm);
     gap: 0.5rem;
 }
 
 .progress-left {
     width: 100%;
+}
+
+.progress-left>div {
+    background: white;
 }
 
 .household-tasklist-task {
@@ -78,11 +82,12 @@
 }
 
 .household-tasklist-page-list {
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     width: 100%;
-    border: 1px solid var(--main-border);
-    background: var(--main-background);
+    border: 1px solid var(--border);
+    background: white;
     box-shadow: var(--mantine-shadow-sm);
+    color: black;
     flex: 0 1 auto;
     min-height: 0;
     overflow-y: auto;

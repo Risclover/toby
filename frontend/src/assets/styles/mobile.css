@@ -146,7 +146,6 @@
     justify-content: space-around;
     padding: 0.5rem;
     padding-bottom: 0;
-    margin-bottom: 1rem;
     flex-wrap: wrap;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
@@ -226,6 +225,7 @@
     border: 1px solid transparent;
     background: rgb(239, 240, 247);
     cursor: pointer;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     /* box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; */
 }
 

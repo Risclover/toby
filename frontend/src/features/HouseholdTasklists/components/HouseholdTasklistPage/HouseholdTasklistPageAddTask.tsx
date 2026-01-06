@@ -25,9 +25,17 @@ export const HouseholdTasklistPageAddTask = ({ listId }: Props) => {
         inputRef.current?.focus();
     }
 
-    return <div className="add-task-container"><div className="add-task shell-footer">
-        <input value={title} onKeyDown={(e) => { if (e.key === "Enter") { handleAddTodo() } }} ref={inputRef} onChange={handleTitle} type="text" placeholder="Add a task and press Enter" />
-        <Button color="cyan" loading={loading} onClick={handleAddTodo}>Add</Button>
-    </div>
+    return <div className="add-task-container">
+        <div className="add-task shell-footer">
+            <input
+                value={title}
+                onKeyDown={(e) => { if (e.key === "Enter") { handleAddTodo() } }}
+                ref={inputRef}
+                onChange={handleTitle}
+                type="text"
+                placeholder="Add a task and press Enter"
+            />
+            <Button color="cyan" loading={loading} onClick={handleAddTodo}>Add</Button>
+        </div>
     </div>
 }
