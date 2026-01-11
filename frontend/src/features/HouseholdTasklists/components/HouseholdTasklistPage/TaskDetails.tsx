@@ -62,6 +62,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                     <Textarea
                         minRows={1}
                         maxRows={20}
+                        maxLength={255}
                         autosize
                         value={taskDetailsProps.title.value}
                         onChange={taskDetailsProps.title.onChange}

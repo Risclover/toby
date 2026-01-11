@@ -15,10 +15,10 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
     const [isImportant, setIsImportant] = useState(false);
     const [createAnnouncement] = useCreateAnnouncementMutation();
     const [error, setError] = useState("");
-    const [remainingChars, setRemainingChars] = useState(500);
+    const [remainingChars, setRemainingChars] = useState(255);
 
     useEffect(() => {
-        setRemainingChars(500 - message.trim().length);
+        setRemainingChars(255 - message.trim().length);
     }, [message])
 
     const handleCreateAnnouncement = async () => {
@@ -51,7 +51,7 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
                 autosize
                 minRows={2}
                 maxRows={5}
-                maxLength={500}
+                maxLength={255}
                 placeholder="Ex: Eat your peas"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -60,7 +60,7 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
                 <span className="create-announcement-error">{error}</span>
                 <div className="create-announcement-chars">
                     <span className={`create-announcement-remaining${remainingChars === 0 ? " remaining-none" : ""}`}>{remainingChars}</span>
-                    /500
+                    /255
                 </div>
             </div>
             {error.length > 0 && <Space h="md" />}

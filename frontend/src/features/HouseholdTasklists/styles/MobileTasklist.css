@@ -65,8 +65,14 @@
 .task-row-right {
     display: flex;
     align-items: center;
-    flex-direction: column;
     align-self: flex-start;
+    gap: 0.5rem;
+}
+
+.task-row-move-btns {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
 .task-row-right button {
@@ -82,6 +88,7 @@
 
 .task {
     width: 100%;
+    padding: 0.3rem 0.75rem;
 }
 
 .task:hover {
@@ -99,7 +106,7 @@
     padding-bottom: 80px;
     background: var(--input-grey);
     padding-top: 1rem;
-    min-height: calc(100% - 80px);
+    flex: 1;
 }
 
 .star-path {
@@ -118,6 +125,8 @@
 
 .star-icon-container {
     color: rgb(116, 199, 199);
+    align-self: flex-start;
+    margin-top: 0.8rem;
 }
 
 .star-icon,

@@ -80,7 +80,7 @@ export const MobileTasklist = () => {
                     >
                         <ChevronLeftRoundedIcon />
                     </Button>
-                    {tasklist.title}
+                    <span className="title-announcements-title">{tasklist.title}</span>
                 </div>
                 <Button
                     className="tasklist-settings-btn"

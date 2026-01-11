@@ -53,7 +53,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
     if (!task) return null;
 
     return (
-        <div className="task">
+        <div>
             <div className="household-tasklist-page-task" onClick={() => setShowTaskDetails(true)}>
                 <div className="task-left">
                     <div className="task-main">

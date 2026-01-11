@@ -96,7 +96,7 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
             onClick={navigateToTasklistPage}
         >
             <div className="tasklist-head">
-                {list.title}
+                <span className="tasklist-head-title">{list.title}</span>
                 <Tooltip.Group openDelay={300} closeDelay={100}>
                     <Avatar.Group spacing="sm">
                         {visible.map((person: any) => (

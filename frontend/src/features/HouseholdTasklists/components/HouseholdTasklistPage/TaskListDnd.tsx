@@ -184,14 +184,15 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                     )}
                     <HouseholdTasklistPageTask taskId={task.id} listId={task.listId} householdId={user?.householdId} />
                 </div>
-                <div
-                    className="star-icon-container"
-                    onClick={handleStarClick}
-                >
-                    {task?.isImportant ? <StarIcon /> : <StarIconOutline />}
-                </div>
-                {tasks && isSmall && tasks?.length > 1 && (
-                    <div className="task-row-right">
+
+                <div className="task-row-right">
+                    <div
+                        className="star-icon-container"
+                        onClick={handleStarClick}
+                    >
+                        {task?.isImportant ? <StarIcon /> : <StarIconOutline />}
+                    </div>
+                    {tasks && isSmall && tasks?.length > 1 && (<div className="task-row-move-btns">
                         <Button
                             variant="subtle"
                             size="xs"
@@ -210,8 +211,9 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                         >
                             <ExpandMoreRoundedIcon />
                         </Button>
-                    </div>
-                )}
+                    </div>)}
+                </div>
+
             </div>
         </li>
     );

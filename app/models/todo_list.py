@@ -6,7 +6,7 @@ class TodoList(db.Model):
     __tablename__ = "todo_lists"
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), nullable=False)
+    title = db.Column(db.String(64), nullable=False)
     icon = db.Column(db.String(120), nullable=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)

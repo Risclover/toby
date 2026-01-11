@@ -22,14 +22,22 @@
     align-items: flex-start;
     /* top-align checkbox & title */
     gap: 12px;
-    padding: 8px 0;
-    padding-left: 0.75rem;
+    padding: 0.5rem 0.75rem;
     align-items: center;
     width: 100%;
     word-wrap: break-word;
     color: var(--main-background);
     font-size: var(--text-sm);
 }
+
+.household-tasklist-page-task:not(.completed-task) {
+    padding-right: 0;
+}
+
+.household-tasklist-page-completed .household-tasklist-page-task {
+    padding-right: 0.75rem;
+}
+
 
 .completed-task {
     text-decoration: line-through;
@@ -48,6 +56,7 @@
     -moz-hyphens: auto;
     -webkit-hyphens: auto;
     hyphens: auto;
+    line-height: 1.3;
 }
 
 .editable-title {
@@ -142,7 +151,6 @@ textarea.editable-title.is-editing {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 0.3rem 0.75rem;
     gap: 0.5rem;
 }
 

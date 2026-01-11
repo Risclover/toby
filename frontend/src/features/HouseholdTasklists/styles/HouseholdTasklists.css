@@ -34,12 +34,22 @@
 
 .tasklist-head {
     display: flex;
-    /* align-items: center; */
+    align-items: center;
     justify-content: space-between;
     line-height: 1.2;
     /* margin-bottom: 1rem; */
     font-weight: 500;
     font-size: 1.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    gap: 0.5rem;
+}
+
+.tasklist-head-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .progress {

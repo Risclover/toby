@@ -91,6 +91,14 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    overflow: hidden;
+    width: 100%;
+}
+
+.title-announcements-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .title-announcements button {
@@ -162,6 +170,7 @@
     z-index: 99;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
+    flex: 0 0 auto;
 }
 
 /* .mobile-home-nav-grid-btn {
@@ -314,16 +323,24 @@
             hsl(244deg 96% 26%) 100%);
     color: white;
     padding-bottom: 1rem;
+    flex: 0 0 auto;
     /* margin-bottom: 1rem; */
 }
 
 .mobile-home-container-bottom {
+    display: flex;
+    /* ✨ Enable Flexbox here too */
+    flex-direction: column;
+
+    /* This makes it fill all remaining space in .mobile-home-container */
+    flex: 1;
     margin-top: -1rem;
     background: white;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
-    height: 100%;
     position: relative;
+    overflow: visible;
+    /* Ensure sticky works */
     /* background-color:  */
 
 }

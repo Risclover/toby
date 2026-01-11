@@ -7,7 +7,7 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     list_id = db.Column(db.Integer, db.ForeignKey("todo_lists.id"), nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    title = db.Column(db.String, nullable=False)
+    title = db.Column(db.String(255), nullable=False)
     description=db.Column(db.Text)
     status=db.Column(db.Text)
     is_important=db.Column(db.Boolean, default=False)

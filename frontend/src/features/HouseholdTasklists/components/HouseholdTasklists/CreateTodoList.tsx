@@ -65,6 +65,7 @@ export const CreateTodoList = ({ householdId, opened, open, close }: Props) => {
                         label="Title"
                         placeholder='e.g., "Weekend Grocery Run"'
                         required
+                        maxLength={64}
                     />
                     <CreateTodoListMembers
                         members={household?.members}
