@@ -1,12 +1,12 @@
 // MobileAnnouncementsFilterDrawer.tsx
-import { Avatar, Button, Drawer, Group, Stack, Text, Space } from "@mantine/core";
+import { Avatar, Button, Drawer, Group, Stack, Text, Space, Tooltip } from "@mantine/core";
 import { useState } from "react";
 import { type FiltersType } from "@/features/Announcements/components/Announcements";
 
 type Props = {
     opened: boolean;
     close: () => void;
-    householdMembers: { id: number; name: string; profileImg: string }[];
+    householdMembers: { id: number; firstName: string; profileImg: string }[];
     filters: FiltersType;
     setFilters: React.Dispatch<React.SetStateAction<FiltersType>>;
 };
@@ -61,11 +61,16 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
                                 radius="xl"
                                 onClick={() => setLocalFilters({ ...localFilters, creatorId: localFilters.creatorId === member.id ? null : member.id })}
                             >
-                                <Avatar
-                                    key={member.id}
-                                    radius="xl"
-                                    src={member.profileImg}
-                                />
+                                <Tooltip
+                                    withArrow
+                                    label={member.firstName}
+                                >
+                                    <Avatar
+                                        key={member.id}
+                                        radius="xl"
+                                        src={member.profileImg}
+                                    />
+                                </Tooltip>
                             </Button>
                         ))}
                     </Group>

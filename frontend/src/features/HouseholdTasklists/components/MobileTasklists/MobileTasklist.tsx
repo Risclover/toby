@@ -30,9 +30,7 @@ export const MobileTasklist = () => {
     const { tasklistId } = useParams();
     const listId = tasklistId ? Number(tasklistId) : undefined;
 
-    const { data: user } = useAuthenticateQuery();
     const { data: tasklist, isFetching } = useGetTodoListQuery(listId ?? skipToken);
-    const [updateTodoListTitle] = useUpdateTodoListMutation();
 
     // 3. Derived Data (Safe to run even if tasklist is undefined)
     const todos = tasklist?.todos ?? [];

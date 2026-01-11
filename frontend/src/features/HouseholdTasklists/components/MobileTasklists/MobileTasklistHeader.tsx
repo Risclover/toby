@@ -4,8 +4,6 @@ import { Button, CloseButton, Combobox, Input, InputBase, TextInput, useCombobox
 import { useDisclosure } from "@mantine/hooks";
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
-import { useState } from "react";
-import { MobileAnnouncementsFilterDrawer } from "@/component/MobileAnnouncementsFilterDrawer";
 import { type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
 import { MobileTasklistFilterDrawer } from "./MobileTasklistFilterDrawer";
 
@@ -24,23 +22,12 @@ export const MobileTasklistHeader = ({ searchValue, setSearchValue, sortOption, 
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
-    // const [searchValue, setSearchValue] = useState<string>("");
-    // const [sortOption, setSortOption] = useState<"Newest" | "Oldest" | "Important first" | null>(null);
-    // const [filters, setFilters] = useState<{
-    //     importance: "all" | "important";
-    //     creatorId: number | null;
-    //     time: "past due" | "today" | "tomorrow" | "this week" | "this month" | "all";
-    // }>({
-    //     importance: "all",
-    //     creatorId: null,
-    //     time: "all",
-    // });
 
     const optionsList: SortOption[] = [
         "Due Date",
         "Importance",
         "Alphabetical",
-        "Newest"
+        "Newest",
     ];
 
     const options = optionsList.map(item => {

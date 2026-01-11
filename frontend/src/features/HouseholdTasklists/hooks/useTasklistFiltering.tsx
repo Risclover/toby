@@ -15,7 +15,7 @@ export type SortOption =
     | "Due Date"
     | "Importance"
     | "Newest"
-    | null;
+    | "";
 
 export type TimeFilter = "past_due" | "today" | "tomorrow" | "this_week" | "this_month" | "all";
 

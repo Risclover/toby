@@ -1,11 +1,11 @@
-import { Avatar, Button, Drawer, Group, Stack, Text, Space } from "@mantine/core";
+import { Avatar, Button, Drawer, Group, Stack, Text, Space, Tooltip } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { type TaskFilters, type TimeFilter } from "../../hooks/useTasklistFiltering";
 
 type Props = {
     opened: boolean;
     close: () => void;
-    householdMembers: { id: number; username: string; profileImg: string }[] | undefined;
+    householdMembers: { id: number; firstName: string; profileImg: string }[] | undefined;
     filters: TaskFilters;
     setFilters: (val: TaskFilters) => void;
 };
@@ -110,13 +110,18 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                                 }}
                                 onClick={() => setLocalFilters({ ...localFilters, assignedToId: localFilters.assignedToId === member.id ? null : member.id })}
                             >
-                                <Avatar
-                                    radius="xl"
-                                    src={member.profileImg} // Check if your User type uses 'profileImg' or 'avatarUrl'
-                                    alt={member.username}
+                                <Tooltip
+                                    withArrow
+                                    label={member.firstName}
                                 >
-                                    {member.username?.[0]?.toUpperCase()}
-                                </Avatar>
+                                    <Avatar
+                                        radius="xl"
+                                        src={member.profileImg} // Check if your User type uses 'profileImg' or 'avatarUrl'
+                                        alt={member.firstName}
+                                    >
+                                        {member.firstName?.[0]?.toUpperCase()}
+                                    </Avatar>
+                                </Tooltip>
                             </div>
                         ))}
                     </Group>
@@ -152,6 +157,6 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                     </Button>
                 </Group>
             </Stack>
-        </Drawer>
+        </Drawer >
     );
 };
