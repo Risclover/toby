@@ -45,7 +45,7 @@ export const SignIn = () => {
 
     const handleAddTodo = async (e: MouseEvent) => {
         e.preventDefault();
-        await addTodo({ title: "One", description: "One todo", status: "in_progress", priority: "low", dueDate: undefined, assignedToId: user?.id, listId: todoListId })
+        await addTodo({ title: "One", description: "One todo", status: "in_progress", isImportant: false, dueDate: undefined, assignedToId: user?.id, listId: todoListId })
     }
 
     return (

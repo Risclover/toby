@@ -20,7 +20,7 @@ export const HouseholdTasklistPageAddTask = ({ listId }: Props) => {
 
     const handleAddTodo = async () => {
         if (title.trim() === "") return;
-        await addTodo({ title: title, description: "", status: "in_progress", priority: "low", dueDate: undefined, listId: listId })
+        await addTodo({ title: title, description: "", status: "in_progress", isImportant: false, dueDate: undefined, listId: listId })
         setTitle("");
         inputRef.current?.focus();
     }

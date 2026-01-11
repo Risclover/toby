@@ -6,26 +6,51 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
 import { useState } from "react";
 import { MobileAnnouncementsFilterDrawer } from "@/component/MobileAnnouncementsFilterDrawer";
+import { type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
+import { MobileTasklistFilterDrawer } from "./MobileTasklistFilterDrawer";
 
-export const MobileTasklistHeader = () => {
+interface Props {
+    // Lift state up! Pass these down from the Page component
+    searchValue: string;
+    setSearchValue: (val: string) => void;
+    sortOption: SortOption;
+    setSortOption: (val: SortOption) => void;
+    filters: TaskFilters;
+    setFilters: (val: TaskFilters) => void;
+}
+
+export const MobileTasklistHeader = ({ searchValue, setSearchValue, sortOption, setSortOption, filters, setFilters }: Props) => {
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
-    const [searchValue, setSearchValue] = useState<string>("");
-    const [sortOption, setSortOption] = useState<"Newest" | "Oldest" | "Important first" | null>(null);
-    const [filters, setFilters] = useState<{
-        importance: "all" | "important";
-        creatorId: number | null;
-        time: "today" | "7days" | "30days" | "all";
-    }>({
-        importance: "all",
-        creatorId: null,
-        time: "all",
+    // const [searchValue, setSearchValue] = useState<string>("");
+    // const [sortOption, setSortOption] = useState<"Newest" | "Oldest" | "Important first" | null>(null);
+    // const [filters, setFilters] = useState<{
+    //     importance: "all" | "important";
+    //     creatorId: number | null;
+    //     time: "past due" | "today" | "tomorrow" | "this week" | "this month" | "all";
+    // }>({
+    //     importance: "all",
+    //     creatorId: null,
+    //     time: "all",
+    // });
+
+    const optionsList: SortOption[] = [
+        "Due Date",
+        "Importance",
+        "Alphabetical",
+        "Newest"
+    ];
+
+    const options = optionsList.map(item => {
+        return (
+            <Combobox.Option value={item} key={item}>
+                {item}
+            </Combobox.Option>
+        );
     });
 
-    const optionsList = ["Title (A-Z)", "Title (Z-A)", "Incomplete first", "Completed first"];
-    const options = optionsList.map(item => <Combobox.Option value={item} key={item}>{item}</Combobox.Option>)
     return (
         <div className="mobile-announcements-header">
             <TextInput
@@ -59,7 +84,7 @@ export const MobileTasklistHeader = () => {
                         type="button"
                         pointer
                         onClick={() => combobox.toggleDropdown()}
-                        rightSectionPointerEvents={sortOption === null ? 'none' : 'all'}
+                        rightSectionPointerEvents={sortOption === "" ? 'none' : 'all'}
                         rightSection={
                             sortOption ? (
                                 <CloseButton
@@ -67,8 +92,8 @@ export const MobileTasklistHeader = () => {
                                     onMouseDown={(e) => {
                                         e.preventDefault();
                                     }}
-                                    onClick={(e) => {
-                                        setSortOption(null);
+                                    onClick={() => {
+                                        setSortOption("");
                                     }}
                                     aria-label="Clear sort option"
                                 />
@@ -82,8 +107,10 @@ export const MobileTasklistHeader = () => {
                     <Combobox.Options>{options}</Combobox.Options>
                 </Combobox.Dropdown>
             </Combobox>
-            <Button onClick={open} styles={{ root: { minWidth: "54px" } }} variant="light" size="xs" color="rgb(5, 5, 73)"><FilterAltRoundedIcon /></Button>
-            <MobileAnnouncementsFilterDrawer
+            <Button onClick={open} styles={{ root: { minWidth: "54px" } }} variant="light" size="xs" color="rgb(5, 5, 73)">
+                <FilterAltRoundedIcon />
+            </Button>
+            <MobileTasklistFilterDrawer
                 opened={opened}
                 close={close}
                 householdMembers={household?.members}

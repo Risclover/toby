@@ -83,7 +83,7 @@ def add_todo(id):
         title=data["title"],
         description=data.get("description"),
         status=data.get("status", "pending"),
-        priority=data.get("priority", "low"),  # or "normal" if that's your enum
+        is_important=data.get("isImportant", False), 
         due_date=data.get("due_date"),         # parse to date/datetime if needed
         assigned_to_id=data.get("assigned_to_id"),
         list_id=id,

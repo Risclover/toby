@@ -33,10 +33,7 @@ type Props = {
 
 export function TaskListDnd({ listId, tasks }: Props) {
     // 1. Sort incoming props to ensure we start with the correct server order
-    const sortedTasks = useMemo(
-        () => [...tasks].sort((a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0)),
-        [tasks]
-    );
+    const sortedTasks = useMemo(() => tasks, [tasks]);
 
     const [local, setLocal] = useState<Todo[]>(sortedTasks);
 

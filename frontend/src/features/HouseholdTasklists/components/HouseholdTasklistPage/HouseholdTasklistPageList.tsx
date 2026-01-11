@@ -1,20 +1,27 @@
 import { useEffect, useMemo, useRef } from "react";
 import { TaskListDnd } from "./TaskListDnd";
-import type { TodoListType } from "@/store/todoSlice";
+import type { Todo, TodoListType } from "@/store/todoSlice"; // Match your import path
 
 type Props = {
-    tasklist: TodoListType | undefined
+    tasklist: TodoListType | undefined;
+    tasks?: Todo[]; // 👈 NEW: Accept the pre-sorted list
 }
 
-export const HouseholdTasklistPageList = ({ tasklist }: Props) => {
-    const uncompleted = useMemo(
-        () =>
-            [...tasklist?.todos as any[]]
-                .filter((t) => t.status === "in_progress")
-                .sort((a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0)),
-        [tasklist?.todos]
-    );
+export const HouseholdTasklistPageList = ({ tasklist, tasks }: Props) => {
 
+    // THE FIX:
+    // If 'tasks' is passed from the parent, use it directly (it's already sorted).
+    // If NOT passed, fall back to the default behavior (filter by progress + sort by index).
+    const displayedTasks = useMemo(() => {
+        if (tasks) return tasks;
+
+        // Default logic (only runs if no 'tasks' prop is provided)
+        return [...(tasklist?.todos ?? [])]
+            .filter((t) => t.status === "in_progress")
+            .sort((a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0));
+    }, [tasklist, tasks]);
+
+    // Auto-scroll logic
     const tasksEndRef = useRef<HTMLDivElement | null>(null);
     const prevTaskLengthRef = useRef<number>(0);
 
@@ -23,19 +30,19 @@ export const HouseholdTasklistPageList = ({ tasklist }: Props) => {
     }
 
     useEffect(() => {
-        // ONLY scroll if the new length is greater than the previous length
-        if (uncompleted.length > prevTaskLengthRef.current) {
+        if (displayedTasks.length > prevTaskLengthRef.current) {
             scrollToBottom();
         }
+        prevTaskLengthRef.current = displayedTasks.length;
+    }, [displayedTasks]);
 
-        // Always update the ref to the current length after checking
-        prevTaskLengthRef.current = uncompleted.length;
-    }, [uncompleted]);
-
-    return <div className='household-tasklist-page-list panel tasklist-panel'>
-        <div className="household-tasklist-page-tasks panel-body">
-            {tasklist && <TaskListDnd tasks={uncompleted} listId={tasklist.id} />}
-            <div ref={tasksEndRef} />
+    return (
+        <div className='household-tasklist-page-list panel tasklist-panel'>
+            <div className="household-tasklist-page-tasks panel-body">
+                {/* Pass 'displayedTasks' to the DND component */}
+                {tasklist && <TaskListDnd tasks={displayedTasks} listId={tasklist.id} />}
+                <div ref={tasksEndRef} />
+            </div>
         </div>
-    </div>
+    );
 }

@@ -9,7 +9,7 @@ class Todo(db.Model):
     title = db.Column(db.String, nullable=False)
     description=db.Column(db.Text)
     status=db.Column(db.Text)
-    priority=db.Column(db.Text)
+    is_important=db.Column(db.Boolean, default=False)
     due_date=db.Column(db.Date, nullable=True)
     assigned_to_id=db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     sort_index = db.Column(db.Integer, nullable=False, default=0)
@@ -27,7 +27,7 @@ class Todo(db.Model):
             "title": self.title,
             "description": self.description,
             "status": self.status,
-            "priority": self.priority,
+            "isImportant": self.is_important,
             "dueDate": self.due_date.isoformat() if self.due_date else None,
             "assignedToId": self.assigned_to_id,
             "notes": self.notes,

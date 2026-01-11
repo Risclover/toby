@@ -41,7 +41,7 @@ def edit_todo(id):
     todo = Todo.query.get_or_404(id)
     data = request.get_json(silent=True) or {}
 
-    for field in ("title", "description", "priority", "status"):
+    for field in ("title", "description", "isImportant", "status"):
         if field in data:
             setattr(todo, field, data[field])
 

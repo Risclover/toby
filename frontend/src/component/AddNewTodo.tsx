@@ -12,7 +12,7 @@ export const AddNewTodo = ({ todoListId }: Props) => {
     const handleAddTodo = async (e: MouseEvent) => {
         e.preventDefault();
         await addTodo({
-            title: title, description: description, status: "in_progress", priority: "low", dueDate: undefined, assignedToId: undefined, listId: todoListId
+            title: title, description: description, status: "in_progress", isImportant: false, dueDate: undefined, assignedToId: undefined, listId: todoListId
         })
 
     }

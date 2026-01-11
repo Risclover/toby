@@ -6,7 +6,7 @@ export interface Todo {
     title: string;
     description?: string;
     status: "pending" | "in_progress" | "completed";
-    priority: "low" | "normal" | "high";
+    isImportant: boolean;
     sortIndex: number;
     dueDate?: string | Date | undefined | null;
     assignedToId?: number | undefined | null;
@@ -59,7 +59,7 @@ export interface CreateTodoRequest {
     title: string;
     description?: string;
     status?: "pending" | "in_progress" | "completed";
-    priority?: "low" | "normal" | "high";
+    isImportant: boolean;
     dueDate?: string | Date | undefined;
     assignedToId?: number | undefined | null;
     listId: number | undefined;
@@ -92,7 +92,7 @@ export interface CompleteTodoRequest {
 }
 
 type UpdateTodoPatch = Partial<
-    Pick<Todo, "priority" | "status" | "title" | "description" | "dueDate" | "assignedToId" | "notes">
+    Pick<Todo, "isImportant" | "status" | "title" | "description" | "dueDate" | "assignedToId" | "notes">
 >;
 
 type TodoListTag = { type: "TodoList"; id: number | string };
@@ -178,14 +178,14 @@ export const todoSlice = apiSlice.injectEndpoints({
         }),
 
         addTodo: builder.mutation<Todo, CreateTodoRequest>({
-            query: ({ title, description, status, priority, dueDate, assignedToId, listId }) => ({
+            query: ({ title, description, status, isImportant, dueDate, assignedToId, listId }) => ({
                 url: `/todo_lists/${listId}/todos`,
                 method: "POST",
                 body: {
                     title,
                     description,
                     status,
-                    priority,
+                    isImportant,
                     due_date: dueDate,
                     assigned_to_id: assignedToId,
                     list_id: listId,

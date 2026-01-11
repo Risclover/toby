@@ -34,7 +34,7 @@ export const TodoList = ({ list }: Props) => {
         <div style={{ marginLeft: "1rem" }}>
             {list.todos?.map((todo: Todo) => (
                 <div key={todo.id}>
-                    <button onClick={(e) => handleCompleteTodo(e, todo.id)}>x</button>{todo.title} - {todo.description} {todo.priority}
+                    <button onClick={(e) => handleCompleteTodo(e, todo.id)}>x</button>{todo.title} - {todo.description} {todo.isImportant}
                 </div>
             ))}
         </div>
