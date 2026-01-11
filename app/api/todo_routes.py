@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.models import Todo
 from app.extensions import db
 from datetime import datetime, date
+from flask_login import current_user, login_required
 
 todo_routes = Blueprint("todos", __name__)
 
@@ -67,3 +68,22 @@ def edit_todo(id):
 def get_todo(id):
     todo = Todo.query.get(id)
     return jsonify(todo.to_dict()), 200
+
+
+@todo_routes.route("/<int:id>/importance", methods=["PUT"])
+def toggle_importance(id):
+    """
+    Toggle the importance of an announcement
+    """
+    todo = Todo.query.get(id)
+    if not todo:
+        abort(404, description="Todo not found")
+    
+    user_id = int(current_user.get_id())
+
+    if todo.creator_id != user_id:
+        abort(403, description="Only the creator can toggle importance")
+    
+    todo.is_important = not todo.is_important
+    db.session.commit()
+    return jsonify(todo.to_dict())

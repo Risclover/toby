@@ -101,3 +101,28 @@
     padding-top: 1rem;
     min-height: calc(100% - 80px);
 }
+
+.star-path {
+    transition: stroke-width 0.2s ease;
+    /* Default state: no stroke */
+    stroke: currentColor;
+    stroke-width: 0;
+    paint-order: stroke;
+}
+
+.star-icon-outline:hover .star-path {
+    /* Hover state: add stroke to thicken */
+    /* stroke-width: .5px; */
+    color: var(--accent-color)
+}
+
+.star-icon-container {
+    color: rgb(116, 199, 199);
+}
+
+.star-icon,
+.star-icon-outline {
+    font-size: 1rem;
+    width: 1.25em;
+    height: 1.25em;
+}

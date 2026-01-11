@@ -48,7 +48,18 @@ class User(db.Model, UserMixin):
 
     # habits = db.relationship("HabitLog", back_populates="habit_user")
     todo_lists = db.relationship("TodoList", back_populates="user")
-    todos = db.relationship("Todo", back_populates="assigned_to")
+    todos = db.relationship(
+        "Todo",
+        foreign_keys="Todo.assigned_to_id", # 👈 ADD THIS (use string if Todo is not imported, or [Todo.assigned_to_id] if it is)
+        back_populates="assigned_to"
+    )
+
+    # Add the reverse for created tasks (matches back_populates="created_todos" in Todo)
+    created_todos = db.relationship(
+        "Todo",
+        foreign_keys="Todo.creator_id",
+        back_populates="creator"
+    )
     # projects = db.relationship("ProjectMember", back_populates="user")
     # moods = db.relationship("MoodCheckin", back_populates="user")
 

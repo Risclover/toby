@@ -81,6 +81,7 @@ def add_todo(id):
 
     todo = Todo(
         title=data["title"],
+        creator_id=current_user.get_id(),
         description=data.get("description"),
         status=data.get("status", "pending"),
         is_important=data.get("isImportant", False), 

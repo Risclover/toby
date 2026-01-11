@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { type Todo } from '@/store/todoSlice'; // Checked path
+import { type Todo } from '@/store/todoSlice';
 import dayjs from 'dayjs';
+// We need these plugins for the logic to work safely
 import isBetween from 'dayjs/plugin/isBetween';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -9,12 +10,12 @@ dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-// 1. Updated Sort Options
 export type SortOption =
     | "Alphabetical"
     | "Due Date"
     | "Importance"
-    | "Newest" | "";
+    | "Newest"
+    | null;
 
 export type TimeFilter = "past_due" | "today" | "tomorrow" | "this_week" | "this_month" | "all";
 
@@ -34,6 +35,7 @@ export const useTaskFiltering = (
         if (!todos) return [];
 
         let result = [...todos];
+        // Use 'now' as the reference point for all comparisons
         const now = dayjs();
 
         // --- FILTERING ---
@@ -60,20 +62,37 @@ export const useTaskFiltering = (
         // 4. Time / Due Date
         if (filters.time !== 'all') {
             result = result.filter(t => {
+                // If task has no due date, it never matches a time filter (unless the filter is 'all')
                 if (!t.dueDate) return false;
-                const d = dayjs(t.dueDate);
+
+                const taskDate = dayjs(t.dueDate);
+                if (!taskDate.isValid()) return false;
 
                 switch (filters.time) {
                     case 'past_due':
-                        return d.isBefore(now, 'day') && t.status !== 'completed';
+                        // Strictly before the start of today, AND not completed
+                        return taskDate.isBefore(now, 'day') && t.status !== 'completed';
+
                     case 'today':
-                        return d.isSame(now, 'day');
+                        // Exactly matches today's calendar date
+                        return taskDate.isSame(now, 'day');
+
                     case 'tomorrow':
-                        return d.isSame(now.add(1, 'day'), 'day');
+                        // Exactly matches tomorrow's calendar date
+                        return taskDate.isSame(now.add(1, 'day'), 'day');
+
                     case 'this_week':
-                        return d.isSameOrAfter(now, 'day') && d.isSameOrBefore(now.endOf('week'), 'day');
+                        // OLD: return taskDate.isSame(now, 'week');
+                        // Problem: On Saturday, this hides Sunday.
+
+                        // NEW: "Next 7 Days" (Rolling Window)
+                        // This includes Today, Tomorrow, and the next 5 days regardless of the day of the week.
+                        return taskDate.isSameOrAfter(now, 'day') && taskDate.isBefore(now.add(7, 'day'), 'day');
+
                     case 'this_month':
-                        return d.isSame(now, 'month');
+                        // Matches the current month
+                        return taskDate.isSame(now, 'month');
+
                     default:
                         return true;
                 }
@@ -95,7 +114,7 @@ export const useTaskFiltering = (
                         return dayjs(a.dueDate).diff(dayjs(b.dueDate));
 
                     case "Newest":
-                        // Newest created first
+                        // Newest created first (descending)
                         return dayjs(b.createdAt).diff(dayjs(a.createdAt));
 
                     case "Importance":

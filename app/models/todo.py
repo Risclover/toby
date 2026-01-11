@@ -6,6 +6,7 @@ class Todo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     list_id = db.Column(db.Integer, db.ForeignKey("todo_lists.id"), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     title = db.Column(db.String, nullable=False)
     description=db.Column(db.Text)
     status=db.Column(db.Text)
@@ -18,12 +19,24 @@ class Todo(db.Model):
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
     todo_list=db.relationship("TodoList", back_populates="todos")
-    assigned_to=db.relationship("User", back_populates="todos")
+    assigned_to = db.relationship(
+        "User", 
+        foreign_keys=[assigned_to_id],  # 👈 ADD THIS: Explicitly use assigned_to_id
+        back_populates="todos"
+    )
+
+    # 2. Add the new creator relationship
+    creator = db.relationship(
+        "User", 
+        foreign_keys=[creator_id],      # 👈 ADD THIS: Explicitly use creator_id
+        back_populates="created_todos"
+    )
 
     def to_dict(self):
         return {
             "id": self.id,
             "listId": self.list_id,
+            "creatorId": self.creator_id,
             "title": self.title,
             "description": self.description,
             "status": self.status,

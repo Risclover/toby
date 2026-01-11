@@ -6,6 +6,7 @@ import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
 import { TaskDetails } from "./TaskDetails";
 import { TaskExtra } from "./TaskExtra";
+import StarRoundedIcon from '@mui/icons-material/StarRounded';
 
 type Props = {
     taskId: number;
@@ -75,10 +76,6 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
                         {!checked && <TaskExtra todo={task} listId={listId} householdId={householdId} />}
                     </div>
                 </div>
-                {!checked && <div className="household-tasklist-page-btns">
-                    <BorderColorRoundedIcon onClick={() => setShowTaskDetails(true)} />
-                    <DeleteRounded onClick={() => setShowDeleteConfirmation(true)} />
-                </div>}
                 {showDeleteConfirmation &&
                     <TaskDeletionConfirmation
                         title={task.title}

@@ -91,6 +91,12 @@ export interface CompleteTodoRequest {
     householdId?: number;
 }
 
+export interface ToggleImportanceRequest {
+    todoId: number;
+    listId: number;
+    householdId?: number;
+}
+
 type UpdateTodoPatch = Partial<
     Pick<Todo, "isImportant" | "status" | "title" | "description" | "dueDate" | "assignedToId" | "notes">
 >;
@@ -297,6 +303,62 @@ export const todoSlice = apiSlice.injectEndpoints({
             },
         }),
 
+        toggleTodoImportance: builder.mutation<Todo, ToggleImportanceRequest>({
+            query: ({ todoId }) => ({
+                url: `/todos/${todoId}/importance`,
+                method: "PUT",
+            }),
+            async onQueryStarted({ todoId, listId, householdId }, { dispatch, getState, queryFulfilled }) {
+                // Optimistic Update 1: Update the specific List view
+                const p1 = dispatch(
+                    todoSlice.util.updateQueryData("getTodoList", listId, (draft) => {
+                        const todo = draft?.todos?.find(t => t.id === todoId);
+                        if (todo) {
+                            todo.isImportant = !todo.isImportant;
+                        }
+                    })
+                );
+
+                // Attempt to find householdId if not passed
+                if (householdId == null) {
+                    const sel = todoSlice.endpoints.getTodoList.select(listId)(getState() as any);
+                    householdId = sel?.data?.householdId ?? undefined;
+                }
+
+                // Optimistic Update 2: Update the Household dashboard view
+                const p2 = householdId != null
+                    ? dispatch(
+                        householdSlice.util.updateQueryData("getHouseholdTodoLists", householdId, (lists: any[] | undefined) => {
+                            const list = lists?.find(l => l.id === listId);
+                            const todo = list?.todos?.find((x: any) => x.id === todoId);
+                            if (todo) {
+                                todo.isImportant = !todo.isImportant;
+                            }
+                        })
+                    )
+                    : { undo: () => { } };
+
+                // Optimistic Update 3: Single Todo View
+                const p3 = dispatch(
+                    todoSlice.util.updateQueryData("getTodo", todoId, (draft: any) => {
+                        if (draft) draft.isImportant = !draft.isImportant;
+                    })
+                );
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    p1.undo();
+                    p2.undo?.();
+                    p3.undo();
+                }
+            },
+            invalidatesTags: (_res, _err, { listId, todoId }) => [
+                { type: "TodoList", id: listId },
+                { type: "Todo", id: todoId }
+            ],
+        }),
+
         reorderTodos: builder.mutation<void, ReorderPayload>({
             query: ({ listId, orderedIds }) => ({
                 url: `/todo_lists/${listId}/reorder`,
@@ -361,5 +423,6 @@ export const {
     useCompleteTodoMutation,
     useUpdateTodoListMutation,
     useUpdateTodoMutation,
+    useToggleTodoImportanceMutation,
     useReorderTodosMutation
 } = todoSlice;
