@@ -14,7 +14,7 @@
 .household-tasklist-page-title .editable-title {
     font-family: "Alan Sans", sans-serif;
     font-weight: 500;
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
 }
 
 .household-tasklist-page-task {
@@ -28,11 +28,26 @@
     width: 100%;
     word-wrap: break-word;
     color: var(--main-background);
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
 }
 
 .completed-task {
     text-decoration: line-through;
+    /* These are technically the same, but use both */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
+    word-break: break-word;
+
+    /* Adds a hyphen where the word breaks, if supported (No Blink) */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }
 
 .editable-title {
@@ -121,17 +136,14 @@ textarea.editable-title.is-editing {
     overflow-y: auto;
 }
 
-.drag-handle svg {
-    font-size: var(--text-xl);
-    color: var(--accent-color);
-    padding-bottom: 1px;
-}
+
 
 .task-row {
     display: flex;
     align-items: center;
     width: 100%;
     padding: 0.3rem 0.75rem;
+    gap: 0.5rem;
 }
 
 .tasklist>li.task:has(+ li.task) {
@@ -156,6 +168,7 @@ textarea.editable-title.is-editing {
     width: calc(100% - 50px);
     outline: none;
     font-family: "Nunito Sans", sans-serif;
+    padding-right: 10px;
 }
 
 .tasklist-panel {
@@ -168,9 +181,7 @@ textarea.editable-title.is-editing {
 
 }
 
-.household-tasklist-page-task:hover .household-tasklist-page-btns {
-    display: flex;
-}
+
 
 .household-tasklist-page-btns {
     display: none;
@@ -214,7 +225,7 @@ textarea.editable-title.is-editing {
 }
 
 .task-section svg {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
     color: #15aabf;
 }
 
@@ -224,15 +235,24 @@ textarea.editable-title.is-editing {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    min-height: 100%;
+    padding: 1rem;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 60px;
 }
 
 .task-details-footer {
-    position: sticky;
+    background: white;
+    padding: 0.8rem;
+    border-top: 1px solid var(--border-grey);
+    position: fixed;
     bottom: 0;
     left: 0;
-    right: 0;
+    width: 100%;
     color: var(--sub-text);
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
+    z-index: 99;
 }
 
 .date-picker {
@@ -263,15 +283,36 @@ textarea.editable-title.is-editing {
 }
 
 .task-main {
-    flex: 1 1 auto;
+    display: flex;
+    /* flex: 1 1 auto; */
+    gap: 0.5rem;
+}
+
+.task-title {
+    line-height: 1.3;
+    /* These are technically the same, but use both */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
+    word-break: break-word;
+
+    /* Adds a hyphen where the word breaks, if supported (No Blink) */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }
 
 .task-extra {
     display: flex;
     align-items: center;
-    font-size: 10px;
-    color: white;
-    gap: 4px;
+    font-size: var(--text-xs);
+    color: var(--mantine-color-gray-7);
+    gap: 0.5rem;
 }
 
 .task-extra svg {
@@ -309,14 +350,14 @@ textarea.editable-title.is-editing {
 
 .extra {
     display: flex;
-    margin: 0 2px;
     gap: 3px;
+    align-self: flex-start;
 }
 
 .task-details-label {
     font-family: "Alan Sans", sans-serif;
     margin-bottom: 0.2rem;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
 }
 
 .task-details-label:not(:first-child) {
@@ -328,14 +369,15 @@ textarea.editable-title.is-editing {
     position: fixed;
     width: 100%;
     bottom: 0;
+    /* box-shadow: rgba(50, 50, 93, 0.25) 0px -2px 5px -1px, rgba(0, 0, 0, 0.3) 0px -1px 3px -1px; */
     padding: 1rem;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px -2px 5px -1px, rgba(0, 0, 0, 0.3) 0px -1px 3px -1px;
 }
 
 .add-task.shell-footer {
     background: white;
     border: none;
     box-shadow: none;
+    font-size: var(--text-sm)
 }
 
 
@@ -350,3 +392,5 @@ textarea.editable-title.is-editing {
     padding-right: 3rem;
     margin-top: 1rem;
 }
+
+.household-tasklist {}

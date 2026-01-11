@@ -14,7 +14,7 @@ export const MobileHomeFamilyTitle = () => {
     const additionalMembers = household?.members.length - 3;
     return (
         <div className="mobile-home-family-title">
-            {household?.name}
+            <h1>{household?.name}</h1>
 
             <Avatar.Group spacing="xs">
                 {household?.members.map(member => <Tooltip label={member.firstName} withArrow>

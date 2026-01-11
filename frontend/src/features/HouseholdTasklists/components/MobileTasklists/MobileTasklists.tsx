@@ -33,7 +33,7 @@ export const MobileTasklists = () => {
     });
 
     const titleComponent = <div className="mobile-home-family-title">
-        Tasklists
+        <h1>Tasklists</h1>
         <Button
             color="transparent"
             radius="md"

@@ -21,7 +21,7 @@
     justify-content: space-between;
     gap: .5rem;
     font-family: "Alan Sans", sans-serif;
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
     font-weight: 500;
     line-height: 1;
 }
@@ -66,6 +66,7 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    align-self: flex-start;
 }
 
 .task-row-right button {
@@ -76,6 +77,16 @@
 .task-row-left {
     display: flex;
     align-items: center;
+    width: 100%;
+}
+
+.task {
+    width: 100%;
+}
+
+.task:hover {
+    cursor: pointer;
+    background: var(--indigo-50);
 }
 
 .task-row-right button:disabled {
@@ -87,6 +98,6 @@
     padding: 0 1rem;
     padding-bottom: 80px;
     background: var(--input-grey);
-    height: 100%;
     padding-top: 1rem;
+    min-height: calc(100% - 80px);
 }

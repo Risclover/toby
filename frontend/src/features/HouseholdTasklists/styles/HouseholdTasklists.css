@@ -63,8 +63,8 @@
     display: flex;
     align-items: flex-start;
     gap: 0.5rem;
-    line-height: 1;
-    font-size: 0.9rem;
+    line-height: 1.3;
+    font-size: var(--text-sm);
 }
 
 .household-tasklist-task:not(:first-child) {
@@ -73,6 +73,12 @@
 
 .household-tasklist-task:first-child {
     align-self: center;
+}
+
+.household-tasklist-task-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .household-tasklist-bottom {
@@ -113,6 +119,33 @@
     align-items: center;
     gap: 6px;
 }
+
+.drag-handle {
+    opacity: 0;
+    color: var(--accent-color);
+}
+
+.drag-handle svg {
+    font-size: var(--text-xl);
+}
+
+.task-row:hover .drag-handle {
+    opacity: 1;
+}
+
+.invisible-wall {
+    width: 1.25rem;
+}
+
+.task-left-bottom {
+    display: flex;
+    gap: 0.5rem;
+}
+
+
+
+
+
 
 @media (width >=40rem) {
     .household-tasklists-grid {

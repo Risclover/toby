@@ -40,7 +40,7 @@ export const TaskExtra = ({ todo, householdId, listId }: Props) => {
     const membersList =
         household?.members
             .filter(m => todoList?.memberIds?.includes(m.id))
-            .map(m => ({ id: m.id, name: m.name, img: m.profileImg })) ?? [];
+            .map(m => ({ id: m.id, firstName: m.firstName, img: m.profileImg })) ?? [];
 
     const assigned =
         todo.assignedToId != null
@@ -53,7 +53,7 @@ export const TaskExtra = ({ todo, householdId, listId }: Props) => {
             ? dayjs(todo.dueDate, "YYYY-MM-DD", true).format("ddd, MMM D")
             : null;
     return <div className="task-extra">
-        {assigned !== null && <div className="extra"><Tooltip key={assigned?.id} label={assigned?.name} withArrow>
+        {assigned !== null && <div className="extra"><Tooltip key={assigned?.id} label={assigned?.firstName} withArrow>
             <Avatar style={{ cursor: "pointer" }} onClick={() => navigate(`/users/${assigned?.id}`)} size="xs" src={assigned?.img} alt={assigned?.name} />
         </Tooltip></div>}
         {dateLabel !== null && <div className="extra"><CalendarTodayRoundedIcon />{relativeDayLabel(todo?.dueDate)}</div>}

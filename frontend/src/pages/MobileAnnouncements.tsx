@@ -20,7 +20,7 @@ export const MobileAnnouncements = () => {
     const title = <div className="mobile-home-family-title">
         <div className="title-announcements">
             <Button size="compact-xs" radius="xl" variant="subtle" color="white" onClick={() => navigate(-1)}><ChevronLeftRoundedIcon /></Button>
-            Announcements
+            <h1>Announcements</h1>
         </div>
         <Button
             className="add-announcement" size="compact-md" variant="filled" color="white"

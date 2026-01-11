@@ -57,7 +57,7 @@ export const CreateTodoList = ({ householdId, opened, open, close }: Props) => {
 
     return (
         <div className="create-list">
-            <Modal opened={opened} onClose={close} title="Create Todo List" centered>
+            <Modal opened={opened} onClose={close} title="Create Tasklist" centered>
                 <Stack component="form" onSubmit={handleListCreation}>
                     <TextInput
                         value={title}

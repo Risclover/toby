@@ -74,22 +74,27 @@
 
 .shopping-item-expanded-input-section label {
     font-family: 'Alan Sans', sans-serif !important;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
 }
 
 .shopping-item-expanded-input-section input {
     font-family: 'Nunito Sans', sans-serif !important;
 }
 
-.task-left,
+/* .task-left,
 .task-right {
     display: flex;
     align-items: center;
-}
+} */
 
-.task-left {
+/* .task-left {
     gap: 1rem;
     line-height: 0;
+} */
+.task-left {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
 }
 
 .task-right button {
@@ -160,7 +165,7 @@
 .add-category input {
     width: 80%;
     outline: none;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     font-family: "Nunito Sans", sans-serif;
 }
 
@@ -192,7 +197,7 @@
 
 .no-categories-msg {
     color: var(--sub-text);
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     line-height: 1.1;
     margin-top: 0.3rem;
 }

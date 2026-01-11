@@ -168,7 +168,7 @@ function SortableTaskItem({ task, tasks, isFirst, isLast, onMove }: SortableTask
                             tabIndex={0}
                             style={{ cursor: "grab" }}
                         >
-                            <DragIndicatorIcon />
+                            <DragIndicatorIcon fontSize="small" />
                         </span>
                     )}
                     <HouseholdTasklistPageTask taskId={task.id} listId={task.listId} householdId={user?.householdId} />

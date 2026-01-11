@@ -7,6 +7,7 @@ import { HouseholdTasklistTask } from "./HouseholdTasklistTask";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMobileTasklist } from "../../hooks/useMobileTasklist";
+import { useDragMode } from "@/hooks/useDragMode";
 
 type HouseholdTasklistProps = {
     list: TodoListType;
@@ -83,6 +84,7 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
 
     // Now initializes fresh whenever the parent wrapper changes the key
     const { tasks, moveTask } = useMobileTasklist({ initialTasks: uncompletedTodos });
+
 
     if (!list?.memberIds?.includes(user?.id)) return null;
 

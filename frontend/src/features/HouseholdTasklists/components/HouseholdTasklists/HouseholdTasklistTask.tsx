@@ -15,6 +15,8 @@ export const HouseholdTasklistTask = ({ task }: Props) => {
             readOnly
             checked={false}
         />
-        {task.title}
+        <div className="household-tasklist-task-title">
+            {task.title}
+        </div>
     </div>
 }

@@ -17,6 +17,41 @@
     background: var(--input-background) !important;
 }
 
+.m_8fb7ebe7 {
+    line-height: 1.3;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.m_396ce5cb:where([data-weekend]) {
+    color: var(--accent-color);
+}
+
+.m_396ce5cb:where([data-selected]),
+.m_dc6a3c71:where([data-selected]) {
+    background: var(--accent-color);
+    color: white;
+}
+
+.tasklist-date-picker .mantine-DatePicker-day:hover {
+    background: red !important;
+}
+
+.m_396ce5cb:where([data-selected]):hover,
+.m_dc6a3c71:where([data-selected]):hover {
+    background: var(--mantine-color-cyan-7);
+    color: white;
+}
+
+.m_f6645d97,
+.m_acd30b22,
+.m_8f457cd5:where([data-with-spacing]),
+.m_18a3eca,
+.m_fe27622f:where([data-with-spacing]),
+.m_c5a19c7d:where([data-with-spacing]) {
+    font-family: "Nunito Sans", sans-serif;
+    /* font-weight: 400; */
+}
+
 /* .mantine-TextInput-input {
     background: var(--input-background) !important;
 }
@@ -177,7 +212,7 @@
 }
 
 .p-speeddial-list svg {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
 }
 
 .m_99d16a4:hover:where(:not([data-disabled], [data-selected])),

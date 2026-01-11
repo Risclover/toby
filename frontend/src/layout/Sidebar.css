@@ -229,7 +229,7 @@
 }
 
 .nav-profile-info-name {
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
 }
 
 .nav-profile-info-household {

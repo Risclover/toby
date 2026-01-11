@@ -31,6 +31,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
     }, [task?.status]);
 
     const onChange = async (e: ChangeEvent<HTMLInputElement>) => {
+        e.stopPropagation();
         const nextChecked = e.currentTarget.checked;
 
         setChecked(nextChecked);
@@ -48,27 +49,31 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
         }
     };
 
-    console.log('task:', task)
     if (!task) return null;
 
     return (
         <div className="task">
-            <div className="household-tasklist-page-task">
-                <div className="task-check">
-                    <Checkbox
-                        radius="xl"
-                        color="cyan"
-                        checked={checked}
-                        onChange={onChange}
-                    />
-                </div>
-                <div className="task-main">
-                    {checked ? (
-                        <div className="completed-task">{task?.title}</div>
-                    ) : (
-                        <div>{task?.title}</div>
-                    )}
-                    {!checked && <TaskExtra todo={task} listId={listId} householdId={householdId} />}
+            <div className="household-tasklist-page-task" onClick={() => setShowTaskDetails(true)}>
+                <div className="task-left">
+                    <div className="task-main">
+                        <Checkbox
+                            radius="xl"
+                            color="cyan"
+                            checked={checked}
+                            onChange={onChange}
+                            size="sm"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                        {checked ? (
+                            <div className="completed-task">{task?.title}</div>
+                        ) : (
+                            <div className="task-title">{task?.title}</div>
+                        )}
+                    </div>
+                    <div className="task-left-bottom">
+                        <div className="invisible-wall"></div>
+                        {!checked && <TaskExtra todo={task} listId={listId} householdId={householdId} />}
+                    </div>
                 </div>
                 {!checked && <div className="household-tasklist-page-btns">
                     <BorderColorRoundedIcon onClick={() => setShowTaskDetails(true)} />
@@ -82,8 +87,8 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
                         listId={task.listId}
                         todoId={task.id}
                     />}
-                {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={householdId} />}
             </div>
+            {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={householdId} />}
         </div>
     );
 }

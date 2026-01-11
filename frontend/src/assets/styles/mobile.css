@@ -23,7 +23,7 @@
 }
 
 .mobile-header-container .title {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
 }
 
 .mobile-header-left,
@@ -37,7 +37,7 @@
 }
 
 .mobile-header-right svg {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
 }
 
 .mobile-header-right svg {
@@ -72,7 +72,7 @@
     justify-content: space-between;
     gap: .5rem;
     font-family: "Alan Sans", sans-serif;
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
     font-weight: 500;
     margin: 0 1rem;
     line-height: 1;
@@ -88,6 +88,7 @@
 }
 
 .title-announcements {
+    display: flex;
     justify-content: flex-start;
     align-items: center;
 }
@@ -285,7 +286,7 @@
 }
 
 .mobile-home-notice-board-container h2 {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
     font-weight: 500;
 }
 
@@ -321,8 +322,6 @@
     background: white;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
-    overflow-y: auto;
-    max-height: 1060px;
     height: 100%;
     position: relative;
     /* background-color:  */
@@ -341,7 +340,7 @@
 
 .mobile-home-daily-checkins h2,
 .mobile-home-recent-activity h2 {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
     font-weight: 500;
     font-family: "Alan Sans", sans-serif;
 }
