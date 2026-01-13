@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask"
+import React from "react";
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import { useAuthenticateQuery } from "@/store/authSlice";
 import type { TodoListType } from "@/store/todoSlice";
+import { HouseholdTasklistPageCompletedTask } from "./HouseholdTasklistPageCompletedTask";
 
 type Props = {
     tasklist: TodoListType | undefined
@@ -18,7 +18,7 @@ export const HouseholdTasklistPageCompleted = ({ tasklist, completed, showComple
     return <div className='household-tasklist-page-completed panel completed-panel'>
         <div
             className="household-tasklist-page-completed-title panel-header"
-            onClick={() => setShowCompleted(prev => !prev)}
+            onClick={(e) => { e.stopPropagation(); setShowCompleted(prev => !prev) }}
             title="Click to show"
         >
             <h2>{showCompleted ? "Hide completed" : `Completed (${completed.length})`}</h2>
@@ -26,13 +26,15 @@ export const HouseholdTasklistPageCompleted = ({ tasklist, completed, showComple
         </div>
         {showCompleted && <div className="panel-body">
             {tasklist && completed.map((todo) => (
-                <HouseholdTasklistPageTask
+                <HouseholdTasklistPageCompletedTask
                     key={todo.id}                    // <-- add key
+                    task={todo}
                     householdId={user?.householdId}  // can be optional in child
                     listId={tasklist.id}             // <-- guaranteed number here
                     taskId={todo.id}
                 />
             ))}
         </div>}
+
     </div>
 }

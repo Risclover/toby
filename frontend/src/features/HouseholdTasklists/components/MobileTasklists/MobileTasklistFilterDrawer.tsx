@@ -46,9 +46,10 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
 
     return (
         <Drawer
+            className="filter-drawer"
             size="auto"
             styles={{
-                content: { borderTopLeftRadius: "1rem", borderTopRightRadius: "1rem", maxHeight: "80vh" },
+                content: { height: "min-content", borderTopLeftRadius: "1rem", borderTopRightRadius: "1rem", },
                 body: { paddingBottom: "20px" }
             }}
             opened={opened}

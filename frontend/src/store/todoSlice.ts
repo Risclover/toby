@@ -14,6 +14,7 @@ export interface Todo {
     notes: string | undefined;
     createdAt: string;   // <- camelCase
     updatedAt: string;
+    completedAt: string | null;
 }
 
 export interface TodoListType {

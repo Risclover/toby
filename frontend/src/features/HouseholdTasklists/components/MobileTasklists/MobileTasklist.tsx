@@ -3,19 +3,17 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Progress } from "@mantine/core";
-import { useAuthenticateQuery } from "@/store/authSlice";
-import { useGetTodoListQuery, useUpdateTodoListMutation } from "@/store/todoSlice"; // Checked import path
+import { useGetTodoListQuery } from "@/store/todoSlice"; // Checked import path
 import { skipToken } from "@reduxjs/toolkit/query";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import "../../styles/MobileTasklist.css";
 import { MobileTasklistHeader } from "./MobileTasklistHeader";
 import { HouseholdTasklistPageList } from "../HouseholdTasklistPage/HouseholdTasklistPageList";
 import { HouseholdTasklistPageCompleted } from "../HouseholdTasklistPage/HouseholdTasklistPageCompleted";
 import { HouseholdTasklistPageAddTask } from "../HouseholdTasklistPage/HouseholdTasklistPageAddTask";
 import { useTaskFiltering, type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
+import "../../styles/MobileTasklist.css";
 
 export const MobileTasklist = () => {
-    // 1. UI State Hooks
     const [showCompleted, setShowCompleted] = useState(false);
     const [searchValue, setSearchValue] = useState("");
     const [sortOption, setSortOption] = useState<SortOption>("");
@@ -70,7 +68,7 @@ export const MobileTasklist = () => {
     const titleComponent = (
         <div className="mobile-tasklist-title-bar">
             <div className="mobile-tasklist-title-bar-top">
-                <div className="title-announcements">
+                <div className="title-announcements tasklist-announcements">
                     <Button
                         size="compact-xs"
                         radius="xl"

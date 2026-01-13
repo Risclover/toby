@@ -26,11 +26,15 @@ def complete_todo(id):
 
     if completed is True:
         todo.status = "completed"
+        todo.completed_at = datetime.utcnow()
     elif completed is False:
         # or "pending" if that's what you want
         todo.status = "in_progress"
+        todo.completed_at = None
     elif data.get("status") in {"completed", "in_progress", "pending"}:
         todo.status = data["status"]
+        if todo.status == "completed":
+            todo.completed_at = datetime.utcnow()
     else:
         return jsonify({"error": "Provide boolean 'completed' or valid 'status'"}), 400
 

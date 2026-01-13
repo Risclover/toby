@@ -1,19 +1,16 @@
-import { EditableTitle } from "@/component/EditableTitle";
-import { useGetTodoListQuery, useUpdateTodoMutation } from "@/store/todoSlice";
-import { Avatar, Button, Drawer, Group, Select, Textarea, TextInput } from "@mantine/core"
-import { useEffect, useState, type ChangeEventHandler } from "react";
+import { Avatar, Button, Drawer, Group, Select, Textarea } from "@mantine/core"
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded';
 import { DatePickerInput } from '@mantine/dates';
-import { useGetHouseholdQuery } from "@/store/householdSlice";
 import dayjs from 'dayjs';
 import { useTaskDetails } from "../../hooks/useTaskDetails";
+import { TrashIcon } from "@/assets/icons/TrashIcon";
+import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
+import isToday from 'dayjs/plugin/isToday';
+import isYesterday from 'dayjs/plugin/isYesterday';
 
-type Member = {
-    id: number;
-    firstName: string;
-    profileImg: string | null;
-}
+dayjs.extend(isToday);
+dayjs.extend(isYesterday);
 
 type Props = {
     opened: boolean;
@@ -30,8 +27,10 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
         data,
         selected,
         handleSaveTaskDetails,
-        taskDate,
-        options
+        handleConfirmTaskDeletion,
+        showTaskDeletion,
+        setShowTaskDeletion,
+        getFooterText
     } = useTaskDetails({ taskId, listId, householdId: householdId!, close });
 
     return (
@@ -135,8 +134,10 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                 </div>
             </div>
             <div className="task-details-footer">
-                Created on {taskDate.toLocaleDateString("en-US", options)}
+                <span className="task-details-date">{getFooterText()}</span>
+                <Button variant="subtle" radius="xs" size="xs" color="cyan" className="delete-task-btn" onClick={handleConfirmTaskDeletion}><TrashIcon /></Button>
             </div>
+            {showTaskDeletion && <TaskDeletionConfirmation title={taskDetailsProps.title.value} opened={showTaskDeletion} onClose={() => setShowTaskDeletion(false)} listId={listId} todoId={taskId} />}
         </Drawer>
     )
 }

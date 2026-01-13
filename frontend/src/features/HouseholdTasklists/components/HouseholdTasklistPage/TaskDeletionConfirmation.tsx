@@ -18,11 +18,11 @@ export const TaskDeletionConfirmation = ({ title, opened, onClose, listId, todoI
     }
 
     return <Modal onClose={onClose} opened={opened} title="Delete Task" centered>
-        <Text size="sm">You are about to delete the task <strong>{title}</strong>. Would you like to continue?</Text>
+        <Text size="sm" c="white">You are about to delete the task <strong className="task-deletion-title">{title}</strong>. Would you like to continue?</Text>
         <Space h="md" />
         <Group justify="flex-end">
-            <Button color="cyan" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button color="red" variant="" onClick={handleTaskDeletion}>Delete</Button>
+            <Button size="compact-sm" radius="xl" variant="subtle" color="cyan.5" onClick={onClose}>Cancel</Button>
+            <Button size="compact-sm" color="red" radius="xl" variant="" onClick={handleTaskDeletion}>Confirm</Button>
         </Group>
     </Modal>
 }

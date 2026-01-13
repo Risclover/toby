@@ -23,7 +23,7 @@ export const AnnouncementDeleteConfirmation = ({ announcement, openDeleteConfirm
 
     return (
         <Modal centered opened={openDeleteConfirmation} onClose={() => setOpenDeleteConfirmation(false)} title="Delete announcement?">
-            <Text size="sm" color="white">Are you sure you want to delete this announcement? This action cannot be undone.</Text>
+            <Text size="sm" c="white">Are you sure you want to delete this announcement? This action cannot be undone.</Text>
             <Space h="md" />
             <Group justify="flex-end">
                 <Button
@@ -32,7 +32,7 @@ export const AnnouncementDeleteConfirmation = ({ announcement, openDeleteConfirm
                     size="compact-sm"
                     variant="subtle"
                     radius="xl"
-                    styles={{ label: { fontWeight: "400" } }}
+                // styles={{ label: { fontWeight: "400" } }}
                 >
                     Cancel
                 </Button>
@@ -41,7 +41,7 @@ export const AnnouncementDeleteConfirmation = ({ announcement, openDeleteConfirm
                     size="compact-sm"
                     onClick={handleDeleteAnnouncement}
                     radius="xl"
-                    styles={{ label: { fontWeight: "400" } }}
+                // styles={{ label: { fontWeight: "400" } }}
                 >
                     Confirm
                 </Button>

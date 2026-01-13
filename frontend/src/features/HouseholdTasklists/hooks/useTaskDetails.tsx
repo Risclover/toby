@@ -1,7 +1,7 @@
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useGetTodoListQuery, useUpdateTodoListMutation, useUpdateTodoMutation } from "@/store/todoSlice";
+import { useGetTodoListQuery, useUpdateTodoMutation } from "@/store/todoSlice";
 import dayjs from "dayjs";
-import { useEffect, useRef, useState, type ChangeEventHandler } from "react";
+import { useState, type ChangeEventHandler } from "react";
 
 type Member = {
     id: number;
@@ -35,6 +35,7 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
     const [dateValue, setDateValue] = useState<string | Date | undefined | null>(task?.dueDate);
     const [taskNote, setTaskNote] = useState<string>(task?.notes ?? "");
     const [taskError, setTaskError] = useState<string>("");
+    const [showTaskDeletion, setShowTaskDeletion] = useState<boolean>(false);
 
     // Derived data
     const membersList =
@@ -103,6 +104,38 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
         notes: { value: taskNote, onChange: handleUpdateNotes },
     }
 
+    const handleConfirmTaskDeletion = () => {
+        setShowTaskDeletion(true);
+    }
+
+    const getFooterText = () => {
+        if (!task) return "";
+
+        // Helper to handle "Today", "Yesterday", or "On [Date]"
+        const formatStatusDate = (dateInput: string | Date, action: "Created" | "Completed") => {
+            const dateObj = dayjs(dateInput);
+
+            if (dateObj.isToday()) {
+                return `${action} today`;
+            }
+            if (dateObj.isYesterday()) {
+                return `${action} yesterday`;
+            }
+
+            // Default: "Created on Sun, Jan 8, 2024"
+            return `${action} on ${dateObj.format("ddd, MMM D, YYYY")}`;
+        };
+
+        // 1. COMPLETED STATE
+        if (task.status === "completed" && task.completedAt) {
+            return formatStatusDate(task.completedAt, "Completed");
+        }
+
+        // 2. CREATED STATE (Default)
+        // Ensure we pass the date object correctly (taskDate or task.createdAt)
+        return formatStatusDate(taskDate, "Created");
+    };
+
     return {
         taskDetailsProps,
         taskError,
@@ -110,7 +143,11 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
         selected,
         handleSaveTaskDetails,
         taskDate,
-        options
+        options,
+        showTaskDeletion,
+        setShowTaskDeletion,
+        handleConfirmTaskDeletion,
+        getFooterText
     }
 
 }

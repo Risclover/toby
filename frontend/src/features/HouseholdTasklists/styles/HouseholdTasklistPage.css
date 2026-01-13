@@ -57,6 +57,7 @@
     -webkit-hyphens: auto;
     hyphens: auto;
     line-height: 1.3;
+    cursor: pointer;
 }
 
 .editable-title {
@@ -252,7 +253,6 @@ textarea.editable-title.is-editing {
 
 .task-details-footer {
     background: white;
-    padding: 0.8rem;
     border-top: 1px solid var(--border-grey);
     position: fixed;
     bottom: 0;
@@ -261,6 +261,38 @@ textarea.editable-title.is-editing {
     color: var(--sub-text);
     font-size: var(--text-sm);
     z-index: 99;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-details-date {
+    padding: 0.8rem;
+}
+
+.delete-task-btn {
+    font-size: 1rem !important;
+    height: 50px !important;
+    width: 50px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 0;
+}
+
+.delete-task-btn svg {
+    width: 1rem !important;
+    height: 1rem !important;
+    font-size: 1rem !important;
+}
+
+.delete-task-btn:active {
+    transform: none !important;
+}
+
+.task-deletion-title {
+    word-wrap: break-word;
 }
 
 .date-picker {

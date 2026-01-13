@@ -31,7 +31,7 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
     };
 
     return (
-        <Drawer size="auto" styles={{ content: { borderTopLeftRadius: "1rem", borderTopRightRadius: "1rem", maxHeight: "440px" }, body: { paddingBottom: "0" } }} opened={opened} onClose={close} position="bottom" withCloseButton={false}>
+        <Drawer className="filter-drawer" size="auto" styles={{ content: { borderTopLeftRadius: "1rem", borderTopRightRadius: "1rem", height: "min-content" } }} opened={opened} onClose={close} position="bottom" withCloseButton={false}>
             <div className="h-1 w-12 bg-muted mx-auto rounded-full mb-4"></div>
             <Stack justify="space-between" className="mobile-announcements-filter-drawer">
                 {/* Importance */}

@@ -1,21 +1,7 @@
 // src/components/TaskListDnd.tsx
 import { useEffect, useMemo, useState } from "react";
-import {
-    DndContext,
-    closestCenter,
-    PointerSensor,
-    KeyboardSensor,
-    useSensor,
-    useSensors,
-    type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-    arrayMove,
-    SortableContext,
-    useSortable,
-    verticalListSortingStrategy,
-    sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
+import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useGetTodoQuery, useReorderTodosMutation, useToggleTodoImportanceMutation, type Todo } from "@/store/todoSlice";
 import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
@@ -25,9 +11,8 @@ import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import { Button } from "@mantine/core";
-import StarRoundedIcon from '@mui/icons-material/StarRounded';
-import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
 import { StarIcon, StarIconOutline } from "@/assets/icons/StarIcon";
+import { TaskDetails } from "./TaskDetails";
 
 type Props = {
     listId: number;
@@ -128,7 +113,6 @@ export function TaskListDnd({ listId, tasks }: Props) {
     );
 }
 
-// ... (SortableTaskItem remains exactly the same as the previous correct version)
 type SortableTaskItemProps = {
     task: Todo;
     tasks: Todo[] | undefined;
@@ -139,9 +123,8 @@ type SortableTaskItemProps = {
 };
 
 function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, listId }: SortableTaskItemProps) {
+    const [showTaskDetails, setShowTaskDetails] = useState(false);
     const { data: latestTask } = useGetTodoQuery(initialTask.id);
-
-    // Fallback to the prop if the query hasn't loaded yet (though it should be in cache)
     const task = latestTask ?? initialTask;
     const isSmall = useIsSmallScreen();
     const {
@@ -162,13 +145,24 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
         opacity: isDragging ? 0.6 : 1,
     };
 
-    const handleStarClick = async () => {
+    const handleStarClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
         await toggleImportance({ todoId: task.id, listId: listId, householdId: user?.householdId })
+    }
+
+    const handleMoveTaskUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        onMove(task.id, "up")
+    }
+
+    const handleMoveTaskDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        onMove(task.id, "down");
     }
 
     return (
         <li ref={setNodeRef} style={style} className="task">
-            <div className="task-row">
+            <div className="task-row" onClick={() => setShowTaskDetails(true)}>
                 <div className="task-row-left">
                     {tasks && !isSmall && tasks?.length > 1 && (
                         <span
@@ -182,12 +176,12 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                             <DragIndicatorIcon fontSize="small" />
                         </span>
                     )}
-                    <HouseholdTasklistPageTask taskId={task.id} listId={task.listId} householdId={user?.householdId} />
+                    <HouseholdTasklistPageTask taskId={task.id} listId={task.listId} householdId={user?.householdId} showTaskDetails={showTaskDetails} setShowTaskDetails={setShowTaskDetails} />
                 </div>
 
                 <div className="task-row-right">
                     <div
-                        className="star-icon-container"
+                        className={`star-icon-container${isSmall ? " star-icon-small" : ""}`}
                         onClick={handleStarClick}
                     >
                         {task?.isImportant ? <StarIcon /> : <StarIconOutline />}
@@ -198,7 +192,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                             size="xs"
                             color="cyan"
                             disabled={isFirst}
-                            onClick={() => onMove(task.id, 'up')}
+                            onClick={handleMoveTaskUp}
                         >
                             <ExpandLessRoundedIcon />
                         </Button>
@@ -207,7 +201,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                             size="xs"
                             color="cyan"
                             disabled={isLast}
-                            onClick={() => onMove(task.id, 'down')}
+                            onClick={handleMoveTaskDown}
                         >
                             <ExpandMoreRoundedIcon />
                         </Button>
@@ -215,6 +209,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                 </div>
 
             </div>
+            {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={user?.householdId} />}
         </li>
     );
 }

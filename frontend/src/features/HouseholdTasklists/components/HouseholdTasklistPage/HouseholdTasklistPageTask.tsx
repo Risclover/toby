@@ -1,20 +1,18 @@
 import { useCompleteTodoMutation, useGetTodoListQuery } from "@/store/todoSlice";
 import { Checkbox } from "@mantine/core";
-import { useEffect, useState, type ChangeEvent } from "react";
-import DeleteRounded from '@mui/icons-material/Delete';
-import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
+import { useEffect, useState, type ChangeEvent, type SetStateAction } from "react";
 import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
-import { TaskDetails } from "./TaskDetails";
 import { TaskExtra } from "./TaskExtra";
-import StarRoundedIcon from '@mui/icons-material/StarRounded';
 
 type Props = {
     taskId: number;
     listId: number;
     householdId: number;
+    showTaskDetails: boolean;
+    setShowTaskDetails: React.Dispatch<SetStateAction<boolean>>
 };
 
-export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props) {
+export function HouseholdTasklistPageTask({ taskId, listId, householdId, showTaskDetails, setShowTaskDetails }: Props) {
     const { task } = useGetTodoListQuery(listId, {
         selectFromResult: ({ data }) => ({
             task: data?.todos?.find(t => t.id === taskId),
@@ -22,7 +20,6 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
     });
 
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-    const [showTaskDetails, setShowTaskDetails] = useState(false);
     const [checked, setChecked] = useState(task?.status === "completed");
     const [completeTodo, { isLoading }] = useCompleteTodoMutation();
 
@@ -54,7 +51,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
 
     return (
         <div>
-            <div className="household-tasklist-page-task" onClick={() => setShowTaskDetails(true)}>
+            <div className="household-tasklist-page-task">
                 <div className="task-left">
                     <div className="task-main">
                         <Checkbox
@@ -85,7 +82,6 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
                         todoId={task.id}
                     />}
             </div>
-            {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={householdId} />}
         </div>
     );
 }

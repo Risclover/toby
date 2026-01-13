@@ -93,6 +93,7 @@
     align-items: center;
     overflow: hidden;
     width: 100%;
+    gap: 0.5rem;
 }
 
 .title-announcements-title {
@@ -436,4 +437,10 @@
 
 .members-modal-member div:first-of-type {
     background: white;
+}
+
+@media (max-width: 768px) {
+    .tasklist-announcements {
+        font-size: var(--text-base);
+    }
 }
