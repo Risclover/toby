@@ -12,9 +12,11 @@ import { HouseholdTasklistPageCompleted } from "../HouseholdTasklistPage/Househo
 import { HouseholdTasklistPageAddTask } from "../HouseholdTasklistPage/HouseholdTasklistPageAddTask";
 import { useTaskFiltering, type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
 import "../../styles/MobileTasklist.css";
+import { TasklistSettings } from "../HouseholdTasklistPage/TasklistSettings";
 
 export const MobileTasklist = () => {
     const [showCompleted, setShowCompleted] = useState(false);
+    const [showTasklistSettings, setShowTasklistSettings] = useState(false);
     const [searchValue, setSearchValue] = useState("");
     const [sortOption, setSortOption] = useState<SortOption>("");
     const [filters, setFilters] = useState<TaskFilters>({
@@ -88,6 +90,7 @@ export const MobileTasklist = () => {
                     w={30}
                     h={30}
                     p={0}
+                    onClick={() => setShowTasklistSettings(true)}
                 >
                     <SettingsRoundedIcon />
                 </Button>
@@ -148,6 +151,8 @@ export const MobileTasklist = () => {
             <div className="mobile-tasklist-input">
                 <HouseholdTasklistPageAddTask listId={tasklist.id} />
             </div>
+
+            {showTasklistSettings && <TasklistSettings opened={showTasklistSettings} handleClose={() => setShowTasklistSettings(false)} />}
         </MobileLayout>
     );
 };
