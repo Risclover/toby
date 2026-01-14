@@ -1,13 +1,12 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import type { TodoListType } from "@/store/todoSlice";
-import { Avatar, Card, Divider, Progress, Tooltip } from "@mantine/core";
+import { Avatar, Divider, Progress, Tooltip } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklistTask } from "./HouseholdTasklistTask";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMobileTasklist } from "../../hooks/useMobileTasklist";
-import { useDragMode } from "@/hooks/useDragMode";
 
 type HouseholdTasklistProps = {
     list: TodoListType;

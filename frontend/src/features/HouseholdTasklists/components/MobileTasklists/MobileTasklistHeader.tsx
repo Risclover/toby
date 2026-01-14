@@ -1,12 +1,11 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { ActionIcon, Button, CloseButton, Combobox, Input, InputBase, TextInput, Tooltip, useCombobox } from "@mantine/core"
+import { ActionIcon, CloseButton, Combobox, Input, InputBase, Tooltip, useCombobox } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks";
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
 import { type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
 import { MobileTasklistFilterDrawer } from "./MobileTasklistFilterDrawer";
-import { ReorderListIcon, ReorderListIconCyan } from "@/assets/icons/ReorderListIcon";
+import { ReorderListIcon } from "@/assets/icons/ReorderListIcon";
 import { useEffect } from "react";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
@@ -22,7 +21,7 @@ interface Props {
     setShowReorderMode: (val: boolean | ((prev: boolean) => boolean)) => void;
 }
 
-export const MobileTasklistHeader = ({ searchValue, setSearchValue, sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode }: Props) => {
+export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode }: Props) => {
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();

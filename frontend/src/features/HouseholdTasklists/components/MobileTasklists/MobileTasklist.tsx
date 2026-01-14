@@ -13,7 +13,6 @@ import { HouseholdTasklistPageAddTask } from "../HouseholdTasklistPage/Household
 import { useTaskFiltering, type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
 import "../../styles/MobileTasklist.css";
 import { TasklistSettings } from "../HouseholdTasklistPage/TasklistSettings";
-import { MobileTasklistHeaderCompact } from "./MobileTasklistHeaderCompact";
 
 export const MobileTasklist = () => {
     const [showCompleted, setShowCompleted] = useState(false);

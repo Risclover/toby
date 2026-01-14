@@ -10,7 +10,7 @@ type Props = {
     taskId: number;
 }
 
-export const HouseholdTasklistPageCompletedTask = ({ task, householdId, listId, taskId, }: Props) => {
+export const HouseholdTasklistPageCompletedTask = ({ task, householdId, listId }: Props) => {
     const [showTaskDetails, setShowTaskDetails] = useState(false);
     return (
         <div className="completed-task">

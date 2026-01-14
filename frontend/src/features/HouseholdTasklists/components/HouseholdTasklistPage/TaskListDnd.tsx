@@ -1,5 +1,5 @@
 // src/components/TaskListDnd.tsx
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, type SetStateAction } from "react";
 import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -18,7 +18,7 @@ type Props = {
     listId: number;
     tasks: Todo[];
     showReorderMode: boolean;
-    setShowReorderMode: () => void;
+    setShowReorderMode: React.Dispatch<SetStateAction<boolean>>;
 };
 
 export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode }: Props) {
@@ -125,10 +125,10 @@ type SortableTaskItemProps = {
     onMove: (id: number, direction: 'up' | 'down') => void;
     listId: number;
     showReorderMode: boolean;
-    setShowReorderMode: () => void;
+    setShowReorderMode: React.Dispatch<SetStateAction<boolean>>;
 };
 
-function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, listId, showReorderMode, setShowReorderMode }: SortableTaskItemProps) {
+function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, listId, showReorderMode }: SortableTaskItemProps) {
     const [showTaskDetails, setShowTaskDetails] = useState(false);
     const { data: latestTask } = useGetTodoQuery(initialTask.id);
     const task = latestTask ?? initialTask;

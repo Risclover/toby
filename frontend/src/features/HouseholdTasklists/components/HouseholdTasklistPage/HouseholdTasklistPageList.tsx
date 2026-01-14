@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, type SetStateAction } from "react";
 import { TaskListDnd } from "./TaskListDnd";
 import type { Todo, TodoListType } from "@/store/todoSlice"; // Match your import path
 
 type Props = {
     tasklist: TodoListType | undefined;
     tasks?: Todo[]; // 👈 NEW: Accept the pre-sorted list
-    setShowReorderMode: () => void;
+    setShowReorderMode: React.Dispatch<SetStateAction<boolean>>;
     showReorderMode: boolean;
 }
 

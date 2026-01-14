@@ -1,4 +1,4 @@
-import { useAuthenticateQuery } from "@/store/authSlice"
+import { useAuthenticateQuery, type User } from "@/store/authSlice"
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { Avatar, Tooltip } from "@mantine/core"
 import { useState } from "react";
@@ -17,7 +17,7 @@ export const MobileHomeFamilyTitle = () => {
             <h1>{household?.name}</h1>
 
             <Avatar.Group spacing="xs">
-                {household?.members.map(member => <Tooltip label={member.firstName} withArrow>
+                {household?.members.map((member: User) => <Tooltip label={member.firstName} withArrow>
                     <Avatar component={Link} to={`/users/${member.id}`} target="_blank" src={member.profileImg} alt={member.firstName} radius="xl" size={26} />
                 </Tooltip>).slice(0, 3)}
                 {additionalMembers > 0 && <Avatar className="clickable-avatar" onClick={() => setShowMembersModal(true)} size={26}>+{additionalMembers}</Avatar>}

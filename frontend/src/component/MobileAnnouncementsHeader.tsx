@@ -1,6 +1,6 @@
-import { ActionIcon, Button, CloseButton, Combobox, Input, InputBase, TextInput, Tooltip, useCombobox } from '@mantine/core';
+import { ActionIcon, CloseButton, Combobox, Input, InputBase, TextInput, Tooltip, useCombobox } from '@mantine/core';
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
-import React, { useState, type SetStateAction } from 'react';
+import React, { type SetStateAction } from 'react';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { MobileAnnouncementsFilterDrawer } from './MobileAnnouncementsFilterDrawer';
 import { useDisclosure } from '@mantine/hooks';
@@ -26,7 +26,6 @@ type Props = {
 export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue, sortOption, setSortOption, filters, setFilters }: Props) => {
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
-    const [value, setValue] = useState<string | null>(null);
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId)
 
