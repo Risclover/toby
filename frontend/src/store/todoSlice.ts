@@ -248,14 +248,11 @@ export const todoSlice = apiSlice.injectEndpoints({
             },
         }),
 
-        updateTodo: builder.mutation<
-            Todo,
-            { todoId: number; listId: number; householdId?: number } & UpdateTodoPatch
-        >({
+        updateTodo: builder.mutation<Todo, { todoId: number; listId: number; householdId?: number } & UpdateTodoPatch>({
             query: ({ todoId, listId, householdId, ...patch }) => ({
                 url: `/todos/${todoId}`,
-                method: "PATCH",                 // <-- partial update
-                body: patch,                     // <-- only what you pass in
+                method: "PATCH",
+                body: patch,
             }),
             async onQueryStarted({ todoId, listId, householdId, ...patch }, { dispatch, getState, queryFulfilled }) {
                 const p1 = dispatch(

@@ -18,7 +18,7 @@ def parse_due_date(val: str) -> datetime:
 
 
 @todo_routes.route("/<int:id>/completed", methods=["PUT"])
-def complete_todo(id):
+def update_todo_status(id):
     todo = Todo.query.get_or_404(id)
     data = request.get_json(silent=True) or {}
 
@@ -42,7 +42,7 @@ def complete_todo(id):
     return jsonify(todo.to_dict()), 200
 
 @todo_routes.route("/<int:id>", methods=["PATCH", "PUT"])
-def edit_todo(id):
+def update_todo(id):
     todo = Todo.query.get_or_404(id)
     data = request.get_json(silent=True) or {}
 
@@ -91,3 +91,14 @@ def toggle_importance(id):
     todo.is_important = not todo.is_important
     db.session.commit()
     return jsonify(todo.to_dict())
+
+@todo_routes.route("/<int:id>", methods=["DELETE"])
+def delete_todo(id):
+    """
+    Delete todo
+    """
+    todo = Todo.query.get_or_404(id)
+    todo.delete()
+    db.session.commit()
+
+    return {"message": f"Todo (id: {todo.id}) deleted from database"}
