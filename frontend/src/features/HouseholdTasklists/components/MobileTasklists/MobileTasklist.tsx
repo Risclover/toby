@@ -54,6 +54,8 @@ export const MobileTasklist = () => {
         filters
     );
 
+    const filteredCompleted = useTaskFiltering(completed, searchValue, sortOption, filters);
+
     // Progress Bar Logic
     const { percent } = useMemo(() => {
         const total = todos.length;
@@ -137,7 +139,7 @@ export const MobileTasklist = () => {
                             opacity: 0.5,
                             fontSize: '0.9rem'
                         }}>
-                            No tasks match your filters
+                            No tasks match your filters.
                         </div>
                     )
                 )}
@@ -146,7 +148,7 @@ export const MobileTasklist = () => {
                 {completed && completed.length > 0 && (
                     <HouseholdTasklistPageCompleted
                         tasklist={tasklist}
-                        completed={completed}
+                        completed={filteredCompleted}
                         showCompleted={showCompleted}
                         setShowCompleted={setShowCompleted}
                     />

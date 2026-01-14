@@ -133,6 +133,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
     const { data: latestTask } = useGetTodoQuery(initialTask.id);
     const task = latestTask ?? initialTask;
     const isSmall = useIsSmallScreen();
+
     const {
         attributes,
         listeners,
@@ -142,6 +143,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
         transition,
         isDragging,
     } = useSortable({ id: task.id });
+
     const { data: user } = useAuthenticateQuery();
     const [toggleImportance] = useToggleTodoImportanceMutation();
 
