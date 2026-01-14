@@ -1,6 +1,6 @@
 export const StarIcon = () => {
     return (
-        <svg className="star-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+        <svg className="star-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24px" height="24px">
 
             <g fill="none" fill-rule="evenodd">
 
@@ -20,6 +20,8 @@ export const StarIconOutline = () => {
             className="star-icon-outline"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 32 32"
+            width="24px"
+            height="24px"
             style={{ cursor: 'pointer', overflow: 'visible' }} // overflow visible prevents clipped edges
         >
             <g fill="none" fillRule="evenodd">

@@ -17,9 +17,11 @@ import { TaskDetails } from "./TaskDetails";
 type Props = {
     listId: number;
     tasks: Todo[];
+    showReorderMode: boolean;
+    setShowReorderMode: () => void;
 };
 
-export function TaskListDnd({ listId, tasks }: Props) {
+export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode }: Props) {
     // 1. Sort incoming props to ensure we start with the correct server order
     const sortedTasks = useMemo(() => tasks, [tasks]);
 
@@ -105,6 +107,8 @@ export function TaskListDnd({ listId, tasks }: Props) {
                             isFirst={index === 0}
                             isLast={index === local.length - 1}
                             onMove={handleManualMove}
+                            showReorderMode={showReorderMode}
+                            setShowReorderMode={setShowReorderMode}
                         />
                     ))}
                 </ul>
@@ -120,9 +124,11 @@ type SortableTaskItemProps = {
     isLast: boolean;
     onMove: (id: number, direction: 'up' | 'down') => void;
     listId: number;
+    showReorderMode: boolean;
+    setShowReorderMode: () => void;
 };
 
-function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, listId }: SortableTaskItemProps) {
+function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, listId, showReorderMode, setShowReorderMode }: SortableTaskItemProps) {
     const [showTaskDetails, setShowTaskDetails] = useState(false);
     const { data: latestTask } = useGetTodoQuery(initialTask.id);
     const task = latestTask ?? initialTask;
@@ -180,13 +186,12 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                 </div>
 
                 <div className="task-row-right">
-                    <div
-                        className={`star-icon-container${isSmall ? " star-icon-small" : ""}`}
+                    {!showReorderMode ? <div
+                        className="star-icon-container"
                         onClick={handleStarClick}
                     >
                         {task?.isImportant ? <StarIcon /> : <StarIconOutline />}
-                    </div>
-                    {tasks && isSmall && tasks?.length > 1 && (<div className="task-row-move-btns">
+                    </div> : tasks && isSmall && tasks?.length > 1 && (<div className={`task-row-move-btns show-task-btns`}>
                         <Button
                             variant="subtle"
                             size="xs"

@@ -1,4 +1,4 @@
-import { Button, CloseButton, Combobox, Input, InputBase, TextInput, useCombobox } from '@mantine/core';
+import { ActionIcon, Button, CloseButton, Combobox, Input, InputBase, TextInput, Tooltip, useCombobox } from '@mantine/core';
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
 import React, { useState, type SetStateAction } from 'react';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
@@ -87,7 +87,7 @@ export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue, sortOpt
                     <Combobox.Options>{options}</Combobox.Options>
                 </Combobox.Dropdown>
             </Combobox>
-            <Button onClick={open} styles={{ root: { minWidth: "54px" } }} variant="light" size="xs" color="rgb(5, 5, 73)"><FilterAltRoundedIcon /></Button>
+            <Tooltip position="bottom" label="Filter"><ActionIcon onClick={open} variant="light" color="rgb(5, 5, 73)"><FilterAltRoundedIcon /></ActionIcon></Tooltip>
             <MobileAnnouncementsFilterDrawer
                 opened={opened}
                 close={close}

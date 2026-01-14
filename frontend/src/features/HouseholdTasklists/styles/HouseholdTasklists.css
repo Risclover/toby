@@ -77,11 +77,11 @@
     font-size: var(--text-sm);
 }
 
-.household-tasklist-task:not(:first-child) {
+.household-tasklist-task:not(:nth-child(2)) {
     margin-top: 0.825rem;
 }
 
-.household-tasklist-task:first-child {
+.household-tasklist-task:nth-child(2) {
     align-self: center;
 }
 
@@ -153,7 +153,9 @@
 }
 
 
-
+.clickable-avatar {
+    cursor: pointer;
+}
 
 
 

@@ -5,9 +5,11 @@ import type { Todo, TodoListType } from "@/store/todoSlice"; // Match your impor
 type Props = {
     tasklist: TodoListType | undefined;
     tasks?: Todo[]; // 👈 NEW: Accept the pre-sorted list
+    setShowReorderMode: () => void;
+    showReorderMode: boolean;
 }
 
-export const HouseholdTasklistPageList = ({ tasklist, tasks }: Props) => {
+export const HouseholdTasklistPageList = ({ tasklist, tasks, setShowReorderMode, showReorderMode }: Props) => {
 
     // THE FIX:
     // If 'tasks' is passed from the parent, use it directly (it's already sorted).
@@ -40,7 +42,7 @@ export const HouseholdTasklistPageList = ({ tasklist, tasks }: Props) => {
         <div className='household-tasklist-page-list panel tasklist-panel'>
             <div className="household-tasklist-page-tasks panel-body">
                 {/* Pass 'displayedTasks' to the DND component */}
-                {tasklist && <TaskListDnd tasks={displayedTasks} listId={tasklist.id} />}
+                {tasklist && <TaskListDnd tasks={displayedTasks} listId={tasklist.id} showReorderMode={showReorderMode} setShowReorderMode={setShowReorderMode} />}
                 <div ref={tasksEndRef} />
             </div>
         </div>

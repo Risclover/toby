@@ -27,10 +27,9 @@
 }
 
 .mobile-tasklists-content {
-    padding: 0 1rem;
+    padding: 1rem;
     position: relative;
     height: 100%;
-    padding-top: 1rem;
 }
 
 .mobile-add-tasklist-btn {
@@ -132,10 +131,12 @@
 .star-icon,
 .star-icon-outline {
     font-size: 1rem;
-    width: 1.25em;
+    width: 24px;
     height: 1.25em;
 }
 
-.star-icon-small {
-    margin-top: 0.85rem;
+.tasklists-list-empty-state {
+    /* font-style: italic; */
+    font-size: var(--text-sm);
+    color: var(--mantine-color-gray-7);
 }

@@ -13,10 +13,12 @@ import { HouseholdTasklistPageAddTask } from "../HouseholdTasklistPage/Household
 import { useTaskFiltering, type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
 import "../../styles/MobileTasklist.css";
 import { TasklistSettings } from "../HouseholdTasklistPage/TasklistSettings";
+import { MobileTasklistHeaderCompact } from "./MobileTasklistHeaderCompact";
 
 export const MobileTasklist = () => {
     const [showCompleted, setShowCompleted] = useState(false);
     const [showTasklistSettings, setShowTasklistSettings] = useState(false);
+    const [showReorderMode, setShowReorderMode] = useState(false);
     const [searchValue, setSearchValue] = useState("");
     const [sortOption, setSortOption] = useState<SortOption>("");
     const [filters, setFilters] = useState<TaskFilters>({
@@ -113,6 +115,8 @@ export const MobileTasklist = () => {
                 setSortOption={setSortOption}
                 filters={filters}
                 setFilters={setFilters}
+                showReorderMode={showReorderMode}
+                setShowReorderMode={setShowReorderMode}
             />
 
             <div className="mobile-tasklist-content">
@@ -121,6 +125,8 @@ export const MobileTasklist = () => {
                     <HouseholdTasklistPageList
                         tasklist={tasklist}
                         tasks={filteredTodos} // <--- Passing the filtered list explicitly
+                        showReorderMode={showReorderMode}
+                        setShowReorderMode={setShowReorderMode}
                     />
                 ) : (
                     // Empty state when filters hide everything

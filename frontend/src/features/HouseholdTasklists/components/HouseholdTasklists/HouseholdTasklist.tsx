@@ -56,6 +56,10 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
         return todosSorted.filter((t: any) => t.status !== "completed");
     }, [todosSorted]);
 
+    const completedTodos = useMemo(() => {
+        return todosSorted.filter((t: any) => t.status === "completed");
+    }, [todosSorted])
+
     const members =
         household?.members?.filter((m: any) => list?.memberIds?.includes(m?.id)) ??
         [];
@@ -122,7 +126,7 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                                     </div>
                                 }
                             >
-                                <Avatar radius="xl" size="sm" style={{ fontSize: "3rem" }}>
+                                <Avatar className="clickable-avatar" radius="xl" size="sm" style={{ fontSize: "3rem" }}>
                                     +{hidden.length}
                                 </Avatar>
                             </Tooltip>
@@ -138,6 +142,7 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
             </div>
 
             <div className="mobile-home-notice-board-content">
+                <span className="tasklists-list-empty-state">{tasks?.length === 0 && completedTodos.length === 0 ? "This is an empty list." : tasks?.length === 0 && completedTodos.length > 0 ? "🏅 All tasks completed!" : ""}</span>
                 {tasks?.slice(0, 3).map((todo: any) => (
                     <HouseholdTasklistTask
                         key={todo.id}
