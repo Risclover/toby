@@ -1,7 +1,7 @@
 from app.extensions import db
 from sqlalchemy import CheckConstraint, Index, inspect  # Add inspect here
-from app.models.todo_list_member import TodoListMember
-from app.models.todo import Todo  # Add this import
+from app.models.tasklist_member import TasklistMember
+from app.models.task import Task  # Add this import
 from enum import Enum
 
 class ViewMode(str, Enum):
@@ -24,8 +24,8 @@ class FilterType(str, Enum):
     DUE_DATE = 'due_date'
 
 
-class TodoList(db.Model):
-    __tablename__ = "todo_lists"
+class Tasklist(db.Model):
+    __tablename__ = "tasklists"
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -54,22 +54,22 @@ class TodoList(db.Model):
     auto_hide_when_empty = db.Column(db.Boolean, default=False)
 
     # Relationships
-    todos = db.relationship(
-        "Todo",
-        back_populates="todo_list",
+    tasks = db.relationship(
+        "Task",
+        back_populates="tasklist",
         cascade="all, delete-orphan"  # optional but handy
     )
-    user = db.relationship("User", back_populates="todo_lists")
-    household = db.relationship("Household", back_populates="todo_lists")
+    user = db.relationship("User", back_populates="tasklists")
+    household = db.relationship("Household", back_populates="tasklists")
     member_links = db.relationship(
-        "TodoListMember", 
-        back_populates="todo_list", 
+        "TasklistMember", 
+        back_populates="tasklist", 
         cascade="all, delete-orphan", 
         lazy="selectin"
     )
     members = db.relationship(
         "User", 
-        secondary=lambda: TodoListMember.__table__, 
+        secondary=lambda: TasklistMember.__table__, 
         back_populates="lists_participating", 
         lazy="selectin", 
         viewonly=True
@@ -79,11 +79,11 @@ class TodoList(db.Model):
         # XOR: exactly one of user_id / household_id must be non-null
         CheckConstraint(
             "(user_id IS NOT NULL) <> (household_id IS NOT NULL)",
-            name="ck_todo_lists_exactly_one_owner",
+            name="ck_tasklists_exactly_one_owner",
         ),
         # Unique title per owner (fix: use 'title', not 'name')
-        Index("ix_todo_lists_user_id", "user_id"),
-        Index("ix_todo_lists_household_id", "household_id"),
+        Index("ix_tasklists_user_id", "user_id"),
+        Index("ix_tasklists_household_id", "household_id"),
     )
 
     @property
@@ -103,7 +103,7 @@ class TodoList(db.Model):
         """Create an exact copy of this list with all settings and members the same"""
         from copy import deepcopy
 
-        duplicate = TodoList(
+        duplicate = Tasklist(
             title=f"{self.title} (Copy)",
             icon=self.icon,
             color=self.color,
@@ -123,25 +123,25 @@ class TodoList(db.Model):
         # Duplicate member assignments (if not all_members)
         if not self.all_members:
             for member_link in self.member_links:
-                new_link = TodoListMember(
+                new_link = TasklistMember(
                     list_id=duplicate.id,
                     user_id=member_link.user_id
                 )
                 db.session.add(new_link)
 
         # Duplicate tasks, but with new ids, createdAts, updatedAts, and listIds
-        for todo in self.todos:
-            new_todo = Todo()
-            for col in inspect(Todo).columns:
+        for task in self.tasks:
+            new_task = Task()
+            for col in inspect(Task).columns:
                 if col.key in {"id", "created_at", "updated_at", "list_id"}:
                     continue
-                setattr(new_todo, col.key, getattr(todo, col.key))
-            new_todo.list_id = duplicate.id
-            db.session.add(new_todo)
+                setattr(new_task, col.key, getattr(task, col.key))
+            new_task.list_id = duplicate.id
+            db.session.add(new_task)
         
         return duplicate
 
-    def to_dict(self, include_todos: bool = True, include_members: bool = True):
+    def to_dict(self, include_tasks: bool = True, include_members: bool = True):
         return {
             "id": self.id,
             "title": self.title,
@@ -160,9 +160,9 @@ class TodoList(db.Model):
             "memberIds": self.audience_user_ids() if include_members else None,
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
-            "todos": [t.to_dict() for t in self.todos] if include_todos else [],
+            "tasks": [t.to_dict() for t in self.tasks] if include_tasks else [],
         }
 
     def __repr__(self):
-        return f"<TodoList id={self.id} title={self.title!r} scope={self.scope} all_members={self.all_members}>"
+        return f"<Tasklist id={self.id} title={self.title!r} scope={self.scope} all_members={self.all_members}>"
 

@@ -1,21 +1,21 @@
 import { Button, Modal, Stack, TextInput } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
-import { useCreateHouseholdTodoListMutation } from "@/store/todoSlice";
+import { useCreateHouseholdTasklistMutation } from "@/store/taskSlice";
 import { useState, type FormEvent } from "react";
-import { CreateTodoListMembers } from "./CreateTodoListMembers";
+import { CreateTasklistMembers } from "./CreateTasklistMembers";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useMemberSelection } from "@/hooks/useMemberSelection";
 import AddIcon from '@mui/icons-material/Add';
 
-type CreateTodoList = {
+type CreateTasklist = {
     householdId: number
     open: () => void;
     close: () => void;
     opened: boolean;
 }
 
-export const CreateTodoList = ({ householdId, opened, open, close }: Props) => {
+export const CreateTasklist = ({ householdId, opened, open, close }: Props) => {
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const [title, setTitle] = useState("");
@@ -30,7 +30,7 @@ export const CreateTodoList = ({ householdId, opened, open, close }: Props) => {
         selected,
     } = useMemberSelection(household?.members);
 
-    const [createTodoList] = useCreateHouseholdTodoListMutation();
+    const [createTasklist] = useCreateHouseholdTasklistMutation();
 
     const canSubmit =
         title.trim().length > 0 && (allMembers || memberIds.length > 0);
@@ -40,9 +40,9 @@ export const CreateTodoList = ({ householdId, opened, open, close }: Props) => {
         if (!canSubmit) return;
 
         if (allMembers) {
-            await createTodoList({ title, householdId, allMembers: true } as const);
+            await createTasklist({ title, householdId, allMembers: true } as const);
         } else {
-            await createTodoList({
+            await createTasklist({
                 title,
                 householdId,
                 allMembers: false,
@@ -67,7 +67,7 @@ export const CreateTodoList = ({ householdId, opened, open, close }: Props) => {
                         required
                         maxLength={64}
                     />
-                    <CreateTodoListMembers
+                    <CreateTasklistMembers
                         members={household?.members}
                         allMembers={allMembers}
                         someSelected={someSelected}

@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, type SetStateAction } from "react";
 import { TaskListDnd } from "./TaskListDnd";
-import type { Todo, TodoListType } from "@/store/todoSlice"; // Match your import path
+import type { Task, TasklistType } from "@/store/taskSlice"; // Match your import path
 
 type Props = {
-    tasklist: TodoListType | undefined;
-    tasks?: Todo[]; // 👈 NEW: Accept the pre-sorted list
+    tasklist: TasklistType | undefined;
+    tasks?: Task[]; // 👈 NEW: Accept the pre-sorted list
     setShowReorderMode: React.Dispatch<SetStateAction<boolean>>;
     showReorderMode: boolean;
 }
@@ -18,7 +18,7 @@ export const HouseholdTasklistPageList = ({ tasklist, tasks, setShowReorderMode,
         if (tasks) return tasks;
 
         // Default logic (only runs if no 'tasks' prop is provided)
-        return [...(tasklist?.todos ?? [])]
+        return [...(tasklist?.tasks ?? [])]
             .filter((t) => t.status === "in_progress")
             .sort((a, b) => (a.sortIndex ?? 0) - (b.sortIndex ?? 0));
     }, [tasklist, tasks]);

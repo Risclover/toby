@@ -1,18 +1,18 @@
 import { useState, type MouseEvent } from "react"
-import { useAddTodoMutation } from "../store/todoSlice";
+import { useAddTaskMutation } from "../store/taskSlice";
 
 type Props = {
-    todoListId: number
+    tasklistId: number
 }
-export const AddNewTodo = ({ todoListId }: Props) => {
+export const AddNewTask = ({ tasklistId }: Props) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [addTodo] = useAddTodoMutation();
+    const [addTask] = useAddTaskMutation();
 
-    const handleAddTodo = async (e: MouseEvent) => {
+    const handleAddTask = async (e: MouseEvent) => {
         e.preventDefault();
-        await addTodo({
-            title: title, description: description, status: "in_progress", isImportant: false, dueDate: undefined, assignedToId: undefined, listId: todoListId
+        await addTask({
+            title: title, description: description, status: "in_progress", isImportant: false, dueDate: undefined, assignedToId: undefined, listId: tasklistId
         })
 
     }
@@ -21,7 +21,7 @@ export const AddNewTodo = ({ todoListId }: Props) => {
         <div>
             <input type="text" name="title" id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
             <input type="text" name="description" id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
-            <button onClick={handleAddTodo}>Add Todo</button>
+            <button onClick={handleAddTask}>Add Task</button>
         </div>
     )
 }

@@ -1,12 +1,12 @@
-import { type Todo } from "@/store/todoSlice";
+import { type Task } from "@/store/taskSlice";
 import { useCallback, useState } from "react";
 
 type Props = {
-    initialTasks: Todo[] | undefined;
+    initialTasks: Task[] | undefined;
 }
 
 export const useMobileTasklist = ({ initialTasks }: Props) => {
-    const [tasks, setTasks] = useState<Todo[] | undefined>(initialTasks)
+    const [tasks, setTasks] = useState<Task[] | undefined>(initialTasks)
 
     const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
     const [swipedTaskId, setSwipedTaskId] = useState<number | null>(null);

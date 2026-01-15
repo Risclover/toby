@@ -1,9 +1,9 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import "../../styles/HouseholdTasklists.css"
-import { useGetHouseholdTodoListsQuery } from "@/store/householdSlice";
+import { useGetHouseholdTasklistsQuery } from "@/store/householdSlice";
 import { HouseholdTasklist } from "./HouseholdTasklist";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { CreateTodoList } from "./CreateTodoList";
+import { CreateTasklist } from "./CreateTasklist";
 
 export const HouseholdTasklists = () => {
     const { data: user, isLoading: authLoading } = useAuthenticateQuery();
@@ -14,7 +14,7 @@ export const HouseholdTasklists = () => {
         data: lists = [],
         isLoading,
         isFetching,
-    } = useGetHouseholdTodoListsQuery(householdId, {
+    } = useGetHouseholdTasklistsQuery(householdId, {
         refetchOnFocus: false,
         refetchOnReconnect: false,
         // ADDED: This ensures you get fresh data every time you navigate back to this page
@@ -30,7 +30,7 @@ export const HouseholdTasklists = () => {
                     <h1>Tasklists</h1>
                     <p>Shared lists for your household. Click to open full list.</p>
                 </div>
-                <CreateTodoList householdId={householdId} />
+                <CreateTasklist householdId={householdId} />
             </div>
 
             {isFetching && <div className="subtle-loading">Refreshing…</div>}
@@ -40,7 +40,7 @@ export const HouseholdTasklists = () => {
                     // ADDED: Create a simple hash of the order. 
                     // This forces the 'HouseholdTasklist' component to completely reset 
                     // (and update its internal 'useMobileTasklist' hook) whenever the order changes.
-                    const orderSignature = list.todos
+                    const orderSignature = list.tasks
                         ?.map((t) => t.id)
                         .join("-");
 

@@ -1,6 +1,8 @@
 import { useState, type MouseEvent } from "react";
 import { useAuthenticateQuery, useGenerateInviteMutation, useLoginMutation, useLogoutMutation } from "./store/authSlice";
-import { useAddTodoMutation, useCreateHouseholdTodoListMutation } from "./store/todoSlice";
+
+import { useCreateHouseholdTasklistMutation, useAddTaskMutation } from "./store/taskSlice";
+
 export const SignIn = () => {
     const { data: user } = useAuthenticateQuery(undefined);
     const [logout] = useLogoutMutation();
@@ -10,9 +12,9 @@ export const SignIn = () => {
     const [password, setPassword] = useState("");
     const [inviteCode, setInviteCode] = useState("");
     const [generateInvite] = useGenerateInviteMutation();
-    const [createTodoList] = useCreateHouseholdTodoListMutation();
-    const [addTodo] = useAddTodoMutation();
-    const [todoListId, setTodoListId] = useState<number | undefined>();
+    const [createTasklist] = useCreateHouseholdTasklistMutation();
+    const [addTask] = useAddTaskMutation();
+    const [tasklistId, setTasklistId] = useState<number | undefined>();
 
     const handleLogout = async () => {
         await logout();
@@ -37,15 +39,15 @@ export const SignIn = () => {
         await navigator.clipboard.writeText(`localhost:5173/join/${inviteCode}`);
     }
 
-    const handleCreateNewTodoList = async (e: MouseEvent) => {
+    const handleCreateNewTasklist = async (e: MouseEvent) => {
         e.preventDefault();
-        const { data } = await createTodoList({ title: "Hello", userId: user.id, householdId: user.householdId });
-        setTodoListId(data?.id);
+        const { data } = await createTasklist({ title: "Hello", userId: user.id, householdId: user.householdId });
+        setTasklistId(data?.id);
     }
 
-    const handleAddTodo = async (e: MouseEvent) => {
+    const handleAddTask = async (e: MouseEvent) => {
         e.preventDefault();
-        await addTodo({ title: "One", description: "One todo", status: "in_progress", isImportant: false, dueDate: undefined, assignedToId: user?.id, listId: todoListId })
+        await addTask({ title: "One", description: "One task", status: "in_progress", isImportant: false, dueDate: undefined, assignedToId: user?.id, listId: tasklistId })
     }
 
     return (
@@ -59,8 +61,8 @@ export const SignIn = () => {
             {user?.email && <button onClick={handleLogout}>Logout</button>}
             <br /><button onClick={handleInvite}>Click to invite!</button>
             {inviteCode ? <div onClick={handleCopy}>localhost:5173/join/{inviteCode}</div> : ""}
-            <button onClick={handleCreateNewTodoList}>Create new todo list</button>
-            <button onClick={handleAddTodo}>Add Todo to Todo List</button>
+            <button onClick={handleCreateNewTasklist}>Create new tasklist</button>
+            <button onClick={handleAddTask}>Add Task to Tasklist</button>
 
 
         </div>

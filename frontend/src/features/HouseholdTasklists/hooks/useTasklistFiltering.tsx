@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { type Todo } from '@/store/todoSlice';
+import { type Task } from '@/store/taskSlice';
 import dayjs from 'dayjs';
 // We need these plugins for the logic to work safely
 import isBetween from 'dayjs/plugin/isBetween';
@@ -26,15 +26,15 @@ export interface TaskFilters {
 }
 
 export const useTaskFiltering = (
-    todos: Todo[] | undefined,
+    tasks: Task[] | undefined,
     searchValue: string,
     sortOption: SortOption,
     filters: TaskFilters
 ) => {
     return useMemo(() => {
-        if (!todos) return [];
+        if (!tasks) return [];
 
-        let result = [...todos];
+        let result = [...tasks];
         // Use 'now' as the reference point for all comparisons
         const now = dayjs();
 
@@ -141,5 +141,5 @@ export const useTaskFiltering = (
         }
 
         return result;
-    }, [todos, searchValue, sortOption, filters]);
+    }, [tasks, searchValue, sortOption, filters]);
 };

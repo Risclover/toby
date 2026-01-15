@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Household, TodoList, TodoListMember, Announcement, AnnouncementSeen
+from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen
 from sqlalchemy.orm import aliased
 from sqlalchemy import outerjoin, or_, and_
 import base64
@@ -27,20 +27,20 @@ def get_household(id):
 
     return jsonify(household.to_dict())
 
-@household_routes.route("/<int:household_id>/todo_lists", methods=["GET"])
+@household_routes.route("/<int:household_id>/tasklists", methods=["GET"])
 @login_required
-def get_household_todo_lists(household_id):
+def get_household_tasklists(household_id):
     household = Household.query.get(household_id)
 
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    lists = household.todo_lists
+    lists = household.tasklists
 
     return jsonify([t.to_dict() for t in lists]), 200
 
-@household_routes.route("/<int:household_id>/todo_lists", methods=["POST"])
-def create_household_todo_list(household_id):
+@household_routes.route("/<int:household_id>/tasklists", methods=["POST"])
+def create_household_tasklist(household_id):
     # 1) Household must exist
     household = Household.query.get(household_id)
 
@@ -64,22 +64,22 @@ def create_household_todo_list(household_id):
         if not isinstance(member_ids, list) or len(member_ids) == 0:
             return jsonify({"error": "memberIds (non-empty) required when allMembers is false"}), 400
         valid_ids = {u.id for u in household.members or []}
-        bad = [uid for uid in set(member_ids) if uid not in valid_ids]
+        bad = [user_id for user_id in set(member_ids) if user_id not in valid_ids]
         if bad:
             return jsonify({"error": "memberIds must belong to the household", "invalid": bad}), 400
 
 
     # 4) Create list + (optional) audience rows
-    tl = TodoList(title=title, household_id=household_id, all_members=all_members)
-    db.session.add(tl)
+    tasklist = Tasklist(title=title, household_id=household_id, all_members=all_members)
+    db.session.add(tasklist)
     db.session.flush()  # get tl.id now
 
     if not all_members:
-        links = [TodoListMember(todo_list_id=tl.id, user_id=uid) for uid in set(member_ids)]
+        links = [TasklistMember(list_id=tasklist.id, user_id=user_id) for user_id in set(member_ids)]
         db.session.add_all(links)
 
     db.session.commit()
-    return jsonify(tl.to_dict(include_todos=False, include_members=True)), 201
+    return jsonify(tasklist.to_dict(include_tasks=False, include_members=True)), 201
 
 @household_routes.route("/<int:id>/shopping")
 def get_household_shopping_lists(id):

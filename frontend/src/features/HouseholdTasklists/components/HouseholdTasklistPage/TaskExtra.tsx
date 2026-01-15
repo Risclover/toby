@@ -1,5 +1,5 @@
 import { useGetHouseholdQuery } from "@/store/householdSlice"
-import { useGetTodoListQuery, useGetTodoQuery, type Todo } from "@/store/todoSlice"
+import { useGetTasklistQuery, useGetTaskQuery, type Task } from "@/store/taskSlice"
 import { useGetUserQuery } from "@/store/userSlice";
 import { Avatar, Tooltip } from "@mantine/core";
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 dayjs.extend(customParseFormat);
 
 type Props = {
-    todo: Todo
+    task: Task
     householdId: number;
     listId: number;
 }
@@ -33,30 +33,30 @@ export function relativeDayLabel(
     return d.format(fmt);               // fallback formatting
 }
 
-export const TaskExtra = ({ todo, householdId, listId }: Props) => {
+export const TaskExtra = ({ task, householdId, listId }: Props) => {
     const navigate = useNavigate();
     const { data: household } = useGetHouseholdQuery(householdId)
-    const { data: todoList } = useGetTodoListQuery(listId)
+    const { data: tasklist } = useGetTasklistQuery(listId)
     const membersList =
         household?.members
-            .filter(m => todoList?.memberIds?.includes(m.id))
+            .filter(m => tasklist?.memberIds?.includes(m.id))
             .map(m => ({ id: m.id, firstName: m.firstName, img: m.profileImg })) ?? [];
 
     const assigned =
-        todo.assignedToId != null
-            ? membersList.find(m => m.id === todo.assignedToId) ?? null
+        task.assignedToId != null
+            ? membersList.find(m => m.id === task.assignedToId) ?? null
             : null;
     console.log(assigned)
 
     const dateLabel =
-        todo.dueDate
-            ? dayjs(todo.dueDate, "YYYY-MM-DD", true).format("ddd, MMM D")
+        task.dueDate
+            ? dayjs(task.dueDate, "YYYY-MM-DD", true).format("ddd, MMM D")
             : null;
     return <div className="task-extra">
         {assigned !== null && <div className="extra"><Tooltip key={assigned?.id} label={assigned?.firstName} withArrow>
             <Avatar style={{ cursor: "pointer" }} onClick={() => navigate(`/users/${assigned?.id}`)} size="xs" src={assigned?.img} alt={assigned?.name} />
         </Tooltip></div>}
-        {dateLabel !== null && <div className="extra"><CalendarTodayRoundedIcon />{relativeDayLabel(todo?.dueDate)}</div>}
-        {todo.notes !== "" && todo.notes !== null && <div className="extra"><TextSnippetIcon /> Notes </div>}
+        {dateLabel !== null && <div className="extra"><CalendarTodayRoundedIcon />{relativeDayLabel(task?.dueDate)}</div>}
+        {task.notes !== "" && task.notes !== null && <div className="extra"><TextSnippetIcon /> Notes </div>}
     </div>
 }

@@ -137,7 +137,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                 <span className="task-details-date">{getFooterText()}</span>
                 <Button variant="subtle" radius="xs" size="xs" color="cyan" className="delete-task-btn" onClick={handleConfirmTaskDeletion}><TrashIcon /></Button>
             </div>
-            {showTaskDeletion && <TaskDeletionConfirmation title={taskDetailsProps.title.value} opened={showTaskDeletion} onClose={() => setShowTaskDeletion(false)} listId={listId} todoId={taskId} />}
+            {showTaskDeletion && <TaskDeletionConfirmation title={taskDetailsProps.title.value} opened={showTaskDeletion} onClose={() => setShowTaskDeletion(false)} listId={listId} taskId={taskId} />}
         </Drawer>
     )
 }

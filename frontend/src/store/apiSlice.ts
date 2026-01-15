@@ -8,6 +8,6 @@ export const apiSlice = createApi({
     baseUrl: API_BASE,
     credentials: "include",
   }),
-  tagTypes: ["Household", "TodoList", "Todo", "ShoppingList", "ShoppingItem", "Announcement", "ShoppingCategory", "Session", "User", "Mood", "Checkins", "Calendar"],
+  tagTypes: ["Household", "Tasklist", "Task", "ShoppingList", "ShoppingItem", "Announcement", "ShoppingCategory", "Session", "User", "Mood", "Checkins", "Calendar"],
   endpoints: () => ({}),
 });

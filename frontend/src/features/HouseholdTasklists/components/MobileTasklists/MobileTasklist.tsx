@@ -3,7 +3,7 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Progress } from "@mantine/core";
-import { useGetTodoListQuery } from "@/store/todoSlice"; // Checked import path
+import { useGetTasklistQuery } from "@/store/taskSlice"; // Checked import path
 import { skipToken } from "@reduxjs/toolkit/query";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { MobileTasklistHeader } from "./MobileTasklistHeader";
@@ -31,22 +31,22 @@ export const MobileTasklist = () => {
     const { tasklistId } = useParams();
     const listId = tasklistId ? Number(tasklistId) : undefined;
 
-    const { data: tasklist, isFetching } = useGetTodoListQuery(listId ?? skipToken);
+    const { data: tasklist, isFetching } = useGetTasklistQuery(listId ?? skipToken);
 
     // 3. Derived Data (Safe to run even if tasklist is undefined)
-    const todos = tasklist?.todos ?? [];
+    const tasks = tasklist?.tasks ?? [];
 
     const completed = useMemo(() =>
-        todos.filter((todo) => todo.status === "completed"),
-        [todos]);
+        tasks.filter((task) => task.status === "completed"),
+        [tasks]);
 
     // Capture everything NOT completed (pending + in_progress)
     const uncompleted = useMemo(() =>
-        todos.filter((todo) => todo.status !== "completed"),
-        [todos]);
+        tasks.filter((task) => task.status !== "completed"),
+        [tasks]);
 
     // 4. Custom Filter Hook (Must run every render)
-    const filteredTodos = useTaskFiltering(
+    const filteredTasks = useTaskFiltering(
         uncompleted,
         searchValue,
         sortOption,
@@ -57,11 +57,11 @@ export const MobileTasklist = () => {
 
     // Progress Bar Logic
     const { percent } = useMemo(() => {
-        const total = todos.length;
+        const total = tasks.length;
         const done = completed.length;
         const raw = total ? (done / total) * 100 : 0;
         return { percent: Math.min(100, Math.max(0, Math.round(raw))) };
-    }, [todos.length, completed.length]);
+    }, [tasks.length, completed.length]);
 
     // 5. Early Returns (Loading / Error States)
     // Safe to return here because all hooks have been called above
@@ -122,10 +122,10 @@ export const MobileTasklist = () => {
 
             <div className="mobile-tasklist-content">
                 {/* Active Tasks List */}
-                {filteredTodos && filteredTodos.length > 0 ? (
+                {filteredTasks && filteredTasks.length > 0 ? (
                     <HouseholdTasklistPageList
                         tasklist={tasklist}
-                        tasks={filteredTodos} // <--- Passing the filtered list explicitly
+                        tasks={filteredTasks} // <--- Passing the filtered list explicitly
                         showReorderMode={showReorderMode}
                         setShowReorderMode={setShowReorderMode}
                     />

@@ -1,5 +1,5 @@
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useGetTodoListQuery } from "@/store/todoSlice";
+import { useGetTasklistQuery } from "@/store/taskSlice";
 import { Combobox, Input, InputBase, useCombobox } from "@mantine/core"
 import { useState } from "react";
 
@@ -11,9 +11,9 @@ type Props = {
 export const AssignedToDropdown = ({ householdId, listId }: Props) => {
     const [value, setValue] = useState();
     const { data: household } = useGetHouseholdQuery(householdId)
-    const { data: todoList } = useGetTodoListQuery(listId)
+    const { data: tasklist } = useGetTasklistQuery(listId)
 
-    const membersList = household?.members.filter(member => todoList?.memberIds?.includes(member.id)).map((member) => { return { id: member.id, profileImg: member.profileImg, name: member.firstName } })
+    const membersList = household?.members.filter(member => tasklist?.memberIds?.includes(member.id)).map((member) => { return { id: member.id, profileImg: member.profileImg, name: member.firstName } })
     const memberOptions = membersList?.map((m) => ({ value: String(m.id), label: <><img src={m.profileImg} />{m.name}</> })) ?? [];
 
     const combobox = useCombobox({

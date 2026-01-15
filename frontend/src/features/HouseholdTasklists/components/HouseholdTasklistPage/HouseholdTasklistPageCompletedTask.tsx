@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { TaskDetails } from "./TaskDetails";
-import type { TodoListType } from "@/store/todoSlice";
+import type { TasklistType } from "@/store/taskSlice";
 
 type Props = {
-    task: TodoListType;
+    task: TasklistType;
     householdId: number;
     listId: number;
     taskId: number;

@@ -1,7 +1,7 @@
 from app.extensions import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models.todo_list_member import TodoListMember
+from app.models.tasklist_member import TasklistMember
 from sqlalchemy import Index
 
 def default_display(context):
@@ -37,27 +37,27 @@ class User(db.Model, UserMixin):
         back_populates="members",
         foreign_keys=[household_id]  # explicitly point to household_id
     )
-    todo_list_memberships = db.relationship("TodoListMember", back_populates="user", cascade="all, delete-orphan")
+    tasklist_memberships = db.relationship("TasklistMember", back_populates="user", cascade="all, delete-orphan")
     lists_participating = db.relationship(
-    "TodoList",
-    secondary=lambda: TodoListMember.__table__,  # ✅ a Table
+    "Tasklist",
+    secondary=lambda: TasklistMember.__table__,  # ✅ a Table
     back_populates="members",
     lazy="selectin",
-    viewonly=True,  # write via TodoListMember rows
+    viewonly=True,  # write via TasklistMember rows
 )
 
     # habits = db.relationship("HabitLog", back_populates="habit_user")
-    todo_lists = db.relationship("TodoList", back_populates="user")
-    todos = db.relationship(
-        "Todo",
-        foreign_keys="Todo.assigned_to_id", # 👈 ADD THIS (use string if Todo is not imported, or [Todo.assigned_to_id] if it is)
+    tasklists = db.relationship("Tasklist", back_populates="user")
+    tasks = db.relationship(
+        "Task",
+        foreign_keys="Task.assigned_to_id", # 👈 ADD THIS (use string if Task is not imported, or [.assigned_to_id] if it is)
         back_populates="assigned_to"
     )
 
-    # Add the reverse for created tasks (matches back_populates="created_todos" in Todo)
-    created_todos = db.relationship(
-        "Todo",
-        foreign_keys="Todo.creator_id",
+    # Add the reverse for created tasks (matches back_populates="created_tasks" in Task)
+    created_tasks = db.relationship(
+        "Task",
+        foreign_keys="Task.creator_id",
         back_populates="creator"
     )
     # projects = db.relationship("ProjectMember", back_populates="user")

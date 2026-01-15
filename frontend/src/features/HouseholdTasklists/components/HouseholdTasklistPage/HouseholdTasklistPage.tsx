@@ -1,5 +1,5 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
-import { useGetTodoListQuery, useUpdateTodoListMutation } from "@/store/todoSlice";
+import { useGetTasklistQuery, useUpdateTasklistMutation } from "@/store/taskSlice";
 import { Progress } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -19,30 +19,30 @@ export const HouseholdTasklistPage = () => {
     const { data: user } = useAuthenticateQuery();
 
     // Don't fetch with NaN/undefined
-    const { data: tasklist, isFetching } = useGetTodoListQuery(listId ?? skipToken);
+    const { data: tasklist, isFetching } = useGetTasklistQuery(listId ?? skipToken);
 
-    const [updateTodoListTitle] = useUpdateTodoListMutation();
+    const [updateTasklistTitle] = useUpdateTasklistMutation();
 
-    const todos = tasklist?.todos ?? [];
+    const tasks = tasklist?.tasks ?? [];
 
     const { percent } = useMemo(() => {
-        const total = todos.length;
-        const done = todos.filter((t) => t.status === "completed").length;
+        const total = tasks.length;
+        const done = tasks.filter((t) => t.status === "completed").length;
         const raw = total ? (done / total) * 100 : 0;
         const percent = Math.min(100, Math.max(0, Math.round(raw)));
         return { percent };
-    }, [todos]);
+    }, [tasks]);
 
     const handleUpdateTitle = async (next: string) => {
         if (!tasklist) return; // guard
-        await updateTodoListTitle({ listId: tasklist.id, title: next, householdId: user?.householdId }).unwrap();
+        await updateTasklistTitle({ listId: tasklist.id, title: next, householdId: user?.householdId }).unwrap();
     };
 
     if (!listId) return <div>Invalid list id.</div>;
     if (isFetching && !tasklist) return <div>Loading…</div>;
 
-    const completed = tasklist?.todos?.filter((todo) => todo.status === "completed")
-    const uncompleted = tasklist?.todos?.filter((todo) => todo.status === "in_progress")
+    const completed = tasklist?.tasks?.filter((task) => task.status === "completed")
+    const uncompleted = tasklist?.tasks?.filter((task) => task.status === "in_progress")
 
     return (
         <div className={`household-tasklist-page tasklists-shell ${showCompleted ? 'completed-open' : 'completed-collapsed'}`}>

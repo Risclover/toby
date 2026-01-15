@@ -12,7 +12,7 @@ export const MobileHeader = () => {
     return (
         <div className="mobile-header-container">
             <div className="mobile-header-left">
-                {/* TODO: Animated hamburger menu icon */}
+                {/* TASK: Animated hamburger menu icon */}
                 <MenuRoundedIcon />
                 <div className="brand">
                     <TobyIcon />

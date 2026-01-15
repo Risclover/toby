@@ -1,5 +1,5 @@
 import { useStablePending } from "@/hooks/useStablePending";
-import { useAddTodoMutation } from "@/store/todoSlice";
+import { useAddTaskMutation } from "@/store/taskSlice";
 import { Button } from "@mantine/core"
 import { useRef, useState } from "react"
 
@@ -10,7 +10,7 @@ type Props = {
 export const HouseholdTasklistPageAddTask = ({ listId }: Props) => {
     const inputRef = useRef<HTMLInputElement>(null)
     const [title, setTitle] = useState("");
-    const [addTodo, { isLoading }] = useAddTodoMutation();
+    const [addTask, { isLoading }] = useAddTaskMutation();
     const loading = useStablePending(isLoading, { showAfterMs: 120, minVisibleMs: 300 });
 
 
@@ -18,9 +18,9 @@ export const HouseholdTasklistPageAddTask = ({ listId }: Props) => {
         setTitle(e.target.value)
     }
 
-    const handleAddTodo = async () => {
+    const handleAddTask = async () => {
         if (title.trim() === "") return;
-        await addTodo({ title: title, description: "", status: "in_progress", isImportant: false, dueDate: undefined, listId: listId })
+        await addTask({ title: title, description: "", status: "in_progress", isImportant: false, dueDate: undefined, listId: listId })
         setTitle("");
         inputRef.current?.focus();
     }
@@ -29,14 +29,14 @@ export const HouseholdTasklistPageAddTask = ({ listId }: Props) => {
         <div className="add-task shell-footer">
             <input
                 value={title}
-                onKeyDown={(e) => { if (e.key === "Enter") { handleAddTodo() } }}
+                onKeyDown={(e) => { if (e.key === "Enter") { handleAddTask() } }}
                 ref={inputRef}
                 onChange={handleTitle}
                 type="text"
                 placeholder="Add a task and press Enter"
                 maxLength={255}
             />
-            <Button color="cyan" loading={loading} onClick={handleAddTodo}>Add</Button>
+            <Button color="cyan" loading={loading} onClick={handleAddTask}>Add</Button>
         </div>
     </div>
 }

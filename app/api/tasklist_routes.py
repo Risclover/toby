@@ -1,20 +1,20 @@
-# routes/todo_lists.py
+# routes/tasklists.py
 from flask import Blueprint, jsonify, request
-from app.models import TodoList, Todo, User, Household
+from app.models import Tasklist, Task, User, Household
 from app.extensions import db
 from flask_login import current_user, login_required
 
-todo_list_routes = Blueprint("todo_lists", __name__)
+tasklist_routes = Blueprint("tasklists", __name__)
 
 # TABLE OF CONTENTS
-# 1. get_todo_list: Retrieve tasklist by id
-# 2. get_todo_lists: Get all of a scope's tasklists (user's or household's)
-# 3. create_todo_list: Create todo list
-# 4. add_todo: Add todo to todo list
-# 5. complete_todo: Mark todo as "completed"
-# 6. Mark todo as "in_progress"
-# 7. Remove todo from list
-# 8. Clear list by removing all todos
+# 1. get_tasklist: Retrieve tasklist by id
+# 2. get_tasklists: Get all of a scope's tasklists (user's or household's)
+# 3. create_tasklist: Create task list
+# 4. add_task: Add task to task list
+# 5. complete_task: Mark task as "completed"
+# 6. Mark task as "in_progress"
+# 7. Remove task from list
+# 8. Clear list by removing all tasks
 # 9. Delete tasklist
 # 10. Reorder tasklist (drag and drop)
 # 11. Duplicate tasklist
@@ -24,24 +24,24 @@ todo_list_routes = Blueprint("todo_lists", __name__)
 # 15. Mark all tasks in a tasklist as "in_progress" (incompleted)
 # 16. Manage a tasklist's assigned members
 
-@todo_list_routes.route("/<int:id>", methods=["GET"])
-def get_todo_list(id):
+@tasklist_routes.route("/<int:id>", methods=["GET"])
+def get_tasklist(id):
     """
-    Get a specific todo list by id 
+    Get a specific task list by id 
     """
-    todo_list = TodoList.query.get_or_404(id)
-    return jsonify(todo_list.to_dict()), 200
+    tasklist = Tasklist.query.get_or_404(id)
+    return jsonify(tasklist.to_dict()), 200
 
-@todo_list_routes.route("/<int:id>", methods=["GET"])
+@tasklist_routes.route("/<int:id>", methods=["GET"])
 @login_required
-def get_todo_lists(id):
+def get_tasklists(id):
     """
-    Get a specific user's or household's todo lists
+    Get a specific user's or household's task lists
     """
     scope = request.args.get("scope", "user")
 
     if scope == "user":
-        lists = TodoList.query.filter_by(user_id=current_user.id).all()
+        lists = Tasklist.query.filter_by(user_id=current_user.id).all()
 
     elif scope == "household":
         household_id = request.args.get("householdId", type=int)
@@ -55,7 +55,7 @@ def get_todo_lists(id):
         if not current_user.is_member_of(household):  # implement this helper
             return jsonify({"error": "Forbidden"}), 403
 
-        lists = TodoList.query.filter_by(household_id=household_id).all()
+        lists = Tasklist.query.filter_by(household_id=household_id).all()
 
     else:
         return jsonify({"error": "invalid scope"}), 400
@@ -63,44 +63,44 @@ def get_todo_lists(id):
     return jsonify([t.to_dict() for t in lists]), 200  # [] when empty
 
 
-@todo_list_routes.route("", methods=["POST"])
-def create_todo_list():
+@tasklist_routes.route("", methods=["POST"])
+def create_tasklist():
     """
-    Create a new todo list 
+    Create a new task list 
     """
     data = request.get_json()
 
-    todo_list = TodoList(
+    tasklist = Tasklist(
         title=data["title"],
         user_id=data.get("user_id"),
         household_id=data.get("household_id")
     )
     
-    db.session.add(todo_list)
+    db.session.add(tasklist)
     
     household = Household.query.get(data.get("household_id"))
-    household.todo_lists.append(todo_list)
+    household.tasklists.append(tasklist)
 
     db.session.commit()
 
-    return jsonify(todo_list.to_dict()), 201
+    return jsonify(tasklist.to_dict()), 201
 
 
-@todo_list_routes.route("/<int:id>/todos", methods=["POST"])
-def add_todo(id):
+@tasklist_routes.route("/<int:id>/tasks", methods=["POST"])
+def add_task(id):
     """
-    Add a todo to a specific todo list, appended to the end (by sort_index).
+    Add a task to a specific task list, appended to the end (by sort_index).
     """
     data = request.get_json() or {}
-    TodoList.query.get_or_404(id)  # ensures list exists
+    Tasklist.query.get_or_404(id)  # ensures list exists
 
     max_idx = (
-        db.session.query(db.func.coalesce(db.func.max(Todo.sort_index), -1))
-        .filter(Todo.list_id == id)
+        db.session.query(db.func.coalesce(db.func.max(Task.sort_index), -1))
+        .filter(Task.list_id == id)
         .scalar()
     )
 
-    todo = Todo(
+    task = Task(
         title=data["title"],
         creator_id=current_user.get_id(),
         description=data.get("description"),
@@ -112,100 +112,100 @@ def add_todo(id):
         sort_index=max_idx + 1,
     )
 
-    db.session.add(todo)
+    db.session.add(task)
     db.session.commit()
-    return jsonify(todo.to_dict()), 201
+    return jsonify(task.to_dict()), 201
 
-# @todo_list_routes.route("/<int:id>/todos/<int:todo_id>/completed", methods=["PUT"])
-# def complete_todo(id, todo_id):
+# @tasklist_routes.route("/<int:id>/tasks/<int:task_id>/completed", methods=["PUT"])
+# def complete_task(id, task_id):
 #     data = request.get_json()
-#     todo = Todo.query.get(todo_id)
+#     task = Task.query.get(task_id)
 
-#     setattr(todo, "status", "completed")
+#     setattr(task, "status", "completed")
 #     db.session.commit()
 
 #     return jsonify({"message": f""})
 
-@todo_list_routes.route("/<int:list_id>/todos/<int:id>", methods=["DELETE"])
-def delete_todo(list_id, id):
+@tasklist_routes.route("/<int:list_id>/tasks/<int:id>", methods=["DELETE"])
+def delete_task(list_id, id):
     """
-    Remove a todo from a todo list
+    Remove a task from a task list
     """
-    todo = Todo.query.filter_by(id=id, list_id=list_id).first_or_404()
-    deleted_todo = todo.to_dict()
+    task = Task.query.filter_by(id=id, list_id=list_id).first_or_404()
+    deleted_task = task.to_dict()
 
-    db.session.delete(todo)
+    db.session.delete(task)
     db.session.commit()
 
-    return jsonify(deleted_todo), 200
+    return jsonify(deleted_task), 200
 
 
-@todo_list_routes.route("/<int:list_id>/todos", methods=["DELETE"])
+@tasklist_routes.route("/<int:list_id>/tasks", methods=["DELETE"])
 def clear_list(list_id):
     """
-    Remove all todos from a list
+    Remove all tasks from a list
     """
-    Todo.query.filter_by(list_id=list_id).delete()
+    Task.query.filter_by(list_id=list_id).delete()
     db.session.commit()
-    return jsonify({"message": f"All todos deleted from list {list_id}"}), 200
+    return jsonify({"message": f"All tasks deleted from list {list_id}"}), 200
 
 
-@todo_list_routes.route("/<int:id>", methods=["DELETE"])
+@tasklist_routes.route("/<int:id>", methods=["DELETE"])
 def delete_list(id):
     """
-    Delete a todo list
+    Delete a task list
     """
-    todo_list = TodoList.query.get_or_404(id)
-    db.session.delete(todo_list)
+    tasklist = Tasklist.query.get_or_404(id)
+    db.session.delete(tasklist)
     db.session.commit()
     return jsonify({"message": f"List {id} deleted"}), 200
 
 
-@todo_list_routes.route("/<int:id>", methods=["PUT"])
-def edit_todo_list(id):
+@tasklist_routes.route("/<int:id>", methods=["PUT"])
+def edit_tasklist(id):
     """
-    Edit todo list's title
+    Edit task list's title
     """
-    todo_list = TodoList.query.get(id)
+    tasklist = Tasklist.query.get(id)
 
     data = request.get_json()
     title = data["title"]
-    todo_list.title = title
+    tasklist.title = title
 
     db.session.commit()
-    return jsonify(todo_list.to_dict()), 200
+    return jsonify(tasklist.to_dict()), 200
 
-@todo_list_routes.route("/<int:list_id>/reorder", methods=['PATCH'])
-def reorder_todos(list_id):
+@tasklist_routes.route("/<int:list_id>/reorder", methods=['PATCH'])
+def reorder_tasks(list_id):
     data = request.get_json() or {} 
     ordered_ids = data.get("orderedIds")
 
     if not isinstance(ordered_ids, list) or not ordered_ids:
         return jsonify({ "error": "orderedIds (non-empty array) required"}), 400
     
-    todos = Todo.query.filter(Todo.list_id == list_id).all()
-    current_ids = {todo.id for todo in todos}
+    tasks = Task.query.filter(Task.list_id == list_id).all()
+    current_ids = {task.id for task in tasks}
     requested_ids = set(ordered_ids)
 
 
     for idx, tid in enumerate(ordered_ids):
         (
-            db.session.query(Todo)
-                .filter(Todo.id == tid, Todo.list_id == list_id)
-                .update({Todo.sort_index: idx}, synchronize_session=False)
+            db.session.query(Task)
+                .filter(Task.id == tid, Task.list_id == list_id)
+                .update({Task.sort_index: idx}, synchronize_session=False)
         )
     
     db.session.commit()
     return("", 204)
 
-@todo_list_routes.route("/<int:id>/duplicate", methods=["POST"])
+@tasklist_routes.route("/<int:id>/duplicate", methods=["POST"])
 @login_required
 def duplicate_list(id):
     """
     Create an exact copy of an existing tasklist.
     """
     try:
-        original_list = TodoList.query.get_or_404(id)
+        original_list = Tasklist.query.get_or_404(id)
         
         # Permission check
         if current_user.id not in original_list.audience_user_ids():
@@ -220,23 +220,23 @@ def duplicate_list(id):
         db.session.rollback()
         return jsonify({"error": "Failed to duplicate list"}), 500
 
-@todo_list_routes.route("/<int:id>/archive", methods=["PUT"])
+@tasklist_routes.route("/<int:id>/archive", methods=["PUT"])
 def archive_list(id):
     """
     Archive the tasklist.
     """
-    tasklist = TodoList.query.get(id)
+    tasklist = Tasklist.query.get(id)
     tasklist.is_archived = True
     db.session.commit()
 
     return jsonify(tasklist.to_dict())
 
-@todo_list_routes.route("/<int:id>/settings", methods=["PUT"])
+@tasklist_routes.route("/<int:id>/settings", methods=["PUT"])
 def update_list_settings(id):
     """
     Update tasklist's settings
     """
-    tasklist = TodoList.query.get_or_404(id)
+    tasklist = Tasklist.query.get_or_404(id)
     data = request.get_json() or {}
 
     field_mapping = {
@@ -259,26 +259,26 @@ def update_list_settings(id):
 
     return jsonify(tasklist.to_dict()), 200
 
-@todo_list_routes.route("/<int:id>/complete-all", methods=["PUT"])
+@tasklist_routes.route("/<int:id>/complete-all", methods=["PUT"])
 def complete_all_tasks(id):
     """
     Complete all tasks in a tasklist
     """
-    tasklist = TodoList.query.get_or_404(id)
-    for task in tasklist.todos:
+    tasklist = Tasklist.query.get_or_404(id)
+    for task in tasklist.tasks:
         task.status = "completed"
     
     db.session.commit()
 
     return jsonify(tasklist.to_dict()), 200
 
-@todo_list_routes.route("/<int:id>/incomplete-all", methods=["PUT"])
+@tasklist_routes.route("/<int:id>/incomplete-all", methods=["PUT"])
 def incomplete_all_tasks(id):
     """
     Mark all tasks in a tasklist as incomplete 
     """
-    tasklist = TodoList.query.get_or_404(id)
-    for task in tasklist.todos:
+    tasklist = Tasklist.query.get_or_404(id)
+    for task in tasklist.tasks:
         task.status = "in_progress"
     
     db.session.commit()
@@ -286,12 +286,12 @@ def incomplete_all_tasks(id):
     return jsonify(tasklist.to_dict()), 200
 
 
-@todo_list_routes.route("/<int:id>/assigned-members", methods=["PUT"])
+@tasklist_routes.route("/<int:id>/assigned-members", methods=["PUT"])
 def manage_assigned_members(id):
     """
     Manage a tasklist's assigned members
     """
-    tasklist = TodoList.query.get_or_404(id)
+    tasklist = Tasklist.query.get_or_404(id)
     data = request.get_json() or {}
     
     new_member_ids = data.get("members", [])
@@ -304,7 +304,7 @@ def manage_assigned_members(id):
     for user_id in new_member_ids:
         user = User.query.get(user_id)
         if user:
-            new_link = TodoListMember(
+            new_link = TasklistMember(
                 list_id=tasklist.id,
                 user_id=user_id
             )

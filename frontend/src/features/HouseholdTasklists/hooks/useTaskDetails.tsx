@@ -1,5 +1,5 @@
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useGetTodoListQuery, useUpdateTodoMutation } from "@/store/todoSlice";
+import { useGetTasklistQuery, useUpdateTaskMutation } from "@/store/taskSlice";
 import dayjs from "dayjs";
 import { useState, type ChangeEventHandler } from "react";
 
@@ -18,14 +18,14 @@ type Props = {
 
 export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) => {
     // Mutations
-    const [updateTodo] = useUpdateTodoMutation();
+    const [updateTask] = useUpdateTaskMutation();
 
     // Queries 
     const { data: household } = useGetHouseholdQuery(householdId);
-    const { data: todoList } = useGetTodoListQuery(listId);
-    const { task } = useGetTodoListQuery(listId, {
+    const { data: tasklist } = useGetTasklistQuery(listId);
+    const { task } = useGetTasklistQuery(listId, {
         selectFromResult: ({ data }) => ({
-            task: data?.todos?.find(t => t.id === taskId),
+            task: data?.tasks?.find(t => t.id === taskId),
         }),
     })
 
@@ -40,7 +40,7 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
     // Derived data
     const membersList =
         household?.members
-            ?.filter((m: Member) => todoList?.memberIds?.includes(m.id))
+            ?.filter((m: Member) => tasklist?.memberIds?.includes(m.id))
             .map((m: Member) => ({ id: m.id, firstName: m.firstName, profileImg: m.profileImg }))
         ?? [];
 
@@ -83,8 +83,8 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
             return;
         }
 
-        await updateTodo({
-            todoId: task.id,
+        await updateTask({
+            taskId: task.id,
             title: taskTitle.trim(),
             listId: task.listId,
             householdId,

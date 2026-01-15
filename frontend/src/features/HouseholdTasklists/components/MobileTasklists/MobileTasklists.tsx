@@ -1,12 +1,12 @@
 import { MobileHomeNavGrid } from "@/component/MobileHomeNavGrid"
 import { MobileLayout } from "@/layout/MobileLayout"
 import { useAuthenticateQuery } from "@/store/authSlice";
-import { useGetHouseholdTodoListsQuery } from "@/store/householdSlice";
+import { useGetHouseholdTasklistsQuery } from "@/store/householdSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklist } from "../HouseholdTasklists/HouseholdTasklist";
 import { useState } from "react";
 import { Button } from "@mantine/core";
-import { CreateTodoList } from "../HouseholdTasklists/CreateTodoList";
+import { CreateTasklist } from "../HouseholdTasklists/CreateTasklist";
 import { useDisclosure } from "@mantine/hooks";
 
 const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
@@ -26,7 +26,7 @@ export const MobileTasklists = () => {
         data: lists = [],
         isLoading,     // true only for the *first* load
         isFetching,    // true for background refetches
-    } = useGetHouseholdTodoListsQuery(householdId, {
+    } = useGetHouseholdTasklistsQuery(householdId, {
         // Optional: reduce surprise refetches
         refetchOnFocus: false,
         refetchOnReconnect: false,
@@ -62,7 +62,7 @@ export const MobileTasklists = () => {
                     ))}
                 </div>
             </div>
-            {opened && <CreateTodoList householdId={householdId} opened={opened} close={close} />}
+            {opened && <CreateTasklist householdId={householdId} opened={opened} close={close} />}
         </MobileLayout>
     )
 }

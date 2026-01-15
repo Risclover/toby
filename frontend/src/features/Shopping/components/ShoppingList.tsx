@@ -44,8 +44,8 @@ export const ShoppingList = ({ list }: Props) => {
                 {percent}%
             </div>
 
-            {unpurchased?.slice(0, 3).map((todo: any) => (
-                <ShoppingListItem key={todo.id} item={todo} />
+            {unpurchased?.slice(0, 3).map((task: any) => (
+                <ShoppingListItem key={task.id} item={task} />
             ))}
 
             {remainingCount > 0 && <Divider my="md" />}

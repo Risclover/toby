@@ -1,4 +1,4 @@
-import { useCompleteTodoMutation, useGetTodoListQuery } from "@/store/todoSlice";
+import { useCompleteTaskMutation, useGetTasklistQuery } from "@/store/taskSlice";
 import { Checkbox } from "@mantine/core";
 import { useEffect, useState, type ChangeEvent, type SetStateAction } from "react";
 import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
@@ -13,15 +13,15 @@ type Props = {
 };
 
 export function HouseholdTasklistPageTask({ taskId, listId, householdId, showTaskDetails, setShowTaskDetails }: Props) {
-    const { task } = useGetTodoListQuery(listId, {
+    const { task } = useGetTasklistQuery(listId, {
         selectFromResult: ({ data }) => ({
-            task: data?.todos?.find(t => t.id === taskId),
+            task: data?.tasks?.find(t => t.id === taskId),
         }),
     });
 
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [checked, setChecked] = useState(task?.status === "completed");
-    const [completeTodo, { isLoading }] = useCompleteTodoMutation();
+    const [completeTask, { isLoading }] = useCompleteTaskMutation();
 
     // keep local state in sync if task.status changes externally
     useEffect(() => {
@@ -35,15 +35,15 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId, showTas
         setChecked(nextChecked);
 
         try {
-            await completeTodo({
-                todoId: task?.id,
+            await completeTask({
+                taskId: task?.id,
                 listId,
                 completed: nextChecked,
                 householdId: householdId
             }).unwrap();
         } catch (err) {
             setChecked((prev) => !prev);
-            console.error("Failed to toggle todo:", err);
+            console.error("Failed to toggle task:", err);
         }
     };
 
@@ -70,7 +70,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId, showTas
                     </div>
                     <div className="task-left-bottom">
                         <div className="invisible-wall"></div>
-                        {!checked && <TaskExtra todo={task} listId={listId} householdId={householdId} />}
+                        {!checked && <TaskExtra task={task} listId={listId} householdId={householdId} />}
                     </div>
                 </div>
                 {showDeleteConfirmation &&
@@ -79,7 +79,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId, showTas
                         onClose={() => setShowDeleteConfirmation(false)}
                         opened={showDeleteConfirmation}
                         listId={task.listId}
-                        todoId={task.id}
+                        taskId={task.id}
                     />}
             </div>
         </div>

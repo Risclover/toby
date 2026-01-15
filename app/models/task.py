@@ -2,11 +2,11 @@
 from app.extensions import db
 from datetime import datetime 
 
-class Todo(db.Model):
-    __tablename__ = "todos"
+class Task(db.Model):
+    __tablename__ = "tasks"
 
     id = db.Column(db.Integer, primary_key=True)
-    list_id = db.Column(db.Integer, db.ForeignKey("todo_lists.id"), nullable=False)
+    list_id = db.Column(db.Integer, db.ForeignKey("tasklists.id"), nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     title = db.Column(db.String(255), nullable=False)
     description=db.Column(db.Text)
@@ -20,17 +20,17 @@ class Todo(db.Model):
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
     completed_at = db.Column(db.DateTime, nullable=True)
 
-    todo_list=db.relationship("TodoList", back_populates="todos")
+    tasklist=db.relationship("Tasklist", back_populates="tasks")
     assigned_to = db.relationship(
         "User", 
         foreign_keys=[assigned_to_id],
-        back_populates="todos"
+        back_populates="tasks"
     )
 
     creator = db.relationship(
         "User", 
         foreign_keys=[creator_id],   
-        back_populates="created_todos"
+        back_populates="created_tasks"
     )
 
     def to_dict(self):
@@ -52,4 +52,4 @@ class Todo(db.Model):
         }
 
     def __repr__(self):
-        return f"Todo {self.id}"
+        return f"Task {self.id}"

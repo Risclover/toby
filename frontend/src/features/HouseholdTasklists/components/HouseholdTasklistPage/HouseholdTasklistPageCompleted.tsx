@@ -2,12 +2,12 @@ import React from "react";
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import { useAuthenticateQuery } from "@/store/authSlice";
-import type { TodoListType } from "@/store/todoSlice";
+import type { TasklistType } from "@/store/taskSlice";
 import { HouseholdTasklistPageCompletedTask } from "./HouseholdTasklistPageCompletedTask";
 
 type Props = {
-    tasklist: TodoListType | undefined
-    completed: TodoListType[]
+    tasklist: TasklistType | undefined
+    completed: TasklistType[]
     showCompleted: boolean;
     setShowCompleted: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -25,13 +25,13 @@ export const HouseholdTasklistPageCompleted = ({ tasklist, completed, showComple
             {showCompleted ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
         </div>
         {showCompleted && <div className="panel-body">
-            {tasklist && completed.map((todo) => (
+            {tasklist && completed.map((task) => (
                 <HouseholdTasklistPageCompletedTask
-                    key={todo.id}                    // <-- add key
-                    task={todo}
+                    key={task.id}                    // <-- add key
+                    task={task}
                     householdId={user?.householdId}  // can be optional in child
                     listId={tasklist.id}             // <-- guaranteed number here
-                    taskId={todo.id}
+                    taskId={task.id}
                 />
             ))}
         </div>}

@@ -1,4 +1,4 @@
-// CreateTodoListMembers.tsx
+// CreateTasklistMembers.tsx
 import { Avatar, Checkbox, Collapse, Fieldset, Stack } from "@mantine/core";
 import type { UserLite } from "@/hooks/useMemberSelection";
 
@@ -11,7 +11,7 @@ type Props = {
     onToggleOne: (id: number) => void;
 };
 
-export function CreateTodoListMembers({
+export function CreateTasklistMembers({
     members,
     allMembers,
     someSelected,

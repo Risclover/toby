@@ -1,4 +1,4 @@
-export { AddNewTodo } from "./AddNewTodo";
+export { AddNewTask } from "./AddNewTask";
 export { Layout } from "./Layout";
-export { TodoList } from "./TodoList";
+export { Tasklist } from "./Tasklist";
 export { LoggedOutNavbar } from "./LoggedOutNavbar"

@@ -1,8 +1,8 @@
 import { apiSlice } from "./apiSlice";
 
 export type Household = { id: number; name: string };
-export type TodoList = { id: number; title: string; createdAt: string; memberIds: number[] };
-type TodoListTag = { type: "TodoList"; id: number | string };
+export type Tasklist = { id: number; title: string; createdAt: string; memberIds: number[] };
+type TasklistTag = { type: "Tasklist"; id: number | string };
 export type ShoppingCategory = { id: number; listId: number; name: string; createdAt: string; updatedAt: string };
 
 export type ShoppingList = {
@@ -57,15 +57,15 @@ export const householdSlice = apiSlice.injectEndpoints({
                 return [{ type: "Household", id: householdId }]
             }
         }),
-        getHouseholdTodoLists: builder.query<TodoList[], number>({
-            query: (householdId) => `/households/${householdId}/todo_lists`, // no leading slash
-            providesTags: (result, _e, householdId): TodoListTag[] =>
+        getHouseholdTasklists: builder.query<Tasklist[], number>({
+            query: (householdId) => `/households/${householdId}/tasklists`, // no leading slash
+            providesTags: (result, _e, householdId): TasklistTag[] =>
                 result?.length
                     ? [
-                        ...result.map((l) => ({ type: "TodoList", id: l.id } as TodoListTag)),
-                        { type: "TodoList", id: `HOUSEHOLD_${householdId}` },
+                        ...result.map((l) => ({ type: "Tasklist", id: l.id } as TasklistTag)),
+                        { type: "Tasklist", id: `HOUSEHOLD_${householdId}` },
                     ]
-                    : [{ type: "TodoList", id: `HOUSEHOLD_${householdId}` }],
+                    : [{ type: "Tasklist", id: `HOUSEHOLD_${householdId}` }],
 
         }),
         getHouseholdShoppingLists: builder.query<any, number>({
@@ -100,7 +100,7 @@ export const householdSlice = apiSlice.injectEndpoints({
 
 export const {
     useGetHouseholdQuery,
-    useGetHouseholdTodoListsQuery,
+    useGetHouseholdTasklistsQuery,
     useGetHouseholdShoppingListsQuery,
     useGetHouseholdShoppingListQuery,
     useGetAnnouncementsQuery,

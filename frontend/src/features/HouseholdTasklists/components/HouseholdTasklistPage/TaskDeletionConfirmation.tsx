@@ -1,4 +1,4 @@
-import { useDeleteTodoMutation } from "@/store/todoSlice";
+import { useDeleteTaskMutation } from "@/store/taskSlice";
 import { Button, Group, Modal, Space, Text } from "@mantine/core"
 
 type Props = {
@@ -6,14 +6,14 @@ type Props = {
     opened: boolean;
     onClose: () => void;
     listId: number;
-    todoId: number;
+    taskId: number;
 }
 
-export const TaskDeletionConfirmation = ({ title, opened, onClose, listId, todoId }: Props) => {
-    const [deleteTodo] = useDeleteTodoMutation();
+export const TaskDeletionConfirmation = ({ title, opened, onClose, listId, taskId }: Props) => {
+    const [deleteTask] = useDeleteTaskMutation();
 
     const handleTaskDeletion = async () => {
-        await deleteTodo({ listId, todoId });
+        await deleteTask({ listId, taskId });
         onClose();
     }
 

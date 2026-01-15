@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState, type SetStateAction } from "react"
 import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useGetTodoQuery, useReorderTodosMutation, useToggleTodoImportanceMutation, type Todo } from "@/store/todoSlice";
+import { useGetTaskQuery, useReorderTasksMutation, useToggleTaskImportanceMutation, type Task } from "@/store/taskSlice";
 import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -16,7 +16,7 @@ import { TaskDetails } from "./TaskDetails";
 
 type Props = {
     listId: number;
-    tasks: Todo[];
+    tasks: Task[];
     showReorderMode: boolean;
     setShowReorderMode: React.Dispatch<SetStateAction<boolean>>;
 };
@@ -25,7 +25,7 @@ export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode
     // 1. Sort incoming props to ensure we start with the correct server order
     const sortedTasks = useMemo(() => tasks, [tasks]);
 
-    const [local, setLocal] = useState<Todo[]>(sortedTasks);
+    const [local, setLocal] = useState<Task[]>(sortedTasks);
 
     // 2. Sync local state with props ONLY when the task IDs actually change
     //    (e.g., a new task was added or one was deleted), NOT on every re-render.
@@ -39,7 +39,7 @@ export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode
         }
     }, [sortedTasks]);
 
-    const [reorderTodos] = useReorderTodosMutation();
+    const [reorderTasks] = useReorderTasksMutation();
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -47,7 +47,7 @@ export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode
     );
 
     // Helper to persist changes
-    const executeReorder = async (newOrder: Todo[]) => {
+    const executeReorder = async (newOrder: Task[]) => {
         // Optimistically update UI
         setLocal(newOrder);
 
@@ -55,7 +55,7 @@ export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode
 
         try {
             // Send new order to server
-            await reorderTodos({ listId, orderedIds }).unwrap();
+            await reorderTasks({ listId, orderedIds }).unwrap();
         } catch (err) {
             console.error("Failed to reorder:", err);
             // Revert to server state on failure
@@ -118,8 +118,8 @@ export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode
 }
 
 type SortableTaskItemProps = {
-    task: Todo;
-    tasks: Todo[] | undefined;
+    task: Task;
+    tasks: Task[] | undefined;
     isFirst: boolean;
     isLast: boolean;
     onMove: (id: number, direction: 'up' | 'down') => void;
@@ -130,7 +130,7 @@ type SortableTaskItemProps = {
 
 function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, listId, showReorderMode }: SortableTaskItemProps) {
     const [showTaskDetails, setShowTaskDetails] = useState(false);
-    const { data: latestTask } = useGetTodoQuery(initialTask.id);
+    const { data: latestTask } = useGetTaskQuery(initialTask.id);
     const task = latestTask ?? initialTask;
     const isSmall = useIsSmallScreen();
 
@@ -145,7 +145,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
     } = useSortable({ id: task.id });
 
     const { data: user } = useAuthenticateQuery();
-    const [toggleImportance] = useToggleTodoImportanceMutation();
+    const [toggleImportance] = useToggleTaskImportanceMutation();
 
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
@@ -155,7 +155,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
 
     const handleStarClick = async (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
-        await toggleImportance({ todoId: task.id, listId: listId, householdId: user?.householdId })
+        await toggleImportance({ taskId: task.id, listId: listId, householdId: user?.householdId })
     }
 
     const handleMoveTaskUp = (e: React.MouseEvent<HTMLButtonElement>) => {
