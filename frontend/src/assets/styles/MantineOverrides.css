@@ -1,5 +1,5 @@
-.mantine-Modal-header,
-.mantine-Modal-content {
+[data-theme="dark"].mantine-Modal-header,
+[data-theme="dark"].mantine-Modal-content {
     background: var(--main-background) !important;
     color: white !important;
 }
@@ -9,11 +9,11 @@
 }
 
 
-.mantine-Modal-close {
+[data-theme="dark"].mantine-Modal-close {
     color: white !important;
 }
 
-.mantine-Modal-close:hover {
+[data-theme="dark"].mantine-Modal-close:hover {
     background: var(--input-background) !important;
 }
 

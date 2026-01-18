@@ -1,6 +1,6 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import type { TasklistType } from "@/store/taskSlice";
+import type { TasklistType } from "@/store/taskSlice"
 import { Avatar, Divider, Progress, Tooltip } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklistTask } from "./HouseholdTasklistTask";

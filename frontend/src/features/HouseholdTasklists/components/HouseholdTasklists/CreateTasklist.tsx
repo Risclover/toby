@@ -2,7 +2,7 @@ import { Button, Modal, Stack, TextInput } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { useCreateHouseholdTasklistMutation } from "@/store/taskSlice";
 import { useState, type FormEvent } from "react";
-import { CreateTasklistMembers } from "./CreateTasklistMembers";
+import { CreateTasklistMembers } from "./CreateTasklistMembers"
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useMemberSelection } from "@/hooks/useMemberSelection";
@@ -15,7 +15,7 @@ type CreateTasklist = {
     opened: boolean;
 }
 
-export const CreateTasklist = ({ householdId, opened, open, close }: Props) => {
+export const CreateTasklist = ({ householdId, opened, open, close }: CreateTasklist) => {
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const [title, setTitle] = useState("");

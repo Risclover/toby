@@ -1,5 +1,5 @@
 import { useState, type MouseEvent } from "react"
-import { useAddTaskMutation } from "../store/taskSlice";
+import { useAddTaskMutation } from "@/store/taskSlice";
 
 type Props = {
     tasklistId: number

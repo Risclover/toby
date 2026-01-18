@@ -13,16 +13,16 @@ tasklist_routes = Blueprint("tasklists", __name__)
 # 4. add_task: Add task to task list
 # 5. complete_task: Mark task as "completed"
 # 6. Mark task as "in_progress"
-# 7. Remove task from list
-# 8. Clear list by removing all tasks
-# 9. Delete tasklist
-# 10. Reorder tasklist (drag and drop)
-# 11. Duplicate tasklist
-# 12. Archive tasklist 
-# 13. Update tasklist settings
-# 14. Mark all tasks in a tasklist as "completed"
-# 15. Mark all tasks in a tasklist as "in_progress" (incompleted)
-# 16. Manage a tasklist's assigned members
+# 7. delete_task: Remove task from list
+# 8. clear_list: Clear list by removing all tasks
+# 9. delete_list: Delete tasklist
+# 10. reorder_tasks: Reorder tasklist (drag and drop)
+# 11. duplicate_list: Duplicate tasklist
+# 12. archive_list: Archive tasklist 
+# 13. update_list_settings: Update tasklist settings
+# 14. complete_all_tasks: Mark all tasks in a tasklist as "completed"
+# 15. incomplete_all_tasks: Mark all tasks in a tasklist as "in_progress" (incompleted)
+# 16. manage_assigned_members: Manage a tasklist's assigned members
 
 @tasklist_routes.route("/<int:id>", methods=["GET"])
 def get_tasklist(id):
@@ -247,7 +247,8 @@ def update_list_settings(id):
         "defaultSortOrder": "default_sort_order",
         "defaultFilters": "default_filters",
         "newItemPosition": "new_item_position",
-        "autoHideWhenEmpty": "auto_hide_when_empty"
+        "autoHideWhenEmpty": "auto_hide_when_empty",
+        "starsAtTop": "stars_at_top"
     }
 
     # Update only provided fields

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export function useIsSmallScreen(maxWidth = 768) {
+export function useIsSmallScreen(maxWidth = 575) {
     const [isSmall, setIsSmall] = useState(() => window.innerWidth <= maxWidth);
     useEffect(() => {
         const onResize = () => setIsSmall(window.innerWidth <= maxWidth);

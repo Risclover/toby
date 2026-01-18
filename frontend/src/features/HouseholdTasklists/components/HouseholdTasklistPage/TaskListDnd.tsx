@@ -24,7 +24,7 @@ type Props = {
 export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode }: Props) {
     // 1. Sort incoming props to ensure we start with the correct server order
     const sortedTasks = useMemo(() => tasks, [tasks]);
-
+    const isSmallScreen = useIsSmallScreen();
     const [local, setLocal] = useState<Task[]>(sortedTasks);
 
     // 2. Sync local state with props ONLY when the task IDs actually change
@@ -188,12 +188,13 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                 </div>
 
                 <div className="task-row-right">
-                    {!showReorderMode ? <div
+                    <div
                         className="star-icon-container"
                         onClick={handleStarClick}
                     >
-                        {task?.isImportant ? <StarIcon /> : <StarIconOutline />}
-                    </div> : tasks && isSmall && tasks?.length > 1 && (<div className={`task-row-move-btns show-task-btns`}>
+                        {task?.isImportant ? <StarIcon size={24} /> : <StarIconOutline size={24} />}
+                    </div>
+                    {showReorderMode && tasks && isSmall && tasks?.length > 1 && (<div className={`task-row-move-btns show-task-btns`}>
                         <Button
                             variant="subtle"
                             size="xs"

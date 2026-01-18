@@ -32,10 +32,12 @@
 
 .household-tasklist-page-task:not(.completed-task) {
     padding-right: 0;
+    /* padding-left: 0.25rem; */
 }
 
 .household-tasklist-page-completed .household-tasklist-page-task {
     padding-right: 0.75rem;
+    padding-left: 0.75rem;
 }
 
 
@@ -182,7 +184,6 @@ textarea.editable-title.is-editing {
 }
 
 .tasklist-panel {
-    flex: 1 1 auto;
     min-height: 0;
     /* critical for child scrolling */
     display: flex;
@@ -432,4 +433,156 @@ textarea.editable-title.is-editing {
     padding-left: 3rem;
     padding-right: 3rem;
     margin-top: 1rem;
+}
+
+.tasklist-settings-tablist {
+    font-family: "Alan Sans", sans-serif;
+}
+
+.tasklist-settings-panel {
+    padding: 1rem 0.5rem;
+    font-size: var(--text-sm)
+}
+
+.tasklist-settings-section {
+    padding: 0.5rem 0;
+    gap: 1rem;
+    display: inline-flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.tasklist-settings-section .mantine-Input-wrapper,
+.tasklist-settings-section input {
+    max-width: 390px !important;
+    width: 100%;
+}
+
+.input-label-description {
+    max-width: 50%;
+}
+
+.input-label-description .mantine-InputWrapper-label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.input-label-description .mantine-InputWrapper-label svg {
+    color: var(--mantine-color-gray-7);
+    /* transform: rotate(180deg); */
+}
+
+.manage-members-member {
+    display: flex;
+    flex-direction: column;
+}
+
+.manage-members-container {
+    padding: 0.5rem;
+    /* border: 1px solid var(--mantine-color-gray-3); */
+    border-radius: 0.5rem;
+}
+
+.all-members-option {
+    margin-top: 0.5rem;
+}
+
+.section-start {
+    align-items: flex-start;
+}
+
+.tasklist-settings-section:has(.mobile-announcements-filter-drawer) {
+    flex-direction: column;
+}
+
+
+.tasklist-settings-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.delete-tasklist-section {
+    background: var(--mantine-color-red-0);
+    border-radius: 0.5rem;
+    border: 1px solid var(--mantine-color-red-5);
+    padding: 1rem;
+    color: var(--mantine-color-red-9);
+}
+
+.delete-section button {
+    min-width: 130px;
+}
+
+.view-tasklist-section {
+    flex-direction: column;
+}
+
+.tasklist-settings-save-btn {
+    /* font-weight: 500 !important; */
+    font-family: "Nunito Sans", sans-serif;
+    height: 31px !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+    margin-bottom: 5px;
+}
+
+.tasklist-settings-modal-footer {
+    width: 100%;
+    padding: 0.5rem;
+    background: white;
+    z-index: 999;
+    bottom: 0;
+    left: 0;
+    border-top: 1px solid var(--mantine-color-gray-3);
+    position: fixed;
+}
+
+
+.tasklist-settings-footer-btn {
+    height: auto !important;
+    padding: 0.5rem 1rem !important;
+}
+
+.mantine-Tabs-panel {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #fafafa;
+}
+
+@media (max-width: 425px) {
+    .delete-section {
+        display: block;
+    }
+
+}
+
+
+@media (max-width: 768px) {
+    .tasklist-settings-panel {
+        padding: 0.5rem 0;
+    }
+
+    .section-column {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: normal;
+        gap: 0.5rem;
+    }
+
+    .tasklist-settings-section .mantine-Input-wrapper,
+    .tasklist-settings-section input {
+        max-width: 100% !important;
+        width: 100%;
+    }
+
+    .input-label-description {
+        max-width: 100%;
+    }
+
+    .manage-members-member {
+        text-align: center;
+        font-family: "Alan Sans", sans-serif;
+    }
 }

@@ -1,6 +1,10 @@
-export const StarIcon = () => {
+type Props = {
+    size: number;
+}
+
+export const StarIcon = ({ size }: Props) => {
     return (
-        <svg className="star-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24px" height="24px">
+        <svg className="star-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width={`${size}px`} height={`${size}px`}>
 
             <g fill="none" fill-rule="evenodd">
 
@@ -14,15 +18,15 @@ export const StarIcon = () => {
     )
 }
 
-export const StarIconOutline = () => {
+export const StarIconOutline = ({ size }: Props) => {
     return (
         <svg
             className="star-icon-outline"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 32 32"
-            width="24px"
-            height="24px"
+            width={`${size}px`} height={`${size}px`}
             style={{ cursor: 'pointer', overflow: 'visible' }} // overflow visible prevents clipped edges
+
         >
             <g fill="none" fillRule="evenodd">
                 <path d="m0 0h32v32h-32z" />

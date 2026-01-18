@@ -8,6 +8,7 @@ import { MobileTasklistFilterDrawer } from "./MobileTasklistFilterDrawer";
 import { ReorderListIcon } from "@/assets/icons/ReorderListIcon";
 import { useEffect } from "react";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 
 interface Props {
     // Lift state up! Pass these down from the Page component
@@ -26,6 +27,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const isSmall = useIsSmallScreen();
 
     const optionsList: SortOption[] = [
         "Due Date",
@@ -110,17 +112,16 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                     <Tooltip label="Filter list"><ActionIcon onClick={open} variant="subtle" color="rgb(5, 5, 73)">
                         <FilterAltRoundedIcon />
                     </ActionIcon></Tooltip>
-                    <Tooltip label="Reorder list">
+                    {isSmall && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
                         <ActionIcon
                             onClick={() => setShowReorderMode(prev => !prev)}
                             variant={showReorderMode ? "light" : "subtle"}
                             color="rgb(5, 5, 73)"
                             aria-label="Reorder list"
-                            title={showReorderMode ? "Close reorder mode" : "Reorder list"}
                         >
                             {!showReorderMode ? <ReorderListIcon /> : <CloseRoundedIcon />}
                         </ActionIcon>
-                    </Tooltip>
+                    </Tooltip>}
                 </Tooltip.Group>
             </div>
             <MobileTasklistFilterDrawer

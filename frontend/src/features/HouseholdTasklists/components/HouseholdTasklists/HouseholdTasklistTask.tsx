@@ -1,4 +1,4 @@
-import type { Task } from "@/store/taskSlice";
+import type { Task } from "@/store/taskSlice"
 import { Checkbox } from "@mantine/core";
 
 

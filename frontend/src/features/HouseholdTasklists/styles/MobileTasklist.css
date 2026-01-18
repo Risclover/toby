@@ -88,6 +88,7 @@
 .task {
     width: 100%;
     padding: 0.3rem 0.75rem;
+    padding-left: 0.25rem;
 }
 
 .task:hover {
@@ -128,15 +129,39 @@
     margin-top: 0.5rem;
 }
 
-.star-icon,
+/* .star-icon,
 .star-icon-outline {
     font-size: 1rem;
     width: 24px;
     height: 1.25em;
-}
+} */
 
 .tasklists-list-empty-state {
     /* font-style: italic; */
     font-size: var(--text-sm);
     color: var(--mantine-color-gray-7);
+}
+
+
+
+.household-tasklist-page-task:not(.completed-task) {
+    /* padding-right: 0; */
+    padding-left: 0.25rem;
+}
+
+.household-tasklist-page-completed .household-tasklist-page-task {
+    padding-left: 0.75rem;
+}
+
+@media (max-width: 575px) {
+    .task {
+        padding-left: 0;
+    }
+
+
+    .household-tasklist-page-task:not(.completed-task) {
+        /* padding-right: 0; */
+        padding-left: 0.75rem;
+    }
+
 }

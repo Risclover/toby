@@ -1,16 +1,21 @@
-from app.extensions import db
-from sqlalchemy import CheckConstraint, Index, inspect  # Add inspect here
-from app.models.tasklist_member import TasklistMember
-from app.models.task import Task  # Add this import
+from copy import deepcopy
 from enum import Enum
+
+from sqlalchemy import CheckConstraint, Index, inspect
+from app.extensions import db
+from app.models.tasklist_member import TasklistMember
+from app.models.task import Task
+
 
 class ViewMode(str, Enum):
     REGULAR = 'regular'
     COMPACT = 'compact'
 
+
 class NewItemPosition(str, Enum):
     TOP = 'top'
     BOTTOM = 'bottom'
+
 
 class SortOrder(str, Enum):
     DUE_DATE = 'due_date'
@@ -18,10 +23,24 @@ class SortOrder(str, Enum):
     ALPHABETICAL = 'alphabetical'
     NEWEST = 'newest'
 
+
 class FilterType(str, Enum):
     IMPORTANCE = 'importance'
     MEMBER = 'member'
     DUE_DATE = 'due_date'
+
+
+class DuplicateMode(str, Enum):
+    ONLY_UNCOMPLETE = 'only_uncomplete'
+    ALL_PRESERVE = 'all_preserve'
+    ALL_RESET = 'all_reset'
+
+
+DEFAULT_TASKLIST_FILTERS = {
+    "importance": "all",
+    "assignedToId": None,
+    "time": "all",
+}
 
 
 class Tasklist(db.Model):
@@ -36,16 +55,21 @@ class Tasklist(db.Model):
     all_members = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    stars_at_top = db.Column(db.Boolean, default=False, nullable=False)
 
     # Appearance
     icon = db.Column(db.String(120), nullable=True)
-    color = db.Column(db.String(7), default="#050549")
+    color = db.Column(db.String(7), default="#15aabf")
     view_mode = db.Column(db.String(20), default=ViewMode.REGULAR.value)
 
     # Defaults
     default_sort_order = db.Column(db.String(30), nullable=True)
-    default_filters = db.Column(db.JSON, nullable=True)
-
+    default_filters = db.Column(
+        db.JSON,
+        nullable=False,
+        default=lambda: DEFAULT_TASKLIST_FILTERS.copy()
+    )
+ 
     # List status
     is_archived = db.Column(db.Boolean, default=False, nullable=False)
 
@@ -57,7 +81,7 @@ class Tasklist(db.Model):
     tasks = db.relationship(
         "Task",
         back_populates="tasklist",
-        cascade="all, delete-orphan"  # optional but handy
+        cascade="all, delete-orphan"
     )
     user = db.relationship("User", back_populates="tasklists")
     household = db.relationship("Household", back_populates="tasklists")
@@ -81,7 +105,7 @@ class Tasklist(db.Model):
             "(user_id IS NOT NULL) <> (household_id IS NOT NULL)",
             name="ck_tasklists_exactly_one_owner",
         ),
-        # Unique title per owner (fix: use 'title', not 'name')
+        # Unique title per owner
         Index("ix_tasklists_user_id", "user_id"),
         Index("ix_tasklists_household_id", "household_id"),
     )
@@ -99,10 +123,16 @@ class Tasklist(db.Model):
             return [m.id for m in (self.household.members or [])]
         return [link.user_id for link in self.member_links]
 
-    def duplicate(self):
-        """Create an exact copy of this list with all settings and members the same"""
-        from copy import deepcopy
-
+    def duplicate(self, mode: DuplicateMode = DuplicateMode.ALL_PRESERVE):
+        """
+        Create a copy of this list based on the selected mode [memory:1].
+        
+        Args:
+            mode (DuplicateMode): 
+                - ONLY_UNCOMPLETE: Copy only uncompleted tasks.
+                - ALL_PRESERVE: Copy all tasks, keeping their completion status.
+                - ALL_RESET: Copy all tasks, but mark them all as uncompleted.
+        """
         duplicate = Tasklist(
             title=f"{self.title} (Copy)",
             icon=self.icon,
@@ -129,13 +159,24 @@ class Tasklist(db.Model):
                 )
                 db.session.add(new_link)
 
-        # Duplicate tasks, but with new ids, createdAts, updatedAts, and listIds
+        # Duplicate tasks
         for task in self.tasks:
+            # 1. Handle "only uncomplete tasks"
+            # Note: Verify your Task model uses 'is_complete'. If it uses 'status' or 'completed', update below.
+            if mode == DuplicateMode.ONLY_UNCOMPLETE and getattr(task, 'is_complete', False):
+                continue
+
             new_task = Task()
             for col in inspect(Task).columns:
                 if col.key in {"id", "created_at", "updated_at", "list_id"}:
                     continue
                 setattr(new_task, col.key, getattr(task, col.key))
+            
+            # 2. Handle "all tasks, without completed status"
+            if mode == DuplicateMode.ALL_RESET:
+                if hasattr(new_task, 'is_complete'):
+                    new_task.is_complete = False
+            
             new_task.list_id = duplicate.id
             db.session.add(new_task)
         
@@ -161,8 +202,8 @@ class Tasklist(db.Model):
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
             "tasks": [t.to_dict() for t in self.tasks] if include_tasks else [],
+            "starsAtTop": self.stars_at_top,
         }
 
     def __repr__(self):
         return f"<Tasklist id={self.id} title={self.title!r} scope={self.scope} all_members={self.all_members}>"
-

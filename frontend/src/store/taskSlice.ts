@@ -20,12 +20,33 @@ export interface Task {
 export interface TasklistType {
     id: number;
     title: string;
+    icon: string;
+    color: string;
+    viewMode: string;
+    newItemPosition: string;
+    autoHideWhenEmpty: boolean;
+    isArchived: boolean;
+    defaultSortOrder: string;
+    defaultFilters: {
+        importance: "all" | "important";
+        assignedToId: null | number; // userId
+        time:
+        | "past_due"
+        | "today"
+        | "tomorrow"
+        | "this_week"
+        | "this_month"
+        | "all";
+    };
     userId?: number;
     householdId?: number;
     memberIds?: number[];
     tasks?: Task[];
     createdAt: string;   // <- camelCase
     updatedAt?: string;
+    members?: string[];
+    allMembers: boolean;
+    starsAtTop: boolean;
 }
 
 type CreateTasklistBase = {

@@ -6,7 +6,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklist } from "../HouseholdTasklists/HouseholdTasklist";
 import { useState } from "react";
 import { Button } from "@mantine/core";
-import { CreateTasklist } from "../HouseholdTasklists/CreateTasklist";
+import { CreateTasklist } from "../HouseholdTasklists/CreateTasklist"
 import { useDisclosure } from "@mantine/hooks";
 
 const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (

@@ -3,7 +3,7 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Progress } from "@mantine/core";
-import { useGetTasklistQuery } from "@/store/taskSlice"; // Checked import path
+import { useGetTasklistQuery } from "@/store/taskSlice" // Checked import path
 import { skipToken } from "@reduxjs/toolkit/query";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { MobileTasklistHeader } from "./MobileTasklistHeader";
