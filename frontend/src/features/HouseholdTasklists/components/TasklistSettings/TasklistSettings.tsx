@@ -3,6 +3,7 @@ import { useTasklistSettings, type TasklistFormValues } from "../../hooks/useTas
 import { GeneralTab } from "./GeneralTab";
 import { BehaviorTab } from "./BehaviorTab";
 import { AppearanceTab } from "./AppearanceTab";
+import { DiscardWarning } from "./DiscardWarning";
 
 /* --- SHARED CONSTANTS --- */
 export const TIME_OPTIONS = [
@@ -16,10 +17,10 @@ export const TIME_OPTIONS = [
 
 type Props = {
     opened: boolean;
-    handleClose: () => void;
+    setShowTasklistSettings: () => void;
 };
 
-export const TasklistSettings = ({ opened, handleClose }: Props) => {
+export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => {
     const {
         form,
         household,
@@ -28,8 +29,12 @@ export const TasklistSettings = ({ opened, handleClose }: Props) => {
         memberOptions,
         renderMultiSelectOption,
         handleToggleAllMembers,
-        handleMemberChange
-    } = useTasklistSettings({ opened });
+        handleMemberChange,
+        handleClose,
+        setShowDiscardWarning,
+        showDiscardWarning,
+        handleDiscardConfirmation
+    } = useTasklistSettings({ opened, setShowTasklistSettings });
 
     // Handle Form Submission
     const handleSubmit = (values: TasklistFormValues) => {
@@ -48,10 +53,7 @@ export const TasklistSettings = ({ opened, handleClose }: Props) => {
             size="xl"
             radius="md"
             fullScreen={isSmallScreen}
-            styles={{
-                body: { display: "flex", flexDirection: "column", height: "100%", padding: 0, overflow: 'hidden' },
-                content: { overflow: 'hidden', maxHeight: isSmallScreen ? "100%" : "700px", height: "100%", display: "flex", flexDirection: "column" }
-            }}
+            styles={{ body: { padding: 0 } }}
         >
             <Tabs defaultValue="general" style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
                 <Tabs.List className="tasklist-settings-tablist" style={{ flexShrink: 0, padding: "0 16px", justifyContent: "space-between", alignItems: "flex-end" }}>
@@ -96,6 +98,10 @@ export const TasklistSettings = ({ opened, handleClose }: Props) => {
                     </Button>
                 </Group>
             </Modal.Header>
+            {showDiscardWarning && <DiscardWarning opened={showDiscardWarning} setShowDiscardWarning={setShowDiscardWarning} handleClose={() => {
+                setShowDiscardWarning(false);
+                handleDiscardConfirmation();
+            }} />}
         </Modal>
     );
 };

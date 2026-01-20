@@ -159,7 +159,7 @@ export const MobileTasklist = () => {
                 <HouseholdTasklistPageAddTask listId={tasklist.id} />
             </div>
 
-            {showTasklistSettings && <TasklistSettings opened={showTasklistSettings} handleClose={() => setShowTasklistSettings(false)} />}
+            {showTasklistSettings && <TasklistSettings opened={showTasklistSettings} setShowTasklistSettings={setShowTasklistSettings} />}
         </MobileLayout>
     );
 };

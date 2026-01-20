@@ -1,6 +1,6 @@
+import type { User } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice"
-import { useGetTasklistQuery, useGetTaskQuery, type Task } from "@/store/taskSlice"
-import { useGetUserQuery } from "@/store/userSlice";
+import { useGetTasklistQuery, type Task } from "@/store/taskSlice"
 import { Avatar, Tooltip } from "@mantine/core";
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
@@ -17,7 +17,7 @@ type Props = {
 }
 
 export function relativeDayLabel(
-    input: string | number | Date | undefined,              // accepts "YYYY-MM-DD" or a Date
+    input: string | Date | null | undefined,              // accepts "YYYY-MM-DD" or a Date
     fmt = "ddd, MMM D"
 ): "Today" | "Tomorrow" | "Yesterday" | string {
     const d = typeof input === "string"
@@ -37,14 +37,15 @@ export const TaskExtra = ({ task, householdId, listId }: Props) => {
     const navigate = useNavigate();
     const { data: household } = useGetHouseholdQuery(householdId)
     const { data: tasklist } = useGetTasklistQuery(listId)
+
     const membersList =
         household?.members
-            .filter(m => tasklist?.memberIds?.includes(m.id))
-            .map(m => ({ id: m.id, firstName: m.firstName, img: m.profileImg })) ?? [];
+            .filter((m: User) => tasklist?.memberIds?.includes(m.id))
+            .map((m: User) => ({ id: m.id, firstName: m.firstName, img: m.profileImg })) ?? [];
 
     const assigned =
         task.assignedToId != null
-            ? membersList.find(m => m.id === task.assignedToId) ?? null
+            ? membersList.find((m: User) => m.id === task.assignedToId) ?? null
             : null;
     console.log(assigned)
 
@@ -52,11 +53,20 @@ export const TaskExtra = ({ task, householdId, listId }: Props) => {
         task.dueDate
             ? dayjs(task.dueDate, "YYYY-MM-DD", true).format("ddd, MMM D")
             : null;
+
     return <div className="task-extra">
-        {assigned !== null && <div className="extra"><Tooltip key={assigned?.id} label={assigned?.firstName} withArrow>
-            <Avatar style={{ cursor: "pointer" }} onClick={() => navigate(`/users/${assigned?.id}`)} size="xs" src={assigned?.img} alt={assigned?.name} />
-        </Tooltip></div>}
-        {dateLabel !== null && <div className="extra"><CalendarTodayRoundedIcon />{relativeDayLabel(task?.dueDate)}</div>}
-        {task.notes !== "" && task.notes !== null && <div className="extra"><TextSnippetIcon /> Notes </div>}
+        {assigned !== null && <div className="extra">
+            <Tooltip key={assigned?.id} label={assigned?.firstName} withArrow>
+                <Avatar style={{ cursor: "pointer" }} onClick={() => navigate(`/users/${assigned?.id}`)} size="xs" src={assigned?.img} alt={assigned?.name} />
+            </Tooltip>
+        </div>}
+        {dateLabel !== null && <div className="extra">
+            <CalendarTodayRoundedIcon />
+            {relativeDayLabel(task?.dueDate)}
+        </div>}
+        {task.notes !== "" && task.notes !== null && <div className="extra">
+            <TextSnippetIcon />
+            Notes
+        </div>}
     </div>
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
@@ -28,12 +28,15 @@ export type TasklistFormValues = {
 
 type Props = {
     opened: boolean;
+    setShowTasklistSettings: () => void;
 };
 
-export const useTasklistSettings = ({ opened }: Props) => {
+export const useTasklistSettings = ({ opened, setShowTasklistSettings }: Props) => {
     const { tasklistId } = useParams();
     const tasklistTitleRef = useRef<HTMLInputElement>(null);
     const isSmallScreen = useIsSmallScreen();
+
+    const [showDiscardWarning, setShowDiscardWarning] = useState(false);
 
     // Data Fetching
     const { data: user } = useAuthenticateQuery();
@@ -116,6 +119,18 @@ export const useTasklistSettings = ({ opened }: Props) => {
         form.setFieldValue("allMembers", values.length === allHouseholdMemberIds.length);
     };
 
+    const handleClose = () => {
+        if (form.isDirty()) {
+            setShowDiscardWarning(true);
+        } else {
+            setShowTasklistSettings(false);
+        }
+    }
+
+    const handleDiscardConfirmation = () => {
+        setShowTasklistSettings(false);
+    }
+
     const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) => (
         !isSmallScreen && usersData ? (
             <Group gap="sm">
@@ -144,5 +159,9 @@ export const useTasklistSettings = ({ opened }: Props) => {
         renderMultiSelectOption,
         handleToggleAllMembers,
         handleMemberChange,
+        showDiscardWarning,
+        setShowDiscardWarning,
+        handleClose,
+        handleDiscardConfirmation
     };
 };
