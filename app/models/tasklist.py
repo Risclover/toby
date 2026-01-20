@@ -8,7 +8,7 @@ from app.models.task import Task
 
 
 class ViewMode(str, Enum):
-    REGULAR = 'regular'
+    DETAILED = 'detailed'
     COMPACT = 'compact'
 
 
@@ -55,12 +55,12 @@ class Tasklist(db.Model):
     all_members = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
-    stars_at_top = db.Column(db.Boolean, default=False, nullable=False)
+    stars_at_top = db.Column(db.Boolean, default=False)
 
     # Appearance
     icon = db.Column(db.String(120), nullable=True)
     color = db.Column(db.String(7), default="#15aabf")
-    view_mode = db.Column(db.String(20), default=ViewMode.REGULAR.value)
+    view_mode = db.Column(db.String(20), default=ViewMode.DETAILED.value)
 
     # Defaults
     default_sort_order = db.Column(db.String(30), nullable=True)

@@ -425,6 +425,14 @@ export const taskSlice = apiSlice.injectEndpoints({
                     p2.undo?.();
                 }
             },
+        }),
+
+        archiveList: builder.mutation({
+            query: (listId) => ({
+                url: `/tasklists/${listId}/archive`,
+                method: "PUT",
+                body: { listId }
+            })
         })
 
     })
@@ -443,5 +451,7 @@ export const {
     useUpdateTasklistMutation,
     useUpdateTaskMutation,
     useToggleTaskImportanceMutation,
-    useReorderTasksMutation
+    useReorderTasksMutation,
+    useArchiveListMutation,
+    useDuplicateListMutation
 } = taskSlice;

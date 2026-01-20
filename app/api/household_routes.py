@@ -57,7 +57,13 @@ def create_household_tasklist(household_id):
     if not title:
         return jsonify({"error": "Title is required"}), 400
 
-    all_members = bool(data.get("allMembers"))
+    all_members = data.get("allMembers")
+
+    if all_members is None:
+        all_members = True
+    elif not isinstance(all_members, bool):
+        return jsonify({"error": "allMembers must be a boolean"}), 400
+
     member_ids = data.get("memberIds") or []
 
     if not all_members:
@@ -75,7 +81,7 @@ def create_household_tasklist(household_id):
     db.session.flush()  # get tl.id now
 
     if not all_members:
-        links = [TasklistMember(list_id=tasklist.id, user_id=user_id) for user_id in set(member_ids)]
+        links = [TasklistMember(tasklist_id=tasklist.id, user_id=user_id) for user_id in set(member_ids)]
         db.session.add_all(links)
 
     db.session.commit()

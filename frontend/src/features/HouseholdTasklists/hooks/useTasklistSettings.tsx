@@ -1,147 +1,148 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useParams } from "react-router-dom";
+import { useForm, isNotEmpty } from "@mantine/form";
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useAuthenticateQuery, type User } from "@/store/authSlice";
-import { useGetTasklistQuery } from "@/store/taskSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
+import { useGetTasklistQuery } from "@/store/taskSlice";
+import { type MultiSelectProps, Avatar, Group, Text } from "@mantine/core";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 
-// Constants for filter logic
-export const FILTER_PREFIX = {
-    IMPORTANCE: 'importance:',
-    MEMBER: 'member:',
-    TIME: 'time:'
+// Define the exact shape of your form values
+export type TasklistFormValues = {
+    title: string;
+    autoHideWhenEmpty: boolean;
+    newItemPosition: string;
+    starsAtTop: boolean;
+    defaultSortOrder: string | null;
+    color: string;
+    viewMode: string;
+    memberIds: string[]; // MultiSelect uses strings
+    allMembers: boolean;
+    defaultFilters: {
+        importance: "all" | "important";
+        assignedToId: number | null;
+        time: "past_due" | "today" | "tomorrow" | "this_week" | "this_month" | "all";
+    };
 };
 
-export const useTasklistSettings = () => {
-    // 1. Data Fetching
+type Props = {
+    opened: boolean;
+};
+
+export const useTasklistSettings = ({ opened }: Props) => {
+    const { tasklistId } = useParams();
+    const tasklistTitleRef = useRef<HTMLInputElement>(null);
+    const isSmallScreen = useIsSmallScreen();
+
+    // Data Fetching
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
-    const { data: tasklist } = useGetTasklistQuery(user?.householdId);
+    const { data: tasklist } = useGetTasklistQuery(Number(tasklistId));
 
-    // 2. State Definitions
-    const [tasklistTitle, setTasklistTitle] = useState<string>("");
-    const [newTaskDefault, setNewTaskDefault] = useState<string | null>("bottom");
-    const [listHidden, setListHidden] = useState<boolean>(false);
-    const [defaultSortOrder, setDefaultSortOrder] = useState<string | null>(null);
-    const [assignAllMembers, setAssignAllMembers] = useState<boolean>(false);
-    const [assignedMembers, setAssignedMembers] = useState<string[]>([]);
+    // 1. Data Transformation: Convert API Data -> Form Shape
+    // We use useMemo to prevent re-calculating this default object on every render
+    const initialValues: TasklistFormValues = useMemo(() => ({
+        title: tasklist?.title ?? "",
+        autoHideWhenEmpty: tasklist?.autoHideWhenEmpty ?? false,
+        newItemPosition: tasklist?.newItemPosition ?? "bottom",
+        starsAtTop: tasklist?.starsAtTop ?? false,
+        defaultSortOrder: tasklist?.defaultSortOrder || null,
+        color: tasklist?.color ?? "#15aabf", // Provide a fallback color
+        viewMode: tasklist?.viewMode ?? "detailed",
+        memberIds: (tasklist?.memberIds ?? []).map(String),
+        allMembers: tasklist?.allMembers ?? false,
+        defaultFilters: {
+            importance: tasklist?.defaultFilters?.importance ?? "all",
+            assignedToId: tasklist?.defaultFilters?.assignedToId ?? null,
+            time: tasklist?.defaultFilters?.time ?? "all",
+        },
+    }), [tasklist]);
 
-    // Default Filters State
-    const [defaultFilters, setDefaultFilters] = useState<string[]>([
-        `${FILTER_PREFIX.IMPORTANCE}all`,
-        `${FILTER_PREFIX.MEMBER}all`,
-        `${FILTER_PREFIX.TIME}all`
-    ]);
+    // 2. The Form Instance
+    // Mantine form handles dirty checking, resetting, and validation internally.
+    const form = useForm<TasklistFormValues>({
+        initialValues,
+        validate: {
+            memberIds: isNotEmpty("You must assign at least one member"),
+        },
+    });
 
-    // 3. Derived Data (Helpers)
-    const members = household?.members ?? [];
-
-    const usersData = Object.fromEntries(
-        members.map((member: User) => [
-            `${member.firstName} ${member.lastName}`,
-            { profileImg: member.profileImg, email: member.email }
-        ])
-    );
-
-    const memberNames = Object.keys(usersData);
-
-    const filterOptions = [
-        // Importance
-        { group: 'Importance', value: `${FILTER_PREFIX.IMPORTANCE}all`, label: 'All Importance' },
-        { group: 'Importance', value: `${FILTER_PREFIX.IMPORTANCE}important`, label: 'Important Only' },
-        // Time
-        { group: 'Time', value: `${FILTER_PREFIX.TIME}all`, label: 'Any Time' },
-        { group: 'Time', value: `${FILTER_PREFIX.TIME}past_due`, label: 'Past Due' },
-        { group: 'Time', value: `${FILTER_PREFIX.TIME}today`, label: 'Today' },
-        { group: 'Time', value: `${FILTER_PREFIX.TIME}tomorrow`, label: 'Tomorrow' },
-        { group: 'Time', value: `${FILTER_PREFIX.TIME}week`, label: 'This Week' },
-        { group: 'Time', value: `${FILTER_PREFIX.TIME}month`, label: 'This Month' },
-        // Member
-        { group: 'Member', value: `${FILTER_PREFIX.MEMBER}all`, label: 'All Members' },
-        ...members.map((m: User) => ({
-            group: 'Member',
-            value: `${FILTER_PREFIX.MEMBER}${m.firstName} ${m.lastName}`,
-            label: `${m.firstName} ${m.lastName}`
-        }))
-    ];
-
-    // 4. Synchronization Effect
-    // Ensures state matches DB data when it finishes loading
+    // 3. Sync State: Update form when backend data loads/changes
+    // This replaces the manual useEffect mapping you had before.
     useEffect(() => {
         if (tasklist) {
-            setTasklistTitle(tasklist.title ?? "");
-            setNewTaskDefault(tasklist.newItemPosition ?? "bottom");
-            setListHidden(tasklist.autoHideWhenEmpty ?? false);
-            setDefaultSortOrder(tasklist.defaultSortOrder ?? null);
-            setAssignAllMembers(tasklist.allMembers ?? false);
-
-            if (tasklist.members) {
-                setAssignedMembers(
-                    tasklist.members.map((m: User) => `${m.firstName} ${m.lastName}`)
-                );
-            }
-            // Note: If you have saved default filters in DB, sync them here too
+            // Initialize sets the "pristine" state (what 'reset' goes back to)
+            form.initialize(initialValues);
         }
-    }, [tasklist]);
+    }, [initialValues]); // We depend on the memoized initialValues
 
-    // 5. Handlers
-    const handleFiltersChange = (newValues: string[]) => {
-        // Find the item that was just added
-        const addedValue = newValues.find(v => !defaultFilters.includes(v));
+    // 4. Derived Helpers
+    const memberOptions = useMemo(() =>
+        household?.members.map((member: User) => ({
+            value: String(member.id),
+            label: `${member.firstName} ${member.lastName}`,
+        })) ?? [],
+        [household]);
 
-        if (!addedValue) {
-            // Item removed
-            setDefaultFilters(newValues);
-            return;
-        }
+    const allHouseholdMemberIds = useMemo(() =>
+        household?.members.map((m: User) => String(m.id)) ?? [],
+        [household]);
 
-        // Determine prefix group
-        let activePrefix = '';
-        if (addedValue.startsWith(FILTER_PREFIX.IMPORTANCE)) activePrefix = FILTER_PREFIX.IMPORTANCE;
-        if (addedValue.startsWith(FILTER_PREFIX.TIME)) activePrefix = FILTER_PREFIX.TIME;
-        if (addedValue.startsWith(FILTER_PREFIX.MEMBER)) activePrefix = FILTER_PREFIX.MEMBER;
-
-        // Remove siblings with same prefix
-        const distinctValues = newValues.filter(val =>
-            !val.startsWith(activePrefix) || val === addedValue
+    const usersData = useMemo(() => {
+        if (isSmallScreen) return null;
+        return Object.fromEntries(
+            household?.members.map((member: User) => [
+                String(member.id),
+                { profileImg: member?.profileImg },
+            ]) ?? []
         );
+    }, [household, isSmallScreen]);
 
-        setDefaultFilters(distinctValues);
-    };
-
-    const handleTitleBlur = () => {
-        if (tasklistTitle?.trim().length === 0) setTasklistTitle(tasklist?.title ?? "");
-    };
-
-    return {
-        // Data & Status
-        isLoading: !tasklist || !household,
-        household,
-
-        // Helpers for UI
-        usersData,
-        memberNames,
-        filterOptions,
-
-        // State Values
-        values: {
-            title: tasklistTitle,
-            newTaskDefault,
-            listHidden,
-            defaultSortOrder,
-            assignAllMembers,
-            assignedMembers,
-            defaultFilters
-        },
-
-        // Handlers
-        handlers: {
-            setTitle: setTasklistTitle,
-            setNewTaskDefault,
-            setListHidden: (e: React.ChangeEvent<HTMLInputElement>) => setListHidden(e.currentTarget.checked),
-            setDefaultSortOrder,
-            toggleAssignAllMembers: () => setAssignAllMembers(prev => !prev),
-            setAssignedMembers: (val: string[] | undefined) => setAssignedMembers(val || []),
-            setFilters: handleFiltersChange,
-            onTitleBlur: handleTitleBlur
+    // 5. Custom Handlers (Business Logic)
+    // Logic for the "Select All" checkbox
+    const handleToggleAllMembers = (checked: boolean) => {
+        form.setFieldValue("allMembers", checked);
+        if (checked) {
+            form.setFieldValue("memberIds", allHouseholdMemberIds);
+        } else {
+            form.setFieldValue("memberIds", []);
         }
+    };
+
+    // Logic to uncheck "Select All" if user manually deselects a person
+    const handleMemberChange = (values: string[]) => {
+        form.setFieldValue("memberIds", values);
+        form.setFieldValue("allMembers", values.length === allHouseholdMemberIds.length);
+    };
+
+    const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) => (
+        !isSmallScreen && usersData ? (
+            <Group gap="sm">
+                <Avatar src={usersData[option.value]?.profileImg} size="sm" radius="xl" />
+                <Text size="sm">{option.label}</Text>
+            </Group>
+        ) : (
+            <Text size="sm">{option.label}</Text>
+        )
+    );
+
+    useOutsideClick(tasklistTitleRef, () => {
+        // Check if the CURRENT form value is empty/whitespace
+        if (!form.values.title || form.values.title.trim().length === 0) {
+            // Revert to the original saved in initialValues
+            form.setFieldValue("title", initialValues.title);
+        }
+    });
+    return {
+        form, // We expose the whole form object
+        tasklist,
+        household,
+        isSmallScreen,
+        tasklistTitleRef,
+        memberOptions,
+        renderMultiSelectOption,
+        handleToggleAllMembers,
+        handleMemberChange,
     };
 };

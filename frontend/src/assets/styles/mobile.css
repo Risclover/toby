@@ -449,7 +449,7 @@
     background: white;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 575px) {
     .tasklist-announcements {
         font-size: var(--text-base);
     }

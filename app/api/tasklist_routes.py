@@ -11,8 +11,6 @@ tasklist_routes = Blueprint("tasklists", __name__)
 # 2. get_tasklists: Get all of a scope's tasklists (user's or household's)
 # 3. create_tasklist: Create task list
 # 4. add_task: Add task to task list
-# 5. complete_task: Mark task as "completed"
-# 6. Mark task as "in_progress"
 # 7. delete_task: Remove task from list
 # 8. clear_list: Clear list by removing all tasks
 # 9. delete_list: Delete tasklist
@@ -115,16 +113,6 @@ def add_task(id):
     db.session.add(task)
     db.session.commit()
     return jsonify(task.to_dict()), 201
-
-# @tasklist_routes.route("/<int:id>/tasks/<int:task_id>/completed", methods=["PUT"])
-# def complete_task(id, task_id):
-#     data = request.get_json()
-#     task = Task.query.get(task_id)
-
-#     setattr(task, "status", "completed")
-#     db.session.commit()
-
-#     return jsonify({"message": f""})
 
 @tasklist_routes.route("/<int:list_id>/tasks/<int:id>", methods=["DELETE"])
 def delete_task(list_id, id):
@@ -241,7 +229,6 @@ def update_list_settings(id):
 
     field_mapping = {
         "title": "title",
-        "icon": "icon",
         "color": "color",
         "viewMode": "view_mode",
         "defaultSortOrder": "default_sort_order",
@@ -289,29 +276,45 @@ def incomplete_all_tasks(id):
 
 @tasklist_routes.route("/<int:id>/assigned-members", methods=["PUT"])
 def manage_assigned_members(id):
-    """
-    Manage a tasklist's assigned members
-    """
     tasklist = Tasklist.query.get_or_404(id)
     data = request.get_json() or {}
-    
-    new_member_ids = data.get("members", [])
-    
-    # Clear all existing member links
+
+    new_member_ids = set(data.get("members", []))
+
+    # Household safety check
+    if not tasklist.household:
+        return jsonify({"error": "Only household lists support assigned members"}), 400
+
+    household_member_ids = {u.id for u in tasklist.household.members}
+
+    # Validate incoming IDs
+    invalid_ids = new_member_ids - household_member_ids
+    if invalid_ids:
+        return jsonify(
+            {"error": "Members must belong to the household", "invalid": list(invalid_ids)},
+            400,
+        )
+
+    # Clear existing links
     for link in tasklist.member_links[:]:
         db.session.delete(link)
-    
-    # Add new members
-    for user_id in new_member_ids:
-        user = User.query.get(user_id)
-        if user:
-            new_link = TasklistMember(
-                list_id=tasklist.id,
-                user_id=user_id
+
+    # Decide all_members FIRST
+    if new_member_ids == household_member_ids:
+        # Everyone selected → no links needed
+        tasklist.all_members = True
+    else:
+        tasklist.all_members = False
+
+        # Persist subset links
+        for user_id in new_member_ids:
+            db.session.add(
+                TasklistMember(
+                    list_id=tasklist.id,
+                    user_id=user_id,
+                )
             )
-            db.session.add(new_link)
-    
+
     db.session.commit()
-    
     return jsonify(tasklist.to_dict()), 200
     

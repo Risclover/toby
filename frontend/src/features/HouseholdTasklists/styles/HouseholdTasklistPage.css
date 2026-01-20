@@ -466,7 +466,6 @@ textarea.editable-title.is-editing {
 .input-label-description .mantine-InputWrapper-label {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
 }
 
 .input-label-description .mantine-InputWrapper-label svg {
@@ -551,6 +550,15 @@ textarea.editable-title.is-editing {
     scrollbar-color: #c1c1c1 #fafafa;
 }
 
+.tasklist-settings-right {
+    max-width: 50%;
+    width: 100%;
+}
+
+.asterisk {
+    color: var(--mantine-color-red-8)
+}
+
 @media (max-width: 425px) {
     .delete-section {
         display: block;
@@ -559,7 +567,7 @@ textarea.editable-title.is-editing {
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 575px) {
     .tasklist-settings-panel {
         padding: 0.5rem 0;
     }
@@ -574,7 +582,11 @@ textarea.editable-title.is-editing {
     .tasklist-settings-section .mantine-Input-wrapper,
     .tasklist-settings-section input {
         max-width: 100% !important;
-        width: 100%;
+        width: 100% !important;
+    }
+
+    .tasklist-settings-right {
+        max-width: 100% !important;
     }
 
     .input-label-description {
