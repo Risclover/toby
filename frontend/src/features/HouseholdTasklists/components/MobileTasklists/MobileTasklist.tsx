@@ -2,7 +2,7 @@ import { MobileLayout } from "@/layout/MobileLayout";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Progress } from "@mantine/core";
+import { Button, Group, Progress, Text } from "@mantine/core";
 import { useGetTasklistQuery } from "@/store/taskSlice" // Checked import path
 import { skipToken } from "@reduxjs/toolkit/query";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
@@ -122,6 +122,8 @@ export const MobileTasklist = () => {
             />
 
             <div className="mobile-tasklist-content">
+                {filteredTasks.length === 0 && uncompleted.length === 0 && completed.length === 0 &&
+                    <Group w="100%" justify="center"><Text styles={{ root: { lineHeight: "1.4" } }}>This tasklist contains no tasks. Use the input box below to add some.</Text></Group>}
                 {/* Active Tasks List */}
                 {filteredTasks && filteredTasks.length > 0 ? (
                     <HouseholdTasklistPageList

@@ -57,7 +57,7 @@ export const CreateTasklist = ({ householdId, opened, open, close }: CreateTaskl
 
     return (
         <div className="create-list">
-            <Modal opened={opened} onClose={close} title="Create Tasklist" centered>
+            <Modal radius="md" opened={opened} onClose={close} title="Create Tasklist" centered>
                 <Stack component="form" onSubmit={handleListCreation}>
                     <TextInput
                         value={title}

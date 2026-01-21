@@ -5,9 +5,11 @@ import { useGetHouseholdTasklistsQuery } from "@/store/householdSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklist } from "../HouseholdTasklists/HouseholdTasklist";
 import { useState } from "react";
-import { Button } from "@mantine/core";
+import { Button, Group, Stack, Text } from "@mantine/core";
 import { CreateTasklist } from "../HouseholdTasklists/CreateTasklist"
 import { useDisclosure } from "@mantine/hooks";
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import { useNavigate } from "react-router-dom";
 
 const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
@@ -16,9 +18,10 @@ const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export const MobileTasklists = () => {
+    const navigate = useNavigate();
     const { data: user, isLoading: authLoading } = useAuthenticateQuery();
     const [opened, { open, close }] = useDisclosure(false);
-
+    const isSmall = useIsSmallScreen();
     // Gate the lists query until we have an ID
     const householdId = user?.householdId ?? skipToken;
 
@@ -54,6 +57,17 @@ export const MobileTasklists = () => {
         <MobileLayout titleComponent={titleComponent}>
             <MobileHomeNavGrid activeTab={1} />
             <div className="mobile-tasklists-content">
+                {lists.length === 0 &&
+                    <Stack justify="center" align="center" my={isSmall && "5rem"} h={!isSmall && "100%"}>
+                        <Group w="100%" justify="center" align="center">
+                            <Text ta="center" styles={{ root: { lineHeight: "1.4" } }}>This household contains no tasklists. Would you like to create one?</Text>
+                        </Group>
+                        <Group mx="auto">
+                            <Button color="cyan" variant="outline" onClick={() => navigate("/")}>Go home</Button>
+                            <Button color="cyan" w="fit-content" onClick={open}>Add tasklist</Button>
+                        </Group>
+                    </Stack>
+                }
                 {isFetching && <div className="subtle-loading">Refreshing…</div>}
 
                 <div className="household-tasklists-grid">
