@@ -35,48 +35,11 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
         setShowDiscardWarning,
         showDiscardWarning,
         handleDiscardConfirmation,
-        updateTasklist,
-        resetToDefault
+        resetToDefault,
+        isSubmitting,
+        handleSubmit
     } = useTasklistSettings({ setShowTasklistSettings });
 
-    // Handle Form Submission
-    const handleSubmit = async () => {
-        // Validate first
-        if (!form.isValid()) {
-            form.validate();
-            return;
-        }
-
-        // Transform form values to match your API shape
-        const payload = {
-            title: form.values.title,
-            showCompleted: form.values.showCompleted, // <- This boolean should now work
-            newItemPosition: form.values.newItemPosition,
-            starsAtTop: form.values.starsAtTop,
-            defaultSortOrder: form.values.defaultSortOrder,
-            color: form.values.color,
-            viewMode: form.values.viewMode,
-            allMembers: form.values.allMembers,
-            memberIds: form.values.memberIds.map(Number), // Convert strings back to numbers
-            defaultFilters: {
-                importance: form.values.defaultFilters.importance,
-                assignedToId: form.values.defaultFilters.assignedToId,
-                time: form.values.defaultFilters.time,
-            },
-        };
-
-        try {
-            // Replace this with your actual mutation hook
-            await updateTasklist({ listId: Number(tasklist?.id), data: payload }).unwrap();
-            console.log("Submitting:", payload);
-
-            form.resetDirty(); // Mark form as clean
-            handleClose();
-        } catch (error) {
-            console.error("Failed to update tasklist:", error);
-            // Optionally show error notification
-        }
-    };
     console.log('tasklist:', tasklist)
     return (
         <Modal
@@ -101,6 +64,7 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                 </Tabs.List>
                 <GeneralTab
                     form={form}
+                    tasklistId={tasklist?.id}
                     household={household}
                     isSmallScreen={isSmallScreen}
                     memberOptions={memberOptions}
@@ -108,7 +72,6 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                     titleRef={tasklistTitleRef}
                     onToggleAll={handleToggleAllMembers}
                     onMemberChange={handleMemberChange}
-                    tasklistId={tasklist?.id}
                     setShowTasklistSettings={setShowTasklistSettings}
                 />
                 <BehaviorTab form={form} household={household} />
@@ -133,6 +96,8 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                             className="tasklist-settings-footer-btn"
                             disabled={!form.isDirty() || !form.isValid()} // Built-in helpers
                             onClick={() => handleSubmit()}
+                            loading={isSubmitting}
+                            loaderProps={{ children: 'Saving...' }}
                         >
                             Update
                         </Button>

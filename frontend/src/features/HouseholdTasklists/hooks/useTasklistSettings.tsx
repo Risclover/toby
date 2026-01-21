@@ -36,7 +36,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
     const isSmallScreen = useIsSmallScreen();
     const [updateTasklist] = useUpdateTasklistMutation();
     const [showDiscardWarning, setShowDiscardWarning] = useState(false);
-
+    const [isSubmitting, setIsSubmitting] = useState(false); // Local state
     // Data Fetching
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
@@ -130,6 +130,47 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         setShowTasklistSettings(false);
     }
 
+    const handleSubmit = async () => {
+        // Validate first
+        if (!form.isValid()) {
+            form.validate();
+            return;
+        }
+        setIsSubmitting(true); // START loading
+
+        // Transform form values to match your API shape
+        const payload = {
+            title: form.values.title,
+            showCompleted: form.values.showCompleted, // <- This boolean should now work
+            newItemPosition: form.values.newItemPosition,
+            starsAtTop: form.values.starsAtTop,
+            defaultSortOrder: form.values.defaultSortOrder,
+            color: form.values.color,
+            viewMode: form.values.viewMode,
+            allMembers: form.values.allMembers,
+            memberIds: form.values.memberIds.map(Number), // Convert strings back to numbers
+            defaultFilters: {
+                importance: form.values.defaultFilters.importance,
+                assignedToId: form.values.defaultFilters.assignedToId,
+                time: form.values.defaultFilters.time,
+            },
+        };
+
+        try {
+            // Replace this with your actual mutation hook
+            await Promise.all([
+                updateTasklist({ listId: Number(tasklist?.id), data: payload }).unwrap(),
+                new Promise(resolve => setTimeout(resolve, 400)) // 800ms minimum
+            ]);
+            setIsSubmitting(false);
+            form.resetDirty(); // Mark form as clean
+        } catch (error) {
+            console.error("Failed to update tasklist:", error);
+            setIsSubmitting(false);
+            // Optionally show error notification
+        }
+    };
+
     const resetToDefault = () => {
         if (!tasklist) return;
         form.setFieldValue("title", tasklist.title);
@@ -174,7 +215,8 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         setShowDiscardWarning,
         handleClose,
         handleDiscardConfirmation,
-        updateTasklist,
-        resetToDefault
+        resetToDefault,
+        isSubmitting,
+        handleSubmit
     };
 };

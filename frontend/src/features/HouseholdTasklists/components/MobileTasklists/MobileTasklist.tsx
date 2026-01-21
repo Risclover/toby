@@ -1,6 +1,6 @@
 import { MobileLayout } from "@/layout/MobileLayout";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Group, Progress, Stack, Text } from "@mantine/core";
 import { useGetTasklistQuery } from "@/store/taskSlice" // Checked import path
@@ -18,7 +18,11 @@ import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 export const MobileTasklist = () => {
     const isSmall = useIsSmallScreen();
     const inputRef = useRef<HTMLInputElement>(null);
+    const navigate = useNavigate();
+    const { tasklistId } = useParams();
+    const listId = tasklistId ? Number(tasklistId) : undefined;
 
+    const { data: tasklist, isFetching } = useGetTasklistQuery(listId ?? skipToken);
     const [showCompleted, setShowCompleted] = useState(false);
     const [showTasklistSettings, setShowTasklistSettings] = useState(false);
     const [showReorderMode, setShowReorderMode] = useState(false);
@@ -29,13 +33,6 @@ export const MobileTasklist = () => {
         assignedToId: null,
         time: "all",
     });
-
-    // 2. Navigation & Data Hooks
-    const navigate = useNavigate();
-    const { tasklistId } = useParams();
-    const listId = tasklistId ? Number(tasklistId) : undefined;
-
-    const { data: tasklist, isFetching } = useGetTasklistQuery(listId ?? skipToken);
 
     // 3. Derived Data (Safe to run even if tasklist is undefined)
     const tasks = tasklist?.tasks ?? [];
@@ -66,6 +63,12 @@ export const MobileTasklist = () => {
         const raw = total ? (done / total) * 100 : 0;
         return { percent: Math.min(100, Math.max(0, Math.round(raw))) };
     }, [tasks.length, completed.length]);
+
+    useEffect(() => {
+        if (tasklist?.showCompleted !== undefined) {
+            setShowCompleted(tasklist.showCompleted);
+        }
+    }, [tasklist?.showCompleted]);
 
     // 5. Early Returns (Loading / Error States)
     // Safe to return here because all hooks have been called above

@@ -130,19 +130,21 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                 </SettingsItem>
             )}
             <SettingsItem
-                layout="row"
+                layout="delete"
                 label="Duplicate list"
                 description="Create an identical copy of this tasklist."
                 divider={false}
             >
+                <Space h={12} />
                 <Button color="cyan" variant="filled">Duplicate list</Button>
             </SettingsItem>
             <SettingsItem
-                layout="row"
+                layout="delete"
                 label="Archive list"
                 description="Retire the tasklist from active use."
                 divider={true}
             >
+                <Space h={12} />
                 <Button color="cyan" variant="filled">Archive list</Button>
             </SettingsItem>
             <SettingsItem

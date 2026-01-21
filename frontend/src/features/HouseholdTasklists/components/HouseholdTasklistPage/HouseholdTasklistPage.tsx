@@ -12,17 +12,17 @@ import "../../styles/HouseholdTasklistPage.css";
 
 export const HouseholdTasklistPage = () => {
     const { tasklistId } = useParams();
-    const listId = tasklistId ? Number(tasklistId) : undefined;
-    const [showCompleted, setShowCompleted] = useState(false);
-
     const navigate = useNavigate();
-    const { data: user } = useAuthenticateQuery();
 
+    const listId = tasklistId ? Number(tasklistId) : undefined;
+
+    const { data: user } = useAuthenticateQuery();
     // Don't fetch with NaN/undefined
     const { data: tasklist, isFetching } = useGetTasklistQuery(listId ?? skipToken);
-
     const [updateTasklistTitle] = useUpdateTasklistMutation();
 
+    const [showCompleted, setShowCompleted] = useState(tasklist?.showCompleted);
+    console.log('showCompleted:', showCompleted)
     const tasks = tasklist?.tasks ?? [];
 
     const { percent } = useMemo(() => {
