@@ -9,6 +9,7 @@ import { ReorderListIcon } from "@/assets/icons/ReorderListIcon";
 import { useEffect } from "react";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import type { Task } from "@/store/taskSlice";
 
 interface Props {
     // Lift state up! Pass these down from the Page component
@@ -20,9 +21,10 @@ interface Props {
     setFilters: (val: TaskFilters) => void;
     showReorderMode: boolean;
     setShowReorderMode: (val: boolean | ((prev: boolean) => boolean)) => void;
+    tasks: Task[];
 }
 
-export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode }: Props) => {
+export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode, tasks }: Props) => {
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
@@ -112,7 +114,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                     <Tooltip label="Filter list"><ActionIcon onClick={open} variant="subtle" color="rgb(5, 5, 73)">
                         <FilterAltRoundedIcon />
                     </ActionIcon></Tooltip>
-                    {isSmall && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
+                    {isSmall && tasks?.length > 1 && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
                         <ActionIcon
                             onClick={() => setShowReorderMode(prev => !prev)}
                             variant={showReorderMode ? "light" : "subtle"}

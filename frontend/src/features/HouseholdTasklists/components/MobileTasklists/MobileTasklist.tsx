@@ -118,6 +118,7 @@ export const MobileTasklist = () => {
                 setFilters={setFilters}
                 showReorderMode={showReorderMode}
                 setShowReorderMode={setShowReorderMode}
+                tasks={tasks}
             />
 
             <div className="mobile-tasklist-content">

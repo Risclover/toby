@@ -4,7 +4,7 @@ import { useForm, isNotEmpty } from "@mantine/form";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useAuthenticateQuery, type User } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useGetTasklistQuery } from "@/store/taskSlice";
+import { useGetTasklistQuery, useUpdateTasklistMutation } from "@/store/taskSlice";
 import { type MultiSelectProps, Avatar, Group, Text } from "@mantine/core";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 
@@ -27,15 +27,14 @@ export type TasklistFormValues = {
 };
 
 type Props = {
-    opened: boolean;
-    setShowTasklistSettings: () => void;
+    setShowTasklistSettings: (val: boolean) => void;
 };
 
-export const useTasklistSettings = ({ opened, setShowTasklistSettings }: Props) => {
+export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
     const { tasklistId } = useParams();
     const tasklistTitleRef = useRef<HTMLInputElement>(null);
     const isSmallScreen = useIsSmallScreen();
-
+    const [updateTasklist] = useUpdateTasklistMutation();
     const [showDiscardWarning, setShowDiscardWarning] = useState(false);
 
     // Data Fetching
@@ -131,6 +130,18 @@ export const useTasklistSettings = ({ opened, setShowTasklistSettings }: Props) 
         setShowTasklistSettings(false);
     }
 
+    const resetToDefault = () => {
+        if (!tasklist) return;
+        form.setFieldValue("title", tasklist.title);
+        form.setFieldValue("autoHideWhenEmpty", false);
+        form.setFieldValue("newItemPosition", "bottom");
+        form.setFieldValue("starsAtTop", false);
+        form.setFieldValue("defaultSortOrder", null);
+        form.setFieldValue("defaultFilters", { importance: "all", assignedToId: null, time: "all" });
+        form.setFieldValue("color", "#15aabf");
+        form.setFieldValue("viewMode", "detailed");
+    }
+
     const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) => (
         !isSmallScreen && usersData ? (
             <Group gap="sm">
@@ -162,6 +173,8 @@ export const useTasklistSettings = ({ opened, setShowTasklistSettings }: Props) 
         showDiscardWarning,
         setShowDiscardWarning,
         handleClose,
-        handleDiscardConfirmation
+        handleDiscardConfirmation,
+        updateTasklist,
+        resetToDefault
     };
 };

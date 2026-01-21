@@ -88,9 +88,6 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
     // Now initializes fresh whenever the parent wrapper changes the key
     const { tasks, moveTask } = useMobileTasklist({ initialTasks: uncompletedTasks });
 
-
-    if (!list?.memberIds?.includes(user?.id)) return null;
-
     const remainingCount = Math.max(0, (uncompletedTasks?.length ?? 0) - 3);
 
     return (

@@ -2,6 +2,7 @@ import type { User } from "@/store/authSlice";
 import type { TasklistSettingsForm } from "./GeneralTab";
 import { Avatar, Button, Divider, Group, Input, Select, Stack, Switch, Tabs, Text, Tooltip } from "@mantine/core";
 import { TIME_OPTIONS } from "./TasklistSettings";
+import { SettingsItem } from "./SettingsItem";
 
 type BehaviorTabProps = {
     form: TasklistSettingsForm;
@@ -10,11 +11,12 @@ type BehaviorTabProps = {
 
 export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
     <Tabs.Panel value="behavior" style={{ overflowY: "auto", padding: "16px", minHeight: 0 }}>
-        <div className="tasklist-settings-section section-column">
-            <div className="input-label-description">
-                <Input.Label>New task default position</Input.Label>
-                <Input.Description>Choose where new tasks go by default.</Input.Description>
-            </div>
+        <SettingsItem
+            layout="column"
+            label="New task default position"
+            description="Choose where new tasks go by default."
+            divider={true}
+        >
             <Select
                 allowDeselect={false}
                 {...form.getInputProps('newItemPosition')}
@@ -23,27 +25,28 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
                     { value: "bottom", label: "Bottom of list" }
                 ]}
             />
-        </div>
-        <Divider my="lg" />
-        <div className="tasklist-settings-section">
-            <div className="input-label-description">
-                <Input.Label>Starred tasks at top</Input.Label>
-                <Input.Description>Decide where starred tasks go by default.</Input.Description>
-            </div>
+        </SettingsItem>
+        <SettingsItem
+            layout="row"
+            label="Starred tasks at top"
+            description="Decide where starred tasks go by default."
+            divider={true}
+        >
             <Switch
                 {...form.getInputProps('starsAtTop', { type: 'checkbox' })}
                 color="cyan"
                 size="md"
                 withThumbIndicator={false}
             />
-        </div>
-        <Divider my="lg" />
-        <div className="tasklist-settings-section section-column">
-            <div className="input-label-description">
-                <Input.Label>Default sort order</Input.Label>
-                <Input.Description>Set the default sort order.</Input.Description>
-            </div>
+        </SettingsItem>
+        <SettingsItem
+            layout="column"
+            label="Default sort order"
+            description="Set the default sort order."
+            divider={true}
+        >
             <Select
+                placeholder="Sort by"
                 {...form.getInputProps('defaultSortOrder')}
                 clearable
                 data={[
@@ -53,13 +56,13 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
                     { value: "newest", label: "Newest" }
                 ]}
             />
-        </div>
-        <Divider my="lg" />
-        <div className="tasklist-settings-section section-column">
-            <div className="input-label-description larger">
-                <Input.Label>Default filters</Input.Label>
-                <Input.Description>Apply filters automatically.</Input.Description>
-            </div>
+        </SettingsItem>
+        <SettingsItem
+            layout="column"
+            label="Default filters"
+            description="Apply filters automatically."
+            divider={false}
+        >
             <Stack mt="0.5rem" justify="space-between" className="mobile-announcements-filter-drawer">
                 {/* Importance Filter */}
                 <Stack gap="0.25rem">
@@ -136,6 +139,6 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
                     </Group>
                 </Stack>
             </Stack>
-        </div>
+        </SettingsItem>
     </Tabs.Panel>
 );

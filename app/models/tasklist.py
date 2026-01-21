@@ -115,13 +115,19 @@ class Tasklist(db.Model):
         return "user" if self.user_id is not None else "household"
 
     def audience_user_ids(self):
-        """Who should see this list?"""
+        if self.household_id is not None:
+            # FIX: Check the flag before returning everyone
+            if self.all_members:
+                return [m.id for m in (self.household.members or [])]
+            
+            # If not all members, return only the assigned ones
+            return [link.user_id for link in self.member_links]
+
+        # 1. Personal lists: Only the owner
         if self.user_id is not None:
             return [self.user_id]
-        if self.all_members:
-            # assumes Household.members is defined
-            return [m.id for m in (self.household.members or [])]
-        return [link.user_id for link in self.member_links]
+    
+        return []
 
     def duplicate(self, mode: DuplicateMode = DuplicateMode.ALL_PRESERVE):
         """

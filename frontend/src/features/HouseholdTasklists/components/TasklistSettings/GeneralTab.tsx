@@ -3,6 +3,7 @@ import type { User } from "@/store/authSlice";
 import { ActionIcon, Button, Checkbox, Divider, Input, MultiSelect, Space, Switch, Tabs, Tooltip, type MultiSelectProps } from "@mantine/core";
 import type { UseFormReturnType } from "@mantine/form";
 import type { RefObject } from "react";
+import { SettingsItem } from "./SettingsItem";
 
 export type TasklistFormValues = {
     title: string;
@@ -40,11 +41,12 @@ export const GeneralTab = ({ form, household, memberOptions, renderMultiSelectOp
 
     return (
         <Tabs.Panel value="general" style={{ overflowY: "auto", padding: "16px", minHeight: 0 }}>
-            <Input.Wrapper className="tasklist-settings-section section-column">
-                <div className="input-label-description">
-                    <Input.Label id="title">Tasklist title</Input.Label>
-                    <Input.Description>Change the title of the tasklist (max 64 characters).</Input.Description>
-                </div>
+            <SettingsItem
+                layout="column"
+                label="Tasklist title"
+                description="Change the title of the tasklist (max 64 characters)."
+                divider={true}
+            >
                 <div className={!isSmallScreen ? "tasklist-settings-right" : ""}>
                     <Input
                         id="title"
@@ -66,10 +68,7 @@ export const GeneralTab = ({ form, household, memberOptions, renderMultiSelectOp
                         rightSectionPointerEvents="auto"
                     />
                 </div>
-            </Input.Wrapper>
-
-            <Divider my="lg" />
-
+            </SettingsItem>
             <div className="tasklist-settings-section">
                 <div className="input-label-description">
                     <Tooltip
@@ -93,78 +92,65 @@ export const GeneralTab = ({ form, household, memberOptions, renderMultiSelectOp
                     withThumbIndicator={false}
                 />
             </div>
-
             <Divider my="lg" />
-
             {household.members.length > 1 && (
-                <>
-                    <div className="tasklist-settings-section section-column">
-                        <div className="input-label-description">
-                            <Input.Label id="assigned" required={hasMemberError}>Assigned members</Input.Label>
-                            <Input.Description>Manage tasklist's assigned members.</Input.Description>
-                            {/* RESTORED: Immediate error display */}
-                            {hasMemberError && <Input.Error>You must assign at least one member.</Input.Error>}
-                        </div>
-                        <div className="tasklist-settings-right">
-                            <MultiSelect
-                                data={memberOptions}
-                                value={form.values.memberIds}
-                                onChange={onMemberChange}
-                                renderOption={renderMultiSelectOption}
-                                maxDropdownHeight={300}
-                                placeholder="Assign members"
-                                id="assigned"
-                                hidePickedOptions
-                                clearable
-                                error={hasMemberError}
+                <SettingsItem
+                    layout="column"
+                    label="Assigned members"
+                    labelRequired={hasMemberError}
+                    error="You must assign at least one member."
+                    errorBool={hasMemberError}
+                    description="Manage tasklist's assigned members."
+                    divider={true}
+                >
+                    <div className="tasklist-settings-right">
+                        <MultiSelect
+                            data={memberOptions}
+                            value={form.values.memberIds}
+                            onChange={onMemberChange}
+                            renderOption={renderMultiSelectOption}
+                            maxDropdownHeight={300}
+                            placeholder="Assign members"
+                            id="assigned"
+                            hidePickedOptions
+                            clearable
+                        />
+                        <div className="all-members-option">
+                            <Checkbox
+                                label="All members"
+                                checked={form.values.allMembers}
+                                onChange={(e) => onToggleAll(e.currentTarget.checked)}
+                                color="cyan"
                             />
-                            <div className="all-members-option">
-                                <Checkbox
-                                    label="All members"
-                                    checked={form.values.allMembers}
-                                    onChange={(e) => onToggleAll(e.currentTarget.checked)}
-                                    color="cyan"
-                                />
-                            </div>
                         </div>
                     </div>
-                    <Divider my="lg" />
-                </>
+                </SettingsItem>
             )}
-
-            {/* Duplicate List */}
-            <div className="tasklist-settings-section">
-                <div className="input-label-description">
-                    <Input.Label>Duplicate list</Input.Label>
-                    <Input.Description>Create an identical copy of this tasklist.</Input.Description>
-                </div>
-                <div className="tasklist-settings-actions">
-                    <Button color="cyan" variant="filled">Duplicate list</Button>
-                </div>
-            </div>
-
-            {/* RESTORED: Archive List */}
-            <div className="tasklist-settings-section">
-                <div className="input-label-description">
-                    <Input.Label>Archive list</Input.Label>
-                    <Input.Description>Retire the tasklist from active use.</Input.Description>
-                </div>
-                <div className="tasklist-settings-actions">
-                    <Button color="cyan" variant="filled">Archive list</Button>
-                </div>
-            </div>
-
-            <Divider my="lg" />
-
-            {/* Delete List */}
-            <div className="tasklist-settings-section delete-section">
-                <div className="input-label-description">
-                    <Input.Label>Delete tasklist</Input.Label>
-                    <Input.Description>Delete the tasklist permanently. This cannot be undone.</Input.Description>
-                </div>
+            <SettingsItem
+                layout="row"
+                label="Duplicate list"
+                description="Create an identical copy of this tasklist."
+                divider={false}
+            >
+                <Button color="cyan" variant="filled">Duplicate list</Button>
+            </SettingsItem>
+            <SettingsItem
+                layout="row"
+                label="Archive list"
+                description="Retire the tasklist from active use."
+                divider={true}
+            >
+                <Button color="cyan" variant="filled">Archive list</Button>
+            </SettingsItem>
+            <SettingsItem
+                layout="delete"
+                label="Delete tasklist"
+                description="Delete the tasklist permanently. This cannot be undone."
+                divider={false}
+            >
                 <Space h={12} />
                 <Button color="red.7">Delete tasklist</Button>
-            </div>
+            </SettingsItem>
         </Tabs.Panel>
     );
 };

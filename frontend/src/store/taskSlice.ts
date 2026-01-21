@@ -255,10 +255,10 @@ export const taskSlice = apiSlice.injectEndpoints({
         }),
 
         updateTasklist: builder.mutation({
-            query: ({ listId, title }) => ({
-                url: `/tasklists/${listId}`,
+            query: ({ listId, data }) => ({
+                url: `/tasklists/${listId}/settings`,
                 method: "PUT",
-                body: { title }
+                body: data
             }),
             invalidatesTags: (_res, _err, { listId, householdId }): TasklistTag[] => {
                 const tags: TasklistTag[] = [{ type: "Tasklist", id: listId }];
@@ -453,5 +453,4 @@ export const {
     useToggleTaskImportanceMutation,
     useReorderTasksMutation,
     useArchiveListMutation,
-    useDuplicateListMutation
 } = taskSlice;

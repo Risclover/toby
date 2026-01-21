@@ -1,6 +1,6 @@
 # routes/tasklists.py
 from flask import Blueprint, jsonify, request
-from app.models import Tasklist, Task, User, Household
+from app.models import Tasklist, Task, User, Household, TasklistMember
 from app.extensions import db
 from flask_login import current_user, login_required
 
@@ -221,12 +221,10 @@ def archive_list(id):
 
 @tasklist_routes.route("/<int:id>/settings", methods=["PUT"])
 def update_list_settings(id):
-    """
-    Update tasklist's settings
-    """
     tasklist = Tasklist.query.get_or_404(id)
     data = request.get_json() or {}
 
+    # 1. Update Standard Settings
     field_mapping = {
         "title": "title",
         "color": "color",
@@ -238,14 +236,60 @@ def update_list_settings(id):
         "starsAtTop": "stars_at_top"
     }
 
-    # Update only provided fields
     for json_key, model_attr in field_mapping.items():
         if json_key in data:
             setattr(tasklist, model_attr, data[json_key])
 
-    db.session.commit()
+    # 2. Update Assigned Members (Diff Logic)
+    if "memberIds" in data:
+        new_member_ids = set(data["memberIds"])
 
+        if tasklist.household:
+            household_member_ids = {u.id for u in tasklist.household.members}
+            
+            # Validation
+            invalid_ids = new_member_ids - household_member_ids
+            if invalid_ids:
+                 return jsonify({
+                     "error": "Members must belong to the household", 
+                     "invalid": list(invalid_ids)
+                 }), 400
+
+            # Logic: Check if "All Members" are selected
+            if new_member_ids == household_member_ids:
+                tasklist.all_members = True
+                # Optimization: If everyone is included, we don't need specific links
+                # (Assuming your app logic relies on tasklist.all_members=True to imply everyone)
+                for link in tasklist.member_links[:]:
+                    db.session.delete(link)
+            else:
+                tasklist.all_members = False
+                
+                # --- START DIFF LOGIC ---
+                # 1. Get current links
+                current_links = {link.user_id: link for link in tasklist.member_links}
+                current_ids = set(current_links.keys())
+                
+                # 2. Calculate what changed
+                ids_to_add = new_member_ids - current_ids
+                ids_to_remove = current_ids - new_member_ids
+                
+                # 3. Apply changes (Efficiently)
+                # Only delete the members who were actually removed
+                for uid in ids_to_remove:
+                    db.session.delete(current_links[uid])
+                
+                # Only add the new members who weren't there before
+                for uid in ids_to_add:
+                    db.session.add(
+                        TasklistMember(tasklist_id=tasklist.id, user_id=uid)
+                    )
+                # --- END DIFF LOGIC ---
+
+    db.session.commit()
     return jsonify(tasklist.to_dict()), 200
+
+
 
 @tasklist_routes.route("/<int:id>/complete-all", methods=["PUT"])
 def complete_all_tasks(id):

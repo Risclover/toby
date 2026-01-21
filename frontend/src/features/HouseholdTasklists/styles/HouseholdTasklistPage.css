@@ -496,13 +496,6 @@ textarea.editable-title.is-editing {
     flex-direction: column;
 }
 
-
-.tasklist-settings-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
 .delete-tasklist-section {
     background: var(--mantine-color-red-0);
     border-radius: 0.5rem;
