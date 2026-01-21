@@ -1,5 +1,5 @@
 import { Button, Group, Modal, Tabs } from "@mantine/core";
-import { useTasklistSettings, type TasklistFormValues } from "../../hooks/useTasklistSettings";
+import { useTasklistSettings } from "../../hooks/useTasklistSettings";
 import { GeneralTab } from "./GeneralTab";
 import { BehaviorTab } from "./BehaviorTab";
 import { AppearanceTab } from "./AppearanceTab";
@@ -50,7 +50,7 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
         // Transform form values to match your API shape
         const payload = {
             title: form.values.title,
-            autoHideWhenEmpty: form.values.autoHideWhenEmpty, // <- This boolean should now work
+            showCompleted: form.values.showCompleted, // <- This boolean should now work
             newItemPosition: form.values.newItemPosition,
             starsAtTop: form.values.starsAtTop,
             defaultSortOrder: form.values.defaultSortOrder,

@@ -1,4 +1,4 @@
-import { ColorInput, Divider, Input, Tabs } from "@mantine/core";
+import { ColorInput, Input, Tabs } from "@mantine/core";
 import type { TasklistSettingsForm } from "./GeneralTab";
 import ColorizeRoundedIcon from "@mui/icons-material/ColorizeRounded";
 import { TaskViewSelector } from "./TaskViewSelector";

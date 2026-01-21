@@ -4,7 +4,6 @@ import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdTasklistsQuery } from "@/store/householdSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklist } from "../HouseholdTasklists/HouseholdTasklist";
-import { useState } from "react";
 import { Button, Group, Stack, Text } from "@mantine/core";
 import { CreateTasklist } from "../HouseholdTasklists/CreateTasklist"
 import { useDisclosure } from "@mantine/hooks";
@@ -28,7 +27,6 @@ export const MobileTasklists = () => {
     const {
         data: lists = [],
         isLoading,     // true only for the *first* load
-        isFetching,    // true for background refetches
     } = useGetHouseholdTasklistsQuery(householdId, {
         // Optional: reduce surprise refetches
         refetchOnFocus: false,
@@ -58,7 +56,7 @@ export const MobileTasklists = () => {
             <MobileHomeNavGrid activeTab={1} />
             <div className="mobile-tasklists-content">
                 {lists.length === 0 &&
-                    <Stack justify="center" align="center" my={isSmall && "5rem"} h={!isSmall && "100%"}>
+                    <Stack justify="center" align="center" my={isSmall ? "5rem" : ""} h={!isSmall ? "100%" : ""}>
                         <Group w="100%" justify="center" align="center">
                             <Text ta="center" styles={{ root: { lineHeight: "1.4" } }}>This household contains no tasklists. Would you like to create one?</Text>
                         </Group>
@@ -68,7 +66,6 @@ export const MobileTasklists = () => {
                         </Group>
                     </Stack>
                 }
-                {isFetching && <div className="subtle-loading">Refreshing…</div>}
 
                 <div className="household-tasklists-grid">
                     {lists.map(list => (
@@ -76,7 +73,7 @@ export const MobileTasklists = () => {
                     ))}
                 </div>
             </div>
-            {opened && <CreateTasklist householdId={householdId} opened={opened} close={close} />}
+            {opened && <CreateTasklist householdId={householdId} open={open} opened={opened} close={close} />}
         </MobileLayout>
     )
 }

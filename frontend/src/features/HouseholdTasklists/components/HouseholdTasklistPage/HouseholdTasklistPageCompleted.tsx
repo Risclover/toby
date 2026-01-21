@@ -2,12 +2,12 @@ import React from "react";
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import { useAuthenticateQuery } from "@/store/authSlice";
-import type { TasklistType } from "@/store/taskSlice";
+import type { Task, TasklistType } from "@/store/taskSlice";
 import { HouseholdTasklistPageCompletedTask } from "./HouseholdTasklistPageCompletedTask";
 
 type Props = {
     tasklist: TasklistType | undefined
-    completed: TasklistType[]
+    completed: Task[]
     showCompleted: boolean;
     setShowCompleted: React.Dispatch<React.SetStateAction<boolean>>;
 }

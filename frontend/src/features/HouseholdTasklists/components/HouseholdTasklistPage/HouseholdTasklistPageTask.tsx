@@ -1,6 +1,6 @@
 import { useCompleteTaskMutation, useGetTasklistQuery } from "@/store/taskSlice";
 import { Checkbox } from "@mantine/core";
-import { useEffect, useState, type ChangeEvent, type SetStateAction } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
 import { TaskExtra } from "./TaskExtra";
 
@@ -8,11 +8,9 @@ type Props = {
     taskId: number;
     listId: number;
     householdId: number;
-    showTaskDetails: boolean;
-    setShowTaskDetails: React.Dispatch<SetStateAction<boolean>>
 };
 
-export function HouseholdTasklistPageTask({ taskId, listId, householdId, showTaskDetails, setShowTaskDetails }: Props) {
+export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props) {
     const { task } = useGetTasklistQuery(listId, {
         selectFromResult: ({ data }) => ({
             task: data?.tasks?.find(t => t.id === taskId),
@@ -21,7 +19,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId, showTas
 
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [checked, setChecked] = useState(task?.status === "completed");
-    const [completeTask, { isLoading }] = useCompleteTaskMutation();
+    const [completeTask] = useCompleteTaskMutation();
 
     // keep local state in sync if task.status changes externally
     useEffect(() => {

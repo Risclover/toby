@@ -1,6 +1,4 @@
-import { useDeleteListMutation } from "@/store/taskSlice";
 import { Button, Group, Modal, Text } from "@mantine/core"
-import type { MouseEventHandler } from "react";
 
 type Props = {
     opened: boolean;

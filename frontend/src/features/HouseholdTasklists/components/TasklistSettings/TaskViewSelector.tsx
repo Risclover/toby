@@ -1,4 +1,3 @@
-import type { SetStateAction } from "react";
 import { Box, Checkbox, Flex, Group, rem, Stack, Text } from "@mantine/core";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { StarIcon } from "@/assets/icons/StarIcon";
@@ -112,7 +111,7 @@ function PreviewWindow({ label, onClick, activeTaskDisplay, children }: { label:
                 </Box>
             </Box>
             <Group gap="0.5rem" align="center" ml={5}>
-                <Checkbox color="cyan" checked={activeTaskDisplay === label.toLowerCase()} size="xs" radius="xl" />
+                <Checkbox onChange={onClick} color="cyan" checked={activeTaskDisplay === label.toLowerCase()} size="xs" radius="xl" />
                 <Text size="xs" fw={500} c="black" mt={1}>{label}</Text>
             </Group>
         </Stack>

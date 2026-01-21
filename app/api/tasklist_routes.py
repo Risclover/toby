@@ -229,10 +229,10 @@ def update_list_settings(id):
         "title": "title",
         "color": "color",
         "viewMode": "view_mode",
+        "showCompleted": "show_completed",
         "defaultSortOrder": "default_sort_order",
         "defaultFilters": "default_filters",
         "newItemPosition": "new_item_position",
-        "autoHideWhenEmpty": "auto_hide_when_empty",
         "starsAtTop": "stars_at_top"
     }
 

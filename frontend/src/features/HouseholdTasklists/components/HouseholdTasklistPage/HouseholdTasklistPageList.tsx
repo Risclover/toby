@@ -5,8 +5,8 @@ import type { Task, TasklistType } from "@/store/taskSlice"; // Match your impor
 type Props = {
     tasklist: TasklistType | undefined;
     tasks?: Task[]; // 👈 NEW: Accept the pre-sorted list
-    setShowReorderMode: React.Dispatch<SetStateAction<boolean>>;
-    showReorderMode: boolean;
+    setShowReorderMode?: React.Dispatch<SetStateAction<boolean>> | undefined;
+    showReorderMode?: boolean | undefined;
 }
 
 export const HouseholdTasklistPageList = ({ tasklist, tasks, setShowReorderMode, showReorderMode }: Props) => {

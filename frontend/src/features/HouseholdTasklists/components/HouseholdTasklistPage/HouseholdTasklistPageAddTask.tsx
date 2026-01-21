@@ -1,14 +1,14 @@
 import { useStablePending } from "@/hooks/useStablePending";
 import { useAddTaskMutation } from "@/store/taskSlice";
 import { Button } from "@mantine/core"
-import { useRef, useState } from "react"
+import { useState, type RefObject } from "react"
 
 type Props = {
+    inputRef?: RefObject<HTMLInputElement | null>;
     listId: number | undefined;
 }
 
-export const HouseholdTasklistPageAddTask = ({ listId }: Props) => {
-    const inputRef = useRef<HTMLInputElement>(null)
+export const HouseholdTasklistPageAddTask = ({ inputRef, listId }: Props) => {
     const [title, setTitle] = useState("");
     const [addTask, { isLoading }] = useAddTaskMutation();
     const loading = useStablePending(isLoading, { showAfterMs: 120, minVisibleMs: 300 });
@@ -22,12 +22,13 @@ export const HouseholdTasklistPageAddTask = ({ listId }: Props) => {
         if (title.trim() === "") return;
         await addTask({ title: title, description: "", status: "in_progress", isImportant: false, dueDate: undefined, listId: listId })
         setTitle("");
-        inputRef.current?.focus();
+        inputRef?.current?.focus();
     }
 
     return <div className="add-task-container">
         <div className="add-task shell-footer">
             <input
+
                 value={title}
                 onKeyDown={(e) => { if (e.key === "Enter") { handleAddTask() } }}
                 ref={inputRef}

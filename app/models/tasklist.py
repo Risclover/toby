@@ -55,7 +55,6 @@ class Tasklist(db.Model):
     all_members = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
-    stars_at_top = db.Column(db.Boolean, default=False)
 
     # Appearance
     icon = db.Column(db.String(120), nullable=True)
@@ -73,9 +72,10 @@ class Tasklist(db.Model):
     # List status
     is_archived = db.Column(db.Boolean, default=False, nullable=False)
 
-    # Misc.
+    # Layout
+    show_completed = db.Column(db.Boolean, default=False)
     new_item_position = db.Column(db.String(10), default=NewItemPosition.BOTTOM.value)
-    auto_hide_when_empty = db.Column(db.Boolean, default=False)
+    stars_at_top = db.Column(db.Boolean, default=False)
 
     # Relationships
     tasks = db.relationship(
@@ -143,14 +143,15 @@ class Tasklist(db.Model):
             title=f"{self.title} (Copy)",
             icon=self.icon,
             color=self.color,
+            show_completed=self.show_completed,
             view_mode=self.view_mode,
             new_item_position=self.new_item_position,
-            auto_hide_when_empty=self.auto_hide_when_empty,
+            stars_at_top=self.stars_at_top,
             default_sort_order=self.default_sort_order,
             default_filters=deepcopy(self.default_filters) if self.default_filters else None,
             user_id=self.user_id,
             household_id=self.household_id,
-            all_members=self.all_members
+            all_members=self.all_members,
         )
 
         db.session.add(duplicate)
@@ -194,9 +195,9 @@ class Tasklist(db.Model):
             "title": self.title,
             "icon": self.icon,
             "color": self.color,
+            "showCompleted": self.show_completed,
             "viewMode": self.view_mode,
             "newItemPosition": self.new_item_position,
-            "autoHideWhenEmpty": self.auto_hide_when_empty,
             "isArchived": self.is_archived,
             "defaultSortOrder": self.default_sort_order,
             "defaultFilters": self.default_filters,

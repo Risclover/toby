@@ -1,4 +1,5 @@
 import { apiSlice } from "./apiSlice";
+import type { TasklistType } from "./taskSlice";
 
 export type Household = { id: number; name: string };
 export type Tasklist = { id: number; title: string; createdAt: string; memberIds: number[] };
@@ -57,7 +58,7 @@ export const householdSlice = apiSlice.injectEndpoints({
                 return [{ type: "Household", id: householdId }]
             }
         }),
-        getHouseholdTasklists: builder.query<Tasklist[], number>({
+        getHouseholdTasklists: builder.query<TasklistType[], number>({
             query: (householdId) => `/households/${householdId}/tasklists`, // no leading slash
             providesTags: (result, _e, householdId): TasklistTag[] =>
                 result?.length
@@ -103,5 +104,4 @@ export const {
     useGetHouseholdTasklistsQuery,
     useGetHouseholdShoppingListsQuery,
     useGetHouseholdShoppingListQuery,
-    useGetAnnouncementsQuery,
 } = householdSlice;

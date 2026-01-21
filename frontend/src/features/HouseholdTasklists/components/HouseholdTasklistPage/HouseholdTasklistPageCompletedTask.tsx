@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { TaskDetails } from "./TaskDetails";
-import type { TasklistType } from "@/store/taskSlice";
+import type { Task } from "@/store/taskSlice";
 
 type Props = {
-    task: TasklistType;
+    task: Task;
     householdId: number;
     listId: number;
     taskId: number;
@@ -20,8 +20,6 @@ export const HouseholdTasklistPageCompletedTask = ({ task, householdId, listId }
                     householdId={householdId}  // can be optional in child
                     listId={listId}             // <-- guaranteed number here
                     taskId={task.id}
-                    showTaskDetails={showTaskDetails}
-                    setShowTaskDetails={setShowTaskDetails}
                 />
             </div>
             {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={householdId} />}

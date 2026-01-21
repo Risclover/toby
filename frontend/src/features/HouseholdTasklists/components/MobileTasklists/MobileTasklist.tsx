@@ -1,8 +1,8 @@
 import { MobileLayout } from "@/layout/MobileLayout";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Group, Progress, Text } from "@mantine/core";
+import { Button, Group, Progress, Stack, Text } from "@mantine/core";
 import { useGetTasklistQuery } from "@/store/taskSlice" // Checked import path
 import { skipToken } from "@reduxjs/toolkit/query";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
@@ -13,8 +13,12 @@ import { HouseholdTasklistPageAddTask } from "../HouseholdTasklistPage/Household
 import { useTaskFiltering, type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
 import "../../styles/MobileTasklist.css";
 import { TasklistSettings } from "../TasklistSettings/TasklistSettings";
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 
 export const MobileTasklist = () => {
+    const isSmall = useIsSmallScreen();
+    const inputRef = useRef<HTMLInputElement>(null);
+
     const [showCompleted, setShowCompleted] = useState(false);
     const [showTasklistSettings, setShowTasklistSettings] = useState(false);
     const [showReorderMode, setShowReorderMode] = useState(false);
@@ -123,7 +127,13 @@ export const MobileTasklist = () => {
 
             <div className="mobile-tasklist-content">
                 {filteredTasks.length === 0 && uncompleted.length === 0 && completed.length === 0 &&
-                    <Group w="100%" justify="center"><Text styles={{ root: { lineHeight: "1.4" } }}>This tasklist contains no tasks. Use the input box below to add some.</Text></Group>}
+                    <Stack justify="center" align="center" my={isSmall ? "5rem" : ""} h={!isSmall ? "100%" : ""}>
+                        <Group w="100%" justify="center" align="center">
+                            <Text styles={{ root: { lineHeight: "1.4" } }}>This tasklist contains no tasks. Would you like to add one?</Text>
+                        </Group>
+                        <Button color="cyan" onClick={() => inputRef.current?.focus()}>Add Task</Button>
+                    </Stack>
+                }
                 {/* Active Tasks List */}
                 {filteredTasks && filteredTasks.length > 0 ? (
                     <HouseholdTasklistPageList
@@ -159,7 +169,7 @@ export const MobileTasklist = () => {
 
             {/* Input Bar */}
             <div className="mobile-tasklist-input">
-                <HouseholdTasklistPageAddTask listId={tasklist.id} />
+                <HouseholdTasklistPageAddTask inputRef={inputRef} listId={tasklist.id} />
             </div>
 
             {showTasklistSettings && <TasklistSettings opened={showTasklistSettings} setShowTasklistSettings={setShowTasklistSettings} />}

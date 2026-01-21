@@ -11,7 +11,7 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 // Define the exact shape of your form values
 export type TasklistFormValues = {
     title: string;
-    autoHideWhenEmpty: boolean;
+    showCompleted: boolean;
     newItemPosition: string;
     starsAtTop: boolean;
     defaultSortOrder: string | null;
@@ -46,7 +46,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
     // We use useMemo to prevent re-calculating this default object on every render
     const initialValues: TasklistFormValues = useMemo(() => ({
         title: tasklist?.title ?? "",
-        autoHideWhenEmpty: tasklist?.autoHideWhenEmpty ?? false,
+        showCompleted: tasklist?.showCompleted ?? false,
         newItemPosition: tasklist?.newItemPosition ?? "bottom",
         starsAtTop: tasklist?.starsAtTop ?? false,
         defaultSortOrder: tasklist?.defaultSortOrder || null,
@@ -133,7 +133,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
     const resetToDefault = () => {
         if (!tasklist) return;
         form.setFieldValue("title", tasklist.title);
-        form.setFieldValue("autoHideWhenEmpty", false);
+        form.setFieldValue("showCompleted", false);
         form.setFieldValue("newItemPosition", "bottom");
         form.setFieldValue("starsAtTop", false);
         form.setFieldValue("defaultSortOrder", null);

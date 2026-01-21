@@ -1,6 +1,6 @@
 import type { User } from "@/store/authSlice";
 import type { TasklistSettingsForm } from "./GeneralTab";
-import { Avatar, Button, Divider, Group, Input, Select, Stack, Switch, Tabs, Text, Tooltip } from "@mantine/core";
+import { Avatar, Button, Group, Select, Stack, Switch, Tabs, Text, Tooltip } from "@mantine/core";
 import { TIME_OPTIONS } from "./TasklistSettings";
 import { SettingsItem } from "./SettingsItem";
 

@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 export type TasklistFormValues = {
     title: string;
-    autoHideWhenEmpty: boolean;
+    showCompleted: boolean;
     newItemPosition: string;
     starsAtTop: boolean;
     defaultSortOrder: string | null;
@@ -83,30 +83,19 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                     />
                 </div>
             </SettingsItem>
-            <div className="tasklist-settings-section">
-                <div className="input-label-description">
-                    <Tooltip
-                        multiline
-                        w={220}
-                        target="#tooltip-target"
-                        label="Choose whether empty tasklists (all tasks are completed, or no tasks exist) are automatically hidden."
-                        events={{ hover: true, focus: true, touch: true }}
-                    />
-                    <Input.Label>
-                        Auto-hide empty tasklists
-                        <ActionIcon variant="transparent" id="tooltip-target">
-                            <InfoIcon id="tooltip-target" width="1em" height="1em" />
-                        </ActionIcon>
-                    </Input.Label>
-                </div>
+            <SettingsItem
+                layout="row"
+                label="Show completed tasks"
+                description="Choose whether the 'Completed' section remains open."
+                divider={true}
+            >
                 <Switch
-                    {...form.getInputProps('autoHideWhenEmpty', { type: 'checkbox' })}
+                    {...form.getInputProps('showCompleted', { type: 'checkbox' })}
                     color="cyan"
                     size="md"
                     withThumbIndicator={false}
                 />
-            </div>
-            <Divider my="lg" />
+            </SettingsItem>
             {household.members.length > 1 && (
                 <SettingsItem
                     layout="column"

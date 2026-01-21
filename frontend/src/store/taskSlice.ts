@@ -24,7 +24,7 @@ export interface TasklistType {
     color: string;
     viewMode: string;
     newItemPosition: string;
-    autoHideWhenEmpty: boolean;
+    showCompleted: boolean;
     isArchived: boolean;
     defaultSortOrder: string;
     defaultFilters: {
