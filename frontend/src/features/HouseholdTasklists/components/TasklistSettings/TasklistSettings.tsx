@@ -108,6 +108,8 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                     titleRef={tasklistTitleRef}
                     onToggleAll={handleToggleAllMembers}
                     onMemberChange={handleMemberChange}
+                    tasklistId={tasklist?.id}
+                    setShowTasklistSettings={setShowTasklistSettings}
                 />
                 <BehaviorTab form={form} household={household} />
                 <AppearanceTab form={form} />

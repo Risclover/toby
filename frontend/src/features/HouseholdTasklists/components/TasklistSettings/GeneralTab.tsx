@@ -2,8 +2,11 @@ import { InfoIcon } from "@/assets/icons/InfoIcon";
 import type { User } from "@/store/authSlice";
 import { ActionIcon, Button, Checkbox, Divider, Input, MultiSelect, Space, Switch, Tabs, Tooltip, type MultiSelectProps } from "@mantine/core";
 import type { UseFormReturnType } from "@mantine/form";
-import type { RefObject } from "react";
+import { useState, type RefObject } from "react";
 import { SettingsItem } from "./SettingsItem";
+import { useDeleteListMutation } from "@/store/taskSlice";
+import { DeleteConfirmation } from "./DeleteConfirmation";
+import { useNavigate } from "react-router-dom";
 
 export type TasklistFormValues = {
     title: string;
@@ -26,6 +29,7 @@ export type TasklistSettingsForm = UseFormReturnType<TasklistFormValues>;
 
 type GeneralTabProps = {
     form: TasklistSettingsForm;
+    tasklistId: number | undefined;
     household: { members: User[] }; // Replace with actual Household type if different
     memberOptions: { value: string; label: string }[];
     renderMultiSelectOption: MultiSelectProps['renderOption'];
@@ -33,11 +37,21 @@ type GeneralTabProps = {
     titleRef: RefObject<HTMLInputElement | null>;
     onToggleAll: (checked: boolean) => void;
     onMemberChange: (values: string[]) => void;
+    setShowTasklistSettings: (val: boolean) => void;
 };
 
-export const GeneralTab = ({ form, household, memberOptions, renderMultiSelectOption, isSmallScreen, titleRef, onToggleAll, onMemberChange }: GeneralTabProps) => {
-    // Logic to match original immediate error behavior
+export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderMultiSelectOption, isSmallScreen, titleRef, onToggleAll, onMemberChange, setShowTasklistSettings }: GeneralTabProps) => {
+    const navigate = useNavigate();
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const hasMemberError = form.values.memberIds.length === 0;
+    const [deleteList] = useDeleteListMutation();
+
+    const handleDeleteList = async () => {
+        await deleteList({ listId: tasklistId });
+        setShowDeleteConfirmation(false);
+        setShowTasklistSettings(false);
+        navigate("/tasklists")
+    }
 
     return (
         <Tabs.Panel value="general" style={{ overflowY: "auto", padding: "16px", minHeight: 0 }}>
@@ -149,8 +163,9 @@ export const GeneralTab = ({ form, household, memberOptions, renderMultiSelectOp
                 divider={false}
             >
                 <Space h={12} />
-                <Button color="red.7">Delete tasklist</Button>
+                <Button color="red.7" onClick={() => setShowDeleteConfirmation(true)}>Delete tasklist</Button>
             </SettingsItem>
+            {showDeleteConfirmation && <DeleteConfirmation opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteList={handleDeleteList} />}
         </Tabs.Panel>
     );
 };

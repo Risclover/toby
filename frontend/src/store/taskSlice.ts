@@ -103,7 +103,7 @@ export interface ClearListRequest {
 }
 
 export interface DeleteListRequest {
-    listId: number;
+    listId: number | undefined;
 }
 
 export interface CompleteTaskRequest {
