@@ -90,13 +90,24 @@ def add_task(id):
     Add a task to a specific task list, appended to the end (by sort_index).
     """
     data = request.get_json() or {}
-    Tasklist.query.get_or_404(id)  # ensures list exists
+    tasklist = Tasklist.query.get_or_404(id)  # ensures list exists
 
-    max_idx = (
-        db.session.query(db.func.coalesce(db.func.max(Task.sort_index), -1))
-        .filter(Task.list_id == id)
-        .scalar()
-    )
+    new_sort_index = 0
+
+    if tasklist.new_item_position == "top":
+        min_idx = (
+            db.session.query(db.func.coalesce(db.func.min(Task.sort_index), 1))
+                .filter(Task.list_id == id)
+                .scalar()
+        )
+        new_sort_index = min_idx - 1
+    else:
+        max_idx = (
+            db.session.query(db.func.coalesce(db.func.max(Task.sort_index), -1))
+                .filter(Task.list_id == id)
+                .scalar()
+        )
+        new_sort_index = max_idx + 1
 
     task = Task(
         title=data["title"],
@@ -107,7 +118,7 @@ def add_task(id):
         due_date=data.get("due_date"),         # parse to date/datetime if needed
         assigned_to_id=data.get("assigned_to_id"),
         list_id=id,
-        sort_index=max_idx + 1,
+        sort_index=new_sort_index
     )
 
     db.session.add(task)
