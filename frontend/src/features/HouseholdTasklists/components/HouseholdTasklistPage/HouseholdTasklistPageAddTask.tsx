@@ -37,7 +37,7 @@ export const HouseholdTasklistPageAddTask = ({ inputRef, listId }: Props) => {
                 placeholder="Add a task and press Enter"
                 maxLength={255}
             />
-            <Button color="cyan" loading={loading} onClick={handleAddTask}>Add</Button>
+            <Button color="var(--tasklist-color)" loading={loading} onClick={handleAddTask}>Add</Button>
         </div>
     </div>
 }

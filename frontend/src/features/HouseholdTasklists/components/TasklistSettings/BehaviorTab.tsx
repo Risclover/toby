@@ -34,7 +34,7 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
         >
             <Switch
                 {...form.getInputProps('starsAtTop', { type: 'checkbox' })}
-                color="cyan"
+                color="var(--tasklist-color)"
                 size="md"
                 withThumbIndicator={false}
             />
@@ -71,7 +71,7 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
                         {['all', 'important'].map((opt) => (
                             <Button
                                 key={opt}
-                                color="cyan"
+                                color="var(--tasklist-color)"
                                 size="sm"
                                 variant={form.values.defaultFilters.importance === opt ? "filled" : "outline"}
                                 onClick={() => form.setFieldValue('defaultFilters.importance', opt as any)}
@@ -89,7 +89,7 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
                         <div
                             style={{
                                 cursor: 'pointer',
-                                border: form.values.defaultFilters.assignedToId === null ? '2px solid var(--mantine-color-cyan-7)' : '2px solid transparent',
+                                border: form.values.defaultFilters.assignedToId === null ? '2px solid var(--tasklist-color)' : '2px solid transparent',
                                 borderRadius: '50%',
                                 padding: '2px'
                             }}
@@ -101,7 +101,7 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
                             <div
                                 key={member.id}
                                 style={{
-                                    border: form.values.defaultFilters.assignedToId === member.id ? "2px solid var(--mantine-color-cyan-7)" : "2px solid transparent",
+                                    border: form.values.defaultFilters.assignedToId === member.id ? "2px solid var(--tasklist-color)" : "2px solid transparent",
                                     cursor: "pointer",
                                     borderRadius: '50%',
                                     padding: '2px'
@@ -128,7 +128,7 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
                         {TIME_OPTIONS.map((option) => (
                             <Button
                                 key={option.value}
-                                color="cyan"
+                                color="var(--tasklist-color)"
                                 size="sm"
                                 variant={form.values.defaultFilters.time === option.value ? "filled" : "outline"}
                                 onClick={() => form.setFieldValue('defaultFilters.time', option.value as any)}

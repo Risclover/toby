@@ -358,7 +358,7 @@ textarea.editable-title.is-editing {
 }
 
 .task-extra svg {
-    color: #15aabf;
+    color: var(--tasklist-color);
     font-size: 16px;
 }
 

@@ -22,7 +22,6 @@ export const HouseholdTasklistPage = () => {
     const [updateTasklistTitle] = useUpdateTasklistMutation();
 
     const [showCompleted, setShowCompleted] = useState(tasklist?.showCompleted);
-    console.log('showCompleted:', showCompleted)
     const tasks = tasklist?.tasks ?? [];
 
     const { percent } = useMemo(() => {

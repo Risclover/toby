@@ -136,7 +136,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                         <Button
                             variant="subtle"
                             size="xs"
-                            color="cyan"
+                            color="var(--tasklist-color)"
                             disabled={isFirst}
                             onClick={handleMoveTaskUp}
                         >
@@ -145,7 +145,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                         <Button
                             variant="subtle"
                             size="xs"
-                            color="cyan"
+                            color="var(--tasklist-color)"
                             disabled={isLast}
                             onClick={handleMoveTaskDown}
                         >

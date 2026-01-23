@@ -36,6 +36,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
     const isSmallScreen = useIsSmallScreen();
     const [updateTasklist] = useUpdateTasklistMutation();
     const [showDiscardWarning, setShowDiscardWarning] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false); // Local state
     // Data Fetching
     const { data: user } = useAuthenticateQuery();
@@ -217,6 +218,8 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         handleDiscardConfirmation,
         resetToDefault,
         isSubmitting,
-        handleSubmit
+        handleSubmit,
+        showDeleteConfirmation,
+        setShowDeleteConfirmation
     };
 };

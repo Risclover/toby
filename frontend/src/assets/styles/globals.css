@@ -63,6 +63,8 @@
     --main-border: #374151;
     --main-background: rgb(1, 1, 19);
     --main-error: #ff6b6b;
+
+    --tasklist-color: #15aabf;
 }
 
 * {

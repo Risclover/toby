@@ -94,7 +94,7 @@
 .household-tasklist-bottom {
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--mantine-color-cyan-filled);
+    color: var(--tasklist-color);
 }
 
 .household-tasklist-page-list {
@@ -132,7 +132,7 @@
 
 .drag-handle {
     opacity: 0;
-    color: var(--accent-color);
+    color: var(--tasklist-color);
 }
 
 .drag-handle svg {

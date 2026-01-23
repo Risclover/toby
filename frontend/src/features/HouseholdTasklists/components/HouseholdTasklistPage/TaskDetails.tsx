@@ -75,10 +75,10 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                         leftSection={<CalendarMonthRoundedIcon />}
                         leftSectionWidth="40px"
                         styles={{
-                            section: { color: "var(--accent-color)" }
+                            section: { color: "var(--tasklist-color)" }
                         }}
                         clearable
-                        color="cyan"
+                        color="var(--tasklist-color)"
                         presets={[
                             { value: dayjs().format('YYYY-MM-DD HH:mm:ss'), label: 'Today' },
                             { value: dayjs().add(1, 'day').format('YYYY-MM-DD HH:mm:ss'), label: 'Tomorrow' },
@@ -100,7 +100,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                         clearable
                         placeholder="Assign to member"
                         styles={{
-                            section: { color: "var(--accent-color)" }
+                            section: { color: "var(--tasklist-color)" }
                         }}
                         // Avatar in the INPUT when selected:
                         leftSection={
@@ -128,14 +128,14 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                         autosize
                     />
                     <Group justify="flex-end" mt="md">
-                        <Button variant="light" color="cyan" onClick={() => close()}>Cancel</Button>
-                        <Button variant="filled" color="cyan" onClick={handleSaveTaskDetails}>Save</Button>
+                        <Button variant="light" color="var(--tasklist-color)" onClick={() => close()}>Cancel</Button>
+                        <Button variant="filled" color="var(--tasklist-color)" onClick={handleSaveTaskDetails}>Save</Button>
                     </Group>
                 </div>
             </div>
             <div className="task-details-footer">
                 <span className="task-details-date">{getFooterText()}</span>
-                <Button variant="subtle" radius="xs" size="xs" color="cyan" className="delete-task-btn" onClick={handleConfirmTaskDeletion}><TrashIcon /></Button>
+                <Button variant="subtle" radius="xs" size="xs" color="var(--tasklist-color)" className="delete-task-btn" onClick={handleConfirmTaskDeletion}><TrashIcon /></Button>
             </div>
             {showTaskDeletion && <TaskDeletionConfirmation title={taskDetailsProps.title.value} opened={showTaskDeletion} onClose={() => setShowTaskDeletion(false)} listId={listId} taskId={taskId} />}
         </Drawer>

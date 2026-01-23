@@ -1,8 +1,7 @@
-import { InfoIcon } from "@/assets/icons/InfoIcon";
 import type { User } from "@/store/authSlice";
-import { ActionIcon, Button, Checkbox, Divider, Input, MultiSelect, Space, Switch, Tabs, Tooltip, type MultiSelectProps } from "@mantine/core";
+import { Button, Checkbox, Flex, Input, MultiSelect, Space, Switch, Tabs, type MultiSelectProps } from "@mantine/core";
 import type { UseFormReturnType } from "@mantine/form";
-import { useState, type RefObject } from "react";
+import { type RefObject } from "react";
 import { SettingsItem } from "./SettingsItem";
 import { useDeleteListMutation } from "@/store/taskSlice";
 import { DeleteConfirmation } from "./DeleteConfirmation";
@@ -38,11 +37,12 @@ type GeneralTabProps = {
     onToggleAll: (checked: boolean) => void;
     onMemberChange: (values: string[]) => void;
     setShowTasklistSettings: (val: boolean) => void;
+    showDeleteConfirmation: boolean;
+    setShowDeleteConfirmation: (val: boolean) => void;
 };
 
-export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderMultiSelectOption, isSmallScreen, titleRef, onToggleAll, onMemberChange, setShowTasklistSettings }: GeneralTabProps) => {
+export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderMultiSelectOption, isSmallScreen, titleRef, onToggleAll, onMemberChange, setShowTasklistSettings, showDeleteConfirmation, setShowDeleteConfirmation }: GeneralTabProps) => {
     const navigate = useNavigate();
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const hasMemberError = form.values.memberIds.length === 0;
     const [deleteList] = useDeleteListMutation();
 
@@ -91,7 +91,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
             >
                 <Switch
                     {...form.getInputProps('showCompleted', { type: 'checkbox' })}
-                    color="cyan"
+                    color="var(--tasklist-color)"
                     size="md"
                     withThumbIndicator={false}
                 />
@@ -106,7 +106,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                     description="Manage tasklist's assigned members."
                     divider={true}
                 >
-                    <div className="tasklist-settings-right">
+                    <Flex direction="column">
                         <MultiSelect
                             data={memberOptions}
                             value={form.values.memberIds}
@@ -123,10 +123,10 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                                 label="All members"
                                 checked={form.values.allMembers}
                                 onChange={(e) => onToggleAll(e.currentTarget.checked)}
-                                color="cyan"
+                                color="var(--tasklist-color)"
                             />
                         </div>
-                    </div>
+                    </Flex>
                 </SettingsItem>
             )}
             <SettingsItem
@@ -136,7 +136,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                 divider={false}
             >
                 <Space h={12} />
-                <Button color="cyan" variant="filled">Duplicate list</Button>
+                <Button color="var(--tasklist-color)" variant="filled">Duplicate list</Button>
             </SettingsItem>
             <SettingsItem
                 layout="delete"
@@ -145,7 +145,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                 divider={true}
             >
                 <Space h={12} />
-                <Button color="cyan" variant="filled">Archive list</Button>
+                <Button color="var(--tasklist-color)" variant="filled">Archive list</Button>
             </SettingsItem>
             <SettingsItem
                 layout="delete"

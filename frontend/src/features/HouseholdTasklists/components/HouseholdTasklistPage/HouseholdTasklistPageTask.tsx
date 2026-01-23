@@ -54,7 +54,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
                     <div className="task-main">
                         <Checkbox
                             radius="xl"
-                            color="cyan"
+                            color="var(--tasklist-color)"
                             checked={checked}
                             onChange={onChange}
                             size="sm"

@@ -3,7 +3,7 @@
 }
 
 .tasklist-settings-btn:hover svg {
-    color: var(--accent-color);
+    color: var(--tasklist-color);
 }
 
 .mobile-tasklist-title-bar {
@@ -120,11 +120,11 @@
 .star-icon-outline:hover .star-path {
     /* Hover state: add stroke to thicken */
     /* stroke-width: .5px; */
-    color: var(--accent-color)
+    color: var(--tasklist-color)
 }
 
 .star-icon-container {
-    color: rgb(116, 199, 199);
+    color: var(--tasklist-color);
     align-self: flex-start;
     margin-top: 0.5rem;
 }

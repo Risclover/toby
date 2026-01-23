@@ -23,12 +23,12 @@
 }
 
 .m_396ce5cb:where([data-weekend]) {
-    color: var(--accent-color);
+    color: var(--tasklist-color);
 }
 
 .m_396ce5cb:where([data-selected]),
 .m_dc6a3c71:where([data-selected]) {
-    background: var(--accent-color);
+    background: var(--tasklist-color);
     color: white;
 }
 
@@ -36,9 +36,13 @@
     background: red !important;
 }
 
+.m_396ce5cb {
+    line-height: 1;
+}
+
 .m_396ce5cb:where([data-selected]):hover,
 .m_dc6a3c71:where([data-selected]):hover {
-    background: var(--mantine-color-cyan-7);
+    background: var(--tasklist-color);
     color: white;
 }
 

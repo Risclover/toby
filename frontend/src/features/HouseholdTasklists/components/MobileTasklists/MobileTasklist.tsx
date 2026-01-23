@@ -2,7 +2,7 @@ import { MobileLayout } from "@/layout/MobileLayout";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Group, Progress, Stack, Text } from "@mantine/core";
+import { ActionIcon, Button, Group, Progress, Stack, Text, Tooltip } from "@mantine/core";
 import { useGetTasklistQuery } from "@/store/taskSlice" // Checked import path
 import { skipToken } from "@reduxjs/toolkit/query";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
@@ -11,9 +11,9 @@ import { HouseholdTasklistPageList } from "../HouseholdTasklistPage/HouseholdTas
 import { HouseholdTasklistPageCompleted } from "../HouseholdTasklistPage/HouseholdTasklistPageCompleted";
 import { HouseholdTasklistPageAddTask } from "../HouseholdTasklistPage/HouseholdTasklistPageAddTask";
 import { useTaskFiltering, type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
-import "../../styles/MobileTasklist.css";
 import { TasklistSettings } from "../TasklistSettings/TasklistSettings";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import "../../styles/MobileTasklist.css";
 
 export const MobileTasklist = () => {
     const isSmall = useIsSmallScreen();
@@ -33,6 +33,13 @@ export const MobileTasklist = () => {
         assignedToId: null,
         time: "all",
     });
+
+    useEffect(() => {
+        if (!tasklist) return;
+        document.documentElement.style.setProperty("--tasklist-color", tasklist.color);
+    }, [tasklist?.color])
+
+    console.log('tasklist color:', tasklist?.color);
 
     // 3. Derived Data (Safe to run even if tasklist is undefined)
     const tasks = tasklist?.tasks ?? [];
@@ -81,33 +88,27 @@ export const MobileTasklist = () => {
         <div className="mobile-tasklist-title-bar">
             <div className="mobile-tasklist-title-bar-top">
                 <div className="title-announcements tasklist-announcements">
-                    <Button
-                        size="compact-xs"
-                        radius="xl"
-                        variant="subtle"
-                        color="white"
-                        onClick={() => navigate(-1)}
-                    >
-                        <ChevronLeftRoundedIcon />
-                    </Button>
+                    <Tooltip label="Go back">
+                        <ActionIcon onClick={() => navigate(-1)} variant="subtle" color="white">
+                            <ChevronLeftRoundedIcon />
+                        </ActionIcon></Tooltip>
                     <span className="title-announcements-title">{tasklist.title}</span>
                 </div>
-                <Button
-                    className="tasklist-settings-btn"
-                    size="compact-md"
-                    variant="transparent"
-                    color="white"
-                    w={30}
-                    h={30}
-                    p={0}
-                    onClick={() => setShowTasklistSettings(true)}
-                >
-                    <SettingsRoundedIcon />
-                </Button>
+                <Tooltip label="Tasklist settings">
+                    <ActionIcon
+                        onClick={() => setShowTasklistSettings(true)}
+                        className="tasklist-settings-btn"
+                        size="compact-md"
+                        variant="transparent"
+                        color="white"
+                    >
+                        <SettingsRoundedIcon />
+                    </ActionIcon>
+                </Tooltip>
             </div>
             <div className="progress">
                 <div className="progress-left">
-                    <Progress color="cyan" value={percent} />
+                    <Progress color="var(--tasklist-color)" value={percent} />
                 </div>
                 {percent}%
             </div>
@@ -126,6 +127,7 @@ export const MobileTasklist = () => {
                 showReorderMode={showReorderMode}
                 setShowReorderMode={setShowReorderMode}
                 tasks={tasks}
+                filteredTasks={filteredTasks}
             />
 
             <div className="mobile-tasklist-content">
@@ -160,7 +162,7 @@ export const MobileTasklist = () => {
                 )}
 
                 {/* Completed Tasks Section */}
-                {completed && completed.length > 0 && (
+                {filteredCompleted.length > 0 && completed && completed.length > 0 && (
                     <HouseholdTasklistPageCompleted
                         tasklist={tasklist}
                         completed={filteredCompleted}

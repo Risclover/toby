@@ -22,9 +22,10 @@ interface Props {
     showReorderMode: boolean;
     setShowReorderMode: (val: boolean | ((prev: boolean) => boolean)) => void;
     tasks: Task[];
+    filteredTasks: Task[];
 }
 
-export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode, tasks }: Props) => {
+export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode, tasks, filteredTasks }: Props) => {
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
@@ -114,7 +115,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                     <Tooltip label="Filter list"><ActionIcon onClick={open} variant="subtle" color="rgb(5, 5, 73)">
                         <FilterAltRoundedIcon />
                     </ActionIcon></Tooltip>
-                    {isSmall && tasks?.length > 1 && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
+                    {isSmall && filteredTasks.length > 1 && tasks?.length > 1 && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
                         <ActionIcon
                             onClick={() => setShowReorderMode(prev => !prev)}
                             variant={showReorderMode ? "light" : "subtle"}

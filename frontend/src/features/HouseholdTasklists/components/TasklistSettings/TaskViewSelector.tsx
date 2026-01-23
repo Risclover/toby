@@ -58,7 +58,7 @@ function DetailedTask() {
                 </Stack>
 
                 {/* Real Star Icon (Top aligned) */}
-                <StarIcon size={10} />
+                <Text c="var(--tasklist-color)"><StarIcon size={10} /></Text>
             </Flex>
         </Box>
     );
@@ -77,7 +77,7 @@ function CompactTask() {
                 </Box>
 
                 {/* Real Star Icon */}
-                <StarIcon size={10} />
+                <Text c="var(--tasklist-color)"><StarIcon size={10} /></Text>
             </Flex>
         </Box>
     );
@@ -90,7 +90,7 @@ function PreviewWindow({ label, onClick, activeTaskDisplay, children }: { label:
     return (
         <Stack gap="0.25rem">
             <Box style={{
-                border: activeTaskDisplay === label.toLowerCase() ? "2px solid var(--mantine-color-cyan-6)" : "2px solid transparent",
+                border: activeTaskDisplay === label.toLowerCase() ? "2px solid var(--tasklist-color)" : "2px solid transparent",
                 borderRadius: "var(--mantine-radius-md)",
                 padding: "2px",
             }}
@@ -111,7 +111,7 @@ function PreviewWindow({ label, onClick, activeTaskDisplay, children }: { label:
                 </Box>
             </Box>
             <Group gap="0.5rem" align="center" ml={5}>
-                <Checkbox onChange={onClick} color="cyan" checked={activeTaskDisplay === label.toLowerCase()} size="xs" radius="xl" />
+                <Checkbox onChange={onClick} color="var(--tasklist-color)" checked={activeTaskDisplay === label.toLowerCase()} size="xs" radius="xl" />
                 <Text size="xs" fw={500} c="black" mt={1}>{label}</Text>
             </Group>
         </Stack>

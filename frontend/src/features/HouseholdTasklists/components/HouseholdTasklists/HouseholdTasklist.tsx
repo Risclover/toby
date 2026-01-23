@@ -4,7 +4,7 @@ import type { Task, TasklistType } from "@/store/taskSlice"
 import { Avatar, Divider, Progress, Tooltip } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklistTask } from "./HouseholdTasklistTask";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMobileTasklist } from "../../hooks/useMobileTasklist";
 
@@ -90,10 +90,20 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
 
     const remainingCount = Math.max(0, (uncompletedTasks?.length ?? 0) - 3);
 
+    useEffect(() => {
+        document.documentElement.style.setProperty("--tasklist-color", list?.color);
+    }, [list?.color])
+
+    console.log('list color:', list?.color);
+    console.log('list:', list);
+
     return (
         <div
             className="mobile-home-notice-board mobile-tasklist-card"
             onClick={navigateToTasklistPage}
+            style={{
+                "--tasklist-color": list.color ?? "#15aabf" // Fallback to default cyan
+            } as React.CSSProperties}
         >
             <div className="tasklist-head">
                 <span className="tasklist-head-title">{list.title}</span>
@@ -132,7 +142,7 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
             </div>
             <div className="tasklist-head-progress progress">
                 <div className="progress-left">
-                    <Progress color="cyan" value={percent} />
+                    <Progress color={list.color} value={percent} />
                 </div>
                 {percent}%
             </div>
@@ -150,7 +160,7 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                 {remainingCount > 0 && <Divider my="xs" />}
 
                 {remainingCount > 0 && (
-                    <div className="household-tasklist-bottom">
+                    <div className="household-tasklist-bottom" >
                         + {remainingCount} more task{remainingCount > 1 && "s"}
                     </div>
                 )}
