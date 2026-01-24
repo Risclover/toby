@@ -85,6 +85,8 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         household?.members.map((member: User) => ({
             value: String(member.id),
             label: `${member.firstName} ${member.lastName}`,
+            firstName: `${member.firstName}`,
+            profileImg: `${member.profileImg}`
         })) ?? [],
         [household]);
 
@@ -112,6 +114,53 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
             form.setFieldValue("memberIds", []);
         }
     };
+
+    const householdMembers = household?.members;
+
+    // Members allowed in filters' members section (based on list's assigned members)
+    const allowedMembers = useMemo(() => {
+        if (!householdMembers) return [];
+
+        let filteredUsers = householdMembers;
+
+        // Filter logic
+        if (tasklist && !tasklist.allMembers) {
+            const allowedIds = new Set(tasklist.memberIds?.map(Number) || []);
+            filteredUsers = householdMembers.filter((m: User) => allowedIds.has(m.id));
+        }
+
+        // Map to Option structure
+        return filteredUsers.map((member: User) => ({
+            value: String(member.id),
+            label: `${member.firstName} ${member.lastName}`,
+            id: member.id,
+            firstName: `${member.firstName}`,
+            profileImg: `${member.profileImg}`
+        }));
+
+    }, [householdMembers, tasklist]);
+
+
+    // Make sure filter gets switched to 'All' if selected member is removed from tasklist's assigned members
+    useEffect(() => {
+        const currentAssignedToId = form.values.defaultFilters.assignedToId;
+
+        // If no one is selected in the filter, do nothing
+        if (currentAssignedToId === null) return;
+
+        // 1. If "All Members" is checked, everyone is valid.
+        if (form.values.allMembers) return;
+
+        // 2. Check if the currently filtered member is in the "memberIds" array
+        // Note: memberIds are strings in the form, but assignedToId is a number
+        const isValid = form.values.memberIds.includes(String(currentAssignedToId));
+
+        // 3. If invalid, reset the default filter to null (All)
+        if (!isValid) {
+            form.setFieldValue('defaultFilters.assignedToId', null);
+        }
+
+    }, [form.values.allMembers, form.values.memberIds, form.values.defaultFilters.assignedToId]);
 
     // Logic to uncheck "Select All" if user manually deselects a person
     const handleMemberChange = (values: string[]) => {
@@ -220,6 +269,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         isSubmitting,
         handleSubmit,
         showDeleteConfirmation,
-        setShowDeleteConfirmation
+        setShowDeleteConfirmation,
+        allowedMembers
     };
 };

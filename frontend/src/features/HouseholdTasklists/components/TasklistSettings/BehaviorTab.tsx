@@ -7,9 +7,10 @@ import { SettingsItem } from "./SettingsItem";
 type BehaviorTabProps = {
     form: TasklistSettingsForm;
     household: { members: User[] };
+    allowedMembers: User[];
 };
 
-export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
+export const BehaviorTab = ({ form, household, allowedMembers }: BehaviorTabProps) => (
     <Tabs.Panel value="behavior" style={{ overflowY: "auto", padding: "16px", minHeight: 0 }}>
         <SettingsItem
             layout="column"
@@ -84,7 +85,7 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
                         >
                             <Avatar radius="xl" color="gray">All</Avatar>
                         </div>
-                        {household.members?.map((member: User) => (
+                        {allowedMembers.map((member: User) => (
                             <div
                                 key={member.id}
                                 style={{

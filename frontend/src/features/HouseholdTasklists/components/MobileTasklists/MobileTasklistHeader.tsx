@@ -23,9 +23,10 @@ interface Props {
     setShowReorderMode: (val: boolean | ((prev: boolean) => boolean)) => void;
     tasks: Task[];
     filteredTasks: Task[];
+    listId: number;
 }
 
-export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode, tasks, filteredTasks }: Props) => {
+export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode, tasks, filteredTasks, listId }: Props) => {
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
@@ -143,6 +144,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                 householdMembers={household?.members}
                 filters={filters}
                 setFilters={setFilters}
+                listId={listId}
             />
         </div>
     )

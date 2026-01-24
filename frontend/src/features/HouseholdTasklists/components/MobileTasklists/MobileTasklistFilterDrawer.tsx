@@ -1,6 +1,7 @@
 import { Avatar, Button, Drawer, Group, Stack, Text, Space, Tooltip } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { type TaskFilters, type TimeFilter } from "../../hooks/useTasklistFiltering";
+import { useGetTasklistQuery, type TasklistType } from "@/store/taskSlice";
 
 type Props = {
     opened: boolean;
@@ -8,6 +9,7 @@ type Props = {
     householdMembers: { id: number; firstName: string; profileImg: string }[] | undefined;
     filters: TaskFilters;
     setFilters: (val: TaskFilters) => void;
+    listId: number;
 };
 
 // Map Display Labels to Internal Values
@@ -20,7 +22,9 @@ const TIME_OPTIONS: { label: string; value: TimeFilter }[] = [
     { label: "All", value: "all" },
 ];
 
-export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, filters, setFilters }: Props) => {
+export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, filters, setFilters, listId }: Props) => {
+    const { data: tasklist } = useGetTasklistQuery(listId);
+
     const [localFilters, setLocalFilters] = useState(filters);
 
     // Sync when drawer opens
@@ -43,6 +47,23 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
         setFilters(resetFilters);
         close();
     };
+
+    const availableMembers = useMemo(() => {
+        if (!householdMembers) return [];
+
+        // Case 1: Tasklist is undefined (loading) -> Safe default empty or all
+        if (!tasklist) return householdMembers;
+
+        // Case 2: "All Members" is true -> Show everyone in household
+        if (tasklist.allMembers) {
+            return householdMembers;
+        }
+
+        // Case 3: Subset -> Filter household members by tasklist.memberIds
+        const allowedIds = new Set(tasklist.memberIds?.map(Number) || []);
+        return householdMembers.filter(m => allowedIds.has(m.id));
+
+    }, [householdMembers, tasklist]);
 
     return (
         <Drawer
@@ -100,7 +121,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                             <Avatar radius="xl" color="gray">All</Avatar>
                         </div>
 
-                        {householdMembers?.map((member) => (
+                        {availableMembers?.map((member) => (
                             <div
                                 key={member.id}
                                 style={{
