@@ -41,6 +41,8 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
     );
 
     const isFeatured = list.isFeatured;
+    console.log('user:', user);
+    console.log('isFeatured:', isFeatured);
     const [featureTasklist] = useFeatureTasklistMutation();
 
     const navigate = useNavigate();

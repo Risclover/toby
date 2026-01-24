@@ -5,6 +5,7 @@ from sqlalchemy import CheckConstraint, Index, inspect
 from app.extensions import db
 from app.models.tasklist_member import TasklistMember
 from app.models.task import Task
+from flask_login import current_user
 
 
 class ViewMode(str, Enum):
@@ -193,6 +194,10 @@ class Tasklist(db.Model):
         return duplicate
 
     def to_dict(self, include_tasks: bool = True, include_members: bool = True):
+        try:
+            viewer = current_user
+        except:
+            viewer = self.user
         return {
             "id": self.id,
             "title": self.title,
@@ -212,6 +217,7 @@ class Tasklist(db.Model):
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
             "tasks": [t.to_dict() for t in self.tasks] if include_tasks else [],
+            "isFeatured": self.id == viewer.featured_tasklist_id if (viewer and hasattr(viewer, 'featured_tasklist_id')) else False
         }
 
     def __repr__(self):

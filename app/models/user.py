@@ -104,7 +104,7 @@ class User(db.Model, UserMixin):
             "dailyCheckin": self.daily_checkin,
             "lastCheckin": self.last_checkin,
             "householdId": self.household_id,
-            "isFeatured": self.id == current_user.featured_tasklist_id
+            "featuredTasklistId": self.featured_tasklist_id
         }
 
     def to_dict_with_mood(self):
