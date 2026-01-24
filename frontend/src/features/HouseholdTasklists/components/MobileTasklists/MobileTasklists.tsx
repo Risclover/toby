@@ -4,11 +4,15 @@ import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdTasklistsQuery } from "@/store/householdSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklist } from "../HouseholdTasklists/HouseholdTasklist";
-import { Button, Group, Stack, Text } from "@mantine/core";
+import { ActionIcon, Button, Group, Stack, Text } from "@mantine/core";
 import { CreateTasklist } from "../HouseholdTasklists/CreateTasklist"
 import { useDisclosure } from "@mantine/hooks";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useNavigate } from "react-router-dom";
+import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
+import Snackbar from '@mui/material/Snackbar';
+import { Notification } from '@mantine/core';
+
 
 const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
@@ -25,28 +29,27 @@ export const MobileTasklists = () => {
     const householdId = user?.householdId ?? skipToken;
 
     const {
-        data: lists = [],
-        isLoading,     // true only for the *first* load
+        data: allLists = [], // Rename incoming data to 'allLists'
+        isLoading,
     } = useGetHouseholdTasklistsQuery(householdId, {
-        // Optional: reduce surprise refetches
         refetchOnFocus: false,
         refetchOnReconnect: false,
     });
 
+    const lists = allLists.filter(list => !list.isArchived);
+
     const titleComponent = <div className="mobile-home-family-title">
         <h1>Tasklists</h1>
-        <Button
-            color="transparent"
-            radius="md"
-            h={40}
-            w={40}
-            type="button"
-            onClick={() => open()}
-            className="mobile-add-tasklist-btn"
-            aria-label="Add new tasklist"
-        >
-            <PlusIcon style={{ width: '1.5rem', height: '1.5rem' }} />
-        </Button>
+        <div className="tasklists-title-right">
+            <ActionIcon color="white" variant="subtle"><Inventory2RoundedIcon /></ActionIcon>
+            <ActionIcon
+                color="white"
+                variant="light"
+                onClick={() => open()}
+            >
+                <PlusIcon style={{ width: '1.5rem', height: '1.5rem' }} />
+            </ActionIcon>
+        </div>
     </div>
 
     if (authLoading || isLoading) return <div>Loading...</div>;

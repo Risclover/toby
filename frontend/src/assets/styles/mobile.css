@@ -87,6 +87,12 @@
     background-color: rgba(5, 5, 73, 0.1);
 }
 
+.tasklists-title-right {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
 .title-announcements {
     display: flex;
     justify-content: flex-start;

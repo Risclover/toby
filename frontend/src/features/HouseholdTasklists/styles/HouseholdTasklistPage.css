@@ -393,7 +393,8 @@ textarea.editable-title.is-editing {
 .extra {
     display: flex;
     gap: 3px;
-    align-self: flex-start;
+    align-items: center;
+    line-height: 1;
 }
 
 .task-details-label {
@@ -536,6 +537,7 @@ textarea.editable-title.is-editing {
 .tasklist-settings-footer-btn {
     height: auto !important;
     padding: 0.5rem 1rem !important;
+    font-family: "Nunito Sans", sans-serif;
 }
 
 .mantine-Tabs-panel {

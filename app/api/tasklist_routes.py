@@ -230,6 +230,17 @@ def archive_list(id):
 
     return jsonify(tasklist.to_dict())
 
+@tasklist_routes.route("/<int:id>/unarchive", methods=["PUT"])
+def unarchive_list(id):
+    """
+    Unarchive the tasklist.
+    """
+    tasklist = Tasklist.query.get(id)
+    tasklist.is_archived = False 
+    db.session.commit()
+
+    return jsonify(tasklist.to_dict())
+
 @tasklist_routes.route("/<int:id>/settings", methods=["PUT"])
 def update_list_settings(id):
     tasklist = Tasklist.query.get_or_404(id)

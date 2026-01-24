@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useAuthenticateQuery, type User } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useGetTasklistQuery, useUpdateTasklistMutation } from "@/store/taskSlice";
-import { type MultiSelectProps, Avatar, Group, Text } from "@mantine/core";
+import { useArchiveListMutation, useGetTasklistQuery, useUnarchiveListMutation, useUpdateTasklistMutation } from "@/store/taskSlice";
+import { type MultiSelectProps, Avatar, Button, Group, Text } from "@mantine/core";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { notifications } from '@mantine/notifications'; // <--- Import logic
 
 // Define the exact shape of your form values
 export type TasklistFormValues = {
@@ -31,10 +32,14 @@ type Props = {
 };
 
 export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
+    const navigate = useNavigate();
     const { tasklistId } = useParams();
     const tasklistTitleRef = useRef<HTMLInputElement>(null);
     const isSmallScreen = useIsSmallScreen();
     const [updateTasklist] = useUpdateTasklistMutation();
+    const [archiveList] = useArchiveListMutation();
+    const [unarchiveList] = useUnarchiveListMutation();
+
     const [showDiscardWarning, setShowDiscardWarning] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false); // Local state
@@ -251,6 +256,55 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
             form.setFieldValue("title", initialValues.title);
         }
     });
+
+    const handleArchiveList = async () => {
+        try {
+            await archiveList({ listId: Number(tasklistId) }).unwrap();
+            setShowTasklistSettings(false);
+            navigate("/tasklists");
+
+            notifications.show({
+                title: 'List archived successfully!',
+                color: 'teal',
+                position: 'bottom-center',
+                autoClose: 5000, // Give them time to click
+                message: (
+                    <Group align="center" gap="0.5rem">
+                        <Button variant="subtle" size="compact-xs">View archive</Button>
+                        <Button
+                            variant="subtle"
+                            size="compact-xs"
+                            onClick={handleUndoArchive}
+                        >
+                            Undo
+                        </Button>
+                    </Group>
+                ),
+            });
+
+        } catch (error) {
+            notifications.show({
+                title: 'Error',
+                message: 'Failed to archive list.',
+                color: 'red',
+            });
+        }
+
+    }
+
+    const handleUndoArchive = async () => {
+        await unarchiveList({ listId: Number(tasklistId) }).unwrap();
+
+        notifications.show({
+            title: 'List unarchived successfully!',
+            color: 'teal',
+            position: 'bottom-center',
+            autoClose: 5000, // Give them time to click
+            message: (
+                <Button variant="subtle" size="compact-xs" onClick={() => navigate(`/tasklists/${tasklist?.id}`)}>View tasklist</Button>
+            )
+        })
+    }
     return {
         form, // We expose the whole form object
         tasklist,
@@ -270,6 +324,8 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         handleSubmit,
         showDeleteConfirmation,
         setShowDeleteConfirmation,
-        allowedMembers
+        allowedMembers,
+        handleArchiveList,
+        handleUndoArchive
     };
 };

@@ -41,7 +41,9 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
         handleSubmit,
         showDeleteConfirmation,
         setShowDeleteConfirmation,
-        allowedMembers
+        allowedMembers,
+        handleArchiveList,
+        handleUndoArchive
     } = useTasklistSettings({ setShowTasklistSettings });
 
     const hasColorError = isTooLight(form.values.color);
@@ -82,6 +84,9 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                     setShowTasklistSettings={setShowTasklistSettings}
                     showDeleteConfirmation={showDeleteConfirmation}
                     setShowDeleteConfirmation={setShowDeleteConfirmation}
+                    handleArchiveList={handleArchiveList}
+                    handleUndoArchive={handleUndoArchive}
+                    isArchived={tasklist?.isArchived}
                 />
                 <BehaviorTab form={form} household={household} allowedMembers={allowedMembers} />
                 <AppearanceTab form={form} />

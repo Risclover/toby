@@ -17,12 +17,12 @@ export const TaskDeletionConfirmation = ({ title, opened, onClose, listId, taskI
         onClose();
     }
 
-    return <Modal onClose={onClose} opened={opened} title="Delete Task" centered>
-        <Text size="sm" c="white">You are about to delete the task <strong className="task-deletion-title">{title}</strong>. Would you like to continue?</Text>
+    return <Modal size="sm" withCloseButton={false} closeOnClickOutside={false} closeOnEscape={false} radius="md" yOffset="13vh" onClose={onClose} opened={opened} title="Confirm delete task">
+        <Text size="sm" c="black">Are you sure you want to delete the task <strong className="task-deletion-title">{title}</strong>? This action cannot be undone.</Text>
         <Space h="md" />
         <Group justify="flex-end">
-            <Button size="compact-sm" radius="xl" variant="subtle" color="cyan.5" onClick={onClose}>Cancel</Button>
-            <Button size="compact-sm" color="red" radius="xl" variant="" onClick={handleTaskDeletion}>Confirm</Button>
+            <Button className="tasklist-settings-footer-btn" size="compact-sm" radius="sm" variant="outline" color="var(--tasklist-color)" onClick={onClose}>Cancel</Button>
+            <Button className="tasklist-settings-footer-btn" size="compact-sm" color="red" radius="sm" variant="" onClick={handleTaskDeletion}>Confirm</Button>
         </Group>
     </Modal>
 }

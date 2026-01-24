@@ -7,6 +7,7 @@ import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useMemberSelection } from "@/hooks/useMemberSelection";
 import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from "react-router-dom";
 
 type CreateTasklist = {
     householdId: number
@@ -16,6 +17,7 @@ type CreateTasklist = {
 }
 
 export const CreateTasklist = ({ householdId, opened, open, close }: CreateTasklist) => {
+    const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const [title, setTitle] = useState("");
@@ -39,20 +41,28 @@ export const CreateTasklist = ({ householdId, opened, open, close }: CreateTaskl
         e.preventDefault();
         if (!canSubmit) return;
 
+        let newList;
         if (allMembers) {
-            await createTasklist({ title, householdId, allMembers: true } as const);
+            newList = await createTasklist({ title, householdId, allMembers: true }).unwrap();
         } else {
-            await createTasklist({
+            newList = await createTasklist({
                 title,
                 householdId,
                 allMembers: false,
                 memberIds,
-            } as const);
+            }).unwrap();
         }
 
+        // 1. Success! Access the ID
+        const newId = newList.id;
+
+        // 2. Cleanup
         setTitle("");
         toggleAll(true);
         close();
+
+        // 3. Navigate
+        navigate(`/tasklists/${newId}`); // Adjust path as needed
     };
 
     return (

@@ -129,8 +129,8 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                         autosize
                     />
                     <Group justify="flex-end" mt="md">
-                        <Button variant="light" color="var(--tasklist-color)" onClick={() => close()}>Cancel</Button>
-                        <Button variant="filled" color="var(--tasklist-color)" onClick={handleSaveTaskDetails}>Save</Button>
+                        <Button className="tasklist-settings-footer-btn" variant="outline" color="var(--tasklist-color)" onClick={() => close()}>Cancel</Button>
+                        <Button className="tasklist-settings-footer-btn" variant="filled" color="var(--tasklist-color)" onClick={handleSaveTaskDetails}>Save</Button>
                     </Group>
                 </div>
             </div>

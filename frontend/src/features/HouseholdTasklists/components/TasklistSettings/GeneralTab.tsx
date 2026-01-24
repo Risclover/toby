@@ -39,9 +39,12 @@ type GeneralTabProps = {
     setShowTasklistSettings: (val: boolean) => void;
     showDeleteConfirmation: boolean;
     setShowDeleteConfirmation: (val: boolean) => void;
+    handleArchiveList: () => void;
+    handleUndoArchive: () => void;
+    isArchived: boolean;
 };
 
-export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderMultiSelectOption, isSmallScreen, titleRef, onToggleAll, onMemberChange, setShowTasklistSettings, showDeleteConfirmation, setShowDeleteConfirmation }: GeneralTabProps) => {
+export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderMultiSelectOption, isSmallScreen, titleRef, onToggleAll, onMemberChange, setShowTasklistSettings, showDeleteConfirmation, setShowDeleteConfirmation, handleArchiveList, handleUndoArchive, isArchived }: GeneralTabProps) => {
     const navigate = useNavigate();
     const hasMemberError = form.values.memberIds.length === 0;
     const [deleteList] = useDeleteListMutation();
@@ -145,7 +148,10 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                 divider={true}
             >
                 <Space h={12} />
-                <Button color="var(--tasklist-color)" variant="filled">Archive list</Button>
+                {isArchived ?
+                    <Button color="var(--tasklist-color)" variant="filled" onClick={handleUndoArchive}>Unarchive list</Button> :
+                    <Button color="var(--tasklist-color)" variant="filled" onClick={handleArchiveList}>Archive list</Button>
+                }
             </SettingsItem>
             <SettingsItem
                 layout="delete"
@@ -156,7 +162,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                 <Space h={12} />
                 <Button color="red.7" onClick={() => setShowDeleteConfirmation(true)}>Delete tasklist</Button>
             </SettingsItem>
-            {showDeleteConfirmation && <DeleteConfirmation opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteList={handleDeleteList} />}
+            {showDeleteConfirmation && <DeleteConfirmation title={form.values.title} opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteList={handleDeleteList} />}
         </Tabs.Panel>
     );
 };

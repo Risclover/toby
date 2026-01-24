@@ -119,6 +119,10 @@ export interface ToggleImportanceRequest {
     householdId?: number;
 }
 
+export interface ArchiveListRequest {
+    listId: number;
+}
+
 type UpdateTaskPatch = Partial<
     Pick<Task, "isImportant" | "status" | "title" | "description" | "dueDate" | "assignedToId" | "notes">
 >;
@@ -255,16 +259,25 @@ export const taskSlice = apiSlice.injectEndpoints({
         }),
 
         updateTasklist: builder.mutation({
-            query: ({ listId, data }) => ({
+            // Add householdId to the argument destructuring, but ignore it for the query
+            query: ({ listId, data, householdId }) => ({
                 url: `/tasklists/${listId}/settings`,
                 method: "PUT",
                 body: data
             }),
+
+            // Now householdId will be available here!
             invalidatesTags: (_res, _err, { listId, householdId }): TasklistTag[] => {
                 const tags: TasklistTag[] = [{ type: "Tasklist", id: listId }];
-                if (householdId != null) tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
-                tags.push({ type: "Tasklist", id: listId })
-                tags.push({ type: "Tasklist", id: "LIST" });
+
+                if (householdId != null) {
+                    tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
+                } else {
+                    // Fallback: Invalidate *all* lists if we don't know the household
+                    // This ensures the list reappears even if we forgot the ID
+                    tags.push({ type: "Tasklist", id: "LIST" });
+                }
+
                 return tags;
             },
         }),
@@ -427,15 +440,66 @@ export const taskSlice = apiSlice.injectEndpoints({
             },
         }),
 
-        archiveList: builder.mutation({
-            query: (listId) => ({
+        archiveList: builder.mutation<TasklistType, ArchiveListRequest>({
+            query: ({ listId }) => ({
                 url: `/tasklists/${listId}/archive`,
                 method: "PUT",
-                body: { listId }
-            })
-        })
+            }),
+            async onQueryStarted({ listId }, { dispatch, queryFulfilled, getState }) {
+                // Optimistic Update: Mark list as archived in cache
+                const patchResult = dispatch(
+                    taskSlice.util.updateQueryData("getTasklist", listId, (draft) => {
+                        draft.isArchived = true;
+                    })
+                );
 
-    })
+                // Also update the household list view if possible (to remove it or gray it out)
+                // (Optional, depends on if you want it to disappear instantly)
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchResult.undo();
+                }
+            },
+            invalidatesTags: (result, error, arg) => [
+                { type: "Tasklist", id: arg.listId },
+                { type: "Tasklist", id: "LIST" }, // Refetch the list of lists so it disappears from sidebar
+                // If you use HOUSEHOLD tags for the sidebar list:
+                ...(result?.householdId ? [{ type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` } as const] : [])
+            ],
+        }),
+
+        unarchiveList: builder.mutation<TasklistType, ArchiveListRequest>({
+            query: ({ listId }) => ({
+                url: `/tasklists/${listId}/unarchive`,
+                method: "PUT",
+            }),
+            async onQueryStarted({ listId }, { dispatch, queryFulfilled, getState }) {
+                // Optimistic Update: Mark list as archived in cache
+                const patchResult = dispatch(
+                    taskSlice.util.updateQueryData("getTasklist", listId, (draft) => {
+                        draft.isArchived = false;
+                    })
+                );
+
+                // Also update the household list view if possible (to remove it or gray it out)
+                // (Optional, depends on if you want it to disappear instantly)
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchResult.undo();
+                }
+            },
+            invalidatesTags: (result, error, arg) => [
+                { type: "Tasklist", id: arg.listId },
+                { type: "Tasklist", id: "LIST" }, // Refetch the list of lists so it disappears from sidebar
+                // If you use HOUSEHOLD tags for the sidebar list:
+                ...(result?.householdId ? [{ type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` } as const] : [])
+            ],
+        }),
+    }),
 })
 
 export const {
@@ -453,4 +517,5 @@ export const {
     useToggleTaskImportanceMutation,
     useReorderTasksMutation,
     useArchiveListMutation,
+    useUnarchiveListMutation
 } = taskSlice;

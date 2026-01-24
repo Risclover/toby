@@ -4,10 +4,12 @@ import "./index.css"
 import "./assets/styles/globals.css"
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
+import '@mantine/notifications/styles.css';
 import "@/assets/styles/MantineOverrides.css"
 import { MantineProvider } from '@mantine/core';
 import { PrimeReactProvider } from 'primereact/api';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
+import { Notifications } from "@mantine/notifications"
 
 function App() {
   return (
@@ -15,6 +17,7 @@ function App() {
       <BrowserRouter>
         <PrimeReactProvider>
           <MantineProvider theme={{ primaryShade: 7 }}>
+            <Notifications />
             <Layout />
           </MantineProvider>
         </PrimeReactProvider>
