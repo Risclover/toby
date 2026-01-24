@@ -123,6 +123,12 @@ export interface ArchiveListRequest {
     listId: number;
 }
 
+export interface DuplicateListRequest {
+    listId: number;
+    // Note: If you later update your backend to accept a "mode" (e.g. Copy only active tasks),
+    // you would add that property here.
+}
+
 type UpdateTaskPatch = Partial<
     Pick<Task, "isImportant" | "status" | "title" | "description" | "dueDate" | "assignedToId" | "notes">
 >;
@@ -499,6 +505,24 @@ export const taskSlice = apiSlice.injectEndpoints({
                 ...(result?.householdId ? [{ type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` } as const] : [])
             ],
         }),
+
+        duplicateList: builder.mutation<TasklistType, DuplicateListRequest>({
+            query: ({ listId }) => ({
+                url: `/tasklists/${listId}/duplicate`,
+                method: "POST",
+            }),
+            // 3. Invalidate tags so the new list appears in the sidebar/dashboard
+            invalidatesTags: (result) => {
+                const tags: TasklistTag[] = [{ type: "Tasklist", id: "LIST" }];
+
+                // If the new list belongs to a household, refresh that household's list view
+                if (result?.householdId) {
+                    tags.push({ type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` });
+                }
+
+                return tags;
+            },
+        }),
     }),
 })
 
@@ -517,5 +541,6 @@ export const {
     useToggleTaskImportanceMutation,
     useReorderTasksMutation,
     useArchiveListMutation,
-    useUnarchiveListMutation
+    useUnarchiveListMutation,
+    useDuplicateListMutation
 } = taskSlice;

@@ -1,5 +1,6 @@
 import { useDeleteTaskMutation } from "@/store/taskSlice";
 import { Button, Group, Modal, Space, Text } from "@mantine/core"
+import { notifications } from "@mantine/notifications";
 
 type Props = {
     title: string;
@@ -15,6 +16,13 @@ export const TaskDeletionConfirmation = ({ title, opened, onClose, listId, taskI
     const handleTaskDeletion = async () => {
         await deleteTask({ listId, taskId });
         onClose();
+        notifications.show({
+            title: 'Success!',
+            message: "Task deleted successfully.",
+            color: 'teal',
+            position: 'bottom-center',
+            autoClose: 5000,
+        });
     }
 
     return <Modal size="sm" withCloseButton={false} closeOnClickOutside={false} closeOnEscape={false} radius="md" yOffset="13vh" onClose={onClose} opened={opened} title="Confirm delete task">

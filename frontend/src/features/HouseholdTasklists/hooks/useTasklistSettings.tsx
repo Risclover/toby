@@ -4,7 +4,7 @@ import { useForm, isNotEmpty } from "@mantine/form";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useAuthenticateQuery, type User } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useArchiveListMutation, useGetTasklistQuery, useUnarchiveListMutation, useUpdateTasklistMutation } from "@/store/taskSlice";
+import { useArchiveListMutation, useDuplicateListMutation, useGetTasklistQuery, useUnarchiveListMutation, useUpdateTasklistMutation } from "@/store/taskSlice";
 import { type MultiSelectProps, Avatar, Button, Group, Text } from "@mantine/core";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { notifications } from '@mantine/notifications'; // <--- Import logic
@@ -39,6 +39,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
     const [updateTasklist] = useUpdateTasklistMutation();
     const [archiveList] = useArchiveListMutation();
     const [unarchiveList] = useUnarchiveListMutation();
+    const [duplicateList] = useDuplicateListMutation();
 
     const [showDiscardWarning, setShowDiscardWarning] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -305,6 +306,26 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
             )
         })
     }
+
+    const handleDuplicateList = async () => {
+        try {
+            const newList = await duplicateList({ listId: Number(tasklistId) }).unwrap()
+            notifications.show({
+                title: 'List duplicated successfully!',
+                message: <Button variant="white" size="compact-xs" onClick={() => { setShowTasklistSettings(false); navigate(`/tasklists/${newList.id}`) }}>View duplicated list</Button>,
+                color: 'teal',
+                position: 'bottom-center',
+                autoClose: 5000,
+            });
+
+        } catch (error) {
+            notifications.show({
+                title: 'Error',
+                message: 'Failed to duplicate list',
+                color: 'red'
+            });
+        }
+    }
     return {
         form, // We expose the whole form object
         tasklist,
@@ -326,6 +347,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         setShowDeleteConfirmation,
         allowedMembers,
         handleArchiveList,
-        handleUndoArchive
+        handleUndoArchive,
+        handleDuplicateList
     };
 };

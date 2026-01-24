@@ -6,6 +6,7 @@ import { SettingsItem } from "./SettingsItem";
 import { useDeleteListMutation } from "@/store/taskSlice";
 import { DeleteConfirmation } from "./DeleteConfirmation";
 import { useNavigate } from "react-router-dom";
+import { notifications } from "@mantine/notifications";
 
 export type TasklistFormValues = {
     title: string;
@@ -41,10 +42,11 @@ type GeneralTabProps = {
     setShowDeleteConfirmation: (val: boolean) => void;
     handleArchiveList: () => void;
     handleUndoArchive: () => void;
-    isArchived: boolean;
+    isArchived: boolean | undefined;
+    handleDuplicateList: () => void;
 };
 
-export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderMultiSelectOption, isSmallScreen, titleRef, onToggleAll, onMemberChange, setShowTasklistSettings, showDeleteConfirmation, setShowDeleteConfirmation, handleArchiveList, handleUndoArchive, isArchived }: GeneralTabProps) => {
+export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderMultiSelectOption, isSmallScreen, titleRef, onToggleAll, onMemberChange, setShowTasklistSettings, showDeleteConfirmation, setShowDeleteConfirmation, handleArchiveList, handleUndoArchive, isArchived, handleDuplicateList }: GeneralTabProps) => {
     const navigate = useNavigate();
     const hasMemberError = form.values.memberIds.length === 0;
     const [deleteList] = useDeleteListMutation();
@@ -53,7 +55,14 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
         await deleteList({ listId: tasklistId });
         setShowDeleteConfirmation(false);
         setShowTasklistSettings(false);
-        navigate("/tasklists")
+        navigate("/tasklists");
+        notifications.show({
+            title: "Success!",
+            message: "Tasklist deleted successfully.",
+            color: "teal",
+            position: "bottom-center",
+            autoClose: 5000,
+        })
     }
 
     return (
@@ -139,7 +148,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                 divider={false}
             >
                 <Space h={12} />
-                <Button color="var(--tasklist-color)" variant="filled">Duplicate list</Button>
+                <Button color="var(--tasklist-color)" variant="filled" onClick={handleDuplicateList}>Duplicate list</Button>
             </SettingsItem>
             <SettingsItem
                 layout="delete"

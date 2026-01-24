@@ -124,9 +124,8 @@ export const MobileTasklist = () => {
                 {filteredTasks.length === 0 && uncompleted.length === 0 && completed.length === 0 &&
                     <Stack justify="center" align="center" my={isSmall ? "5rem" : ""} h={!isSmall ? "100%" : ""}>
                         <Group w="100%" justify="center" align="center">
-                            <Text styles={{ root: { lineHeight: "1.4" } }}>This tasklist contains no tasks. Would you like to add one?</Text>
+                            <Text styles={{ root: { lineHeight: "1.4", textAlign: "center" } }} color="black">This tasklist contains no tasks. You can add one by using the text box below.</Text>
                         </Group>
-                        <Button color="cyan" onClick={() => inputRef.current?.focus()}>Add Task</Button>
                     </Stack>
                 }
                 {/* Active Tasks List */}
