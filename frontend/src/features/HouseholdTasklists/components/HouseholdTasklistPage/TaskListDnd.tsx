@@ -1,9 +1,9 @@
 // src/components/TaskListDnd.tsx
-import React, { useState, type SetStateAction } from "react";
+import React, { useEffect, useState, type SetStateAction } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useGetTaskQuery, useToggleTaskImportanceMutation, type Task } from "@/store/taskSlice";
+import { useGetTasklistQuery, useGetTaskQuery, useToggleTaskImportanceMutation, type Task } from "@/store/taskSlice";
 import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -71,6 +71,8 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
     const { data: latestTask } = useGetTaskQuery(initialTask.id);
     const task = latestTask ?? initialTask;
     const isSmall = useIsSmallScreen();
+    const { data: tasklist } = useGetTasklistQuery(listId);
+    const [viewMode, setViewMode] = useState(tasklist?.viewMode);
 
     const {
         attributes,
@@ -91,6 +93,12 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
         opacity: isDragging ? 0.6 : 1,
     };
 
+    useEffect(() => {
+        if (tasklist?.viewMode) {
+            setViewMode(tasklist.viewMode);
+        }
+    }, [tasklist?.viewMode])
+
     const handleStarClick = async (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
         await toggleImportance({ taskId: task.id, listId: listId, householdId: user?.householdId })
@@ -107,7 +115,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
     }
 
     return (
-        <li ref={setNodeRef} style={style} className="task">
+        <li ref={setNodeRef} style={style} className={`task${viewMode === "compact" ? " task-no-padding" : ""}`}>
             <div className="task-row" onClick={() => setShowTaskDetails(true)}>
                 <div className="task-row-left">
                     {tasks && !isSmall && tasks?.length > 1 && (

@@ -419,6 +419,10 @@
     min-width: 130px;
 }
 
+.tasklists-sort button {
+    line-height: 1;
+}
+
 .mobile-announcements-header .mantine-Input-input {
     font-family: "Alan Sans", sans-serif;
 }

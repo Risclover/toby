@@ -91,6 +91,11 @@
     padding-left: 0.25rem;
 }
 
+.task.task-no-padding {
+    padding: 0;
+    padding-right: 0.75rem;
+}
+
 .task:hover {
     cursor: pointer;
     background: var(--indigo-50);

@@ -16,10 +16,12 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
             task: data?.tasks?.find(t => t.id === taskId),
         }),
     });
+    const { data: tasklist } = useGetTasklistQuery(listId)
 
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [checked, setChecked] = useState(task?.status === "completed");
     const [completeTask] = useCompleteTaskMutation();
+    const [viewMode, setViewMode] = useState(tasklist?.viewMode);
 
     // keep local state in sync if task.status changes externally
     useEffect(() => {
@@ -45,6 +47,18 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
         }
     };
 
+    useEffect(() => {
+        // Only apply defaults if tasklist is loaded
+        if (tasklist?.viewMode) {
+            // You might want a check here: "Only set this on FIRST load, not every re-render"
+            // But since useEffect runs on dependency change, and tasklist.defaultFilters 
+            // usually doesn't change often, this is generally safe.
+            // If you want strict "on mount only" behavior, you need a Ref to track "hasInitialized".
+
+            setViewMode(tasklist.viewMode);
+        }
+    }, [tasklist?.viewMode]);
+
     if (!task) return null;
 
     return (
@@ -68,7 +82,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
                     </div>
                     <div className="task-left-bottom">
                         <div className="invisible-wall"></div>
-                        {!checked && <TaskExtra task={task} listId={listId} householdId={householdId} />}
+                        {!checked && viewMode === "detailed" && <TaskExtra task={task} listId={listId} householdId={householdId} />}
                     </div>
                 </div>
                 {showDeleteConfirmation &&

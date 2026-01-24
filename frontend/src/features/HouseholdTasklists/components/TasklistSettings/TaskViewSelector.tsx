@@ -2,13 +2,13 @@ import { Box, Checkbox, Flex, Group, rem, Stack, Text } from "@mantine/core";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { StarIcon } from "@/assets/icons/StarIcon";
 
-function MiniLine({ width, height, opacity = 1, marginTop }: { width: string | number; height: string | number; opacity?: number; marginTop?: string | number; }) {
+function MiniLine({ width, height, opacity = 1, marginTop, color = 'currentColor' }: { width: string | number; height: string | number; opacity?: number; marginTop?: string | number; color?: string; }) {
     return (
         <Box
             style={{
                 width,
                 height,
-                backgroundColor: 'currentColor', // Uses parent text color
+                backgroundColor: color, // Uses parent text color
                 opacity,
                 marginTop,
                 borderRadius: rem(2)
@@ -48,12 +48,12 @@ function DetailedTask() {
                     <MiniLine width="85%" height={6} opacity={0.6} marginTop="2px" />
 
                     {/* Metadata Row */}
-                    <Flex gap={4} align="center" style={{ opacity: 0.4 }}>
-                        <MiniLine width={8} height={8} /> {/* Icon Box */}
-                        <MiniLine width={24} height={4} /> {/* Text Line */}
+                    <Flex gap={4} align="center">
+                        <MiniLine width={8} height={8} opacity={0.7} color="var(--tasklist-color)" /> {/* Icon Box */}
+                        <MiniLine width={24} height={4} opacity={0.4} /> {/* Text Line */}
                         <Box w={4} /> {/* Spacer */}
-                        <MiniLine width={8} height={8} /> {/* Icon Box */}
-                        <MiniLine width={24} height={4} /> {/* Text Line */}
+                        <MiniLine width={8} height={8} opacity={0.7} color="var(--tasklist-color)" /> {/* Icon Box */}
+                        <MiniLine width={24} height={4} opacity={0.4} /> {/* Text Line */}
                     </Flex>
                 </Stack>
 

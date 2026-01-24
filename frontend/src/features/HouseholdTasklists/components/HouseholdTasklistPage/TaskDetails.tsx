@@ -59,12 +59,13 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                 <div>
                     <p className="task-details-label">Task:</p>
                     <Textarea
-                        minRows={1}
+                        minRows={2}
                         maxRows={20}
                         maxLength={255}
                         autosize
                         value={taskDetailsProps.title.value}
                         onChange={taskDetailsProps.title.onChange}
+                        placeholder="Write task here"
                     />
                     {taskError && <div className="error-message">{taskError}</div>}
 
