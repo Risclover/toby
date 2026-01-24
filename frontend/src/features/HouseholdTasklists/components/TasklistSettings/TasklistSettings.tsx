@@ -4,6 +4,7 @@ import { GeneralTab } from "./GeneralTab";
 import { BehaviorTab } from "./BehaviorTab";
 import { AppearanceTab } from "./AppearanceTab";
 import { DiscardWarning } from "./DiscardWarning";
+import { isTooLight } from "../../utils/isTooLight";
 
 /* --- SHARED CONSTANTS --- */
 export const TIME_OPTIONS = [
@@ -41,6 +42,8 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
         showDeleteConfirmation,
         setShowDeleteConfirmation
     } = useTasklistSettings({ setShowTasklistSettings });
+
+    const hasColorError = isTooLight(form.values.color);
 
     console.log('tasklist:', tasklist)
     return (
@@ -99,7 +102,7 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                             color="var(--tasklist-color)"
                             variant="filled"
                             className="tasklist-settings-footer-btn"
-                            disabled={!form.isDirty() || !form.isValid()} // Built-in helpers
+                            disabled={!form.isDirty() || !form.isValid() || hasColorError} // Built-in helpers
                             onClick={() => handleSubmit()}
                             loading={isSubmitting}
                             loaderProps={{ children: 'Saving...' }}
