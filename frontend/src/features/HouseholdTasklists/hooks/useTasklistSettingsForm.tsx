@@ -10,7 +10,6 @@ export type TasklistSettingsForm = {
     title: string;
     autoHide: boolean;
     newTaskPosition: "top" | "bottom";
-    starsAtTop: boolean;
     sortOrder: string | null;
     viewMode: string;
     color?: string;
@@ -24,7 +23,6 @@ export function createInitialForm(tasklist: any): TasklistSettingsForm {
         title: tasklist?.title ?? "",
         autoHide: tasklist?.autoHideWhenEmpty ?? false,
         newTaskPosition: tasklist?.newItemPosition ?? "bottom",
-        starsAtTop: tasklist?.starsAtTop ?? false,
         sortOrder: tasklist?.defaultSortOrder ?? null,
         viewMode: tasklist?.viewMode ?? "detailed",
         color: tasklist?.color,

@@ -14,7 +14,6 @@ export type TasklistFormValues = {
     title: string;
     showCompleted: boolean;
     newItemPosition: string;
-    starsAtTop: boolean;
     defaultSortOrder: string | null;
     color: string;
     viewMode: string;
@@ -55,7 +54,6 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         title: tasklist?.title ?? "",
         showCompleted: tasklist?.showCompleted ?? false,
         newItemPosition: tasklist?.newItemPosition ?? "bottom",
-        starsAtTop: tasklist?.starsAtTop ?? false,
         defaultSortOrder: tasklist?.defaultSortOrder || null,
         color: tasklist?.color ?? "#15aabf", // Provide a fallback color
         viewMode: tasklist?.viewMode ?? "detailed",
@@ -199,7 +197,6 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
             title: form.values.title,
             showCompleted: form.values.showCompleted, // <- This boolean should now work
             newItemPosition: form.values.newItemPosition,
-            starsAtTop: form.values.starsAtTop,
             defaultSortOrder: form.values.defaultSortOrder,
             color: form.values.color,
             viewMode: form.values.viewMode,
@@ -232,7 +229,6 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         form.setFieldValue("title", tasklist.title);
         form.setFieldValue("showCompleted", false);
         form.setFieldValue("newItemPosition", "bottom");
-        form.setFieldValue("starsAtTop", false);
         form.setFieldValue("defaultSortOrder", null);
         form.setFieldValue("defaultFilters", { importance: "all", assignedToId: null, time: "all" });
         form.setFieldValue("color", "#15aabf");

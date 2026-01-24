@@ -52,6 +52,13 @@
     text-overflow: ellipsis;
 }
 
+.tasklist-head-right {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: rgb(230, 176, 2);
+}
+
 .progress {
     display: flex;
     align-items: center;

@@ -35,22 +35,41 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
             <div className="h-1 w-12 bg-muted mx-auto rounded-full mb-4"></div>
             <Stack justify="space-between" className="mobile-announcements-filter-drawer">
                 {/* Importance */}
-                <Stack>
-                    <Text size="sm">Importance</Text>
+                <Stack gap="0.5rem">
+                    <Text size="sm" fw={500} c="black">Importance:</Text>
                     <Group>
-                        <Button color="rgb(5, 5, 73)" variant={localFilters.importance === "all" ? "filled" : "outline"} onClick={() => setLocalFilters({ ...localFilters, importance: "all" })}>
+                        <Button color="rgb(5, 5, 73)"
+                            size="sm"
+                            h="auto"
+                            p="0.5rem 1rem"
+                            fw={500} variant={localFilters.importance === "all" ? "filled" : "outline"} onClick={() => setLocalFilters({ ...localFilters, importance: "all" })}>
                             All
                         </Button>
-                        <Button color="rgb(5, 5, 73)" variant={localFilters.importance === "important" ? "filled" : "outline"} onClick={() => setLocalFilters({ ...localFilters, importance: "important" })}>
+                        <Button color="rgb(5, 5, 73)"
+                            size="sm"
+                            h="auto"
+                            p="0.5rem 1rem"
+                            fw={500} variant={localFilters.importance === "important" ? "filled" : "outline"} onClick={() => setLocalFilters({ ...localFilters, importance: "important" })}>
                             Important
                         </Button>
                     </Group>
                 </Stack>
 
                 {/* Creator */}
-                <Stack className="filter-drawer-avatars">
-                    <Text size="sm">Member</Text>
+                <Stack gap="0.5rem" className="filter-drawer-avatars">
+                    <Text size="sm" fw={500} c="black">Member:</Text>
                     <Group>
+                        <div
+                            style={{
+                                cursor: 'pointer',
+                                border: localFilters.creatorId === null ? '2px solid rgb(5, 5, 73)' : '2px solid transparent',
+                                borderRadius: '50%',
+                                padding: '2px'
+                            }}
+                            onClick={() => setLocalFilters({ ...localFilters, creatorId: null })}
+                        >
+                            <Avatar radius="xl" color="gray">All</Avatar>
+                        </div>
                         {householdMembers?.map((member) => (
                             <Button
                                 style={{
@@ -77,11 +96,15 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
                 </Stack>
 
                 {/* Time */}
-                <Stack>
-                    <Text size="sm">Time</Text>
+                <Stack gap="0.5rem">
+                    <Text size="sm" fw={500} c="black">Time:</Text>
                     <Group>
-                        {["today", "7days", "30days", "all"].map((t) => (
+                        {["all", "today", "7days", "30days"].map((t) => (
                             <Button color="rgb(5, 5, 73)"
+                                size="sm"
+                                h="auto"
+                                p="0.5rem 1rem"
+                                fw={500}
                                 key={t}
                                 variant={localFilters.time === t ? "filled" : "outline"}
                                 onClick={() => setLocalFilters({ ...localFilters, time: t as any })}

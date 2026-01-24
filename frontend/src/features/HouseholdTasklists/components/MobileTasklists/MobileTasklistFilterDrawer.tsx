@@ -14,12 +14,12 @@ type Props = {
 
 // Map Display Labels to Internal Values
 const TIME_OPTIONS: { label: string; value: TimeFilter }[] = [
+    { label: "All", value: "all" },
     { label: "Past due", value: "past_due" },
     { label: "Today", value: "today" },
     { label: "Tomorrow", value: "tomorrow" },
     { label: "This week", value: "this_week" },
     { label: "This month", value: "this_month" },
-    { label: "All", value: "all" },
 ];
 
 export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, filters, setFilters, listId }: Props) => {
@@ -82,12 +82,15 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
             <Stack justify="space-between" className="mobile-announcements-filter-drawer">
 
                 {/* Importance */}
-                <Stack>
-                    <Text size="sm" fw={500}>Importance</Text>
+                <Stack gap="0.5rem">
+                    <Text size="sm" fw={500} c="black">Importance:</Text>
                     <Group>
                         <Button
                             color="rgb(5, 5, 73)"
-                            size="xs"
+                            size="sm"
+                            h="auto"
+                            p="0.5rem 1rem"
+                            fw={500}
                             variant={localFilters.importance === "all" ? "filled" : "outline"}
                             onClick={() => setLocalFilters({ ...localFilters, importance: "all" })}
                         >
@@ -95,7 +98,10 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                         </Button>
                         <Button
                             color="rgb(5, 5, 73)"
-                            size="xs"
+                            size="sm"
+                            h="auto"
+                            p="0.5rem 1rem"
+                            fw={500}
                             variant={localFilters.importance === "important" ? "filled" : "outline"}
                             onClick={() => setLocalFilters({ ...localFilters, importance: "important" })}
                         >
@@ -105,8 +111,8 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                 </Stack>
 
                 {/* Creator / Assignee */}
-                <Stack className="filter-drawer-avatars">
-                    <Text size="sm" fw={500}>Assigned To</Text>
+                <Stack className="filter-drawer-avatars" gap="0.5rem">
+                    <Text size="sm" fw={500} c="black">Assigned to:</Text>
                     <Group gap="xs" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
                         {/* "All" Avatar Option */}
                         <div
@@ -150,14 +156,18 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                 </Stack>
 
                 {/* Time */}
-                <Stack>
-                    <Text size="sm" fw={500}>Due date</Text>
+                <Stack gap="0.5rem">
+                    <Text size="sm" fw={500} c="black">Due date:</Text>
                     <Group gap="xs">
                         {TIME_OPTIONS.map((option) => (
                             <Button
                                 key={option.value}
                                 color="rgb(5, 5, 73)"
-                                size="xs"
+                                size="sm"
+                                h="auto"
+                                // c="black"
+                                fw={500}
+                                p="0.5rem 1rem"
                                 variant={localFilters.time === option.value ? "filled" : "outline"}
                                 onClick={() => setLocalFilters({ ...localFilters, time: option.value })}
                             >
@@ -167,15 +177,13 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                     </Group>
                 </Stack>
 
-                <Space h="md" />
-
                 {/* Actions */}
                 <Group grow className="filter-drawer-submit-btns">
-                    <Button color="rgb(5, 5, 73)" variant="subtle" onClick={handleReset}>
+                    <Button color="rgb(5, 5, 73)" variant="light" onClick={handleReset}>
                         Reset
                     </Button>
                     <Button color="rgb(5, 5, 73)" onClick={handleApply}>
-                        Apply Filters
+                        Apply
                     </Button>
                 </Group>
             </Stack>

@@ -40,17 +40,17 @@ export const MobileTasklists = () => {
 
     const titleComponent = <div className="mobile-home-family-title">
         <h1>Tasklists</h1>
-        <div className="tasklists-title-right">
-            <ActionIcon color="white" variant="subtle"><Inventory2RoundedIcon /></ActionIcon>
+        <Group gap=".75rem" className="tasklists-title-right">
             <ActionIcon
-                color="white"
-                variant="light"
+                size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)"><Inventory2RoundedIcon /></ActionIcon>
+            <ActionIcon
+                size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)"
                 onClick={() => open()}
             >
-                <PlusIcon style={{ width: '1.5rem', height: '1.5rem' }} />
+                <PlusIcon style={{ width: '1.25rem', height: '1.25rem' }} />
             </ActionIcon>
-        </div>
-    </div>
+        </Group>
+    </div >
 
     if (authLoading || isLoading) return <div>Loading...</div>;
 

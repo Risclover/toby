@@ -12,7 +12,6 @@ export type TasklistFormValues = {
     title: string;
     showCompleted: boolean;
     newItemPosition: string;
-    starsAtTop: boolean;
     defaultSortOrder: string | null;
     color: string;
     viewMode: string;

@@ -255,7 +255,6 @@ def update_list_settings(id):
         "defaultSortOrder": "default_sort_order",
         "defaultFilters": "default_filters",
         "newItemPosition": "new_item_position",
-        "starsAtTop": "stars_at_top"
     }
 
     for json_key, model_attr in field_mapping.items():

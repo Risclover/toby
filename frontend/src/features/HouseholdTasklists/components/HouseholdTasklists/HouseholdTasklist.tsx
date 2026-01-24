@@ -4,9 +4,10 @@ import type { Task, TasklistType } from "@/store/taskSlice"
 import { Avatar, Divider, Progress, Tooltip } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklistTask } from "./HouseholdTasklistTask";
-import { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMobileTasklist } from "../../hooks/useMobileTasklist";
+import { StarIcon, StarIconOutline } from "@/assets/icons/StarIcon";
 
 type HouseholdTasklistProps = {
     list: TasklistType;
@@ -32,6 +33,8 @@ export function HouseholdTasklist(props: HouseholdTasklistProps) {
 
 // This contains your original logic, renamed to 'Content'
 function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
+    const [isFeatured, setIsFeatured] = useState(false);
+
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(
         user?.householdId ?? skipToken
@@ -97,6 +100,11 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
     console.log('list color:', list?.color);
     console.log('list:', list);
 
+    const handleStarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        setIsFeatured(prev => !prev)
+    }
+
     return (
         <div
             className="mobile-home-notice-board mobile-tasklist-card"
@@ -107,38 +115,47 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
         >
             <div className="tasklist-head">
                 <span className="tasklist-head-title">{list.title}</span>
-                <Tooltip.Group openDelay={300} closeDelay={100}>
-                    <Avatar.Group spacing="sm">
-                        {visible.map((person: any) => (
-                            <Tooltip key={person.id} label={nameOf(person)} withArrow>
-                                <Avatar
-                                    src={person.profileImg || undefined}
-                                    radius="xl"
-                                    size="sm"
-                                >
-                                    {!person.profileImg && avatarInitial(person)}
-                                </Avatar>
-                            </Tooltip>
-                        ))}
+                <div className="tasklist-head-right">
+                    <Tooltip.Group openDelay={300} closeDelay={100}>
+                        <Avatar.Group spacing="sm">
+                            {visible.map((person: any) => (
+                                <Tooltip key={person.id} label={nameOf(person)} withArrow>
+                                    <Avatar
+                                        src={person.profileImg || undefined}
+                                        radius="xl"
+                                        size="sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            window.open(`/users/${person.id}`, "_blank")
+                                        }}
+                                    >
+                                        {!person.profileImg && avatarInitial(person)}
+                                    </Avatar>
+                                </Tooltip>
+                            ))}
 
-                        {hidden.length > 0 && (
-                            <Tooltip
-                                withArrow
-                                label={
-                                    <div>
-                                        {hidden.map((p: any) => (
-                                            <div key={p.id}>{nameOf(p)}</div>
-                                        ))}
-                                    </div>
-                                }
-                            >
-                                <Avatar className="clickable-avatar" radius="xl" size="sm" style={{ fontSize: "3rem" }}>
-                                    +{hidden.length}
-                                </Avatar>
-                            </Tooltip>
-                        )}
-                    </Avatar.Group>
-                </Tooltip.Group>
+                            {hidden.length > 0 && (
+                                <Tooltip
+                                    withArrow
+                                    label={
+                                        <div>
+                                            {hidden.map((p: any) => (
+                                                <div key={p.id}>{nameOf(p)}</div>
+                                            ))}
+                                        </div>
+                                    }
+                                >
+                                    <Avatar className="clickable-avatar" radius="xl" size="sm" style={{ fontSize: "3rem" }}>
+                                        +{hidden.length}
+                                    </Avatar>
+                                </Tooltip>
+                            )}
+                        </Avatar.Group>
+                    </Tooltip.Group>
+                    <div onClick={handleStarClick}>
+                        {isFeatured ? <StarIcon size={24} /> : <StarIconOutline size={24} />}
+                    </div>
+                </div>
             </div>
             <div className="tasklist-head-progress progress">
                 <div className="progress-left">

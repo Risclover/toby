@@ -75,7 +75,6 @@ class Tasklist(db.Model):
     # Layout
     show_completed = db.Column(db.Boolean, default=False)
     new_item_position = db.Column(db.String(10), default=NewItemPosition.BOTTOM.value)
-    stars_at_top = db.Column(db.Boolean, default=False)
 
     # Relationships
     tasks = db.relationship(
@@ -146,7 +145,6 @@ class Tasklist(db.Model):
             show_completed=self.show_completed,
             view_mode=self.view_mode,
             new_item_position=self.new_item_position,
-            stars_at_top=self.stars_at_top,
             default_sort_order=self.default_sort_order,
             default_filters=deepcopy(self.default_filters) if self.default_filters else None,
             user_id=self.user_id,
@@ -209,7 +207,6 @@ class Tasklist(db.Model):
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
             "tasks": [t.to_dict() for t in self.tasks] if include_tasks else [],
-            "starsAtTop": self.stars_at_top,
         }
 
     def __repr__(self):

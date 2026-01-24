@@ -57,7 +57,7 @@ export const TaskExtra = ({ task, householdId, listId }: Props) => {
     return <div className="task-extra">
         {assigned !== null && <div className="extra">
             <Tooltip key={assigned?.id} label={assigned?.firstName} withArrow>
-                <Avatar style={{ cursor: "pointer" }} onClick={() => navigate(`/users/${assigned?.id}`)} size="xs" src={assigned?.img} alt={assigned?.name} />
+                <Avatar style={{ cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); window.open(`/users/${assigned?.id}`, '_blank') }} size="xs" src={assigned?.img} alt={assigned?.name} />
             </Tooltip>
         </div>}
         {dateLabel !== null && <div className="extra">
