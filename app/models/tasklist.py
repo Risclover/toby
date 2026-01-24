@@ -22,6 +22,7 @@ class SortOrder(str, Enum):
     IMPORTANCE = 'importance'
     ALPHABETICAL = 'alphabetical'
     NEWEST = 'newest'
+    OLDEST = 'oldest'
 
 
 class FilterType(str, Enum):
@@ -82,7 +83,11 @@ class Tasklist(db.Model):
         back_populates="tasklist",
         cascade="all, delete-orphan"
     )
-    user = db.relationship("User", back_populates="tasklists")
+    user = db.relationship(
+        "User", 
+        foreign_keys=[user_id],  # This tells Tasklist which FK to use for 'owner'
+        back_populates="tasklists" # Use back_populates instead of backref for clarity
+    )
     household = db.relationship("Household", back_populates="tasklists")
     member_links = db.relationship(
         "TasklistMember", 

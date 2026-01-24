@@ -1,5 +1,5 @@
 from app.extensions import db
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models.tasklist_member import TasklistMember
 from sqlalchemy import Index
@@ -24,6 +24,7 @@ class User(db.Model, UserMixin):
     daily_checkin = db.Column(db.Boolean, default=False, nullable=False)
     last_checkin = db.Column(db.DateTime, nullable=True)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
+    featured_tasklist_id = db.Column(db.Integer, db.ForeignKey("tasklists.id", ondelete="SET NULL"), nullable=True)
 
     # Relationships
     user_mood = db.relationship(
@@ -44,13 +45,25 @@ class User(db.Model, UserMixin):
     back_populates="members",
     lazy="selectin",
     viewonly=True,  # write via TasklistMember rows
-)
+    )
 
     # habits = db.relationship("HabitLog", back_populates="habit_user")
-    tasklists = db.relationship("Tasklist", back_populates="user")
+    featured_tasklist = db.relationship(
+        'Tasklist', 
+        foreign_keys=[featured_tasklist_id],
+        # No backref here, let's keep this one-way for now to simplify
+    )
+
+    tasklists = db.relationship(
+        'Tasklist', 
+        foreign_keys='Tasklist.user_id', 
+        back_populates='user' # Changed from backref to match the Tasklist model
+    )
+
+    # 3. Same here, references the Task model's foreign key
     tasks = db.relationship(
         "Task",
-        foreign_keys="Task.assigned_to_id", # 👈 ADD THIS (use string if Task is not imported, or [.assigned_to_id] if it is)
+        foreign_keys="Task.assigned_to_id",
         back_populates="assigned_to"
     )
 
@@ -90,7 +103,8 @@ class User(db.Model, UserMixin):
             "points": self.points,
             "dailyCheckin": self.daily_checkin,
             "lastCheckin": self.last_checkin,
-            "householdId": self.household_id
+            "householdId": self.household_id,
+            "isFeatured": self.id == current_user.featured_tasklist_id
         }
 
     def to_dict_with_mood(self):

@@ -46,6 +46,7 @@ export interface TasklistType {
     updatedAt?: string;
     members?: string[];
     allMembers: boolean;
+    isFeatured: boolean;
 }
 
 type CreateTasklistBase = {

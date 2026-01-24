@@ -1,4 +1,5 @@
 import { apiSlice } from "./apiSlice";
+import { householdSlice } from "./householdSlice";
 import type { MoodKey } from "./moodSlice";
 
 type UploadImgArgs = {
@@ -110,6 +111,44 @@ export const userSlice = apiSlice.injectEndpoints({
             // queries should PROVIDE tags, not invalidate
             providesTags: (_result, _error, userId) => [{ type: "User", id: userId }],
         }),
+
+        featureTasklist: builder.mutation<void, { householdId: number; listId: number; userId: number }>({
+            query: ({ userId, listId }) => ({
+                url: `/users/${userId}/featured-list`,
+                method: 'PATCH',
+                body: { listId },
+            }),
+            async onQueryStarted({ householdId, listId, userId }, { dispatch, queryFulfilled }) {
+
+                // 1. Optimistically update the Household API cache
+                const listPatch = dispatch(
+                    householdSlice.util.updateQueryData('getHouseholdTasklists', householdId, (draft) => {
+                        draft.forEach((list: any) => {
+                            const isTarget = list.id === listId;
+                            // Logic: Toggle off if already featured, otherwise set the new one
+                            const wasAlreadyFeatured = list.isFeatured && isTarget;
+                            list.isFeatured = wasAlreadyFeatured ? false : isTarget;
+                        });
+                    })
+                );
+
+                // 2. Optimistically update the User API cache
+                const userPatch = dispatch(
+                    userSlice.util.updateQueryData('getUser', userId, (draft: any) => {
+                        const wasAlreadyFeatured = draft.featured_tasklist_id === listId;
+                        draft.featured_tasklist_id = wasAlreadyFeatured ? null : listId;
+                    })
+                );
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    // Roll back both caches if the server fails
+                    listPatch.undo();
+                    userPatch.undo();
+                }
+            },
+        }),
     }),
 });
 
@@ -122,5 +161,6 @@ export const {
     useCreateHabitMutation,
     useUpdatePointsMutation,
     useUploadImgMutation,
-    useGetUserMoodQuery
+    useGetUserMoodQuery,
+    useFeatureTasklistMutation
 } = userSlice;

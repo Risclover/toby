@@ -149,3 +149,36 @@ def get_user_mood(id):
     user = User.query.get(id)
     mood = user.user_mood.mood if user and user.user_mood else None
     return jsonify(user.to_dict_with_mood()), 200
+
+@user_routes.route("/<int:id>/featured-list", methods=['PATCH'])
+@login_required
+def update_featured_list(id):
+    # Ensure 'id' matches the variable in the route decorator
+    user = User.query.get_or_404(id)
+
+    # Security check (Good job adding this!)
+    if current_user.id != user.id:
+        return jsonify({ "error": "Unauthorized" }), 403
+
+    # Ensure we actually have JSON data
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing JSON body"}), 400
+
+    list_id = data.get('listId')
+
+    if not list_id:
+        return jsonify({"error": "No list ID provided"}), 400
+    
+    # Toggle logic
+    if user.featured_tasklist_id == list_id:
+        user.featured_tasklist_id = None 
+    else:
+        user.featured_tasklist_id = list_id 
+    
+    db.session.commit()
+
+    return jsonify({
+        "message": "Featured list updated",
+        "featuredTasklistId": user.featured_tasklist_id
+    }), 200

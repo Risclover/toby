@@ -37,7 +37,8 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
         { value: "due_date", label: "Due date" },
         { value: "importance", label: "Importance" },
         { value: "alphabetical", label: "Alphabetical" },
-        { value: "newest", label: "Newest" }
+        { value: "newest", label: "Newest" },
+        { value: 'oldest', label: "Oldest" }
     ];
 
 

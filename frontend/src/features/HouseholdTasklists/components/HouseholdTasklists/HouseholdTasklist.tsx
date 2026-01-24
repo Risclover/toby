@@ -8,6 +8,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMobileTasklist } from "../../hooks/useMobileTasklist";
 import { StarIcon, StarIconOutline } from "@/assets/icons/StarIcon";
+import { useFeatureTasklistMutation } from "@/store/userSlice";
 
 type HouseholdTasklistProps = {
     list: TasklistType;
@@ -33,12 +34,14 @@ export function HouseholdTasklist(props: HouseholdTasklistProps) {
 
 // This contains your original logic, renamed to 'Content'
 function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
-    const [isFeatured, setIsFeatured] = useState(false);
 
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(
         user?.householdId ?? skipToken
     );
+
+    const isFeatured = list.isFeatured;
+    const [featureTasklist] = useFeatureTasklistMutation();
 
     const navigate = useNavigate();
 
@@ -100,10 +103,11 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
     console.log('list color:', list?.color);
     console.log('list:', list);
 
-    const handleStarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const onStarClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
-        setIsFeatured(prev => !prev)
-    }
+        // Fire and forget. The slice handles the UI snap and the Rollback.
+        featureTasklist({ userId: user.id, householdId: household.id, listId: list.id });
+    };
 
     return (
         <div
@@ -152,7 +156,7 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                             )}
                         </Avatar.Group>
                     </Tooltip.Group>
-                    <div onClick={handleStarClick}>
+                    <div onClick={onStarClick}>
                         {isFeatured ? <StarIcon size={24} /> : <StarIconOutline size={24} />}
                     </div>
                 </div>
