@@ -3,7 +3,7 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ActionIcon, Button, Group, Progress, Stack, Text, Tooltip } from "@mantine/core";
-import { useGetTasklistQuery } from "@/store/taskSlice" // Checked import path
+import { useGetTasklistQuery, type TasklistType } from "@/store/taskSlice" // Checked import path
 import { skipToken } from "@reduxjs/toolkit/query";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { MobileTasklistHeader } from "./MobileTasklistHeader";
@@ -16,23 +16,32 @@ import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import "../../styles/MobileTasklist.css";
 
 export const MobileTasklist = () => {
-    const isSmall = useIsSmallScreen();
     const inputRef = useRef<HTMLInputElement>(null);
-    const navigate = useNavigate();
     const { tasklistId } = useParams();
+
     const listId = tasklistId ? Number(tasklistId) : undefined;
 
+    const isSmall = useIsSmallScreen();
     const { data: tasklist, isFetching } = useGetTasklistQuery(listId ?? skipToken);
+
     const [showCompleted, setShowCompleted] = useState(false);
     const [showTasklistSettings, setShowTasklistSettings] = useState(false);
     const [showReorderMode, setShowReorderMode] = useState(false);
     const [searchValue, setSearchValue] = useState("");
-    const [sortOption, setSortOption] = useState<SortOption>("");
+    const [sortOption, setSortOption] = useState<SortOption | string>(tasklist?.defaultSortOrder ?? "");
     const [filters, setFilters] = useState<TaskFilters>({
         importance: "all",
         assignedToId: null,
         time: "all",
     });
+
+    useEffect(() => {
+        if (tasklist?.defaultSortOrder) {
+            // Only set it if the user hasn't already picked something else? 
+            // Or strictly enforce it on load? usually strictly enforce on load.
+            setSortOption(tasklist.defaultSortOrder as SortOption);
+        }
+    }, [tasklist?.defaultSortOrder]); // Run when the list config loads/changes
 
     useEffect(() => {
         if (!tasklist) return;
@@ -83,40 +92,8 @@ export const MobileTasklist = () => {
     if (isFetching && !tasklist) return <div>Loading…</div>;
     if (!tasklist) return <div>Task list not found.</div>;
 
-    // 6. Components
-    const titleComponent = (
-        <div className="mobile-tasklist-title-bar">
-            <div className="mobile-tasklist-title-bar-top">
-                <div className="title-announcements tasklist-announcements">
-                    <Tooltip label="Go back">
-                        <ActionIcon onClick={() => navigate(-1)} variant="subtle" color="white">
-                            <ChevronLeftRoundedIcon />
-                        </ActionIcon></Tooltip>
-                    <span className="title-announcements-title">{tasklist.title}</span>
-                </div>
-                <Tooltip label="Tasklist settings">
-                    <ActionIcon
-                        onClick={() => setShowTasklistSettings(true)}
-                        className="tasklist-settings-btn"
-                        size="compact-md"
-                        variant="transparent"
-                        color="white"
-                    >
-                        <SettingsRoundedIcon />
-                    </ActionIcon>
-                </Tooltip>
-            </div>
-            <div className="progress">
-                <div className="progress-left">
-                    <Progress color="var(--tasklist-color)" value={percent} />
-                </div>
-                {percent}%
-            </div>
-        </div>
-    );
-
     return (
-        <MobileLayout titleComponent={titleComponent}>
+        <MobileLayout titleComponent={<TitleComponent percent={percent} setShowTasklistSettings={setShowTasklistSettings} tasklist={tasklist} />}>
             <MobileTasklistHeader
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
@@ -181,3 +158,37 @@ export const MobileTasklist = () => {
         </MobileLayout>
     );
 };
+
+const TitleComponent = ({ percent, tasklist, setShowTasklistSettings }: { percent: number, tasklist: TasklistType, setShowTasklistSettings: (val: boolean) => void }) => {
+    const navigate = useNavigate();
+    return (
+        <div className="mobile-tasklist-title-bar">
+            <div className="mobile-tasklist-title-bar-top">
+                <div className="title-announcements tasklist-announcements">
+                    <Tooltip label="Go back">
+                        <ActionIcon onClick={() => navigate(-1)} variant="subtle" color="white">
+                            <ChevronLeftRoundedIcon />
+                        </ActionIcon></Tooltip>
+                    <span className="title-announcements-title">{tasklist.title}</span>
+                </div>
+                <Tooltip label="Tasklist settings">
+                    <ActionIcon
+                        onClick={() => setShowTasklistSettings(true)}
+                        className="tasklist-settings-btn"
+                        size="compact-md"
+                        variant="transparent"
+                        color="white"
+                    >
+                        <SettingsRoundedIcon />
+                    </ActionIcon>
+                </Tooltip>
+            </div>
+            <div className="progress">
+                <div className="progress-left">
+                    <Progress color="var(--tasklist-color)" value={percent} />
+                </div>
+                {percent}%
+            </div>
+        </div>
+    )
+}

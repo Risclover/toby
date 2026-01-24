@@ -32,24 +32,28 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const isSmall = useIsSmallScreen();
 
-    const optionsList: SortOption[] = [
-        "Due Date",
-        "Importance",
-        "Alphabetical",
-        "Newest",
+    const optionsList = [
+        { value: "due_date", label: "Due date" },
+        { value: "importance", label: "Importance" },
+        { value: "alphabetical", label: "Alphabetical" },
+        { value: "newest", label: "Newest" }
     ];
+
 
     useEffect(() => {
         console.log('reorderMode:', showReorderMode);
     }, [showReorderMode])
 
-    const options = optionsList.map(item => {
-        return (
-            <Combobox.Option value={item} key={item}>
-                {item}
-            </Combobox.Option>
-        );
-    });
+    // 1. Find the selected option object based on the current sortOption value
+    const selectedOption = optionsList.find(o => o.value === sortOption);
+
+    // 2. Map options for the dropdown (Same as before)
+    const options = optionsList.map(item => (
+        <Combobox.Option value={item.value} key={item.value}>
+            {item.label}
+        </Combobox.Option>
+    ));
+
 
     return (
         <div className="mobile-tasklist-header">
@@ -75,10 +79,13 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
 
             </div>
             <div className="tasklist-header-left">
-                <Combobox size="xs" store={combobox} onOptionSubmit={(val) => {
-                    setSortOption(val as any);
-                    combobox.closeDropdown();
-                }}
+                <Combobox
+                    size="xs"
+                    store={combobox}
+                    onOptionSubmit={(val) => {
+                        setSortOption(val as any);
+                        combobox.closeDropdown();
+                    }}
                 >
                     <Combobox.Target>
                         <InputBase
@@ -93,10 +100,9 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                                 sortOption ? (
                                     <CloseButton
                                         size="sm"
-                                        onMouseDown={(e) => {
-                                            e.preventDefault();
-                                        }}
-                                        onClick={() => {
+                                        onMouseDown={(e) => e.preventDefault()}
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Good practice to stop bubbling
                                             setSortOption("");
                                         }}
                                         aria-label="Clear sort option"
@@ -105,8 +111,12 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                                     <Combobox.Chevron />
                                 )
                             }
-                        >{sortOption || <Input.Placeholder>Sort by</Input.Placeholder>}</InputBase>
+                        >
+                            {/* 3. Render the Label if found, otherwise the placeholder */}
+                            {selectedOption ? selectedOption.label : <Input.Placeholder>Sort by</Input.Placeholder>}
+                        </InputBase>
                     </Combobox.Target>
+
                     <Combobox.Dropdown>
                         <Combobox.Options>{options}</Combobox.Options>
                     </Combobox.Dropdown>

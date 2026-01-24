@@ -130,7 +130,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
 
                 {/* Time */}
                 <Stack>
-                    <Text size="sm" fw={500}>Due Date</Text>
+                    <Text size="sm" fw={500}>Due date</Text>
                     <Group gap="xs">
                         {TIME_OPTIONS.map((option) => (
                             <Button

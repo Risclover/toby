@@ -12,10 +12,10 @@ dayjs.extend(isSameOrAfter);
 
 export type SortOption =
     | "Alphabetical"
-    | "Due Date"
+    | "Due date"
     | "Importance"
     | "Newest"
-    | "";
+    | "" | string;
 
 export type TimeFilter = "past_due" | "today" | "tomorrow" | "this_week" | "this_month" | "all";
 
@@ -104,19 +104,23 @@ export const useTaskFiltering = (
         if (sortOption) {
             result.sort((a, b) => {
                 switch (sortOption) {
+                    case "alphabetical":
                     case "Alphabetical":
                         return a.title.localeCompare(b.title);
 
-                    case "Due Date":
+                    case "due_date":
+                    case "Due date":
                         // Put tasks with NO due date at the bottom
                         if (!a.dueDate) return 1;
                         if (!b.dueDate) return -1;
                         return dayjs(a.dueDate).diff(dayjs(b.dueDate));
 
+                    case "newest":
                     case "Newest":
                         // Newest created first (descending)
                         return dayjs(b.createdAt).diff(dayjs(a.createdAt));
 
+                    case "importance":
                     case "Importance":
                         // Primary: Importance (True first)
                         if (a.isImportant !== b.isImportant) {

@@ -27,19 +27,6 @@ export const BehaviorTab = ({ form, household }: BehaviorTabProps) => (
             />
         </SettingsItem>
         <SettingsItem
-            layout="row"
-            label="Starred tasks at top"
-            description="Decide where starred tasks go by default."
-            divider={true}
-        >
-            <Switch
-                {...form.getInputProps('starsAtTop', { type: 'checkbox' })}
-                color="var(--tasklist-color)"
-                size="md"
-                withThumbIndicator={false}
-            />
-        </SettingsItem>
-        <SettingsItem
             layout="column"
             label="Default sort order"
             description="Set the default sort order."

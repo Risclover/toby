@@ -68,7 +68,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                     />
                     {taskError && <div className="error-message">{taskError}</div>}
 
-                    <p className="task-details-label">Due Date:</p>
+                    <p className="task-details-label">Due date:</p>
                     <DatePickerInput
                         value={taskDetailsProps.dueDate.value}
                         placeholder="Add due date"
