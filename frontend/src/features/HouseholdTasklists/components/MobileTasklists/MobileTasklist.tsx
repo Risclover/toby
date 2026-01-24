@@ -36,6 +36,18 @@ export const MobileTasklist = () => {
     });
 
     useEffect(() => {
+        // Only apply defaults if tasklist is loaded
+        if (tasklist?.defaultFilters) {
+            // You might want a check here: "Only set this on FIRST load, not every re-render"
+            // But since useEffect runs on dependency change, and tasklist.defaultFilters 
+            // usually doesn't change often, this is generally safe.
+            // If you want strict "on mount only" behavior, you need a Ref to track "hasInitialized".
+
+            setFilters(tasklist.defaultFilters);
+        }
+    }, [tasklist?.defaultFilters]);
+
+    useEffect(() => {
         if (tasklist?.defaultSortOrder) {
             // Only set it if the user hasn't already picked something else? 
             // Or strictly enforce it on load? usually strictly enforce on load.
