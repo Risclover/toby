@@ -8,8 +8,8 @@ import { HouseholdTasklistPageCompletedTask } from "./HouseholdTasklistPageCompl
 type Props = {
     tasklist: TasklistType | undefined
     completed: Task[]
-    showCompleted: boolean;
-    setShowCompleted: React.Dispatch<React.SetStateAction<boolean>>;
+    showCompleted: boolean | undefined;
+    setShowCompleted: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 }
 
 export const HouseholdTasklistPageCompleted = ({ tasklist, completed, showCompleted, setShowCompleted }: Props) => {

@@ -1,14 +1,20 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import type { Task, TasklistType } from "@/store/taskSlice"
-import { Avatar, Divider, Progress, Tooltip } from "@mantine/core";
+import { ActionIcon, Avatar, Divider, Progress, Tooltip } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklistTask } from "./HouseholdTasklistTask";
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMobileTasklist } from "../../hooks/useMobileTasklist";
 import { StarIcon, StarIconOutline } from "@/assets/icons/StarIcon";
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import { useFeatureTasklistMutation } from "@/store/userSlice";
+import { TasklistCardIcons } from "@/assets/images/tasklists";
+import { OverdueIcon } from "@/assets/icons/OverdueIcon";
+import { TodayIcon } from "@/assets/icons/TodayIcon";
+import { SoonIcon } from "@/assets/icons/SoonIcon";
+import { TasklistCardTooltip } from "./TasklistCardTooltip";
 
 type HouseholdTasklistProps = {
     list: TasklistType;
@@ -105,88 +111,148 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
     console.log('list color:', list?.color);
     console.log('list:', list);
 
-    const onStarClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        e.stopPropagation();
+    const onStarClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
         // Fire and forget. The slice handles the UI snap and the Rollback.
         featureTasklist({ userId: user.id, householdId: household.id, listId: list.id });
     };
 
+    const onStarKeyDown = (e: React.KeyboardEvent) => {
+        // If the user presses Enter or Space while focused on the star
+        if (e.key === "Enter" || e.key === " ") {
+            e.stopPropagation(); // Prevents the parent Card from seeing this keypress
+            // For Spacebar, we also prevent the page from scrolling down
+            if (e.key === "Enter" || e.key === " ") e.preventDefault();
+
+            featureTasklist({ userId: user.id, householdId: household.id, listId: list.id });
+        }
+    };
+
     return (
         <div
-            className="mobile-home-notice-board mobile-tasklist-card"
+            className="tasklist-card"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === "Enter" || e.key === " ") {
+                    navigateToTasklistPage();
+                }
+            }}
             onClick={navigateToTasklistPage}
             style={{
                 "--tasklist-color": list.color ?? "#15aabf" // Fallback to default cyan
             } as React.CSSProperties}
         >
-            <div className="tasklist-head">
-                <span className="tasklist-head-title">{list.title}</span>
-                <div className="tasklist-head-right">
-                    <Tooltip.Group openDelay={300} closeDelay={100}>
-                        <Avatar.Group spacing="sm">
-                            {visible.map((person: any) => (
-                                <Tooltip key={person.id} label={nameOf(person)} withArrow>
-                                    <Avatar
-                                        src={person.profileImg || undefined}
-                                        radius="xl"
-                                        size="sm"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            window.open(`/users/${person.id}`, "_blank")
-                                        }}
-                                    >
-                                        {!person.profileImg && avatarInitial(person)}
-                                    </Avatar>
-                                </Tooltip>
-                            ))}
-
-                            {hidden.length > 0 && (
-                                <Tooltip
-                                    withArrow
-                                    label={
-                                        <div>
-                                            {hidden.map((p: any) => (
-                                                <div key={p.id}>{nameOf(p)}</div>
-                                            ))}
-                                        </div>
-                                    }
-                                >
-                                    <Avatar className="clickable-avatar" radius="xl" size="sm" style={{ fontSize: "3rem" }}>
-                                        +{hidden.length}
-                                    </Avatar>
-                                </Tooltip>
-                            )}
-                        </Avatar.Group>
-                    </Tooltip.Group>
-                    <div onClick={onStarClick}>
-                        {isFeatured ? <StarIcon size={24} /> : <StarIconOutline size={24} />}
+            <div className="mobile-tasklist-card-header">
+                <div className="mobile-tasklist-card-header-top">
+                    <span className="tasklist-head-title">{list.title}</span>
+                    <div className="mobile-tasklist-card-header-top header-right">
+                        {isFeatured ? <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={400} label="Remove featured list">
+                            <ActionIcon size="compact-xs" onKeyDown={onStarKeyDown} onClick={onStarClick} color="rgb(230, 176, 2)" variant="transparent">
+                                <StarIcon size={20} />
+                            </ActionIcon>
+                        </Tooltip> :
+                            <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={400} label="Set featured list">
+                                <ActionIcon size="compact-xs" onKeyDown={onStarKeyDown} onClick={onStarClick} color="cyan" variant="transparent">
+                                    <StarIconOutline size={20} />
+                                </ActionIcon>
+                            </Tooltip>}
+                        <ActionIcon color="var(--mantine-color-gray-6)" variant="subtle" size="compact-xs">
+                            <MoreVertRoundedIcon fontSize="small" />
+                        </ActionIcon>
                     </div>
                 </div>
-            </div>
-            <div className="tasklist-head-progress progress">
-                <div className="progress-left">
-                    <Progress color={list.color} value={percent} />
+                <div className="tasklist-head-progress progress">
+                    <div className="progress-left">
+                        <Progress color={list.color} value={percent} />
+                    </div>
+                    {percent}%
                 </div>
-                {percent}%
             </div>
 
-            <div className="mobile-home-notice-board-content">
+            <div className="mobile-tasklist-card-body">
                 <span className="tasklists-list-empty-state">{tasks?.length === 0 && completedTasks.length === 0 ? "This is an empty list." : tasks?.length === 0 && completedTasks.length > 0 ? "🏅 All tasks completed!" : ""}</span>
-                {tasks?.slice(0, 3).map((task: any) => (
-                    <HouseholdTasklistTask
-                        key={task.id}
-                        task={task}
-                        moveTask={moveTask}
-                    />
-                ))}
-
-                {remainingCount > 0 && <Divider my="xs" />}
+                <ul>
+                    {tasks?.slice(0, 3).map((task: any) => (
+                        <HouseholdTasklistTask
+                            key={task.id}
+                            task={task}
+                            moveTask={moveTask}
+                        />
+                    ))}
+                </ul>
 
                 {remainingCount > 0 && (
-                    <div className="household-tasklist-bottom" >
+                    <div className="household-tasklist-bottom">
                         + {remainingCount} more task{remainingCount > 1 && "s"}
                     </div>
                 )}
+            </div>
+            <div className="mobile-tasklist-card-footer">
+                <Tooltip.Group openDelay={300} closeDelay={100}>
+                    <Avatar.Group spacing="sm">
+                        {visible.map((person: any) => (
+                            <Tooltip events={{ hover: true, focus: true, touch: false }} key={person.id} label={nameOf(person)} withArrow>
+                                <Avatar
+                                    tabIndex={0}
+                                    src={person.profileImg || undefined}
+                                    radius="xl"
+                                    size="sm"
+                                    onKeyDown={(e) => {
+                                        e.stopPropagation();
+                                        if (e.key === "Enter" || e.key === " ") {
+                                            window.open(`/users/${person.id}`, "_blank")
+                                        }
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(`/users/${person.id}`, "_blank")
+                                    }}
+                                >
+                                    {!person.profileImg && avatarInitial(person)}
+                                </Avatar>
+                            </Tooltip>
+                        ))}
+
+                        {hidden.length > 0 && (
+                            <Tooltip
+                                withArrow
+                                label={
+                                    <div>
+                                        {hidden.map((p: any) => (
+                                            <div key={p.id}>{nameOf(p)}</div>
+                                        ))}
+                                    </div>
+                                }
+                            >
+                                <Avatar className="clickable-avatar" radius="xl" size="sm" style={{ fontSize: "3rem" }}>
+                                    +{hidden.length}
+                                </Avatar>
+                            </Tooltip>
+                        )}
+                    </Avatar.Group>
+                </Tooltip.Group>
+                <div className="mobile-tasklist-card-data">
+                    <Tooltip.Group openDelay={300} closeDelay={100}>
+                        <Tooltip withArrow label="Overdue" refProp="innerRef">
+                            <TasklistCardTooltip>
+                                <OverdueIcon size={14} color="currentColor" /> 1
+                            </TasklistCardTooltip>
+                        </Tooltip>
+                        <Tooltip withArrow label="Due today" refProp="innerRef">
+                            <TasklistCardTooltip>
+                                <TodayIcon size={14} color="currentColor" /> 4
+                            </TasklistCardTooltip>
+                        </Tooltip>
+                        <Tooltip withArrow label="Due soon" refProp="innerRef">
+                            <TasklistCardTooltip>
+                                <SoonIcon size={14} color="currentColor" /> 8
+                            </TasklistCardTooltip>
+                        </Tooltip>
+                    </Tooltip.Group>
+                </div>
+            </div>
+            <div className="mobile-tasklist-card-data">
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetTasklistQuery, useUpdateTasklistMutation } from "@/store/taskSlice";
-import { Progress } from "@mantine/core";
+import { Center, Loader, Progress } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query"; // <-- use this
@@ -38,7 +38,11 @@ export const HouseholdTasklistPage = () => {
     };
 
     if (!listId) return <div>Invalid list id.</div>;
-    if (isFetching && !tasklist) return <div>Loading…</div>;
+    if (isFetching && !tasklist) return <Center h="100vh"><Loader color="cyan" style={{
+        transition: 'opacity 200ms ease-in',
+        opacity: isFetching ? 1 : 0,
+        transitionDelay: '300ms' // Only starts appearing after 300ms
+    }} /></Center>;
 
     const completed = tasklist?.tasks?.filter((task) => task.status === "completed")
     const uncompleted = tasklist?.tasks?.filter((task) => task.status === "in_progress")

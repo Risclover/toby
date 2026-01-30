@@ -62,6 +62,9 @@ export const BehaviorTab = ({ form, household, allowedMembers }: BehaviorTabProp
                                 key={opt}
                                 color="var(--tasklist-color)"
                                 size="sm"
+                                h="auto"
+                                p="0.5rem 1rem"
+                                fw={500}
                                 variant={form.values.defaultFilters.importance === opt ? "filled" : "outline"}
                                 onClick={() => form.setFieldValue('defaultFilters.importance', opt as any)}
                             >
@@ -119,6 +122,9 @@ export const BehaviorTab = ({ form, household, allowedMembers }: BehaviorTabProp
                                 key={option.value}
                                 color="var(--tasklist-color)"
                                 size="sm"
+                                h="auto"
+                                p="0.5rem 1rem"
+                                fw={500}
                                 variant={form.values.defaultFilters.time === option.value ? "filled" : "outline"}
                                 onClick={() => form.setFieldValue('defaultFilters.time', option.value as any)}
                             >

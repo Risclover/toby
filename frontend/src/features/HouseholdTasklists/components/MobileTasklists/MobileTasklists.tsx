@@ -4,7 +4,7 @@ import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdTasklistsQuery } from "@/store/householdSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklist } from "../HouseholdTasklists/HouseholdTasklist";
-import { ActionIcon, Button, Group, Stack, Text } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Loader, Stack, Text, Tooltip } from "@mantine/core";
 import { CreateTasklist } from "../HouseholdTasklists/CreateTasklist"
 import { useDisclosure } from "@mantine/hooks";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import Snackbar from '@mui/material/Snackbar';
 import { Notification } from '@mantine/core';
+import { Tasklist } from "../HouseholdTasklists/Tasklist";
+import "../../styles/Tasklist.css";
 
 
 const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
@@ -40,19 +42,29 @@ export const MobileTasklists = () => {
 
     const titleComponent = <div className="mobile-home-family-title">
         <h1>Tasklists</h1>
-        <Group gap=".75rem" className="tasklists-title-right">
-            <ActionIcon
-                size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)"><Inventory2RoundedIcon /></ActionIcon>
-            <ActionIcon
-                size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)"
-                onClick={() => open()}
-            >
-                <PlusIcon style={{ width: '1.25rem', height: '1.25rem' }} />
-            </ActionIcon>
-        </Group>
+        <Tooltip.Group openDelay={500} closeDelay={100}>
+            <Group gap="0.5rem" className="tasklists-title-right">
+                <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="Archive">
+                    <ActionIcon size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)">
+                        <Inventory2RoundedIcon />
+                    </ActionIcon>
+                </Tooltip>
+                <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="New list">
+                    <ActionIcon size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)"
+                        onClick={() => open()}
+                    >
+                        <PlusIcon style={{ width: '1.25rem', height: '1.25rem' }} />
+                    </ActionIcon>
+                </Tooltip>
+            </Group>
+        </Tooltip.Group>
     </div >
 
-    if (authLoading || isLoading) return <div>Loading...</div>;
+    if (authLoading || isLoading) return <Center h="100vh"><Loader color="cyan" style={{
+        transition: 'opacity 200ms ease-in',
+        opacity: isLoading ? 1 : 0,
+        transitionDelay: '300ms' // Only starts appearing after 300ms
+    }} /></Center>;
 
     return (
         <MobileLayout titleComponent={titleComponent}>

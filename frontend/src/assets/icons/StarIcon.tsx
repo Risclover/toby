@@ -1,3 +1,6 @@
+import { ActionIcon } from "@mantine/core";
+import { forwardRef } from "react";
+
 type Props = {
     size: number;
 }

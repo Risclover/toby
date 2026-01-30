@@ -4,6 +4,7 @@ import { useGetHouseholdTasklistsQuery } from "@/store/householdSlice";
 import { HouseholdTasklist } from "./HouseholdTasklist";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { CreateTasklist } from "./CreateTasklist";
+import { Center, Loader } from "@mantine/core";
 
 export const HouseholdTasklists = () => {
     const { data: user, isLoading: authLoading } = useAuthenticateQuery();
@@ -21,7 +22,11 @@ export const HouseholdTasklists = () => {
         refetchOnMountOrArgChange: true,
     });
 
-    if (authLoading || isLoading) return <div>Loading...</div>;
+    if (authLoading || isLoading) return <Center h="100vh"><Loader color="cyan" style={{
+        transition: 'opacity 200ms ease-in',
+        opacity: isLoading ? 1 : 0,
+        transitionDelay: '300ms' // Only starts appearing after 300ms
+    }} /></Center>
 
     return (
         <div className="household-tasklists">
@@ -33,7 +38,7 @@ export const HouseholdTasklists = () => {
                 <CreateTasklist householdId={householdId} />
             </div>
 
-            {isFetching && <div className="subtle-loading">Refreshing…</div>}
+            {isFetching && <div>Loading...</div>}
 
             <div className="household-tasklists-grid">
                 {lists.map(list => {

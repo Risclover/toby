@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, abort
 from app.models import Task
 from app.extensions import db
 from datetime import datetime, date
@@ -84,9 +84,6 @@ def toggle_importance(id):
         abort(404, description="Task not found")
     
     user_id = int(current_user.get_id())
-
-    if task.creator_id != user_id:
-        abort(403, description="Only the creator can toggle importance")
     
     task.is_important = not task.is_important
     db.session.commit()

@@ -1,7 +1,7 @@
 // Announcements.tsx
 import { useGetAnnouncementsQuery, useMarkAnnouncementsSeenBulkMutation } from "@/store/announcementSlice";
 import "../styles/Announcements.css";
-import { Button } from "@mantine/core";
+import { Button, Center, Loader } from "@mantine/core";
 import React, { useEffect, useRef, useState } from "react";
 import { CreateAnnouncement } from "./CreateAnnouncement";
 import { Announcement } from "./Announcement";
@@ -139,7 +139,7 @@ export const Announcements = ({
     return (
         <div className="announcements-container">
             {isFetching && !data?.items?.length ? (
-                <div>Loading...</div>
+                <Center h="100vh"><Loader color="cyan" /></Center>
             ) : visibleAnnouncements.length === 0 ? (
                 <div>No results found.</div>
             ) : (

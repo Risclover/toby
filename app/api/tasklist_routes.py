@@ -42,6 +42,7 @@ def get_tasklists(id):
         lists = Tasklist.query.filter_by(user_id=current_user.id).all()
 
     elif scope == "household":
+        only_archived_lists = request.args.get("archived") == "true"
         household_id = request.args.get("householdId", type=int)
         if not household_id:
             return jsonify({"error": "householdId required"}), 400
@@ -53,7 +54,10 @@ def get_tasklists(id):
         if not current_user.is_member_of(household):  # implement this helper
             return jsonify({"error": "Forbidden"}), 403
 
-        lists = Tasklist.query.filter_by(household_id=household_id).all()
+        if only_archived_lists:
+            lists = Tasklist.query.filter_by(household_id=household_id, is_archived=True).all()
+        else:
+            lists = Tasklist.query.filter_by(household_id=household_id, is_archived=False).all()
 
     else:
         return jsonify({"error": "invalid scope"}), 400

@@ -8,7 +8,7 @@ type Props = {
 }
 
 export const HouseholdTasklistTask = ({ task }: Props) => {
-    return <div className="household-tasklist-task">
+    return <li className="household-tasklist-task">
         <Checkbox
             size="xs"
             radius='xl'
@@ -18,5 +18,5 @@ export const HouseholdTasklistTask = ({ task }: Props) => {
         <div className="household-tasklist-task-title">
             {task.title}
         </div>
-    </div>
+    </li>
 }

@@ -30,12 +30,23 @@ def get_household(id):
 @household_routes.route("/<int:household_id>/tasklists", methods=["GET"])
 @login_required
 def get_household_tasklists(household_id):
-    household = Household.query.get(household_id)
+    """
+    Fetch tasklists for a specific household, filtered by archived status.
+    Ensures the current user actually belongs to the household.
+    """
+    is_archived = request.args.get("is_archived") == "true"
 
+    household = Household.query.get(household_id)
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    lists = household.tasklists
+    if current_user not in household.users:
+        return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
+
+    lists = Tasklist.query.filter_by(
+        household_id=household_id, 
+        is_archived=is_archived
+    ).all()
 
     return jsonify([t.to_dict() for t in lists]), 200
 

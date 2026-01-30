@@ -2,7 +2,7 @@ import { MobileLayout } from "@/layout/MobileLayout";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ActionIcon, Button, Group, Progress, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Loader, Progress, Stack, Text, Tooltip } from "@mantine/core";
 import { useGetTasklistQuery, type TasklistType } from "@/store/taskSlice" // Checked import path
 import { skipToken } from "@reduxjs/toolkit/query";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
@@ -101,7 +101,11 @@ export const MobileTasklist = () => {
     // 5. Early Returns (Loading / Error States)
     // Safe to return here because all hooks have been called above
     if (!listId) return <div>Invalid list id.</div>;
-    if (isFetching && !tasklist) return <div>Loading…</div>;
+    if (isFetching && !tasklist) return <Center h="100vh"><Loader color="cyan" style={{
+        transition: 'opacity 200ms ease-in',
+        opacity: isFetching ? 1 : 0,
+        transitionDelay: '300ms' // Only starts appearing after 300ms
+    }} /></Center>;
     if (!tasklist) return <div>Task list not found.</div>;
 
     return (
