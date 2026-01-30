@@ -15,6 +15,7 @@ import { OverdueIcon } from "@/assets/icons/OverdueIcon";
 import { TodayIcon } from "@/assets/icons/TodayIcon";
 import { SoonIcon } from "@/assets/icons/SoonIcon";
 import { TasklistCardTooltip } from "./TasklistCardTooltip";
+import { getTaskStats } from "../../utils/getTaskStats";
 
 type HouseholdTasklistProps = {
     list: TasklistType;
@@ -128,6 +129,8 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
         }
     };
 
+    const { overdue, dueToday, dueSoon } = getTaskStats({ tasks });
+
     return (
         <div
             className="tasklist-card"
@@ -234,21 +237,15 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                 </Tooltip.Group>
                 <div className="mobile-tasklist-card-data">
                     <Tooltip.Group openDelay={300} closeDelay={100}>
-                        <Tooltip withArrow label="Overdue" refProp="innerRef">
-                            <TasklistCardTooltip>
-                                <OverdueIcon size={14} color="currentColor" /> 1
-                            </TasklistCardTooltip>
-                        </Tooltip>
-                        <Tooltip withArrow label="Due today" refProp="innerRef">
-                            <TasklistCardTooltip>
-                                <TodayIcon size={14} color="currentColor" /> 4
-                            </TasklistCardTooltip>
-                        </Tooltip>
-                        <Tooltip withArrow label="Due soon" refProp="innerRef">
-                            <TasklistCardTooltip>
-                                <SoonIcon size={14} color="currentColor" /> 8
-                            </TasklistCardTooltip>
-                        </Tooltip>
+                        <TasklistCardTooltip label="Overdue">
+                            <OverdueIcon size={16} color="currentColor" /> {overdue}
+                        </TasklistCardTooltip>
+                        <TasklistCardTooltip label="Due today">
+                            <TodayIcon size={16} color="currentColor" /> {dueToday}
+                        </TasklistCardTooltip>
+                        <TasklistCardTooltip label="Due soon">
+                            <SoonIcon size={16} color="currentColor" /> {dueSoon}
+                        </TasklistCardTooltip>
                     </Tooltip.Group>
                 </div>
             </div>
