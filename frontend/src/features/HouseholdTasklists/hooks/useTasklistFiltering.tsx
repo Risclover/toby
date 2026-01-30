@@ -16,6 +16,7 @@ export type SortOption =
     | "Importance"
     | "Newest"
     | "Oldest"
+    | "Manual"
     | "" | string;
 
 export type TimeFilter = "past_due" | "today" | "tomorrow" | "this_week" | "this_month" | "all";
@@ -105,6 +106,9 @@ export const useTaskFiltering = (
         if (sortOption) {
             result.sort((a, b) => {
                 switch (sortOption.toLowerCase()) {
+                    case "manual":
+                        return a.sortIndex - b.sortIndex;
+
                     case "alphabetical":
                         return a.title.localeCompare(b.title);
 
@@ -137,7 +141,8 @@ export const useTaskFiltering = (
                         return 0;
 
                     default:
-                        return 0;
+                        // 🚀 Fallback to manual order if option is unknown
+                        return a.sortIndex - b.sortIndex;
                 }
             });
         } else {

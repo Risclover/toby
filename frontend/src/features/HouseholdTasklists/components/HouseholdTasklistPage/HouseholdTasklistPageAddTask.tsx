@@ -31,7 +31,7 @@ export const HouseholdTasklistPageAddTask = ({ inputRef, listId, tasklist }: Pro
     return <div className="add-task-container">
         <div className="add-task shell-footer">
             <input
-                disabled={!tasklist?.isArchived}
+                disabled={tasklist?.isArchived}
                 value={title}
                 onKeyDown={(e) => { if (e.key === "Enter" && !tasklist.isArchived) { handleAddTask() } }}
                 ref={inputRef}
@@ -40,7 +40,7 @@ export const HouseholdTasklistPageAddTask = ({ inputRef, listId, tasklist }: Pro
                 placeholder="Add a task and press Enter"
                 maxLength={255}
             />
-            <Button disabled={!tasklist?.isArchived} color="var(--tasklist-color)" loading={loading} onClick={handleAddTask}>Add</Button>
+            <Button disabled={tasklist?.isArchived} color="var(--tasklist-color)" loading={loading} onClick={handleAddTask}>Add</Button>
         </div>
     </div>
 }

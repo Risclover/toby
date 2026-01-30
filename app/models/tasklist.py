@@ -19,6 +19,7 @@ class NewItemPosition(str, Enum):
 
 
 class SortOrder(str, Enum):
+    MANUAL = 'manual'
     DUE_DATE = 'due_date'
     IMPORTANCE = 'importance'
     ALPHABETICAL = 'alphabetical'
@@ -64,7 +65,7 @@ class Tasklist(db.Model):
     view_mode = db.Column(db.String(20), default=ViewMode.DETAILED.value)
 
     # Defaults
-    default_sort_order = db.Column(db.String(30), nullable=True)
+    default_sort_order = db.Column(db.String(30), nullable=False, server_default="manual", default="manual")
     default_filters = db.Column(
         db.JSON,
         nullable=False,

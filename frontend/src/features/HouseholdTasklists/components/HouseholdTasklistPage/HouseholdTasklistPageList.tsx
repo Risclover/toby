@@ -7,9 +7,10 @@ type Props = {
     tasks?: Task[]; // 👈 NEW: Accept the pre-sorted list
     setShowReorderMode?: React.Dispatch<SetStateAction<boolean>> | undefined;
     showReorderMode?: boolean | undefined;
+    sortOption: string;
 }
 
-export const HouseholdTasklistPageList = ({ tasklist, tasks, setShowReorderMode, showReorderMode }: Props) => {
+export const HouseholdTasklistPageList = ({ tasklist, tasks, setShowReorderMode, showReorderMode, sortOption }: Props) => {
 
     // THE FIX:
     // If 'tasks' is passed from the parent, use it directly (it's already sorted).
@@ -42,7 +43,7 @@ export const HouseholdTasklistPageList = ({ tasklist, tasks, setShowReorderMode,
         <div className='household-tasklist-page-list panel tasklist-panel'>
             <div className="household-tasklist-page-tasks panel-body">
                 {/* Pass 'displayedTasks' to the DND component */}
-                {tasklist && <TaskListDnd tasks={displayedTasks} listId={tasklist.id} showReorderMode={showReorderMode} setShowReorderMode={setShowReorderMode} />}
+                {tasklist && <TaskListDnd tasks={displayedTasks} listId={tasklist.id} showReorderMode={showReorderMode} setShowReorderMode={setShowReorderMode} currentSort={sortOption} />}
                 <div ref={tasksEndRef} />
             </div>
         </div>

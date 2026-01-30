@@ -9,45 +9,49 @@ import { ReorderListIcon } from "@/assets/icons/ReorderListIcon";
 import { useEffect } from "react";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
-import type { Task } from "@/store/taskSlice";
+import { useReorderTasksMutation, useUpdateTasklistMutation, type Task, type TasklistType } from "@/store/taskSlice";
 
 interface Props {
     // Lift state up! Pass these down from the Page component
-    searchValue?: string;
-    setSearchValue?: (val: string) => void;
-    sortOption?: SortOption;
-    setSortOption?: (val: SortOption) => void;
-    filters?: TaskFilters;
-    setFilters?: (val: TaskFilters) => void;
-    showReorderMode?: boolean;
-    setShowReorderMode?: (val: boolean | ((prev: boolean) => boolean)) => void;
-    tasks?: Task[];
-    filteredTasks?: Task[];
-    listId?: number;
+    searchValue: string;
+    setSearchValue: (val: string) => void;
+    sortOption: SortOption;
+    setSortOption: (val: SortOption) => void;
+    filters: TaskFilters;
+    setFilters: (val: TaskFilters) => void;
+    showReorderMode: boolean;
+    setShowReorderMode: (val: boolean | ((prev: boolean) => boolean)) => void;
+    tasks: Task[];
+    filteredTasks: Task[];
+    listId: number;
+    currentSort: string;
+    tasklist: TasklistType;
 }
 
-export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode, tasks, filteredTasks, listId }: Props) => {
+export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode, tasks, filteredTasks, listId, currentSort, tasklist }: Props) => {
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const isSmall = useIsSmallScreen();
+    const [reorderTasks] = useReorderTasksMutation(); // Assuming you have this in your Redux slice
+    const [updateTasklist] = useUpdateTasklistMutation();
+    const canReorder = currentSort.toLowerCase() === 'manual' && !tasklist?.isArchived;
 
     const optionsList = [
         { value: "due_date", label: "Due date" },
         { value: "importance", label: "Importance" },
         { value: "alphabetical", label: "Alphabetical" },
         { value: "newest", label: "Newest" },
-        { value: 'oldest', label: "Oldest" }
+        { value: 'oldest', label: "Oldest" },
+        { value: 'manual', label: "Manual" }
     ];
 
+    const activeValue = sortOption || tasklist?.defaultSortOrder || 'manual';
+    const selectedOption = optionsList.find(o => o.value === activeValue);
 
-    useEffect(() => {
-        console.log('reorderMode:', showReorderMode);
-    }, [showReorderMode])
-
-    // 1. Find the selected option object based on the current sortOption value
-    const selectedOption = optionsList.find(o => o.value === sortOption);
+    // Inside the InputBase
+    { selectedOption ? selectedOption.label : "Manual" }
 
     // 2. Map options for the dropdown (Same as before)
     const options = optionsList.map(item => (
@@ -55,6 +59,34 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
             {item.label}
         </Combobox.Option>
     ));
+
+    const handleSortChange = async (val: string) => {
+        if (!val) return; // 🚀 Block empty submissions
+        // 1. Close dropdown immediately for better UX
+        combobox.closeDropdown();
+
+        if (val === 'manual') {
+            try {
+                const orderedIds = filteredTasks.map(t => t.id);
+
+                // 2. Call the backend
+                await reorderTasks({
+                    listId,
+                    orderedIds,
+                    setToManual: true
+                }).unwrap(); // .unwrap() ensures it throws an error if the API fails
+
+                // 3. Update the temporary UI state ONLY after success
+                setSortOption(val as any);
+            } catch (error) {
+                console.error("Failed to switch to manual:", error);
+                // Optional: Show a toast/notification here
+            }
+        } else {
+            // Normal behavior for other sort modes
+            setSortOption(val as any);
+        }
+    };
 
 
     return (
@@ -84,10 +116,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                 <Combobox
                     size="xs"
                     store={combobox}
-                    onOptionSubmit={(val) => {
-                        setSortOption(val as any);
-                        combobox.closeDropdown();
-                    }}
+                    onOptionSubmit={handleSortChange}
                 >
                     <Combobox.Target>
                         <InputBase
@@ -97,22 +126,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                             type="button"
                             pointer
                             onClick={() => combobox.toggleDropdown()}
-                            rightSectionPointerEvents={sortOption === "" ? 'none' : 'all'}
-                            rightSection={
-                                sortOption ? (
-                                    <CloseButton
-                                        size="sm"
-                                        onMouseDown={(e) => e.preventDefault()}
-                                        onClick={(e) => {
-                                            e.stopPropagation(); // Good practice to stop bubbling
-                                            setSortOption("");
-                                        }}
-                                        aria-label="Clear sort option"
-                                    />
-                                ) : (
-                                    <Combobox.Chevron />
-                                )
-                            }
+                            rightSection={<Combobox.Chevron />}
                         >
                             {/* 3. Render the Label if found, otherwise the placeholder */}
                             {selectedOption ? selectedOption.label : <Input.Placeholder>Sort by</Input.Placeholder>}
@@ -127,7 +141,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                     <Tooltip label="Filter list"><ActionIcon onClick={open} variant="subtle" color="rgb(5, 5, 73)">
                         <FilterAltRoundedIcon />
                     </ActionIcon></Tooltip>
-                    {isSmall && filteredTasks?.length > 1 && tasks?.length > 1 && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
+                    {isSmall && filteredTasks?.length > 1 && tasks?.length > 1 && canReorder && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
                         <ActionIcon
                             onClick={() => setShowReorderMode(prev => !prev)}
                             variant={showReorderMode ? "light" : "subtle"}

@@ -129,6 +129,8 @@ export const MobileTasklist = () => {
                 tasks={tasks}
                 filteredTasks={filteredTasks}
                 listId={listId}
+                currentSort={sortOption}
+                tasklist={tasklist}
             />
             {tasklist.isArchived && <ArchiveNotice tasklistId={listId} />}
             <div className="mobile-tasklist-content">
@@ -146,6 +148,7 @@ export const MobileTasklist = () => {
                         tasks={filteredTasks} // <--- Passing the filtered list explicitly
                         showReorderMode={showReorderMode}
                         setShowReorderMode={setShowReorderMode}
+                        sortOption={sortOption}
                     />
                 ) : (
                     // Empty state when filters hide everything
@@ -174,7 +177,7 @@ export const MobileTasklist = () => {
 
             {/* Input Bar */}
             <div className="mobile-tasklist-input">
-                <HouseholdTasklistPageAddTask inputRef={inputRef} listId={tasklist.id} />
+                <HouseholdTasklistPageAddTask inputRef={inputRef} listId={tasklist.id} tasklist={tasklist} />
             </div>
 
             {showTasklistSettings && <TasklistSettings opened={showTasklistSettings} setShowTasklistSettings={setShowTasklistSettings} />}

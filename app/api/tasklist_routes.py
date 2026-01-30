@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 from app.models import Tasklist, Task, User, Household, TasklistMember
 from app.extensions import db
 from flask_login import current_user, login_required
+from app.models.tasklist import SortOrder
 
 tasklist_routes = Blueprint("tasklists", __name__)
 
@@ -180,17 +181,23 @@ def edit_tasklist(id):
 
 @tasklist_routes.route("/<int:list_id>/reorder", methods=['PATCH'])
 def reorder_tasks(list_id):
-    data = request.get_json() or {} 
+    tasklist = Tasklist.query.get_or_404(list_id) # Fixed: use list_id, not id
+    
+    data = request.get_json() or {}
     ordered_ids = data.get("orderedIds")
+    # 🚀 New: Check if the frontend is also requesting a mode change
+    set_to_manual = data.get("setToManual", False)
+
+    # Allow reorder if already manual OR if we are switching to manual right now
+    if tasklist.default_sort_order != SortOrder.MANUAL.value and not set_to_manual:
+        return jsonify({
+            "error": "Manual reordering is disabled unless sort order is set to 'manual'."
+        }), 400
 
     if not isinstance(ordered_ids, list) or not ordered_ids:
         return jsonify({ "error": "orderedIds (non-empty array) required"}), 400
     
-    tasks = Task.query.filter(Task.list_id == list_id).all()
-    current_ids = {task.id for task in tasks}
-    requested_ids = set(ordered_ids)
-
-
+    # 🚀 Update the sort indices
     for idx, tid in enumerate(ordered_ids):
         (
             db.session.query(Task)
@@ -198,8 +205,12 @@ def reorder_tasks(list_id):
                 .update({Task.sort_index: idx}, synchronize_session=False)
         )
     
+    # 🚀 If we are switching modes, update the tasklist setting too
+    if set_to_manual:
+        tasklist.default_sort_order = SortOrder.MANUAL.value
+    
     db.session.commit()
-    return("", 204)
+    return jsonify(tasklist.to_dict()), 200 # Return the updated list
 
 @tasklist_routes.route("/<int:id>/duplicate", methods=["POST"])
 @login_required

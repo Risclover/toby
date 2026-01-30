@@ -20,9 +20,10 @@ type Props = {
     tasks: Task[];
     showReorderMode?: boolean | undefined;
     setShowReorderMode?: React.Dispatch<SetStateAction<boolean>> | undefined;
+    currentSort: string;
 };
 
-export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode }: Props) {
+export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode, currentSort }: Props) {
     const { sensors, handleDragEnd, handleManualMove, local, } = useTasklist({ listId, tasks });
 
     return (
@@ -47,6 +48,7 @@ export function TaskListDnd({ listId, tasks, showReorderMode, setShowReorderMode
                             onMove={handleManualMove}
                             showReorderMode={showReorderMode}
                             setShowReorderMode={setShowReorderMode}
+                            currentSort={currentSort}
                         />
                     ))}
                 </ul>
@@ -64,14 +66,20 @@ type SortableTaskItemProps = {
     listId: number;
     showReorderMode?: boolean | undefined;
     setShowReorderMode?: React.Dispatch<SetStateAction<boolean>> | undefined;
+    currentSort: string;
 };
 
-function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, listId, showReorderMode }: SortableTaskItemProps) {
+function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, listId, showReorderMode, currentSort }: SortableTaskItemProps) {
     const [showTaskDetails, setShowTaskDetails] = useState(false);
     const { data: latestTask } = useGetTaskQuery(initialTask.id);
     const task = latestTask ?? initialTask;
     const isSmall = useIsSmallScreen();
+
     const { data: tasklist } = useGetTasklistQuery(listId);
+
+    // 🚀 Check if manual reordering is allowed
+    const canReorder = currentSort.toLowerCase() === 'manual' && !tasklist?.isArchived;
+
     const [viewMode, setViewMode] = useState(tasklist?.viewMode);
 
     const {
@@ -118,10 +126,10 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
     }
 
     return (
-        <li ref={setNodeRef} style={style} className={`task${viewMode === "compact" ? " task-no-padding" : ""}${tasklist?.isArchived ? " not-allowed" : " cursored"}`}>
+        <li ref={setNodeRef} style={style} className={`task${viewMode === "compact" ? " task-no-padding" : ""}${tasklist?.isArchived ? " not-allowed" : " cursored"}${!canReorder ? ' reorder-disabled' : ''}`}>
             <div className="task-row" onClick={() => { if (!tasklist?.isArchived) setShowTaskDetails(true) }}>
                 <div className="task-row-left">
-                    {tasks && !isSmall && tasks?.length > 1 && (
+                    {tasks && !isSmall && tasks?.length > 1 && canReorder && (
                         <span
                             className="drag-handle"
                             ref={setActivatorNodeRef}
@@ -147,7 +155,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                     >
                         {task?.isImportant ? <StarIcon size={24} /> : <StarIconOutline size={24} />}
                     </div>
-                    {showReorderMode && tasks && isSmall && tasks?.length > 1 && (<div className={`task-row-move-btns show-task-btns`}>
+                    {showReorderMode && tasks && isSmall && tasks?.length > 1 && canReorder && (<div className={`task-row-move-btns show-task-btns`}>
                         <Button
                             variant="subtle"
                             size="xs"

@@ -42,7 +42,10 @@ export const BehaviorTab = ({ form, household, allowedMembers }: BehaviorTabProp
                     { value: "importance", label: "Importance" },
                     { value: "alphabetical", label: "Alphabetical" },
                     { value: "newest", label: "Newest" },
-                    { value: "oldest", label: "Oldest" }
+                    { value: "oldest", label: "Oldest" },
+                    {
+                        value: "manual", label: "Manual"
+                    }
                 ]}
             />
         </SettingsItem>

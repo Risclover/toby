@@ -97,6 +97,7 @@ export type ReorderPayload = {
     listId: number;
     orderedIds: number[];
     householdId?: number; // pass when you have it; we’ll try to derive if not
+    setToManual: boolean;
 };
 
 export interface DeleteTaskRequest {
