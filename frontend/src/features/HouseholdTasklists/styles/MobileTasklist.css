@@ -100,8 +100,15 @@
 }
 
 .task:hover {
-    cursor: pointer;
     background: var(--indigo-50);
+}
+
+.not-allowed {
+    cursor: not-allowed;
+}
+
+.cursored {
+    cursor: pointer;
 }
 
 .task-row-right button:disabled {

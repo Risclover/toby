@@ -73,6 +73,7 @@ export function HouseholdTasklistPageTask({ taskId, listId, householdId }: Props
                             onChange={onChange}
                             size="sm"
                             onClick={(e) => e.stopPropagation()}
+                            disabled={tasklist?.isArchived}
                         />
                         {checked ? (
                             <div className="completed-task">{task?.title}</div>

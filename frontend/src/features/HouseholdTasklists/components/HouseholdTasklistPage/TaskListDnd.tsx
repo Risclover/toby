@@ -100,32 +100,39 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
     }, [tasklist?.viewMode])
 
     const handleStarClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+        if (tasklist?.isArchived) return;
         e.stopPropagation();
         await toggleImportance({ taskId: task.id, listId: listId, householdId: user?.householdId })
     }
 
     const handleMoveTaskUp = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (tasklist?.isArchived) return;
         e.stopPropagation();
         onMove(task.id, "up")
     }
 
     const handleMoveTaskDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (tasklist?.isArchived) return;
         e.stopPropagation();
         onMove(task.id, "down");
     }
 
     return (
-        <li ref={setNodeRef} style={style} className={`task${viewMode === "compact" ? " task-no-padding" : ""}`}>
-            <div className="task-row" onClick={() => setShowTaskDetails(true)}>
+        <li ref={setNodeRef} style={style} className={`task${viewMode === "compact" ? " task-no-padding" : ""}${tasklist?.isArchived ? " not-allowed" : " cursored"}`}>
+            <div className="task-row" onClick={() => { if (!tasklist?.isArchived) setShowTaskDetails(true) }}>
                 <div className="task-row-left">
                     {tasks && !isSmall && tasks?.length > 1 && (
                         <span
                             className="drag-handle"
                             ref={setActivatorNodeRef}
-                            {...listeners}
-                            {...attributes}
-                            tabIndex={0}
-                            style={{ cursor: "grab" }}
+                            // 🚀 ONLY SPREAD LISTENERS IF NOT ARCHIVED
+                            {...(!tasklist?.isArchived ? listeners : {})}
+                            {...(!tasklist?.isArchived ? attributes : {})}
+                            tabIndex={tasklist?.isArchived ? -1 : 0}
+                            style={{
+                                cursor: tasklist?.isArchived ? "default" : "grab",
+                                opacity: tasklist?.isArchived ? 0.3 : 1, // Optional: dim it to show it's disabled
+                            }}
                         >
                             <DragIndicatorIcon fontSize="small" />
                         </span>

@@ -27,7 +27,7 @@ export const ArchivedHouseholdTasklists = () => {
         <div className="archived-household-tasklists-item-top">
             <div className="archived-household-tasklists-item-title">{list.title}</div>
             <div className="archived-table-btns">
-                <ArchivedHouseholdTasklistsMenu />
+                <ArchivedHouseholdTasklistsMenu tasklistId={list.id} />
             </div>
         </div>
         <div className="archived-household-tasklists-item-bottom">

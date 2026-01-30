@@ -28,7 +28,7 @@ export const StarIconOutline = ({ size }: Props) => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 32 32"
             width={`${size}px`} height={`${size}px`}
-            style={{ cursor: 'pointer', overflow: 'visible' }} // overflow visible prevents clipped edges
+            style={{ overflow: 'visible' }} // overflow visible prevents clipped edges
 
         >
             <g fill="none" fillRule="evenodd">

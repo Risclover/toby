@@ -82,7 +82,7 @@ export const HouseholdTasklistPage = () => {
                     />
                 }
             </div>
-            <HouseholdTasklistPageAddTask listId={tasklist?.id} /> {/* number, not undefined */}
+            <HouseholdTasklistPageAddTask listId={tasklist?.id} tasklist={tasklist} /> {/* number, not undefined */}
         </div >
     );
 };

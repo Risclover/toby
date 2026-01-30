@@ -267,7 +267,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
                 autoClose: 5000, // Give them time to click
                 message: (
                     <Group align="center" gap="0.5rem">
-                        <Button variant="subtle" size="compact-xs">View archive</Button>
+                        <Button variant="subtle" size="compact-xs" onClick={() => navigate("/tasklists/archived")}>View archive</Button>
                         <Button
                             variant="subtle"
                             size="compact-xs"

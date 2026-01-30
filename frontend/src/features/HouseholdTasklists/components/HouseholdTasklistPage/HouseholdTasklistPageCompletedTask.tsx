@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { HouseholdTasklistPageTask } from "./HouseholdTasklistPageTask";
 import { TaskDetails } from "./TaskDetails";
-import type { Task } from "@/store/taskSlice";
+import type { Task, TasklistType } from "@/store/taskSlice";
 
 type Props = {
     task: Task;
     householdId: number;
     listId: number;
     taskId: number;
+    tasklist: TasklistType;
 }
 
-export const HouseholdTasklistPageCompletedTask = ({ task, householdId, listId }: Props) => {
+export const HouseholdTasklistPageCompletedTask = ({ task, tasklist, householdId, listId }: Props) => {
     const [showTaskDetails, setShowTaskDetails] = useState(false);
     return (
-        <div className="completed-task">
-            <div onClick={() => setShowTaskDetails(true)}>
+        <div className={`completed-task${tasklist?.isArchived ? " not-allowed" : "cursored"}`}>
+            <div onClick={() => { if (!tasklist?.isArchived) setShowTaskDetails(true) }}>
                 <HouseholdTasklistPageTask
                     key={task.id}                    // <-- add key
                     householdId={householdId}  // can be optional in child

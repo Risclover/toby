@@ -14,6 +14,7 @@ import { useTaskFiltering, type SortOption, type TaskFilters } from "../../hooks
 import { TasklistSettings } from "../TasklistSettings/TasklistSettings";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import "../../styles/MobileTasklist.css";
+import { ArchiveNotice } from "../ArchivedHouseholdTasklists/ArchiveNotice";
 
 export const MobileTasklist = () => {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -129,7 +130,7 @@ export const MobileTasklist = () => {
                 filteredTasks={filteredTasks}
                 listId={listId}
             />
-
+            {tasklist.isArchived && <ArchiveNotice tasklistId={listId} />}
             <div className="mobile-tasklist-content">
                 {filteredTasks.length === 0 && uncompleted.length === 0 && completed.length === 0 &&
                     <Stack justify="center" align="center" my={isSmall ? "5rem" : ""} h={!isSmall ? "100%" : ""}>

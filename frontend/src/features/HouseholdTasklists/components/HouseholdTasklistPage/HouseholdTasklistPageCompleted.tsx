@@ -33,6 +33,7 @@ export const HouseholdTasklistPageCompleted = ({ tasklist, completed, showComple
                         householdId={user?.householdId}  // can be optional in child
                         listId={tasklist.id}             // <-- guaranteed number here
                         taskId={task.id}
+                        tasklist={tasklist}
                     />
                 ))}
             </div>}

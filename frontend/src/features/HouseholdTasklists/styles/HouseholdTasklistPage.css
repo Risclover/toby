@@ -59,7 +59,6 @@
     -webkit-hyphens: auto;
     hyphens: auto;
     line-height: 1.4;
-    cursor: pointer;
     color: var(--mantine-color-gray-6);
 }
 
