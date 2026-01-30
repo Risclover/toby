@@ -19,10 +19,15 @@ export const MobileTasklist = () => {
     const inputRef = useRef<HTMLInputElement>(null);
     const { tasklistId } = useParams();
 
-    const listId = tasklistId ? Number(tasklistId) : undefined;
+    const listId = (tasklistId && !isNaN(Number(tasklistId))) ? Number(tasklistId) : undefined;
 
     const isSmall = useIsSmallScreen();
-    const { data: tasklist, isFetching } = useGetTasklistQuery(listId ?? skipToken);
+    const numericId = Number(listId);
+
+    // 2. Only run the query if we have a valid number
+    const { data: tasklist, isFetching } = useGetTasklistQuery(
+        (listId && !isNaN(numericId)) ? numericId : skipToken
+    );
 
     const [showCompleted, setShowCompleted] = useState(false);
     const [showTasklistSettings, setShowTasklistSettings] = useState(false);
@@ -100,6 +105,7 @@ export const MobileTasklist = () => {
 
     // 5. Early Returns (Loading / Error States)
     // Safe to return here because all hooks have been called above
+    if (tasklistId === "archived") return null; // Or don't render this component for that route
     if (!listId) return <div>Invalid list id.</div>;
     if (isFetching && !tasklist) return <Center h="100vh"><Loader color="cyan" style={{
         transition: 'opacity 200ms ease-in',

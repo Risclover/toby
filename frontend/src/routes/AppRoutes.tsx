@@ -30,6 +30,7 @@ export const AppRoutes = () => {
             <Route path="/join/:inviteCode" element={<Registration createHousehold={false} />} />
             <Route path="/signup" element={<Registration createHousehold={true} />} />
             <Route path="/users/:userId" element={<UserPage />} />
+            <Route path="/tasklists/archived" element={<ArchivedHouseholdTasklists />} />
             <Route path="/tasklists" element={<MobileTasklists />} />
             <Route path="/tasklists/:tasklistId" element={<MobileTasklist />} />
             <Route path="/login" element={<Login />} />
@@ -37,7 +38,6 @@ export const AppRoutes = () => {
             <Route path="/shopping/:listId" element={<ShoppingListPage />} />
             <Route path="/" element={(isMobile || isSmallScreen) ? <MobileHome /> : <Dashboard />} />
             <Route path="/announcements" element={<MobileAnnouncements />} />
-            <Route path="/tasklists/archived" element={<ArchivedHouseholdTasklists />} />
         </Routes>
     )
 }

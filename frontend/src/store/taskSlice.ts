@@ -26,6 +26,12 @@ export interface TasklistType {
     newItemPosition: string;
     showCompleted: boolean;
     isArchived: boolean;
+    archivedBy: {
+        id: number;
+        profileImg: string | null;
+        firstName: string;
+        lastName: string;
+    } | null;
     defaultSortOrder: string;
     defaultFilters: {
         importance: "all" | "important";
@@ -129,6 +135,11 @@ export interface DuplicateListRequest {
     // you would add that property here.
 }
 
+interface GetTasklistsArgs {
+    householdId: number;
+    isArchived: boolean;
+}
+
 type UpdateTaskPatch = Partial<
     Pick<Task, "isImportant" | "status" | "title" | "description" | "dueDate" | "assignedToId" | "notes">
 >;
@@ -150,19 +161,27 @@ export const taskSlice = apiSlice.injectEndpoints({
             }
         }),
 
-        getTasklists: builder.query<TasklistType[], number>({
-            query: (householdId) => `/tasklists/${householdId}`,
-            providesTags: (result, _error, householdId): TasklistTag[] =>
-                result?.length
-                    ? [
-                        ...result.map((l) => ({ type: "Tasklist", id: l.id } as TasklistTag)),
-                        { type: "Tasklist", id: `HOUSEHOLD_${householdId}` }, // string tag ok
-                        { type: "Tasklist", id: "LIST" },
-                    ]
-                    : [
-                        { type: "Tasklist", id: `HOUSEHOLD_${householdId}` },
-                        { type: "Tasklist", id: "LIST" },
-                    ],
+        getTasklists: builder.query<TasklistType[], GetTasklistsArgs>({
+            query: ({ householdId, isArchived }) => ({
+                url: `/households/${householdId}/tasklists`,
+                params: { is_archived: isArchived },
+            }),
+            providesTags: (result, _error, { householdId, isArchived }): TasklistTag[] => {
+                const status = isArchived ? "ARCHIVED" : "ACTIVE";
+                const tags: TasklistTag[] = [
+                    { type: "Tasklist", id: "LIST" },
+                    { type: "Tasklist", id: `HOUSEHOLD_${householdId}` },
+                    { type: "Tasklist", id: `HOUSEHOLD_${householdId}_${status}` },
+                ];
+
+                if (result) {
+                    return [
+                        ...tags,
+                        ...result.map((l) => ({ type: "Tasklist" as const, id: l.id })),
+                    ];
+                }
+                return tags;
+            },
         }),
 
         completeTask: builder.mutation<Task, CompleteTaskRequest>({
@@ -451,58 +470,58 @@ export const taskSlice = apiSlice.injectEndpoints({
                 url: `/tasklists/${listId}/archive`,
                 method: "PUT",
             }),
-            async onQueryStarted({ listId }, { dispatch, queryFulfilled, getState }) {
-                // Optimistic Update: Mark list as archived in cache
-                const patchResult = dispatch(
+            async onQueryStarted({ listId }, { dispatch, queryFulfilled }) {
+                // Optimistic Update: Detailed view
+                const patchDetail = dispatch(
                     taskSlice.util.updateQueryData("getTasklist", listId, (draft) => {
-                        draft.isArchived = true;
+                        if (draft) draft.isArchived = true;
                     })
                 );
-
-                // Also update the household list view if possible (to remove it or gray it out)
-                // (Optional, depends on if you want it to disappear instantly)
 
                 try {
                     await queryFulfilled;
                 } catch {
-                    patchResult.undo();
+                    patchDetail.undo();
                 }
             },
-            invalidatesTags: (result, error, arg) => [
+            invalidatesTags: (result, _error, arg) => [
                 { type: "Tasklist", id: arg.listId },
-                { type: "Tasklist", id: "LIST" }, // Refetch the list of lists so it disappears from sidebar
-                // If you use HOUSEHOLD tags for the sidebar list:
-                ...(result?.householdId ? [{ type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` } as const] : [])
+                { type: "Tasklist", id: "LIST" },
+                ...(result?.householdId ? [
+                    { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ACTIVE` } as const,
+                    { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ARCHIVED` } as const,
+                ] : []),
             ],
         }),
 
+        /**
+         * MUTATION: UNARCHIVE LIST
+         */
         unarchiveList: builder.mutation<TasklistType, ArchiveListRequest>({
             query: ({ listId }) => ({
                 url: `/tasklists/${listId}/unarchive`,
                 method: "PUT",
             }),
-            async onQueryStarted({ listId }, { dispatch, queryFulfilled, getState }) {
-                // Optimistic Update: Mark list as archived in cache
-                const patchResult = dispatch(
+            async onQueryStarted({ listId }, { dispatch, queryFulfilled }) {
+                const patchDetail = dispatch(
                     taskSlice.util.updateQueryData("getTasklist", listId, (draft) => {
-                        draft.isArchived = false;
+                        if (draft) draft.isArchived = false;
                     })
                 );
-
-                // Also update the household list view if possible (to remove it or gray it out)
-                // (Optional, depends on if you want it to disappear instantly)
 
                 try {
                     await queryFulfilled;
                 } catch {
-                    patchResult.undo();
+                    patchDetail.undo();
                 }
             },
-            invalidatesTags: (result, error, arg) => [
+            invalidatesTags: (result, _error, arg) => [
                 { type: "Tasklist", id: arg.listId },
-                { type: "Tasklist", id: "LIST" }, // Refetch the list of lists so it disappears from sidebar
-                // If you use HOUSEHOLD tags for the sidebar list:
-                ...(result?.householdId ? [{ type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` } as const] : [])
+                { type: "Tasklist", id: "LIST" },
+                ...(result?.householdId ? [
+                    { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ACTIVE` } as const,
+                    { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ARCHIVED` } as const,
+                ] : []),
             ],
         }),
 

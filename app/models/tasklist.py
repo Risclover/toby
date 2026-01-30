@@ -73,6 +73,7 @@ class Tasklist(db.Model):
  
     # List status
     is_archived = db.Column(db.Boolean, default=False, nullable=False)
+    archived_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
 
     # Layout
     show_completed = db.Column(db.Boolean, default=False)
@@ -103,6 +104,7 @@ class Tasklist(db.Model):
         lazy="selectin", 
         viewonly=True
     )
+    archiver = db.relationship("User", foreign_keys=[archived_by], back_populates="archived_lists")
 
     __table_args__ = (
         # XOR: exactly one of user_id / household_id must be non-null
@@ -207,6 +209,12 @@ class Tasklist(db.Model):
             "viewMode": self.view_mode,
             "newItemPosition": self.new_item_position,
             "isArchived": self.is_archived,
+            "archivedBy": {
+                "id": self.archiver.id,
+                "profileImg": self.archiver.profile_img, # Ensure this matches your User col name
+                "firstName": self.archiver.first_name,
+                "lastName": self.archiver.last_name
+            } if self.is_archived and self.archiver else None,
             "defaultSortOrder": self.default_sort_order,
             "defaultFilters": self.default_filters,
             "userId": self.user_id,

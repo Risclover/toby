@@ -91,7 +91,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                             h="auto"
                             p="0.5rem 1rem"
                             fw={500}
-                            variant={localFilters.importance === "all" ? "filled" : "outline"}
+                            variant={localFilters?.importance === "all" ? "filled" : "outline"}
                             onClick={() => setLocalFilters({ ...localFilters, importance: "all" })}
                         >
                             All
@@ -102,7 +102,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                             h="auto"
                             p="0.5rem 1rem"
                             fw={500}
-                            variant={localFilters.importance === "important" ? "filled" : "outline"}
+                            variant={localFilters?.importance === "important" ? "filled" : "outline"}
                             onClick={() => setLocalFilters({ ...localFilters, importance: "important" })}
                         >
                             Important
@@ -118,7 +118,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                         <div
                             style={{
                                 cursor: 'pointer',
-                                border: localFilters.assignedToId === null ? '2px solid rgb(5, 5, 73)' : '2px solid transparent',
+                                border: localFilters?.assignedToId === null ? '2px solid rgb(5, 5, 73)' : '2px solid transparent',
                                 borderRadius: '50%',
                                 padding: '2px'
                             }}
@@ -131,12 +131,12 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                             <div
                                 key={member.id}
                                 style={{
-                                    border: localFilters.assignedToId === member.id ? "2px solid rgb(5, 5, 73)" : "2px solid transparent",
+                                    border: localFilters?.assignedToId === member.id ? "2px solid rgb(5, 5, 73)" : "2px solid transparent",
                                     cursor: "pointer",
                                     borderRadius: '50%',
                                     padding: '2px'
                                 }}
-                                onClick={() => setLocalFilters({ ...localFilters, assignedToId: localFilters.assignedToId === member.id ? null : member.id })}
+                                onClick={() => setLocalFilters({ ...localFilters, assignedToId: localFilters?.assignedToId === member.id ? null : member.id })}
                             >
                                 <Tooltip
                                     withArrow
@@ -168,7 +168,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                                 // c="black"
                                 fw={500}
                                 p="0.5rem 1rem"
-                                variant={localFilters.time === option.value ? "filled" : "outline"}
+                                variant={localFilters?.time === option.value ? "filled" : "outline"}
                                 onClick={() => setLocalFilters({ ...localFilters, time: option.value })}
                             >
                                 {option.label}

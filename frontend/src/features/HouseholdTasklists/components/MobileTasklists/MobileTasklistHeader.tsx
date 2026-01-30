@@ -13,17 +13,17 @@ import type { Task } from "@/store/taskSlice";
 
 interface Props {
     // Lift state up! Pass these down from the Page component
-    searchValue: string;
-    setSearchValue: (val: string) => void;
-    sortOption: SortOption;
-    setSortOption: (val: SortOption) => void;
-    filters: TaskFilters;
-    setFilters: (val: TaskFilters) => void;
-    showReorderMode: boolean;
-    setShowReorderMode: (val: boolean | ((prev: boolean) => boolean)) => void;
-    tasks: Task[];
-    filteredTasks: Task[];
-    listId: number;
+    searchValue?: string;
+    setSearchValue?: (val: string) => void;
+    sortOption?: SortOption;
+    setSortOption?: (val: SortOption) => void;
+    filters?: TaskFilters;
+    setFilters?: (val: TaskFilters) => void;
+    showReorderMode?: boolean;
+    setShowReorderMode?: (val: boolean | ((prev: boolean) => boolean)) => void;
+    tasks?: Task[];
+    filteredTasks?: Task[];
+    listId?: number;
 }
 
 export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode, tasks, filteredTasks, listId }: Props) => {
@@ -127,7 +127,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                     <Tooltip label="Filter list"><ActionIcon onClick={open} variant="subtle" color="rgb(5, 5, 73)">
                         <FilterAltRoundedIcon />
                     </ActionIcon></Tooltip>
-                    {isSmall && filteredTasks.length > 1 && tasks?.length > 1 && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
+                    {isSmall && filteredTasks?.length > 1 && tasks?.length > 1 && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
                         <ActionIcon
                             onClick={() => setShowReorderMode(prev => !prev)}
                             variant={showReorderMode ? "light" : "subtle"}

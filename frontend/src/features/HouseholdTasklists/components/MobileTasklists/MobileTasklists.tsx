@@ -14,7 +14,7 @@ import Snackbar from '@mui/material/Snackbar';
 import { Notification } from '@mantine/core';
 import { Tasklist } from "../HouseholdTasklists/Tasklist";
 import "../../styles/Tasklist.css";
-
+import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded';
 
 const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
@@ -45,8 +45,8 @@ export const MobileTasklists = () => {
         <Tooltip.Group openDelay={500} closeDelay={100}>
             <Group gap="0.5rem" className="tasklists-title-right">
                 <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="Archive">
-                    <ActionIcon size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)">
-                        <Inventory2RoundedIcon />
+                    <ActionIcon size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)" onClick={() => navigate("/tasklists/archived")}>
+                        <ArchiveRoundedIcon />
                     </ActionIcon>
                 </Tooltip>
                 <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="New list">

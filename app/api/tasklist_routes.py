@@ -230,6 +230,7 @@ def archive_list(id):
     """
     tasklist = Tasklist.query.get(id)
     tasklist.is_archived = True
+    tasklist.archived_by = current_user.id
     db.session.commit()
 
     return jsonify(tasklist.to_dict())

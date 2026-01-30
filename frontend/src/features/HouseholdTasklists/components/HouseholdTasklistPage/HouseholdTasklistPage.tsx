@@ -14,7 +14,7 @@ export const HouseholdTasklistPage = () => {
     const { tasklistId } = useParams();
     const navigate = useNavigate();
 
-    const listId = tasklistId ? Number(tasklistId) : undefined;
+    const listId = (tasklistId && !isNaN(Number(tasklistId))) ? Number(tasklistId) : undefined;
 
     const { data: user } = useAuthenticateQuery();
     // Don't fetch with NaN/undefined
@@ -37,6 +37,7 @@ export const HouseholdTasklistPage = () => {
         await updateTasklistTitle({ listId: tasklist.id, title: next, householdId: user?.householdId }).unwrap();
     };
 
+    if (tasklistId === "archived") return null; // Or don't render this component for that route
     if (!listId) return <div>Invalid list id.</div>;
     if (isFetching && !tasklist) return <Center h="100vh"><Loader color="cyan" style={{
         transition: 'opacity 200ms ease-in',

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen
-from sqlalchemy.orm import aliased
+from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy import outerjoin, or_, and_
 import base64
 from datetime import datetime, timedelta
@@ -40,13 +40,13 @@ def get_household_tasklists(household_id):
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    if current_user not in household.users:
+    if current_user.household_id != household_id:
         return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
 
     lists = Tasklist.query.filter_by(
         household_id=household_id, 
         is_archived=is_archived
-    ).all()
+    ).options(joinedload(Tasklist.archiver)).all()
 
     return jsonify([t.to_dict() for t in lists]), 200
 

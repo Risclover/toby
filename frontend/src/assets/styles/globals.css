@@ -287,3 +287,61 @@ form {
     flex: 1;
     width: 100%;
 }
+
+.archived-table-btns {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.archived-table-btns svg {
+    font-size: var(--text-lg);
+}
+
+.archived-household-tasklists-container {
+    max-width: 100%;
+    padding: 0.5rem;
+    height: 100%;
+    background: var(--mantine-color-gray-1);
+}
+
+.archived-household-tasklists-item {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+    background: white;
+    border-radius: 0.25rem;
+    /* font-weight: 400; */
+}
+
+.archived-household-tasklists-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.archived-household-tasklists-item-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.archived-household-tasklists-item-bottom {
+    font-size: var(--text-xs);
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.archived-household-tasklists-item-bottom span {
+    font-weight: 500;
+    font-family: "Alan Sans", sans-serif;
+}
+
+.archived-household-tasklists-item-data {
+    margin-right: 1rem;
+}

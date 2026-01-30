@@ -56,6 +56,12 @@
     /* font-weight: 400; */
 }
 
+.mantine-Table-td {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* .mantine-TextInput-input {
     background: var(--input-background) !important;
 }
