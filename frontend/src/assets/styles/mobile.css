@@ -163,6 +163,7 @@
 .mobile-announcements-header,
 .mobile-tasklist-header {
     display: flex;
+    z-index: 99;
     /* gap: 1.5rem; */
     align-items: center;
     justify-content: space-around;

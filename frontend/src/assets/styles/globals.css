@@ -322,8 +322,10 @@ form {
     justify-content: space-between;
     align-items: center;
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
+    font-size: var(--text-lg);
+    font-family: "Alan Sans", sans-serif;
+    font-weight: 500;
 }
 
 .archived-household-tasklists-item-title {
@@ -344,4 +346,45 @@ form {
 
 .archived-household-tasklists-item-data {
     margin-right: 1rem;
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.archived-menu-icon svg {
+    font-size: 1.25rem;
+    /* color: var(--mantine-color-gray-6); */
+}
+
+.archived-menu-icon-delete svg {
+    font-size: 1.25rem;
+}
+
+.mantine-Menu-item {
+    font-family: "Nunito Sans", sans-serif;
+    line-height: 1;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    align-self: center;
+}
+
+.mantine-Menu-itemLabel:not(:last-child) {
+    line-height: 1;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    color: rgb(5, 5, 73);
+}
+
+.mantine-Menu-itemSection {
+    display: flex;
+    align-items: center;
+}
+
+
+.archived-by {
+    height: 20px;
+    width: 20px;
+    border-radius: 999px;
 }

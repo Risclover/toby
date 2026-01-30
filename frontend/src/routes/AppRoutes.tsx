@@ -19,7 +19,7 @@ import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { MobileAnnouncements } from "@/pages/MobileAnnouncements";
 import { MobileTasklist } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklist";
 import { MobileTasklists } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklists";
-import { ArchivedHouseholdTasklists } from "@/pages/ArchivedHouseholdTasklists";
+import { ArchivedHouseholdTasklistsPage } from "@/pages/ArchivedHouseholdTasklistsPage";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
@@ -30,7 +30,7 @@ export const AppRoutes = () => {
             <Route path="/join/:inviteCode" element={<Registration createHousehold={false} />} />
             <Route path="/signup" element={<Registration createHousehold={true} />} />
             <Route path="/users/:userId" element={<UserPage />} />
-            <Route path="/tasklists/archived" element={<ArchivedHouseholdTasklists />} />
+            <Route path="/tasklists/archived" element={<ArchivedHouseholdTasklistsPage />} />
             <Route path="/tasklists" element={<MobileTasklists />} />
             <Route path="/tasklists/:tasklistId" element={<MobileTasklist />} />
             <Route path="/login" element={<Login />} />
