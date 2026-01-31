@@ -325,7 +325,6 @@ form {
     text-overflow: ellipsis;
     font-size: var(--text-lg);
     font-family: "Alan Sans", sans-serif;
-    font-weight: 500;
 }
 
 .archived-household-tasklists-item-title {

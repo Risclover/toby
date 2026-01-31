@@ -22,7 +22,7 @@ export const ArchivedHouseholdTasklistsPage = () => {
 
     return (
         <MobileLayout titleComponent={titleComponent}>
-            {/* <MobileTasklistHeader /> */}
+            <MobileTasklistHeader />
             <ArchivedHouseholdTasklists />
         </MobileLayout>
     );

@@ -237,7 +237,7 @@ function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                 </Tooltip.Group>
                 <div className="mobile-tasklist-card-data">
                     <Tooltip.Group openDelay={300} closeDelay={100}>
-                        <TasklistCardTooltip label="Overdue">
+                        <TasklistCardTooltip label="Overdue" overdue={overdue}>
                             <OverdueIcon size={16} color="currentColor" /> {overdue}
                         </TasklistCardTooltip>
                         <TasklistCardTooltip label="Due today">

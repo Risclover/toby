@@ -60,32 +60,17 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
         </Combobox.Option>
     ));
 
-    const handleSortChange = async (val: string) => {
-        if (!val) return; // 🚀 Block empty submissions
-        // 1. Close dropdown immediately for better UX
-        combobox.closeDropdown();
+    const handleSortChange = (val: string) => {
+        // 🚀 Just update the state. 
+        // The list will automatically resort itself based on the 'sortIndex' 
+        // already stored in your tasks.
+        setSortOption(val as any);
 
-        if (val === 'manual') {
-            try {
-                const orderedIds = filteredTasks.map(t => t.id);
-
-                // 2. Call the backend
-                await reorderTasks({
-                    listId,
-                    orderedIds,
-                    setToManual: true
-                }).unwrap(); // .unwrap() ensures it throws an error if the API fails
-
-                // 3. Update the temporary UI state ONLY after success
-                setSortOption(val as any);
-            } catch (error) {
-                console.error("Failed to switch to manual:", error);
-                // Optional: Show a toast/notification here
-            }
-        } else {
-            // Normal behavior for other sort modes
-            setSortOption(val as any);
+        if (val !== 'manual') {
+            setShowReorderMode(false);
         }
+
+        combobox.closeDropdown();
     };
 
 
@@ -126,7 +111,22 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                             type="button"
                             pointer
                             onClick={() => combobox.toggleDropdown()}
-                            rightSection={<Combobox.Chevron />}
+                            rightSectionPointerEvents={sortOption === "" ? 'none' : 'all'}
+                            rightSection={
+                                sortOption !== "manual" ? (
+                                    <CloseButton
+                                        size="sm"
+                                        onMouseDown={(e) => e.preventDefault()}
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Good practice to stop bubbling
+                                            setSortOption("manual");
+                                        }}
+                                        aria-label="Clear sort option"
+                                    />
+                                ) : (
+                                    <Combobox.Chevron />
+                                )
+                            }
                         >
                             {/* 3. Render the Label if found, otherwise the placeholder */}
                             {selectedOption ? selectedOption.label : <Input.Placeholder>Sort by</Input.Placeholder>}

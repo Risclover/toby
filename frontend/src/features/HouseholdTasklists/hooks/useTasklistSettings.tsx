@@ -229,7 +229,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         form.setFieldValue("title", tasklist.title);
         form.setFieldValue("showCompleted", false);
         form.setFieldValue("newItemPosition", "bottom");
-        form.setFieldValue("defaultSortOrder", null);
+        form.setFieldValue("defaultSortOrder", "manual");
         form.setFieldValue("defaultFilters", { importance: "all", assignedToId: null, time: "all" });
         form.setFieldValue("color", "#15aabf");
         form.setFieldValue("viewMode", "detailed");

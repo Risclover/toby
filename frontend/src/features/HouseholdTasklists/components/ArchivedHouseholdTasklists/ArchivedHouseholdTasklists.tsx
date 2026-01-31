@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetTasklistsQuery } from "@/store/taskSlice";
-import { ActionIcon, Avatar, Tooltip } from "@mantine/core";
+import { ActionIcon, Avatar, Center, Loader, Tooltip } from "@mantine/core";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import dayjs from "dayjs";
@@ -52,11 +52,15 @@ export const ArchivedHouseholdTasklists = () => {
     </div>)
 
     // Handle the loading state while waiting for user/lists
-    if (!userLoaded || isLoading) return <p>Loading...</p>;
+    if (!userLoaded || isLoading) return <Center h="100vh"><Loader color="cyan" style={{
+        transition: 'opacity 200ms ease-in',
+        opacity: isLoading ? 1 : 0,
+        transitionDelay: '300ms' // Only starts appearing after 300ms
+    }} /></Center>;
 
     return (
         <div className="archived-household-tasklists-container">
-            {rows}
+            {archivedLists?.length === 0 ? <Center h="50vh">You haven't archived any tasklists.</Center> : rows}
         </div>
     )
 }

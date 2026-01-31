@@ -5,9 +5,10 @@ interface Props {
     children: ReactNode;
     label: string; // 🚀 Make it reusable
     color?: string;
+    overdue?: number;
 }
 
-export function TasklistCardTooltip({ children, label, color }: Props) {
+export function TasklistCardTooltip({ children, label, color, overdue }: Props) {
     const [opened, setOpened] = useState(false);
 
     return (
@@ -20,7 +21,7 @@ export function TasklistCardTooltip({ children, label, color }: Props) {
             offset={5}
         >
             <div
-                className="mobile-tasklist-card-data-item"
+                className={`mobile-tasklist-card-data-item${overdue === 0 ? " overdue-zero" : ""}`}
                 tabIndex={0} // Allows keyboard focus
                 onFocus={() => setOpened(true)}
                 onBlur={() => setOpened(false)}

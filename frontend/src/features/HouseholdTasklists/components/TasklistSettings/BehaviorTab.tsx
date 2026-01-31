@@ -34,18 +34,16 @@ export const BehaviorTab = ({ form, household, allowedMembers }: BehaviorTabProp
             divider={true}
         >
             <Select
+                defaultValue="manual"
                 placeholder="Sort by"
                 {...form.getInputProps('defaultSortOrder')}
-                clearable
                 data={[
+                    { value: "manual", label: "Manual" },
+                    { value: "alphabetical", label: "Alphabetical" },
                     { value: "due_date", label: "Due date" },
                     { value: "importance", label: "Importance" },
-                    { value: "alphabetical", label: "Alphabetical" },
                     { value: "newest", label: "Newest" },
                     { value: "oldest", label: "Oldest" },
-                    {
-                        value: "manual", label: "Manual"
-                    }
                 ]}
             />
         </SettingsItem>
