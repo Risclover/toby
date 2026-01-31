@@ -1,29 +1,27 @@
-import { useNavigate } from "react-router-dom";
+import type React from "react";
+import dayjs from "dayjs";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetTasklistsQuery } from "@/store/taskSlice";
-import { ActionIcon, Avatar, Center, Loader, Tooltip } from "@mantine/core";
-import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import dayjs from "dayjs";
-import { ArchivedHouseholdTasklistsPage } from "@/pages/ArchivedHouseholdTasklistsPage";
+import { Avatar, Center, Loader, Tooltip } from "@mantine/core";
 import { ArchivedHouseholdTasklistsMenu } from "./ArchivedHouseholdTasklistsMenu";
 
 export const ArchivedHouseholdTasklists = () => {
-    const navigate = useNavigate();
     const { data: user, isSuccess: userLoaded } = useAuthenticateQuery();
 
     const { data: archivedLists, isLoading } = useGetTasklistsQuery(
-        {
-            householdId: Number(user?.householdId),
-            isArchived: true
-        },
-        {
-            // 🚀 Only run this query if we actually have a householdId
-            skip: !user?.householdId
-        }
+        { householdId: Number(user?.householdId), isArchived: true },
+        { skip: !user?.householdId }
     );
 
-    const rows = archivedLists?.map(list => <div className="archived-household-tasklists-item">
+    const handleAvatarKeyDown = (e: React.KeyboardEvent<HTMLDivElement>, userId: number | undefined) => {
+        if (e.key === "Enter" || e.key === " ") goToUserProfile(userId);
+    }
+
+    const goToUserProfile = (userId: number | undefined) => {
+        window.open(`/users/${userId}`, "_blank")
+    }
+
+    const archivedItems = archivedLists?.map(list => <div className="archived-household-tasklists-item">
         <div className="archived-household-tasklists-item-top">
             <div className="archived-household-tasklists-item-title">{list.title}</div>
             <div className="archived-table-btns">
@@ -38,10 +36,10 @@ export const ArchivedHouseholdTasklists = () => {
                     <Avatar
                         onKeyDown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
-                                window.open(`/users/${list.archivedBy?.id}`, "_blank")
+                                handleAvatarKeyDown(e, list.archivedBy?.id)
                             }
                         }}
-                        onClick={() => window.open(`/users/${list.archivedBy?.id}`, "_blank")}
+                        onClick={() => goToUserProfile(list.archivedBy?.id)}
                         tabIndex={0}
                         size="xs"
                         src={list.archivedBy?.profileImg || undefined}
@@ -51,16 +49,24 @@ export const ArchivedHouseholdTasklists = () => {
         </div>
     </div>)
 
-    // Handle the loading state while waiting for user/lists
-    if (!userLoaded || isLoading) return <Center h="100vh"><Loader color="cyan" style={{
-        transition: 'opacity 200ms ease-in',
-        opacity: isLoading ? 1 : 0,
-        transitionDelay: '300ms' // Only starts appearing after 300ms
-    }} /></Center>;
+    // Loading state
+    if (!userLoaded || isLoading)
+        return (
+            <Center h="100vh">
+                <Loader
+                    color="cyan"
+                    style={{
+                        transition: 'opacity 200ms ease-in',
+                        opacity: isLoading ? 1 : 0,
+                        transitionDelay: '300ms'
+                    }}
+                />
+            </Center>
+        )
 
     return (
         <div className="archived-household-tasklists-container">
-            {archivedLists?.length === 0 ? <Center h="50vh">You haven't archived any tasklists.</Center> : rows}
+            {archivedLists?.length === 0 ? <Center h="50vh">You haven't archived any tasklists.</Center> : archivedItems}
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useTaskFiltering, type SortOption, type TaskFilters } from "./useTasklistFiltering";
+import { useTaskFiltering, type SortOption, type TaskFilters } from "./useTaskFiltering";
 import { useTasklistStats } from "./useTasklistStats";
 import { useTasklistTheme } from "./useTasklistTheme";
 import { type TasklistType } from "@/store/taskSlice";

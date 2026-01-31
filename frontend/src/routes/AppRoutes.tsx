@@ -12,7 +12,7 @@ import { ShoppingLists } from "@/features/Shopping/components/ShoppingLists";
 import { ShoppingListsPage } from "@/pages/ShoppingListsPage";
 import { ShoppingList } from "@/features/Shopping/components/ShoppingList";
 import { ShoppingListPage } from "@/pages/ShoppingListPage";
-import { DashboardGrid } from "@/component/DashboardGrid";
+import { DashboardGrid } from "@/components/DashboardGrid";
 import { MobileHome } from "@/pages/MobileHome";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";

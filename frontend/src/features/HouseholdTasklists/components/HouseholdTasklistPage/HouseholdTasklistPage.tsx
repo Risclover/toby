@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query"; // <-- use this
 import { HouseholdTasklistPageAddTask } from "./HouseholdTasklistPageAddTask";
-import { EditableTitle } from "../../../../component/EditableTitle";
+import { EditableTitle } from "../../../../components/EditableTitle";
 import { HouseholdTasklistPageList } from "./HouseholdTasklistPageList";
 import { HouseholdTasklistPageCompleted } from "./HouseholdTasklistPageCompleted";
 import "../../styles/HouseholdTasklistPage.css";

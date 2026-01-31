@@ -1,4 +1,4 @@
-import { MobileHomeNavGrid } from "@/component/MobileHomeNavGrid"
+import { MobileHomeNavGrid } from "@/components/MobileHomeNavGrid"
 import { MobileLayout } from "@/layout/MobileLayout"
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdTasklistsQuery } from "@/store/householdSlice";

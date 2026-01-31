@@ -3,7 +3,7 @@ import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { ActionIcon, CloseButton, Combobox, Input, InputBase, Tooltip, useCombobox } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks";
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
-import { type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
+import { type SortOption, type TaskFilters } from "../../hooks/useTaskFiltering";
 import { MobileTasklistFilterDrawer } from "./MobileTasklistFilterDrawer";
 import { ReorderListIcon } from "@/assets/icons/ReorderListIcon";
 import { useEffect } from "react";

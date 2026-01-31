@@ -1,6 +1,6 @@
-import { MobileHeader } from "@/component/MobileHomeHeader"
-import { MobileHomeNavGrid } from "@/component/MobileHomeNavGrid"
-import { MobileHomeNoticeBoard } from "@/component/MobileHomeNoticeBoard"
+import { MobileHomeHeader } from "@/components/MobileHomeHeader"
+import { MobileHomeNavGrid } from "@/components/MobileHomeNavGrid"
+import { MobileHomeNoticeBoard } from "@/components/MobileHomeNoticeBoard"
 import type React from "react"
 import type { JSX } from "react"
 
@@ -12,7 +12,7 @@ export const MobileLayout = ({ titleComponent, children }: Props) => {
     return (
         <div className="mobile-home-container">
             <div className="mobile-home-container-top">
-                <MobileHeader />
+                <MobileHomeHeader />
                 {titleComponent}
             </div>
             <div className="mobile-home-container-bottom">

@@ -2,9 +2,9 @@ import { apiSlice } from "./apiSlice";
 import type { TasklistType } from "./taskSlice";
 
 export type Household = { id: number; name: string };
-export type Tasklist = { id: number; title: string; createdAt: string; memberIds: number[] };
+type Tasklist = { id: number; title: string; createdAt: string; memberIds: number[] };
 type TasklistTag = { type: "Tasklist"; id: number | string };
-export type ShoppingCategory = { id: number; listId: number; name: string; createdAt: string; updatedAt: string };
+type ShoppingCategory = { id: number; listId: number; name: string; createdAt: string; updatedAt: string };
 
 export type ShoppingList = {
     id: number;
@@ -39,7 +39,7 @@ export type CreateAnnouncementArgs = {
     ttlHours?: number;
 };
 
-export type Announcement = {
+type Announcement = {
     id: number;
     userId: number;
     householdId: number;

@@ -1,4 +1,4 @@
-import { FormInput } from "@/component/FormInput";
+import { FormInput } from "@/components/FormInput";
 import { Button } from "@mantine/core";
 import React, { type SetStateAction } from "react"
 import KeyboardBackspaceRoundedIcon from '@mui/icons-material/KeyboardBackspaceRounded';

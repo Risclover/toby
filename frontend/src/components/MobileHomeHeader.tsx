@@ -5,7 +5,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { Link } from 'react-router-dom';
 import { useAuthenticateQuery } from '@/store/authSlice';
 
-export const MobileHeader = () => {
+export const MobileHomeHeader = () => {
     const { data: user } = useAuthenticateQuery();
 
     console.log('user:', user)

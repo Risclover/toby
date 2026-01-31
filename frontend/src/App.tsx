@@ -1,4 +1,4 @@
-import { Layout } from '@/component'
+import { Layout } from '@/components'
 import { BrowserRouter } from 'react-router-dom'
 import "./index.css"
 import "./assets/styles/globals.css"

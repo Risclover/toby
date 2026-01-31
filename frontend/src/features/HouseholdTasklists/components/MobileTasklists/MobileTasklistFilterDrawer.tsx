@@ -1,6 +1,6 @@
 import { Avatar, Button, Drawer, Group, Stack, Text, Space, Tooltip } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
-import { type TaskFilters, type TimeFilter } from "../../hooks/useTasklistFiltering";
+import { type TaskFilters, type TimeFilter } from "../../hooks/useTaskFiltering";
 import { useGetTasklistQuery, type TasklistType } from "@/store/taskSlice";
 
 type Props = {

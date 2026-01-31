@@ -1,19 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { ActionIcon, Button, Menu } from "@mantine/core"
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import UnarchiveRoundedIcon from '@mui/icons-material/UnarchiveRounded';
 import { ViewIcon } from "@/assets/icons/ViewIcon";
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import UnarchiveOutlinedIcon from '@mui/icons-material/UnarchiveOutlined';
 import { UnarchivedIcon } from "@/assets/icons/UnarchivedIcon";
-import { TrashIcon } from "@/assets/icons/TrashIcon";
 import { MenuTrashIcon } from "@/assets/icons/MenuTrashIcon";
 import { useUnarchiveListMutation } from "@/store/taskSlice";
-import { useTasklistSettings } from "../../hooks/useTasklistSettings";
-import { useNotifications } from "@mantine/notifications";
-import { notifications } from '@mantine/notifications'; // <--- Import logic
-import { useNavigate } from "react-router-dom";
+import { notifications } from '@mantine/notifications';
 
 type Props = {
     tasklistId: number;

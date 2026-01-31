@@ -1,4 +1,4 @@
-import { FormInput } from "@/component/FormInput"
+import { FormInput } from "@/components/FormInput"
 import { useLoginMutation } from "@/store/authSlice";
 import { Button, ScrollArea, Stack } from "@mantine/core"
 import { useState } from "react"

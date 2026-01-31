@@ -1,12 +1,12 @@
-import { MobileHomeFamilyTitle } from "@/component/MobileHomeFamilyTitle"
-import { MobileHeader } from "@/component/MobileHomeHeader"
+import { MobileHomeFamilyTitle } from "@/components/MobileHomeFamilyTitle"
+import { MobileHomeHeader } from "@/components/MobileHomeHeader"
 import "@/assets/styles/mobile.css";
-import { MobileHomeCalendar } from "@/component/MobileHomeCalendar";
-import { MobileHomeCheckinReminder } from "@/component/MobileHomeCheckinReminder";
-import { MobileHomeNavGrid } from "@/component/MobileHomeNavGrid";
-import { MobileHomeNoticeBoard } from "@/component/MobileHomeNoticeBoard";
-import { MobileHomeDailyCheckins } from "@/component/MobileHomeDailyCheckins";
-import { MobileHomeRecentActivity } from "@/component/MobileHomeRecentActivity";
+import { MobileHomeCalendar } from "@/components/MobileHomeCalendar";
+import { MobileHomeCheckinReminder } from "@/components/MobileHomeCheckinReminder";
+import { MobileHomeNavGrid } from "@/components/MobileHomeNavGrid";
+import { MobileHomeNoticeBoard } from "@/components/MobileHomeNoticeBoard";
+import { MobileHomeDailyCheckins } from "@/components/MobileHomeDailyCheckins";
+import { MobileHomeRecentActivity } from "@/components/MobileHomeRecentActivity";
 import { MobileLayout } from "@/layout/MobileLayout";
 
 export const MobileHome = () => {

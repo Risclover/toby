@@ -104,7 +104,7 @@ function MemberRow({
     );
 }
 
-export default function HouseholdCheckinsMini({
+export function HouseholdCheckinsMini({
     members,
     size = 32,               // a little bigger
     gap = 8,                 // tight spacing

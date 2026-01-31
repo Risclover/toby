@@ -4,7 +4,7 @@ import { Button, CloseButton, Combobox, Input, InputBase, TextInput, useCombobox
 import { useDisclosure } from "@mantine/hooks";
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
-import { type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
+import { type SortOption, type TaskFilters } from "../../hooks/useTaskFiltering";
 import { MobileTasklistFilterDrawer } from "./MobileTasklistFilterDrawer";
 import { ReorderListIcon } from "@/assets/icons/ReorderListIcon";
 

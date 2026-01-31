@@ -1,1 +1,2 @@
-export * from "./images/moods";
+export * from "./icons";
+export * from "./images";

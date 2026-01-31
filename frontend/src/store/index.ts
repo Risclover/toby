@@ -34,3 +34,16 @@ export const store = setupStore();
 // Strong types you can import anywhere
 export type AppStore = ReturnType<typeof setupStore>;
 export type AppDispatch = AppStore['dispatch'];
+
+export * from "./announcementSlice";
+export * from "./apiSlice";
+export * from "./authSlice";
+export * from "./categorySlice";
+export * from "./checkinSlice";
+export * from "./eventSlice";
+export * from "./hooks";
+export * from "./householdSlice";
+export * from "./moodSlice";
+export * from "./shoppingSlice";
+export * from "./taskSlice";
+export * from "./userSlice";

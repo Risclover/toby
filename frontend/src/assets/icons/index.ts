@@ -1,0 +1,13 @@
+export { ArchivedIcon } from "./ArchivedIcon";
+export { InfoIcon } from "./InfoIcon";
+export { ManageCategoriesIcon } from "./ManageCategoriesIcon";
+export { MenuTrashIcon } from "./MenuTrashIcon";
+export { OverdueIcon } from "./OverdueIcon";
+export { ReorderListIcon } from "./ReorderListIcon";
+export { SoonIcon } from "./SoonIcon";
+export { StarIcon, StarIconOutline } from "./StarIcon";
+export { TobyIcon } from "./TobyIcon";
+export { TodayIcon } from "./TodayIcon";
+export { TrashIcon } from "./TrashIcon";
+export { UnarchivedIcon } from "./UnarchivedIcon";
+export { ViewIcon } from "./ViewIcon";

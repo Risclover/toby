@@ -1,5 +1,5 @@
-import { MobileAnnouncementsFull } from "@/component/MobileAnnouncementsFull";
-import { MobileAnnouncementsHeader } from "@/component/MobileAnnouncementsHeader";
+import { MobileAnnouncementsFull } from "@/components/MobileAnnouncementsFull";
+import { MobileAnnouncementsHeader } from "@/components/MobileAnnouncementsHeader";
 import { MobileLayout } from "@/layout/MobileLayout"
 import { ActionIcon, Button } from "@mantine/core";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';

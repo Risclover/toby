@@ -75,7 +75,7 @@ type Props = {
     setSidebarExpanded: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Sidebar({ sidebarExpanded, setSidebarExpanded }: Props) {
+export function Sidebar({ sidebarExpanded, setSidebarExpanded }: Props) {
     const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId)

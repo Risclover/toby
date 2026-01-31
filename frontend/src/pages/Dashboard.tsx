@@ -13,9 +13,9 @@ import { FaCalendarPlus } from "react-icons/fa6";
 import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
 import { useCheckInTodayMutation, useGetUserCheckinsQuery } from "@/store/checkinSlice";
 import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
-import { DashboardHeader } from "@/component/DashboardHeader";
-import { DashboardGrid } from "@/component/DashboardGrid";
-import { InviteLink } from "@/component/InviteLink";
+import { DashboardHeader } from "@/components/DashboardHeader";
+import { DashboardGrid } from "@/components/DashboardGrid";
+import { InviteLink } from "@/components/InviteLink";
 
 
 const toISO = (d: Date) => d.toISOString().slice(0, 10); // "YYYY-MM-DD"

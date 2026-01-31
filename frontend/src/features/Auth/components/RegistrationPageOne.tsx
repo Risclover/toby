@@ -1,4 +1,4 @@
-import { FormInput } from "@/component/FormInput"
+import { FormInput } from "@/components/FormInput"
 import { Button, ScrollArea, Stack } from "@mantine/core";
 import { type SetStateAction } from "react"
 import { Link } from "react-router-dom";

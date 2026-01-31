@@ -1,4 +1,4 @@
-import { EditableTitle } from '@/component/EditableTitle'
+import { EditableTitle } from '@/components/EditableTitle'
 import type { ShoppingList } from '@/store/householdSlice'
 import { useEditShoppingItemCategoryMutation, useEditShoppingListMutation, useGetShoppingItemsQuery } from '@/store/shoppingSlice'
 import { Button, Progress, Select, Tooltip } from '@mantine/core'

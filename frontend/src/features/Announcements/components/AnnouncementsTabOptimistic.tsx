@@ -31,7 +31,7 @@ type Props = {
     active: boolean;
 };
 
-export default function AnnouncementsTabOptimistic({ creator, householdId, active, isMenuOpen, onToggleMenu, onCloseMenu }: Props) {
+export function AnnouncementsTabOptimistic({ creator, householdId, active, isMenuOpen, onToggleMenu, onCloseMenu }: Props) {
     const dispatch = useAppDispatch();
     const { data: announcements } = useGetAnnouncementsQuery({ householdId });
     const [markBulk] = useMarkAnnouncementsSeenBulkMutation();
