@@ -1,220 +1,122 @@
 import { MobileLayout } from "@/layout/MobileLayout";
-import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { ActionIcon, Button, Center, Group, Loader, Progress, Stack, Text, Tooltip } from "@mantine/core";
-import { useGetTasklistQuery, type TasklistType } from "@/store/taskSlice" // Checked import path
+import { useParams } from "react-router-dom";
+import { Center, Loader, Stack, Group, Text } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+
+import { useGetTasklistQuery } from "@/store/taskSlice";
+import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import { useMobileTasklistController } from "../../hooks/useMobileTasklistController";
+
 import { MobileTasklistHeader } from "./MobileTasklistHeader";
 import { HouseholdTasklistPageList } from "../HouseholdTasklistPage/HouseholdTasklistPageList";
 import { HouseholdTasklistPageCompleted } from "../HouseholdTasklistPage/HouseholdTasklistPageCompleted";
 import { HouseholdTasklistPageAddTask } from "../HouseholdTasklistPage/HouseholdTasklistPageAddTask";
-import { useTaskFiltering, type SortOption, type TaskFilters } from "../../hooks/useTasklistFiltering";
 import { TasklistSettings } from "../TasklistSettings/TasklistSettings";
-import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
-import "../../styles/MobileTasklist.css";
 import { ArchiveNotice } from "../ArchivedHouseholdTasklists/ArchiveNotice";
+import { MobileTasklistTitleComponent } from "./MobileTasklistTitleComponent";
+
+import "../../styles/MobileTasklist.css"
 
 export const MobileTasklist = () => {
-    const inputRef = useRef<HTMLInputElement>(null);
     const { tasklistId } = useParams();
-
+    const isSmall = useIsSmallScreen();
     const listId = (tasklistId && !isNaN(Number(tasklistId))) ? Number(tasklistId) : undefined;
 
-    const isSmall = useIsSmallScreen();
-    const numericId = Number(listId);
-
-    // 2. Only run the query if we have a valid number
     const { data: tasklist, isFetching } = useGetTasklistQuery(
-        (listId && !isNaN(numericId)) ? numericId : skipToken
+        listId ? Number(listId) : skipToken
     );
 
-    const [showCompleted, setShowCompleted] = useState(false);
-    const [showTasklistSettings, setShowTasklistSettings] = useState(false);
-    const [showReorderMode, setShowReorderMode] = useState(false);
-    const [searchValue, setSearchValue] = useState("");
-    const [sortOption, setSortOption] = useState<SortOption | string>(tasklist?.defaultSortOrder ?? "");
-    const [filters, setFilters] = useState<TaskFilters>({
-        importance: "all",
-        assignedToId: null,
-        time: "all",
-    });
+    const { inputRef, state, data } = useMobileTasklistController(tasklist);
 
-    useEffect(() => {
-        // Only apply defaults if tasklist is loaded
-        if (tasklist?.defaultFilters) {
-            // You might want a check here: "Only set this on FIRST load, not every re-render"
-            // But since useEffect runs on dependency change, and tasklist.defaultFilters 
-            // usually doesn't change often, this is generally safe.
-            // If you want strict "on mount only" behavior, you need a Ref to track "hasInitialized".
-
-            setFilters(tasklist.defaultFilters);
-        }
-    }, [tasklist?.defaultFilters]);
-
-    useEffect(() => {
-        if (tasklist?.defaultSortOrder) {
-            // Only set it if the user hasn't already picked something else? 
-            // Or strictly enforce it on load? usually strictly enforce on load.
-            setSortOption(tasklist.defaultSortOrder as SortOption);
-        }
-    }, [tasklist?.defaultSortOrder]); // Run when the list config loads/changes
-
-    useEffect(() => {
-        if (!tasklist) return;
-        document.documentElement.style.setProperty("--tasklist-color", tasklist.color);
-    }, [tasklist?.color])
-
-    console.log('tasklist color:', tasklist?.color);
-
-    // 3. Derived Data (Safe to run even if tasklist is undefined)
-    const tasks = tasklist?.tasks ?? [];
-
-    const completed = useMemo(() =>
-        tasks.filter((task) => task.status === "completed"),
-        [tasks]);
-
-    // Capture everything NOT completed (pending + in_progress)
-    const uncompleted = useMemo(() =>
-        tasks.filter((task) => task.status !== "completed"),
-        [tasks]);
-
-    // 4. Custom Filter Hook (Must run every render)
-    const filteredTasks = useTaskFiltering(
-        uncompleted,
-        searchValue,
-        sortOption,
-        filters
-    );
-
-    const filteredCompleted = useTaskFiltering(completed, searchValue, sortOption, filters);
-
-    // Progress Bar Logic
-    const { percent } = useMemo(() => {
-        const total = tasks.length;
-        const done = completed.length;
-        const raw = total ? (done / total) * 100 : 0;
-        return { percent: Math.min(100, Math.max(0, Math.round(raw))) };
-    }, [tasks.length, completed.length]);
-
-    useEffect(() => {
-        if (tasklist?.showCompleted !== undefined) {
-            setShowCompleted(tasklist.showCompleted);
-        }
-    }, [tasklist?.showCompleted]);
-
-    // 5. Early Returns (Loading / Error States)
-    // Safe to return here because all hooks have been called above
-    if (tasklistId === "archived") return null; // Or don't render this component for that route
+    // Early Returns
+    if (tasklistId === "archived") return null;
     if (!listId) return <div>Invalid list id.</div>;
-    if (isFetching && !tasklist) return <Center h="100vh"><Loader color="cyan" style={{
-        transition: 'opacity 200ms ease-in',
-        opacity: isFetching ? 1 : 0,
-        transitionDelay: '300ms' // Only starts appearing after 300ms
-    }} /></Center>;
+    if (isFetching && !tasklist) {
+        return (
+            <Center h="100vh">
+                <Loader color="cyan" style={{ opacity: 1, transition: 'opacity 200ms ease-in' }} />
+            </Center>
+        );
+    }
     if (!tasklist) return <div>Task list not found.</div>;
 
     return (
-        <MobileLayout titleComponent={<TitleComponent percent={percent} setShowTasklistSettings={setShowTasklistSettings} tasklist={tasklist} />}>
+        <MobileLayout
+            titleComponent={
+                <MobileTasklistTitleComponent
+                    percent={data.percent}
+                    tasklist={tasklist}
+                    setShowTasklistSettings={state.setShowTasklistSettings}
+                />
+            }
+        >
             <MobileTasklistHeader
-                searchValue={searchValue}
-                setSearchValue={setSearchValue}
-                sortOption={sortOption}
-                setSortOption={setSortOption}
-                filters={filters}
-                setFilters={setFilters}
-                showReorderMode={showReorderMode}
-                setShowReorderMode={setShowReorderMode}
-                tasks={tasks}
-                filteredTasks={filteredTasks}
+                searchValue={state.searchValue}
+                setSearchValue={state.setSearchValue}
+                sortOption={state.sortOption}
+                setSortOption={state.setSortOption}
+                filters={state.filters}
+                setFilters={state.setFilters}
+                showReorderMode={state.showReorderMode}
+                setShowReorderMode={state.setShowReorderMode}
+                tasks={tasklist.tasks ?? []}
+                filteredTasks={data.filteredTasks}
                 listId={listId}
-                currentSort={sortOption}
+                currentSort={state.sortOption}
                 tasklist={tasklist}
             />
+
             {tasklist.isArchived && <ArchiveNotice tasklistId={listId} />}
+
             <div className="mobile-tasklist-content">
-                {filteredTasks.length === 0 && uncompleted.length === 0 && completed.length === 0 &&
+                {data.isEmpty && (
                     <Stack justify="center" align="center" my={isSmall ? "5rem" : ""} h={!isSmall ? "100%" : ""}>
-                        <Group w="100%" justify="center" align="center">
-                            <Text styles={{ root: { lineHeight: "1.4", textAlign: "center" } }} color="black">This tasklist contains no tasks. You can add one by using the text box below.</Text>
+                        <Group w="100%" justify="center">
+                            <Text color="black" style={{ lineHeight: "1.4", textAlign: "center" }}>
+                                This tasklist contains no tasks. Add one below.
+                            </Text>
                         </Group>
                     </Stack>
-                }
-                {/* Active Tasks List */}
-                {filteredTasks && filteredTasks.length > 0 ? (
+                )}
+
+                {data.filteredTasks.length > 0 ? (
                     <HouseholdTasklistPageList
                         tasklist={tasklist}
-                        tasks={filteredTasks} // <--- Passing the filtered list explicitly
-                        showReorderMode={showReorderMode}
-                        setShowReorderMode={setShowReorderMode}
-                        sortOption={sortOption}
+                        tasks={data.filteredTasks}
+                        showReorderMode={state.showReorderMode}
+                        setShowReorderMode={state.setShowReorderMode}
+                        sortOption={state.sortOption}
                     />
                 ) : (
-                    // Empty state when filters hide everything
-                    uncompleted.length > 0 && (
-                        <div style={{
-                            padding: '2rem',
-                            textAlign: 'center',
-                            opacity: 0.5,
-                            fontSize: '0.9rem'
-                        }}>
-                            No tasks match your filters.
-                        </div>
+                    !data.isEmpty && data.uncompleted.length > 0 && (
+                        <div className="no-matches-notice">No tasks match your filters.</div>
                     )
                 )}
 
-                {/* Completed Tasks Section */}
-                {filteredCompleted.length > 0 && completed && completed.length > 0 && (
+                {data.filteredCompleted.length > 0 && (
                     <HouseholdTasklistPageCompleted
                         tasklist={tasklist}
-                        completed={filteredCompleted}
-                        showCompleted={showCompleted}
-                        setShowCompleted={setShowCompleted}
+                        completed={data.filteredCompleted}
+                        showCompleted={state.showCompleted}
+                        setShowCompleted={state.setShowCompleted}
                     />
                 )}
             </div>
 
-            {/* Input Bar */}
             <div className="mobile-tasklist-input">
-                <HouseholdTasklistPageAddTask inputRef={inputRef} listId={tasklist.id} tasklist={tasklist} />
+                <HouseholdTasklistPageAddTask
+                    inputRef={inputRef}
+                    listId={tasklist.id}
+                    tasklist={tasklist}
+                />
             </div>
 
-            {showTasklistSettings && <TasklistSettings opened={showTasklistSettings} setShowTasklistSettings={setShowTasklistSettings} />}
+            {state.showTasklistSettings && (
+                <TasklistSettings
+                    opened={state.showTasklistSettings}
+                    setShowTasklistSettings={state.setShowTasklistSettings}
+                />
+            )}
         </MobileLayout>
     );
 };
-
-const TitleComponent = ({ percent, tasklist, setShowTasklistSettings }: { percent: number, tasklist: TasklistType, setShowTasklistSettings: (val: boolean) => void }) => {
-    const navigate = useNavigate();
-    return (
-        <div className="mobile-tasklist-title-bar">
-            <div className="mobile-tasklist-title-bar-top">
-                <div className="title-announcements tasklist-announcements">
-                    <Tooltip label="Go back">
-                        <ActionIcon onClick={() => navigate(-1)} variant="subtle" color="white">
-                            <ChevronLeftRoundedIcon />
-                        </ActionIcon></Tooltip>
-                    <span className="title-announcements-title">{tasklist.title}</span>
-                </div>
-                <Tooltip label="Tasklist settings">
-                    <ActionIcon
-                        onClick={() => setShowTasklistSettings(true)}
-                        className="tasklist-settings-btn"
-                        size="compact-md"
-                        variant="transparent"
-                        color="white"
-                    >
-                        <SettingsRoundedIcon />
-                    </ActionIcon>
-                </Tooltip>
-            </div>
-            <div className="progress">
-                <div className="progress-left">
-                    <Progress color="var(--tasklist-color)" value={percent} />
-                </div>
-                {percent}%
-            </div>
-        </div>
-    )
-}

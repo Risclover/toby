@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useReorderTasksMutation, useUpdateTasklistMutation, type Task, type TasklistType } from "@/store/taskSlice";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface Props {
     // Lift state up! Pass these down from the Page component
@@ -34,17 +35,18 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const isSmall = useIsSmallScreen();
+    const isMobile = useIsMobile();
     const [reorderTasks] = useReorderTasksMutation(); // Assuming you have this in your Redux slice
     const [updateTasklist] = useUpdateTasklistMutation();
-    const canReorder = currentSort.toLowerCase() === 'manual' && !tasklist?.isArchived;
+    const canReorder = currentSort?.toLowerCase() === 'manual' && !tasklist?.isArchived;
 
     const optionsList = [
+        { value: 'manual', label: "Manual" },
         { value: "due_date", label: "Due date" },
         { value: "importance", label: "Importance" },
         { value: "alphabetical", label: "Alphabetical" },
         { value: "newest", label: "Newest" },
         { value: 'oldest', label: "Oldest" },
-        { value: 'manual', label: "Manual" }
     ];
 
     const activeValue = sortOption || tasklist?.defaultSortOrder || 'manual';
@@ -60,16 +62,25 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
         </Combobox.Option>
     ));
 
-    const handleSortChange = (val: string) => {
-        // 🚀 Just update the state. 
-        // The list will automatically resort itself based on the 'sortIndex' 
-        // already stored in your tasks.
+    const handleSortChange = async (val: string) => {
+        // 1. Update local UI state immediately so the list resorts
         setSortOption(val as any);
 
+        // 2. Persist the change to the database
+        // This ensures tasklist.defaultSortOrder becomes 'manual'
+        try {
+            await updateTasklist({
+                id: listId,
+                defaultSortOrder: val
+            }).unwrap();
+        } catch (err) {
+            console.error("Failed to update default sort order:", err);
+        }
+
+        // 3. Clean up UI
         if (val !== 'manual') {
             setShowReorderMode(false);
         }
-
         combobox.closeDropdown();
     };
 
@@ -110,6 +121,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                             component="button"
                             type="button"
                             pointer
+                            defaultValue="manual"
                             onClick={() => combobox.toggleDropdown()}
                             rightSectionPointerEvents={sortOption === "" ? 'none' : 'all'}
                             rightSection={
@@ -119,7 +131,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                                         onMouseDown={(e) => e.preventDefault()}
                                         onClick={(e) => {
                                             e.stopPropagation(); // Good practice to stop bubbling
-                                            setSortOption("manual");
+                                            handleSortChange("manual");
                                         }}
                                         aria-label="Clear sort option"
                                     />
@@ -141,7 +153,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                     <Tooltip label="Filter list"><ActionIcon onClick={open} variant="subtle" color="rgb(5, 5, 73)">
                         <FilterAltRoundedIcon />
                     </ActionIcon></Tooltip>
-                    {isSmall && filteredTasks?.length > 1 && tasks?.length > 1 && canReorder && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
+                    {(isSmall || isMobile) && filteredTasks?.length > 1 && tasks?.length > 1 && canReorder && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
                         <ActionIcon
                             onClick={() => setShowReorderMode(prev => !prev)}
                             variant={showReorderMode ? "light" : "subtle"}

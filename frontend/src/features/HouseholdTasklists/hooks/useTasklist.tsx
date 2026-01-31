@@ -41,8 +41,14 @@ export const useTasklist = ({ tasks, listId }: Props) => {
         const orderedIds = newOrder.map((t) => t.id);
 
         try {
-            // Send new order to server
-            await reorderTasks({ listId, orderedIds }).unwrap();
+            // 🚀 Add setToManual: true here!
+            // This resolves the 400 error by telling the backend 
+            // to switch the list mode during the reorder operation.
+            await reorderTasks({
+                listId,
+                orderedIds,
+                setToManual: true
+            }).unwrap();
         } catch (err) {
             console.error("Failed to reorder:", err);
             // Revert to server state on failure

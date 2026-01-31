@@ -176,10 +176,15 @@
     padding-left: 0.75rem;
 }
 
+.extra-padding {
+    padding-bottom: 1rem !important;
+}
+
 @media(max-width: 425px) {
     .mobile-tasklist-content {
         padding: 0;
         padding-bottom: 80px;
+        padding-top: 0.5rem;
 
     }
 
@@ -190,7 +195,6 @@
     }
 
     .household-tasklist-page-completed {
-        border-top: 1px solid var(--mantine-color-gray-4);
         margin-top: 0.5rem;
     }
 
@@ -207,17 +211,20 @@
         padding: 0.5rem !important;
         border-radius: 0 !important;
     }
+
+    .mobile-tasklist-card-body {
+        padding-bottom: 1rem;
+    }
 }
 
 @media (max-width: 575px) {
     .task {
         padding-left: 0;
     }
+}
 
-
+@media(max-width: 768px) {
     .household-tasklist-page-task:not(.completed-task) {
-        /* padding-right: 0; */
         padding-left: 0.75rem;
     }
-
 }

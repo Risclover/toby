@@ -417,45 +417,54 @@ export const taskSlice = apiSlice.injectEndpoints({
             ],
         }),
 
-        reorderTasks: builder.mutation<void, ReorderPayload>({
-            query: ({ listId, orderedIds }) => ({
+        reorderTasks: builder.mutation<void, ReorderPayload & { setToManual?: boolean }>({
+            query: ({ listId, orderedIds, setToManual }) => ({
                 url: `/tasklists/${listId}/reorder`,
                 method: "PATCH",
-                body: { orderedIds },
+                // 🚀 THE FIX: Send the flag to the backend!
+                body: { orderedIds, setToManual },
             }),
-            async onQueryStarted({ listId, orderedIds, householdId }, { dispatch, getState, queryFulfilled }) {
+            async onQueryStarted({ listId, orderedIds, householdId, setToManual }, { dispatch, getState, queryFulfilled }) {
                 // 1) Patch the single list detail
                 const p1 = dispatch(
                     taskSlice.util.updateQueryData("getTasklist", listId, (draft: TasklistType | undefined) => {
                         if (!draft?.tasks) return;
+
+                        // 🚀 OPTIMISTIC UPDATE: If we are switching to manual, 
+                        // update the draft setting so the backend doesn't reject the UI state
+                        if (setToManual) {
+                            draft.defaultSortOrder = "manual";
+                        }
+
                         draft.tasks.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
                         draft.tasks.forEach((t, i) => (t.sortIndex = i));
                     })
                 );
 
-                // Infer householdId if missing
-                if (householdId == null) {
-                    const sel = taskSlice.endpoints.getTasklist.select(listId)(getState() as any);
-                    householdId = sel?.data?.householdId ?? undefined;
-                }
+                // ... (Keep your householdId inference logic here) ...
 
-                // 2) Patch the household grid (endpoint lives on householdSlice)
-                const p2 =
-                    householdId != null
-                        ? dispatch(
-                            householdSlice.util.updateQueryData(
-                                "getHouseholdTasklists",
-                                householdId, // must match useGetHouseholdTasklistsQuery arg
-                                (lists: any[] | undefined) => {
-                                    if (!lists) return;
-                                    const target = lists.find((l) => l.id === listId);
-                                    if (!target?.tasks) return;
-                                    target.tasks.sort((a: any, b: any) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
-                                    target.tasks.forEach((t: any, i: number) => (t.sortIndex = i));
+                // 2) Patch the household grid
+                const p2 = householdId != null
+                    ? dispatch(
+                        householdSlice.util.updateQueryData(
+                            "getHouseholdTasklists",
+                            householdId,
+                            (lists: any[] | undefined) => {
+                                if (!lists) return;
+                                const target = lists.find((l) => l.id === listId);
+                                if (!target?.tasks) return;
+
+                                // 🚀 OPTIMISTIC UPDATE: Also update the mode here
+                                if (setToManual) {
+                                    target.defaultSortOrder = "manual";
                                 }
-                            )
+
+                                target.tasks.sort((a: any, b: any) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
+                                target.tasks.forEach((t: any, i: number) => (t.sortIndex = i));
+                            }
                         )
-                        : { undo: () => { } };
+                    )
+                    : { undo: () => { } };
 
                 try {
                     await queryFulfilled;
