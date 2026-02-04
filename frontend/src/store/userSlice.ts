@@ -149,6 +149,11 @@ export const userSlice = apiSlice.injectEndpoints({
                 }
             },
         }),
+
+        getUserTaskStats: builder.query<{ overdue: number; due_today: number; due_soon: number }, number>({
+            query: (userId) => `/users/${userId}/task_stats`,
+            providesTags: (result, error, userId) => [{ type: "UserTaskStats", id: userId }],
+        }),
     }),
 });
 
@@ -162,5 +167,6 @@ export const {
     useUpdatePointsMutation,
     useUploadImgMutation,
     useGetUserMoodQuery,
-    useFeatureTasklistMutation
+    useFeatureTasklistMutation,
+    useGetUserTaskStatsQuery,
 } = userSlice;

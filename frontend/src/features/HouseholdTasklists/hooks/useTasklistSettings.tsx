@@ -4,8 +4,8 @@ import { useForm, isNotEmpty } from "@mantine/form";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useAuthenticateQuery, type User } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useArchiveListMutation, useDuplicateListMutation, useGetTasklistQuery, useUnarchiveListMutation, useUpdateTasklistMutation } from "@/store/taskSlice";
-import { type MultiSelectProps, Avatar, Button, Group, Text } from "@mantine/core";
+import { useArchiveListMutation, useDeleteListMutation, useDuplicateListMutation, useGetTasklistQuery, useUnarchiveListMutation, useUpdateTasklistMutation } from "@/store/taskSlice";
+import { type MultiSelectProps, Avatar, Button, Flex, Group, Space, Stack, Text } from "@mantine/core";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { notifications } from '@mantine/notifications'; // <--- Import logic
 
@@ -27,18 +27,19 @@ export type TasklistFormValues = {
 };
 
 type Props = {
-    setShowTasklistSettings: (val: boolean) => void;
+    setShowTasklistSettings?: (val: boolean) => void;
+    tasklistId: number | undefined;
 };
 
-export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
+export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, tasklistId }: Props) => {
     const navigate = useNavigate();
-    const { tasklistId } = useParams();
     const tasklistTitleRef = useRef<HTMLInputElement>(null);
     const isSmallScreen = useIsSmallScreen();
     const [updateTasklist] = useUpdateTasklistMutation();
     const [archiveList] = useArchiveListMutation();
     const [unarchiveList] = useUnarchiveListMutation();
     const [duplicateList] = useDuplicateListMutation();
+    const [deleteList] = useDeleteListMutation();
 
     const [showDiscardWarning, setShowDiscardWarning] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -176,12 +177,12 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         if (form.isDirty()) {
             setShowDiscardWarning(true);
         } else {
-            setShowTasklistSettings(false);
+            setShowTasklistSettings?.(false);
         }
     }
 
     const handleDiscardConfirmation = () => {
-        setShowTasklistSettings(false);
+        setShowTasklistSettings?.(false);
     }
 
     const handleSubmit = async () => {
@@ -257,32 +258,50 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
     const handleArchiveList = async () => {
         try {
             await archiveList({ listId: Number(tasklistId) }).unwrap();
-            setShowTasklistSettings(false);
+            setShowTasklistSettings?.(false);
             navigate("/tasklists");
 
             notifications.show({
-                title: 'List archived successfully!',
-                color: 'teal',
+                onOpen: () => {
+                    // 3. Use a slightly longer delay to beat the entrance animation
+                    window.setTimeout(() => {
+                        const btn = document.querySelector('.notify-focus-target') as HTMLElement;
+                        if (btn) {
+                            btn.focus();
+                        }
+                    }, 150);
+                },
+                color: 'cyan',
                 position: 'bottom-center',
                 autoClose: 5000, // Give them time to click
                 message: (
-                    <Group align="center" gap="0.5rem">
-                        <Button variant="subtle" size="compact-xs" onClick={() => navigate("/tasklists/archived")}>View archive</Button>
-                        <Button
-                            variant="subtle"
-                            size="compact-xs"
-                            onClick={handleUndoArchive}
-                        >
-                            Undo
-                        </Button>
-                    </Group>
+                    <>
+                        Tasklist archived successfully.
+                        <Space h="xs" />
+                        <Group align="center" gap="0.5rem">
+                            <Button color="cyan" variant="filled" size="compact-xs" onClick={() => navigate("/tasklists/archived")} styles={{
+                                label: { fontWeight: 400 }
+                            }}>View archive</Button>
+                            <Button
+                                color="cyan"
+                                variant="filled"
+                                size="compact-xs"
+                                onClick={handleUndoArchive}
+                                className="notify-focus-target"
+                                styles={{
+                                    label: { fontWeight: 400 }
+                                }}
+                            >
+                                Undo
+                            </Button>
+                        </Group>
+                    </>
                 ),
             });
 
         } catch (error) {
             notifications.show({
-                title: 'Error',
-                message: 'Failed to archive list.',
+                message: 'Error: Failed to archive list.',
                 color: 'red',
             });
         }
@@ -293,12 +312,26 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         await unarchiveList({ listId: Number(tasklistId) }).unwrap();
 
         notifications.show({
-            title: 'List unarchived successfully!',
-            color: 'teal',
+            onOpen: () => {
+                // 3. Use a slightly longer delay to beat the entrance animation
+                window.setTimeout(() => {
+                    const btn = document.querySelector('.notify-focus-target') as HTMLElement;
+                    if (btn) {
+                        btn.focus();
+                    }
+                }, 150);
+            },
+            color: 'cyan',
             position: 'bottom-center',
             autoClose: 5000, // Give them time to click
             message: (
-                <Button variant="subtle" size="compact-xs" onClick={() => navigate(`/tasklists/${tasklist?.id}`)}>View tasklist</Button>
+                <Stack
+                    align="flex-start"
+                    gap="xs">
+                    List unarchived successfully.
+                    <Button className="notify-focus-target" color="cyan" variant="filled" size="compact-xs" onClick={() => navigate(`/tasklists/${tasklist?.id}`)} styles={{
+                        label: { fontWeight: 400 }
+                    }}>View tasklist</Button></Stack>
             )
         })
     }
@@ -307,26 +340,51 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         try {
             const newList = await duplicateList({ listId: Number(tasklistId) }).unwrap()
             notifications.show({
-                title: 'List duplicated successfully!',
-                message: <Button variant="white" size="compact-xs" onClick={() => { setShowTasklistSettings(false); navigate(`/tasklists/${newList.id}`) }}>View duplicated list</Button>,
-                color: 'teal',
+                onOpen: () => {
+                    // 3. Use a slightly longer delay to beat the entrance animation
+                    window.setTimeout(() => {
+                        const btn = document.querySelector('.notify-focus-target') as HTMLElement;
+                        if (btn) {
+                            btn.focus();
+                        }
+                    }, 150);
+                },
+                message: <Stack
+                    align="flex-start"
+                    gap="xs">List duplicated successfully.
+                    <Button className="notify-focus-target" color="cyan" styles={{
+                        label: { fontWeight: 400 }
+                    }} variant="filled" size="compact-xs" onClick={() => { setShowTasklistSettings?.(false); navigate(`/tasklists/${newList.id}`) }}>View list</Button></Stack>,
+                color: 'cyan',
                 position: 'bottom-center',
                 autoClose: 5000,
             });
 
         } catch (error) {
             notifications.show({
-                title: 'Error',
-                message: 'Failed to duplicate list',
+                message: 'Error: Failed to duplicate list',
                 color: 'red'
             });
         }
     }
+
+    const handleDeleteList = async () => {
+        await deleteList({ listId: tasklistId });
+        setShowDeleteConfirmation(false);
+        setShowTasklistSettings(false);
+        navigate("/tasklists");
+        notifications.show({
+            message: "Tasklist deleted successfully.",
+            color: "cyan",
+            position: "bottom-center",
+            autoClose: 5000,
+        })
+    }
+
     return {
         form, // We expose the whole form object
         tasklist,
         household,
-        isSmallScreen,
         tasklistTitleRef,
         memberOptions,
         renderMultiSelectOption,
@@ -344,6 +402,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings }: Props) => {
         allowedMembers,
         handleArchiveList,
         handleUndoArchive,
-        handleDuplicateList
+        handleDuplicateList,
+        handleDeleteList
     };
 };

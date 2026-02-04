@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, type SetStateAction } from "react";
 import { TaskListDnd } from "./TaskListDnd";
 import type { Task, TasklistType } from "@/store/taskSlice"; // Match your import path
+import "../../styles/HouseholdTasklistPage.css";
 
 type Props = {
     tasklist: TasklistType | undefined;

@@ -65,6 +65,7 @@ def update_task(id):
             task.due_date = date.fromisoformat(s)
 
     db.session.commit()
+    db.session.refresh(task)
     return jsonify(task.to_dict()), 200
 
 

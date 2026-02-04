@@ -16,7 +16,7 @@ export const useTasklistActions = (listId: number, userId?: number, householdId?
 
     const handleStarKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Enter" || e.key === " ") {
-            if (e.key === " ") e.preventDefault();
+            e.preventDefault();
             toggleFeatured(e);
         }
     };

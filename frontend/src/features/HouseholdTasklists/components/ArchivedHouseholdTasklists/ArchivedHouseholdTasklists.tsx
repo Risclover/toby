@@ -1,17 +1,31 @@
 import type React from "react";
 import dayjs from "dayjs";
-import { useAuthenticateQuery } from "@/store/authSlice";
-import { useGetTasklistsQuery } from "@/store/taskSlice";
 import { Avatar, Center, Loader, Tooltip } from "@mantine/core";
+
+import { useAuthenticateQuery, useGetTasklistsQuery } from "@/store";
 import { ArchivedHouseholdTasklistsMenu } from "./ArchivedHouseholdTasklistsMenu";
+import { useStablePending } from "@/hooks";
 
 export const ArchivedHouseholdTasklists = () => {
     const { data: user, isSuccess: userLoaded } = useAuthenticateQuery();
-
-    const { data: archivedLists, isLoading } = useGetTasklistsQuery(
+    const { data: archivedLists, isFetching, isSuccess: dataLoaded } = useGetTasklistsQuery(
         { householdId: Number(user?.householdId), isArchived: true },
         { skip: !user?.householdId }
     );
+
+    // Use isFetching instead of isLoading to catch re-renders
+    const isActuallyLoading = !userLoaded || isFetching;
+    const loading = useStablePending(isActuallyLoading, { showAfterMs: 0, minVisibleMs: 500 });
+
+    // 1. THE GATE: If we aren't 100% finished with both Auth AND Data, 
+    // stay in the loading branch.
+    if (loading || !dataLoaded) {
+        return (
+            <Center h="calc(100vh - 300px)">
+                <Loader color="cyan" />
+            </Center>
+        );
+    }
 
     const handleAvatarKeyDown = (e: React.KeyboardEvent<HTMLDivElement>, userId: number | undefined) => {
         if (e.key === "Enter" || e.key === " ") goToUserProfile(userId);
@@ -49,20 +63,6 @@ export const ArchivedHouseholdTasklists = () => {
         </div>
     </div>)
 
-    // Loading state
-    if (!userLoaded || isLoading)
-        return (
-            <Center h="100vh">
-                <Loader
-                    color="cyan"
-                    style={{
-                        transition: 'opacity 200ms ease-in',
-                        opacity: isLoading ? 1 : 0,
-                        transitionDelay: '300ms'
-                    }}
-                />
-            </Center>
-        )
 
     return (
         <div className="archived-household-tasklists-container">

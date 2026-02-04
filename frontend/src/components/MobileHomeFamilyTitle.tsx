@@ -18,9 +18,9 @@ export const MobileHomeFamilyTitle = () => {
 
             <Avatar.Group spacing="xs">
                 {household?.members.map((member: User) => <Tooltip label={member.firstName} withArrow>
-                    <Avatar component={Link} to={`/users/${member.id}`} target="_blank" src={member.profileImg} alt={member.firstName} radius="xl" size={26} />
+                    <Avatar component={Link} to={`/users/${member.id}`} target="_blank" src={member.profileImg} alt={member.firstName} radius="xl" size={30} />
                 </Tooltip>).slice(0, 3)}
-                {additionalMembers > 0 && <Avatar className="clickable-avatar" onClick={() => setShowMembersModal(true)} size={26}>+{additionalMembers}</Avatar>}
+                {additionalMembers > 0 && <Avatar className="clickable-avatar" onClick={() => setShowMembersModal(true)} size={30}>+{additionalMembers}</Avatar>}
             </Avatar.Group>
             <MembersModal opened={showMembersModal} onClose={() => setShowMembersModal(false)} household={household} />
         </div>

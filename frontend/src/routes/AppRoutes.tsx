@@ -1,18 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import { Join } from "../Join";
-import { SignUp } from "../SignUp";
 import { UserPage } from "../pages/UserPage";
 import { Dashboard } from "@/pages/Dashboard";
-import { SignIn } from "@/SignIn";
-import { HouseholdTasklists } from "@/features/HouseholdTasklists/components/HouseholdTasklists/HouseholdTasklists";
-import { HouseholdTasklistPage } from "@/features/HouseholdTasklists/components/HouseholdTasklistPage/HouseholdTasklistPage";
 import { Registration } from "@/features/Auth/components/Registration";
 import { Login } from "@/features/Auth/components/Login";
-import { ShoppingLists } from "@/features/Shopping/components/ShoppingLists";
 import { ShoppingListsPage } from "@/pages/ShoppingListsPage";
-import { ShoppingList } from "@/features/Shopping/components/ShoppingList";
 import { ShoppingListPage } from "@/pages/ShoppingListPage";
-import { DashboardGrid } from "@/components/DashboardGrid";
 import { MobileHome } from "@/pages/MobileHome";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";

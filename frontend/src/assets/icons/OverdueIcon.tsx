@@ -1,9 +1,9 @@
 type Props = {
-    size: number;
+    size: string;
     color: string;
 }
 
-export const OverdueIcon = ({ size = 100, color = "currentColor" }: Props) => {
+export const OverdueIcon = ({ size, color = "currentColor" }: Props) => {
     return (
         <svg
             width={size}

@@ -111,36 +111,39 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                 </Stack>
 
                 {/* Creator / Assignee */}
-                <Stack className="filter-drawer-avatars" gap="0.5rem">
+                <Stack gap="0.25rem">
                     <Text size="sm" fw={500} c="black">Assigned to:</Text>
-                    <Group gap="xs" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
+                    <Group gap="xs" style={{ flexWrap: 'nowrap' }}>
                         {/* "All" Avatar Option */}
-                        <div
-                            style={{
-                                cursor: 'pointer',
-                                border: localFilters?.assignedToId === null ? '2px solid rgb(5, 5, 73)' : '2px solid transparent',
-                                borderRadius: '50%',
-                                padding: '2px'
-                            }}
+                        <Button
+                            color="rgb(5, 5, 73)"
+                            size="sm"
+                            h="auto"
+                            p="0.5rem 1rem"
+                            fw={500}
                             onClick={() => setLocalFilters({ ...localFilters, assignedToId: null })}
+                            variant={localFilters?.assignedToId === null ? "filled" : "outline"}
                         >
-                            <Avatar radius="xl" color="gray">All</Avatar>
-                        </div>
+                            All
+                        </Button>
 
                         {availableMembers?.map((member) => (
-                            <div
-                                key={member.id}
-                                style={{
-                                    border: localFilters?.assignedToId === member.id ? "2px solid rgb(5, 5, 73)" : "2px solid transparent",
-                                    cursor: "pointer",
-                                    borderRadius: '50%',
-                                    padding: '2px'
-                                }}
-                                onClick={() => setLocalFilters({ ...localFilters, assignedToId: localFilters?.assignedToId === member.id ? null : member.id })}
+                            <Tooltip
+                                withArrow
+                                label={member.firstName}
                             >
-                                <Tooltip
-                                    withArrow
-                                    label={member.firstName}
+                                <Button
+                                    key={member.id}
+                                    variant="transparent"
+                                    p={0}
+                                    h="auto"
+                                    style={{
+                                        border: localFilters?.assignedToId === member.id ? "2px solid rgb(5, 5, 73)" : "2px solid transparent",
+                                        cursor: "pointer",
+                                        borderRadius: '50%',
+                                        padding: '2px'
+                                    }}
+                                    onClick={() => setLocalFilters({ ...localFilters, assignedToId: localFilters?.assignedToId === member.id ? null : member.id })}
                                 >
                                     <Avatar
                                         radius="xl"
@@ -149,8 +152,8 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                                     >
                                         {member.firstName?.[0]?.toUpperCase()}
                                     </Avatar>
-                                </Tooltip>
-                            </div>
+                                </Button>
+                            </Tooltip>
                         ))}
                     </Group>
                 </Stack>

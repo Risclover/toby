@@ -1,3 +1,4 @@
+import { authSlice, type RootState } from ".";
 import { apiSlice } from "./apiSlice";
 import { householdSlice } from "./householdSlice"; // 👈 add this import
 
@@ -250,7 +251,10 @@ export const taskSlice = apiSlice.injectEndpoints({
                 },
             }),
             invalidatesTags: (_res, _err, arg: CreateTaskRequest) => {
-                return [{ type: "Tasklist", id: arg.listId }]
+                return [
+                    { type: "Tasklist", id: arg.listId },
+                    "UserTaskStats"
+                ]
             }
         }),
 
@@ -314,49 +318,47 @@ export const taskSlice = apiSlice.injectEndpoints({
                 method: "PATCH",
                 body: patch,
             }),
+
             async onQueryStarted({ taskId, listId, householdId, ...patch }, { dispatch, getState, queryFulfilled }) {
+                // Optimistic Update for the Tasklist
                 const p1 = dispatch(
-                    taskSlice.util.updateQueryData("getTasklist", listId, (draft) => {
-                        const task = draft?.tasks?.find(x => x.id === taskId);
+                    taskSlice.util.updateQueryData("getTasklist", listId, (draft: any) => {
+                        const task = draft?.tasks?.find((x: any) => x.id === taskId);
                         if (task) {
-                            Object.entries(patch).forEach(([key, value]) => { if (value !== undefined) (task as any)[key] = value; });
-                            (task as any).updatedAt = new Date().toISOString();
+                            Object.entries(patch).forEach(([key, value]) => {
+                                if (value !== undefined) task[key] = value;
+                            });
+                            task.updatedAt = new Date().toISOString();
                         }
                     })
                 );
 
-                if (householdId == null) {
-                    const sel = taskSlice.endpoints.getTasklist.select(listId)(getState() as any);
-                    householdId = sel?.data?.householdId ?? undefined;
-                }
-
-                const p2 = householdId != null
-                    ? dispatch(
-                        householdSlice.util.updateQueryData("getHouseholdTasklists", householdId, (lists: any[] | undefined) => {
-                            const list = lists?.find(l => l.id === listId);
-                            const task = list?.tasks?.find((x: any) => x.id === taskId);
-                            if (task) {
-                                Object.entries(patch).forEach(([key, value]) => { if (value !== undefined) (task as any)[key] = value; });
-                                task.updatedAt = new Date().toISOString();
-                            }
-                        })
-                    )
-                    : { undo: () => { } };
-
-                const pSingle = dispatch(
-                    taskSlice.util.updateQueryData("getTask", taskId, (draft: any) => {
-                        if (draft) Object.assign(draft, patch, { updatedAt: new Date().toISOString() });
-                    })
-                );
-                try { await queryFulfilled; } catch { p1.undo(); p2.undo?.(); pSingle.undo(); }
+                try { await queryFulfilled; } catch { p1.undo(); }
             },
-            invalidatesTags: (_r, _e, { taskId, listId, householdId }) => {
+
+            // Note the destructuring of the 4th argument: { getState }
+            invalidatesTags: (result, error, { taskId, listId, householdId }, { getState }) => {
+                // Since you don't have an auth reducer, we select from the 'authenticate' endpoint cache
+                const state = getState() as RootState;
+                const authResult = authSlice.endpoints.authenticate.select()(state);
+                const userId = authResult.data?.id || authResult.data?.user?.id;
+
                 const tags: any[] = [
                     { type: "Tasklist", id: listId },
                     { type: "Tasklist", id: "LIST" },
-                    { type: "Task", id: taskId }, // ✅ refetch single-task queries
+                    { type: "Task", id: taskId },
+
                 ];
-                if (householdId != null) tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
+
+                if (householdId != null) {
+                    tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
+                }
+
+                // Trigger refetch of the 3 stat cards
+                if (userId) {
+                    tags.push({ type: "UserTaskStats", id: userId });
+                }
+
                 return tags;
             },
         }),
@@ -512,27 +514,25 @@ export const taskSlice = apiSlice.injectEndpoints({
                 url: `/tasklists/${listId}/unarchive`,
                 method: "PUT",
             }),
-            async onQueryStarted({ listId }, { dispatch, queryFulfilled }) {
-                const patchDetail = dispatch(
-                    taskSlice.util.updateQueryData("getTasklist", listId, (draft) => {
-                        if (draft) draft.isArchived = false;
-                    })
-                );
+            // ... onQueryStarted ...
+            invalidatesTags: (result, _error, arg) => {
+                // Change the type here to any[] or a broader Tag type
+                const tags: any[] = [
+                    { type: "Tasklist", id: arg.listId },
+                    { type: "Tasklist", id: "LIST" },
+                    "UserTaskStats" // Now TS won't complain
+                ];
 
-                try {
-                    await queryFulfilled;
-                } catch {
-                    patchDetail.undo();
+                if (result?.householdId) {
+                    tags.push(
+                        { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` },
+                        { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ACTIVE` },
+                        { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ARCHIVED` }
+                    );
                 }
+
+                return tags;
             },
-            invalidatesTags: (result, _error, arg) => [
-                { type: "Tasklist", id: arg.listId },
-                { type: "Tasklist", id: "LIST" },
-                ...(result?.householdId ? [
-                    { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ACTIVE` } as const,
-                    { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ARCHIVED` } as const,
-                ] : []),
-            ],
         }),
 
         duplicateList: builder.mutation<TasklistType, DuplicateListRequest>({

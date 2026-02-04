@@ -22,7 +22,7 @@ export const Tasklist = ({ list }: { list: TasklistType }) => {
                         <h2>Tasklist Title</h2>
                         <div className="mobile-tasklist-card-header-top header-right">
                             <ActionIcon color="cyan" variant="subtle" radius="xl" size="compact-xs">
-                                <StarIcon size={20} />
+                                <StarIcon size="20px" />
                             </ActionIcon>
                             <ActionIcon color="var(--mantine-color-gray-6)" variant="subtle" size="compact-xs">
                                 <MoreVertRoundedIcon fontSize="small" />

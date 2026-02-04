@@ -1,12 +1,12 @@
 import { DashboardMiniCalendar } from "@/features/Events/components/DashboardMiniCalendar";
 import { UpcomingThisWeek } from "@/features/Events/components/UpcomingThisWeek";
-import Sidebar from "@/layout/Sidebar";
+import { Sidebar } from "@/layout/Sidebar";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery, useGetHouseholdShoppingListsQuery } from "@/store/householdSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useState } from "react";
 import { DashboardHeader } from "./DashboardHeader";
-import HouseholdCheckinsMini from "@/features/Checkins/components/HouseholdCheckinsMini";
+import { HouseholdCheckinsMini } from "@/features/Checkins/components/HouseholdCheckinsMini";
 import { SpeedDial } from "primereact/speeddial";
 import { MdNotificationsActive } from "react-icons/md";
 import { RiMegaphoneFill } from "react-icons/ri";

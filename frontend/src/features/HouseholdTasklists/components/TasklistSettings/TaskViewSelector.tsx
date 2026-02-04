@@ -85,7 +85,7 @@ function CompactTask() {
 
 // --- Main Container ---
 
-function PreviewWindow({ label, onClick, activeTaskDisplay, children }: { label: string; onClick: () => void; activeTaskDisplay: string | undefined; children: React.ReactNode }) {
+function PreviewWindow({ label, onClick, onKeyDown, activeTaskDisplay, children }: { label: string; onKeyDown: (e: any) => void; onClick: () => void; activeTaskDisplay: string | undefined; children: React.ReactNode }) {
     console.log(activeTaskDisplay === label)
     return (
         <Stack gap="0.25rem">
@@ -111,7 +111,7 @@ function PreviewWindow({ label, onClick, activeTaskDisplay, children }: { label:
                 </Box>
             </Box>
             <Group gap="0.5rem" align="center" ml={5}>
-                <Checkbox onChange={onClick} color="var(--tasklist-color)" checked={activeTaskDisplay === label.toLowerCase()} size="xs" radius="xl" />
+                <Checkbox onChange={onClick} onKeyDown={onKeyDown} color="var(--tasklist-color)" checked={activeTaskDisplay === label.toLowerCase()} size="xs" radius="xl" />
                 <Text size="xs" fw={500} c="black" mt={1}>{label}</Text>
             </Group>
         </Stack>
@@ -122,14 +122,14 @@ export function TaskViewSelector({ activeTaskDisplay, setActiveTaskDisplay }: { 
     const isSmallScreen = useIsSmallScreen();
     return (
         <Flex m="auto" gap={isSmallScreen ? 20 : 30} justify="center" wrap="wrap">
-            <PreviewWindow label="Detailed" onClick={() => setActiveTaskDisplay("detailed")} activeTaskDisplay={activeTaskDisplay}>
+            <PreviewWindow label="Detailed" onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { setActiveTaskDisplay("detailed") } }} onClick={() => setActiveTaskDisplay("detailed")} activeTaskDisplay={activeTaskDisplay}>
                 <DetailedTask />
                 <DetailedTask />
                 <DetailedTask />
                 <Box style={{ opacity: "0.5" }} ><DetailedTask /></Box>
             </PreviewWindow>
 
-            <PreviewWindow label="Compact" onClick={() => setActiveTaskDisplay("compact")} activeTaskDisplay={activeTaskDisplay}>
+            <PreviewWindow label="Compact" onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { setActiveTaskDisplay("compact") } }} onClick={() => setActiveTaskDisplay("compact")} activeTaskDisplay={activeTaskDisplay}>
                 <CompactTask />
                 <CompactTask />
                 <CompactTask />

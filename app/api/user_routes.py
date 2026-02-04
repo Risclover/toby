@@ -1,6 +1,7 @@
 from flask import Blueprint, current_app, jsonify, request
-from app.models import User, Checkin
+from app.models import User, Checkin, Task, Tasklist
 from flask_login import current_user, login_required
+from sqlalchemy import or_
 from app.extensions import db
 from app.s3_helpers import (
     upload_file_to_s3, allowed_file, get_unique_filename)
@@ -182,3 +183,46 @@ def update_featured_list(id):
         "message": "Featured list updated",
         "featuredTasklistId": user.featured_tasklist_id
     }), 200
+
+@user_routes.route("/<int:id>/task_stats")
+def get_task_stats(id):
+    try:
+        # 1. Establish the timeframe based on 'right now'
+        today = date.today()
+        soon_date = today + timedelta(days=7)
+
+        # 2. Query Tasks joined with Tasklist
+        # Filter: (Assigned to User OR Unassigned) AND (Not Completed) AND (List is Active)
+        pending_tasks = Task.query.join(Tasklist).filter(
+            or_(Task.assigned_to_id == id, Task.assigned_to_id == None),
+            Task.completed_at == None,
+            Tasklist.is_archived == False
+        ).all()
+
+        stats = {
+            "overdue": 0,
+            "due_today": 0,
+            "due_soon": 0
+        }
+
+        # 3. Categorize tasks
+        # Using string comparisons for SQLite stability
+        today_str = str(today)
+        soon_str = str(soon_date)
+
+        for t in pending_tasks:
+            if t.due_date:
+                t_due = str(t.due_date)
+                
+                if t_due < today_str:
+                    stats["overdue"] += 1
+                elif t_due == today_str:
+                    stats["due_today"] += 1
+                elif today_str < t_due <= soon_str:
+                    stats["due_soon"] += 1
+        
+        return jsonify(stats), 200
+
+    except Exception as e:
+        print(f"Stats Error for User {id}: {e}")
+        return jsonify({"error": str(e)}), 500

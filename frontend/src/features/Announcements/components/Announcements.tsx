@@ -1,7 +1,7 @@
 // Announcements.tsx
 import { useGetAnnouncementsQuery, useMarkAnnouncementsSeenBulkMutation } from "@/store/announcementSlice";
 import "../styles/Announcements.css";
-import { Button, Center, Loader } from "@mantine/core";
+import { Button, Center, Loader, ScrollArea, Skeleton } from "@mantine/core";
 import React, { useEffect, useRef, useState } from "react";
 import { CreateAnnouncement } from "./CreateAnnouncement";
 import { Announcement } from "./Announcement";
@@ -10,6 +10,8 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
+import { useStablePending } from "@/hooks";
+import { useScrollProgress } from "@/hooks/useScrollProgress";
 
 export type FiltersType = {
     importance: "all" | "important";
@@ -36,6 +38,28 @@ export const Announcements = ({
     searchValue = "",
     filters = { importance: "all", creatorId: null, time: "all" }, // default filters
 }: Props) => {
+    const [scrollPos, setScrollPos] = useState({ x: 0, isEnd: false });
+
+    // Update position and check if we've reached the end
+    const handleScroll = ({ x }: { x: number }) => {
+        setScrollPos((prev) => ({ ...prev, x }));
+    };
+
+    // Determine the mask based on scroll position
+    // Adjust '20' to be your "threshold" for when the fade appears
+    const getMask = () => {
+        const showLeft = scrollPos.x > 20;
+        const showRight = !scrollPos.isEnd;
+
+        if (showLeft && showRight) {
+            return 'linear-gradient(to right, transparent, black 8%, black 95%, transparent)';
+        } else if (showLeft) {
+            return 'linear-gradient(to right, transparent, black 8%)';
+        } else if (showRight) {
+            return 'linear-gradient(to left, transparent, black 8%)';
+        }
+        return 'none';
+    };
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
     const [requestedPage, setRequestedPage] = useState(1);
     const [openMenuAnnouncementId, setOpenMenuAnnouncementId] = useState<number | null>(null);
@@ -59,7 +83,7 @@ export const Announcements = ({
         time: filters.time !== "all" ? filters.time : undefined,
     };
 
-    const { data, isFetching, refetch } = useGetAnnouncementsQuery(queryArgs, { skip: shouldSkip });
+    const { data, isFetching, isLoading, refetch } = useGetAnnouncementsQuery(queryArgs, { skip: shouldSkip });
     const [markSeen] = useMarkAnnouncementsSeenBulkMutation();
 
 
@@ -136,49 +160,104 @@ export const Announcements = ({
         }
     }, [requestedPage]);
 
-    return (
-        <div className="announcements-container">
-            {isFetching && !data?.items?.length ? (
-                <Center h="100vh"><Loader color="cyan" /></Center>
-            ) : visibleAnnouncements.length === 0 ? (
-                <div>No results found.</div>
-            ) : (
-                visibleAnnouncements.map(a => (
-                    <Announcement
-                        key={a.id}
-                        creator={a.creator}
-                        announcement={a}
-                        isMenuOpen={openMenuAnnouncementId === a.id}
-                        onToggleMenu={() => setOpenMenuAnnouncementId(prev => (prev === a.id ? null : a.id))}
-                        onCloseMenu={() => setOpenMenuAnnouncementId(null)}
-                    />
-                ))
-            )}
+    const loading = useStablePending(isFetching, { showAfterMs: 120, minVisibleMs: 500 });
 
-            {fullPage && visibleAnnouncements.length > 0 && (
-                <div className={`pagination-buttons${isSmall ? " mobile" : ""}`}>
-                    <Button
-                        color="rgb(5, 5, 73)"
-                        onClick={loadPrevPage}
-                        disabled={displayedPage === 1}
-                        size="compact-xs"
-                        style={{ marginRight: "0.5rem" }}
-                    >
-                        <ChevronLeftRoundedIcon />
-                    </Button>
-                    <span>
-                        Page {displayedPage} {data?.totalPages ? `of ${data.totalPages}` : ""}
-                    </span>
-                    <Button
-                        color="rgb(5, 5, 73)"
-                        size="compact-xs"
-                        onClick={loadNextPage}
-                        disabled={displayedPage === (data?.totalPages ?? displayedPage)}
-                    >
-                        <ChevronRightRoundedIcon />
-                    </Button>
-                </div>
-            )}
-        </div>
+    // 3. Now handle the empty state
+    if (visibleAnnouncements.length === 0) {
+        return <div className="no-results">No results found.</div>;
+    }
+    return (
+        <div className="announcements-container announcement-mask-container">
+            <ScrollArea scrollbarSize={8} offsetScrollbars className="scroll-mask"
+                style={{ '--mask-edges': getMask() } as any}
+                onScrollPositionChange={handleScroll}
+                // Use viewportRef to detect the actual scroll width for "isEnd" logic
+                viewportRef={(ref) => {
+                    if (ref) {
+                        const isAtEnd = ref.scrollLeft + ref.clientWidth >= ref.scrollWidth - 20;
+                        if (isAtEnd !== scrollPos.isEnd) {
+                            setScrollPos(p => ({ ...p, isEnd: isAtEnd }));
+                        }
+                    }
+                }}
+                styles={{
+                    content: {
+                        display: 'flex',
+                        flexDirection: 'row',
+                        flexWrap: 'nowrap',
+                        gap: '1rem',
+                    }
+                }
+                }>
+                {isLoading && visibleAnnouncements.length > 0 ? (
+                    <><AnnouncementSkeleton /><AnnouncementSkeleton /><AnnouncementSkeleton /></>
+                ) : visibleAnnouncements.length === 0 && !isFetching && !isLoading ? (
+                    <div>No results found.</div>
+                ) : (
+                    visibleAnnouncements.map(a => (
+                        <Announcement
+                            key={a.id}
+                            creator={a.creator}
+                            announcement={a}
+                            isMenuOpen={openMenuAnnouncementId === a.id}
+                            onToggleMenu={() => setOpenMenuAnnouncementId(prev => (prev === a.id ? null : a.id))}
+                            onCloseMenu={() => setOpenMenuAnnouncementId(null)}
+                        />
+                    ))
+                )}
+
+                {fullPage && visibleAnnouncements.length > 0 && (
+                    <div className={`pagination-buttons mobile`}>
+                        <Button
+                            color="rgb(5, 5, 73)"
+                            onClick={loadPrevPage}
+                            disabled={displayedPage === 1}
+                            size="compact-xs"
+                            style={{ marginRight: "0.5rem" }}
+                        >
+                            <ChevronLeftRoundedIcon />
+                        </Button>
+                        <span>
+                            Page {displayedPage} {data?.totalPages ? `of ${data.totalPages}` : ""}
+                        </span>
+                        <Button
+                            color="rgb(5, 5, 73)"
+                            size="compact-xs"
+                            onClick={loadNextPage}
+                            disabled={displayedPage === (data?.totalPages ?? displayedPage)}
+                        >
+                            <ChevronRightRoundedIcon />
+                        </Button>
+                    </div>
+                )}
+            </ScrollArea>
+        </div >
     );
 };
+
+const AnnouncementSkeleton = () => {
+    return (
+        <div className="single-announcement">
+            <div className="single-announcement-header">
+                <div className="single-announcement-header-left">
+                    <Skeleton height="26px" width="26px" radius="xl" mr="0.5rem" />
+                    <div className="single-announcement-header-info">
+                        <Skeleton height={6} width={50} radius="xl" />
+                        <Skeleton height={6} width={80} radius="xl" mt="0.55rem" />
+                    </div>
+                </div>
+                <div className="single-announcement-header-right">
+                    <div className="single-announcement-skeleton-menu-button">
+                        <Skeleton radius="xl" height={3} width={3} />
+                        <Skeleton radius="xl" height={3} width={3} />
+                        <Skeleton radius="xl" height={3} width={3} />
+                    </div>
+                </div>
+            </div>
+            <Skeleton height={7} width="100%" radius="xl" mt="0.55rem" />
+            <Skeleton height={7} width="100%" radius="xl" mt="0.5rem" />
+            <Skeleton height={7} width="60%" radius="xl" mt="0.5rem" />
+
+        </div>
+    )
+}

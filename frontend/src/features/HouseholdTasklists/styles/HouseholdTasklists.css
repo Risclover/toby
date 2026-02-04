@@ -112,12 +112,13 @@
     width: 100%;
     border: 1px solid var(--border);
     background: white;
-    box-shadow: var(--mantine-shadow-sm);
+    box-shadow: var(--mantine-shadow-xs);
     color: black;
     flex: 0 1 auto;
     min-height: 0;
     overflow-y: auto;
     position: relative;
+    border: 0;
 
 }
 

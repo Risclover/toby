@@ -10,7 +10,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
-import { Button } from "@mantine/core";
+import { ActionIcon, Button } from "@mantine/core";
 import { StarIcon, StarIconOutline } from "@/assets/icons/StarIcon";
 import { TaskDetails } from "./TaskDetails";
 import { useTasklist } from "../../hooks/useTasklist";
@@ -109,7 +109,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
         }
     }, [tasklist?.viewMode])
 
-    const handleStarClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleStarClick = async (e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
         if (tasklist?.isArchived) return;
         e.stopPropagation();
         await toggleImportance({ taskId: task.id, listId: listId, householdId: user?.householdId })
@@ -151,12 +151,15 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                 </div>
 
                 <div className="task-row-right">
-                    <div
+                    <ActionIcon
+                        variant="transparent"
                         className="star-icon-container"
                         onClick={handleStarClick}
+                        size="compact-xs"
+                        color="var(--tasklist-color)"
                     >
-                        {task?.isImportant ? <StarIcon size={24} /> : <StarIconOutline size={24} />}
-                    </div>
+                        {task?.isImportant ? <StarIcon size="24px" color="var(--tasklist-color)" /> : <StarIconOutline color="var(--tasklist-color)" size="24px" />}
+                    </ActionIcon>
                     {showReorderMode && tasks && (isMobile || isSmall) && tasks?.length > 1 && canReorder && (<div className={`task-row-move-btns show-task-btns`}>
                         <Button
                             variant="subtle"
@@ -181,6 +184,6 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
 
             </div>
             {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={user?.householdId} />}
-        </li>
+        </li >
     );
 }

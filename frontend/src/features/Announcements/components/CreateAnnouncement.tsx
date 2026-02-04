@@ -43,11 +43,9 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
     }
 
     return (
-        <Modal radius="lg" className="announcement-modal" opened={opened} onClose={close} title="Add announcement" centered>
+        <Modal radius="md" className="announcement-modal" opened={opened} onClose={close} title="Add announcement" centered>
             <Textarea
                 classNames={{ input: styles.input }}
-                styles={{ input: { background: "transparent", color: "white" } }}
-                radius="md"
                 autosize
                 minRows={2}
                 maxRows={5}
@@ -66,9 +64,10 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
             {error.length > 0 && <Space h="md" />}
             <Checkbox
                 size="xs"
-                color="cyan"
+                color="rgb(5, 5, 73)"
                 radius="xs"
                 label="Mark as important"
+                c="black"
                 description="Important announcements are highlighted."
                 checked={isImportant}
                 onChange={(e) => setIsImportant(e.currentTarget.checked)}
@@ -78,20 +77,19 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
             <Group justify="flex-end">
                 <Button
                     onClick={handleCancelAnnouncement}
-                    color="cyan.5"
+                    className="tasklist-settings-footer-btn"
                     size="compact-sm"
-                    variant="subtle"
-                    radius="xl"
+                    color="var(--mantine-color-dark-6)"
+                    variant="outline"
                     styles={{ label: { fontWeight: "400" } }}
                 >
                     Cancel
                 </Button>
                 <Button
-                    color="cyan"
+                    className="tasklist-settings-footer-btn"
                     size="compact-sm"
+                    color="cyan.7   "
                     onClick={handleCreateAnnouncement}
-                    radius="xl"
-                    styles={{ label: { fontWeight: "400" } }}
                 >
                     Save
                 </Button>

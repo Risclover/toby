@@ -11,3 +11,4 @@ export { useTasklistSettingsData } from "./useTasklistSettingsData";
 export { useTasklistSettingsForm } from "./useTasklistSettingsForm";
 export { useTasklistStats } from "./useTasklistStats";
 export { useTasklistTheme } from "./useTasklistTheme";
+export { useUndoArchive } from "./useUndoArchive";

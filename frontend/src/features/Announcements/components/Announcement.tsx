@@ -7,9 +7,10 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { Link } from "react-router-dom";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { AnnouncementDeleteConfirmation } from "./AnnouncementDeleteConfirmation";
-import { Avatar } from "@mantine/core";
+import { Avatar, Text } from "@mantine/core";
 import StarRoundedIcon from '@mui/icons-material/StarRounded';
 import Brightness1RoundedIcon from '@mui/icons-material/Brightness1Rounded';
+import { StarIcon } from "@/assets";
 
 type Props = {
     creator: {
@@ -51,18 +52,16 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
                 </div>
                 <div className="single-announcement-header-right">
                     {announcement?.isImportant && <div className="single-announcement-importance-label">
-                        <StarRoundedIcon />
+                        <StarIcon color="rgb(230, 176, 2)" size="18px" />
                     </div>}
                     {!announcement.seenByCurrent && <div className="single-announcement-new-label"><Brightness1RoundedIcon /></div>}
-                    {user.id === creator.id && <button data-outside-ignore className="announcement-menu-btn" onClick={onToggleMenu}>
-                        <IoEllipsisVerticalSharp />
-                    </button>}
+                    {user.id === creator.id && <AnnouncementMenu ref={wrapperRef} announcement={announcement} onCloseMenu={onCloseMenu} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
                 </div>
                 {isMenuOpen && <AnnouncementMenu ref={wrapperRef} announcement={announcement} onCloseMenu={onCloseMenu} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
                 {openDeleteConfirmation && <AnnouncementDeleteConfirmation announcement={announcement} openDeleteConfirmation={openDeleteConfirmation} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
             </div>
 
-            <span className={`announcement-message${!announcement.seenByCurrent ? " new-announcement" : ""}`}>{announcement?.message}</span>
+            <Text lineClamp={3} c="black" size="sm" className={`announcement-message${!announcement.seenByCurrent ? " new-announcement" : ""}`}>{announcement?.message}</Text>
         </div>
     )
 }

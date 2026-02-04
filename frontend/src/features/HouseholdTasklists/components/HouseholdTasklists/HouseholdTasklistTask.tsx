@@ -1,6 +1,6 @@
 import type { Task } from "@/store/taskSlice"
 import { Checkbox } from "@mantine/core";
-
+import "../../styles/HouseholdTasklists.css"
 
 type Props = {
     task: Task;

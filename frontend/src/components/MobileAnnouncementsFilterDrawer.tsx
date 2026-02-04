@@ -56,25 +56,28 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
                 </Stack>
 
                 {/* Creator */}
-                <Stack gap="0.5rem" className="filter-drawer-avatars">
+                <Stack gap="0.5rem">
                     <Text size="sm" fw={500} c="black">Member:</Text>
-                    <Group>
-                        <div
-                            style={{
-                                cursor: 'pointer',
-                                border: localFilters.creatorId === null ? '2px solid rgb(5, 5, 73)' : '2px solid transparent',
-                                borderRadius: '50%',
-                                padding: '2px'
-                            }}
+                    <Group gap="xs" style={{ flexWrap: "nowrap" }}>
+                        <Button
+                            color="rgb(5, 5, 73)"
+                            size="sm"
+                            h="auto"
+                            p="0.5rem 1rem"
+                            fw={500}
+                            variant={localFilters?.creatorId === null ? "filled" : "outline"}
                             onClick={() => setLocalFilters({ ...localFilters, creatorId: null })}
                         >
-                            <Avatar radius="xl" color="gray">All</Avatar>
-                        </div>
+                            All
+                        </Button>
                         {householdMembers?.map((member) => (
                             <Button
+                                p="2px"
+                                h="auto"
                                 style={{
-                                    border: localFilters.creatorId === member.id ? "2px solid rgb(5, 5, 73)" : undefined,
+                                    border: localFilters.creatorId === member.id ? "2px solid rgb(5, 5, 73)" : "2px solid transparent",
                                     cursor: "pointer",
+
                                 }}
                                 variant="transparent"
                                 radius="xl"

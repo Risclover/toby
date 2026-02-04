@@ -1,4 +1,4 @@
-import HouseholdCheckinsMini from "@/features/Checkins/components/HouseholdCheckinsMini"
+import { HouseholdCheckinsMini } from "@/features/Checkins/components/HouseholdCheckinsMini"
 
 export const MobileHomeDailyCheckins = () => {
     return (

@@ -6,7 +6,7 @@ import { useState, type RefObject } from "react"
 type Props = {
     inputRef?: RefObject<HTMLInputElement | null>;
     listId: number | undefined;
-    tasklist: TasklistType;
+    tasklist: TasklistType | undefined;
 }
 
 export const HouseholdTasklistPageAddTask = ({ inputRef, listId, tasklist }: Props) => {
@@ -16,7 +16,7 @@ export const HouseholdTasklistPageAddTask = ({ inputRef, listId, tasklist }: Pro
 
 
     const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!tasklist.isArchived)
+        if (!tasklist?.isArchived)
             setTitle(e.target.value)
     }
 
@@ -33,14 +33,14 @@ export const HouseholdTasklistPageAddTask = ({ inputRef, listId, tasklist }: Pro
             <input
                 disabled={tasklist?.isArchived}
                 value={title}
-                onKeyDown={(e) => { if (e.key === "Enter" && !tasklist.isArchived) { handleAddTask() } }}
+                onKeyDown={(e) => { if (e.key === "Enter" && !tasklist?.isArchived) { handleAddTask() } }}
                 ref={inputRef}
                 onChange={handleTitle}
                 type="text"
                 placeholder="Add a task and press Enter"
                 maxLength={255}
             />
-            <Button disabled={tasklist?.isArchived} color="var(--tasklist-color)" loading={loading} onClick={handleAddTask}>Add</Button>
+            <Button disabled={tasklist?.isArchived || title.trim().length === 0} color="var(--tasklist-color)" loading={loading} onClick={handleAddTask}>Add</Button>
         </div>
     </div>
 }

@@ -117,7 +117,8 @@ textarea.editable-title.is-editing {
     width: 100%;
     border: 1px solid var(--border);
     background: white;
-    box-shadow: var(--mantine-shadow-sm);
+    box-shadow: var(--mantine-shadow-xs);
+    border: 0;
     min-height: 0;
     position: relative;
     flex: 0 1 auto;
@@ -551,6 +552,10 @@ textarea.editable-title.is-editing {
 
 .asterisk {
     color: var(--mantine-color-red-8)
+}
+
+.menu-wrapper {
+    display: flex;
 }
 
 @media (max-width: 425px) {

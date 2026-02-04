@@ -20,7 +20,9 @@ export const HouseholdTasklistPageCompleted = ({ tasklist, completed, showComple
             <div
                 className="household-tasklist-page-completed-title panel-header"
                 onClick={(e) => { e.stopPropagation(); setShowCompleted((prev) => !prev) }}
+                onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") setShowCompleted(prev => !prev) }}
                 title="Click to show"
+                tabIndex={0}
             >
                 <h2>{showCompleted ? "Hide completed" : `Completed (${completed.length})`}</h2>
                 {showCompleted ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}

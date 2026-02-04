@@ -5,6 +5,7 @@ import { HouseholdTasklist } from "./HouseholdTasklist";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { CreateTasklist } from "./CreateTasklist";
 import { Center, Loader } from "@mantine/core";
+import { useStablePending } from "@/hooks";
 
 export const HouseholdTasklists = () => {
     const { data: user, isLoading: authLoading } = useAuthenticateQuery();
@@ -22,10 +23,12 @@ export const HouseholdTasklists = () => {
         refetchOnMountOrArgChange: true,
     });
 
-    if (authLoading || isLoading) return <Center h="100vh"><Loader color="cyan" style={{
+    const loading = useStablePending(isLoading, { showAfterMs: 0, minVisibleMs: 500 });
+
+
+    if (authLoading || loading) return <Center h="100vh"><Loader color="cyan" style={{
         transition: 'opacity 200ms ease-in',
-        opacity: isLoading ? 1 : 0,
-        transitionDelay: '300ms' // Only starts appearing after 300ms
+        opacity: loading ? 1 : 0,
     }} /></Center>
 
     return (

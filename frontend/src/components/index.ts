@@ -24,4 +24,3 @@ export { MobileHomeHeader } from "./MobileHomeHeader";
 export { MobileHomeNavGrid } from "./MobileHomeNavGrid";
 export { MobileHomeNoticeBoard } from "./MobileHomeNoticeBoard";
 export { MobileHomeRecentActivity } from "./MobileHomeRecentActivity";
-export { UnderlineNav } from "./UnderlineNav";

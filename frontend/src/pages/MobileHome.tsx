@@ -8,6 +8,9 @@ import { MobileHomeNoticeBoard } from "@/components/MobileHomeNoticeBoard";
 import { MobileHomeDailyCheckins } from "@/components/MobileHomeDailyCheckins";
 import { MobileHomeRecentActivity } from "@/components/MobileHomeRecentActivity";
 import { MobileLayout } from "@/layout/MobileLayout";
+import { DueTaskStat } from "@/components/DueTaskStats/DueTaskStat";
+import { DueTasksStats } from "@/components/DueTaskStats/DueTasksStats";
+import { TaskStatusSection } from "@/components/DueTaskStats/TaskStatusSelection";
 
 export const MobileHome = () => {
     const mobileHomeFamilyTitle = <MobileHomeFamilyTitle />
@@ -29,6 +32,7 @@ export const MobileHome = () => {
         // </div>
         <MobileLayout titleComponent={mobileHomeFamilyTitle}>
             <MobileHomeNavGrid />
+            <TaskStatusSection />
             <MobileHomeNoticeBoard />
         </MobileLayout>
     )

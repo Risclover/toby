@@ -5,6 +5,8 @@ import { BehaviorTab } from "./BehaviorTab";
 import { AppearanceTab } from "./AppearanceTab";
 import { DiscardWarning } from "./DiscardWarning";
 import { isTooLight } from "../../utils/isTooLight";
+import { useParams } from "react-router-dom";
+import { useIsSmallScreen } from "@/hooks";
 
 /* --- SHARED CONSTANTS --- */
 export const TIME_OPTIONS = [
@@ -22,16 +24,12 @@ type Props = {
 };
 
 export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => {
+    const { tasklistId } = useParams();
+    const isSmallScreen = useIsSmallScreen();
     const {
         form,
         tasklist,
         household,
-        isSmallScreen,
-        tasklistTitleRef,
-        memberOptions,
-        renderMultiSelectOption,
-        handleToggleAllMembers,
-        handleMemberChange,
         handleClose,
         setShowDiscardWarning,
         showDiscardWarning,
@@ -40,12 +38,8 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
         isSubmitting,
         handleSubmit,
         showDeleteConfirmation,
-        setShowDeleteConfirmation,
         allowedMembers,
-        handleArchiveList,
-        handleUndoArchive,
-        handleDuplicateList
-    } = useTasklistSettings({ setShowTasklistSettings });
+    } = useTasklistSettings({ setShowTasklistSettings, tasklistId: Number(tasklistId) });
 
     const hasColorError = isTooLight(form.values.color);
 
@@ -74,21 +68,9 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                 </Tabs.List>
                 <GeneralTab
                     form={form}
+                    tasklist={tasklist}
                     tasklistId={tasklist?.id}
                     household={household}
-                    isSmallScreen={isSmallScreen}
-                    memberOptions={memberOptions}
-                    renderMultiSelectOption={renderMultiSelectOption}
-                    titleRef={tasklistTitleRef}
-                    onToggleAll={handleToggleAllMembers}
-                    onMemberChange={handleMemberChange}
-                    setShowTasklistSettings={setShowTasklistSettings}
-                    showDeleteConfirmation={showDeleteConfirmation}
-                    setShowDeleteConfirmation={setShowDeleteConfirmation}
-                    handleArchiveList={handleArchiveList}
-                    handleUndoArchive={handleUndoArchive}
-                    isArchived={tasklist?.isArchived}
-                    handleDuplicateList={handleDuplicateList}
                 />
                 <BehaviorTab form={form} household={household} allowedMembers={allowedMembers} />
                 <AppearanceTab form={form} />
@@ -102,7 +84,8 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                             color="var(--tasklist-color)"
                             variant="outline"
                             className="tasklist-settings-footer-btn"
-                            onClick={() => form.reset()} // Simple reset!
+                            onClick={() => form.reset()}
+                            disabled={!form.isDirty() || !form.isValid() || hasColorError}
                         >
                             Cancel
                         </Button>
@@ -110,7 +93,7 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                             color="var(--tasklist-color)"
                             variant="filled"
                             className="tasklist-settings-footer-btn"
-                            disabled={!form.isDirty() || !form.isValid() || hasColorError} // Built-in helpers
+                            disabled={!form.isDirty() || !form.isValid() || hasColorError}
                             onClick={() => handleSubmit()}
                             loading={isSubmitting}
                             loaderProps={{ children: 'Saving...' }}

@@ -1,12 +1,11 @@
 import type { User } from "@/store/authSlice";
-import { Button, Checkbox, Flex, Input, MultiSelect, Space, Switch, Tabs, type MultiSelectProps } from "@mantine/core";
+import { Button, Checkbox, Flex, Input, MultiSelect, Space, Switch, Tabs } from "@mantine/core";
 import type { UseFormReturnType } from "@mantine/form";
-import { type RefObject } from "react";
 import { SettingsItem } from "./SettingsItem";
-import { useDeleteListMutation } from "@/store/taskSlice";
+import { type TasklistType } from "@/store/taskSlice";
 import { DeleteConfirmation } from "./DeleteConfirmation";
-import { useNavigate } from "react-router-dom";
-import { notifications } from "@mantine/notifications";
+import { useTasklistSettings } from "../../hooks";
+import { useIsSmallScreen } from "@/hooks";
 
 export type TasklistFormValues = {
     title: string;
@@ -28,41 +27,28 @@ export type TasklistSettingsForm = UseFormReturnType<TasklistFormValues>;
 
 type GeneralTabProps = {
     form: TasklistSettingsForm;
+    tasklist: TasklistType | undefined;
     tasklistId: number | undefined;
-    household: { members: User[] }; // Replace with actual Household type if different
-    memberOptions: { value: string; label: string }[];
-    renderMultiSelectOption: MultiSelectProps['renderOption'];
-    isSmallScreen: boolean;
-    titleRef: RefObject<HTMLInputElement | null>;
-    onToggleAll: (checked: boolean) => void;
-    onMemberChange: (values: string[]) => void;
-    setShowTasklistSettings: (val: boolean) => void;
-    showDeleteConfirmation: boolean;
-    setShowDeleteConfirmation: (val: boolean) => void;
-    handleArchiveList: () => void;
-    handleUndoArchive: () => void;
-    isArchived: boolean | undefined;
-    handleDuplicateList: () => void;
+    household: { members: User[] };
 };
 
-export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderMultiSelectOption, isSmallScreen, titleRef, onToggleAll, onMemberChange, setShowTasklistSettings, showDeleteConfirmation, setShowDeleteConfirmation, handleArchiveList, handleUndoArchive, isArchived, handleDuplicateList }: GeneralTabProps) => {
-    const navigate = useNavigate();
-    const hasMemberError = form.values.memberIds.length === 0;
-    const [deleteList] = useDeleteListMutation();
+export const GeneralTab = ({ form, tasklist, tasklistId, household }: GeneralTabProps) => {
+    const {
+        memberOptions,
+        renderMultiSelectOption,
+        tasklistTitleRef,
+        handleToggleAllMembers,
+        handleMemberChange,
+        showDeleteConfirmation,
+        setShowDeleteConfirmation,
+        handleArchiveList,
+        handleUndoArchive,
+        handleDuplicateList,
+        handleDeleteList
+    } = useTasklistSettings({ tasklistId })
+    const isSmallScreen = useIsSmallScreen();
 
-    const handleDeleteList = async () => {
-        await deleteList({ listId: tasklistId });
-        setShowDeleteConfirmation(false);
-        setShowTasklistSettings(false);
-        navigate("/tasklists");
-        notifications.show({
-            title: "Success!",
-            message: "Tasklist deleted successfully.",
-            color: "teal",
-            position: "bottom-center",
-            autoClose: 5000,
-        })
-    }
+    const hasMemberError = form.values.memberIds.length === 0;
 
     return (
         <Tabs.Panel value="general" style={{ overflowY: "auto", padding: "16px", minHeight: 0 }}>
@@ -75,7 +61,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                 <div className={!isSmallScreen ? "tasklist-settings-right" : ""}>
                     <Input
                         id="title"
-                        ref={titleRef}
+                        ref={tasklistTitleRef}
                         maxLength={64}
                         placeholder="Weekend Grocery Run"
                         // Spread Mantine props first
@@ -85,7 +71,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                             form.values.title !== '' ? (
                                 <Input.ClearButton onClick={() => {
                                     form.setFieldValue('title', '');
-                                    titleRef.current?.focus();
+                                    tasklistTitleRef.current?.focus();
                                 }}
                                 />
                             ) : undefined
@@ -121,7 +107,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                         <MultiSelect
                             data={memberOptions}
                             value={form.values.memberIds}
-                            onChange={onMemberChange}
+                            onChange={handleMemberChange}
                             renderOption={renderMultiSelectOption}
                             maxDropdownHeight={300}
                             placeholder="Assign members"
@@ -133,7 +119,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                             <Checkbox
                                 label="All members"
                                 checked={form.values.allMembers}
-                                onChange={(e) => onToggleAll(e.currentTarget.checked)}
+                                onChange={(e) => handleToggleAllMembers(e.currentTarget.checked)}
                                 color="var(--tasklist-color)"
                             />
                         </div>
@@ -156,7 +142,7 @@ export const GeneralTab = ({ form, tasklistId, household, memberOptions, renderM
                 divider={true}
             >
                 <Space h={12} />
-                {isArchived ?
+                {tasklist?.isArchived ?
                     <Button color="var(--tasklist-color)" variant="filled" onClick={handleUndoArchive}>Unarchive list</Button> :
                     <Button color="var(--tasklist-color)" variant="filled" onClick={handleArchiveList}>Archive list</Button>
                 }

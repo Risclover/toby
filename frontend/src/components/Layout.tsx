@@ -1,5 +1,5 @@
 import { AppRoutes } from "@/routes"
-import Sidebar from "@/layout/Sidebar"
+import { Sidebar } from "@/layout/Sidebar"
 import { useMantineColorScheme } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";

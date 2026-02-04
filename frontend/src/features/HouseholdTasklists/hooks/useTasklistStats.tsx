@@ -6,7 +6,7 @@ export const useTasklistStats = (tasks: Task[] = []) => {
     return useMemo(() => {
         const total = tasks.length;
         const completed = tasks.filter((t) => t.status === "completed");
-        const uncompleted = tasks.filter((t) => t.status !== "completed");
+        const uncompleted = tasks.filter((t) => t.status === "in_progress");
 
         const rawPercent = total ? (completed.length / total) * 100 : 0;
         const percent = Math.min(100, Math.max(0, Math.round(rawPercent)));

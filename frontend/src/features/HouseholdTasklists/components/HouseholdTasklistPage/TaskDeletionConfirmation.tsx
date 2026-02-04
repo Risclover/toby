@@ -17,9 +17,8 @@ export const TaskDeletionConfirmation = ({ title, opened, onClose, listId, taskI
         await deleteTask({ listId, taskId });
         onClose();
         notifications.show({
-            title: 'Success!',
             message: "Task deleted successfully.",
-            color: 'teal',
+            color: 'cyan',
             position: 'bottom-center',
             autoClose: 5000,
         });

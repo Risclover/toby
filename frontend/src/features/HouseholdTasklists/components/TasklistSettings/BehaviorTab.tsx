@@ -76,22 +76,25 @@ export const BehaviorTab = ({ form, household, allowedMembers }: BehaviorTabProp
                 </Stack>
 
                 {/* Member Filter */}
-                <Stack className="filter-drawer-avatars" gap="0.25rem">
+                <Stack gap="0.25rem">
                     <Text size="sm" fw={500} c="black">Assigned to:</Text>
-                    <Group gap="xs" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
-                        <div
-                            style={{
-                                cursor: 'pointer',
-                                border: form.values.defaultFilters.assignedToId === null ? '2px solid var(--tasklist-color)' : '2px solid transparent',
-                                borderRadius: '50%',
-                                padding: '2px'
-                            }}
+                    <Group gap="xs" style={{ flexWrap: 'nowrap' }}>
+                        <Button
+                            color="var(--tasklist-color)"
+                            size="sm"
+                            h="auto"
+                            p="0.5rem 1rem"
+                            fw={500}
                             onClick={() => form.setFieldValue('defaultFilters.assignedToId', null)}
+                            variant={form.values.defaultFilters.assignedToId === null ? "filled" : "outline"}
                         >
-                            <Avatar radius="xl" color="gray">All</Avatar>
-                        </div>
+                            All
+                        </Button>
                         {allowedMembers.map((member: User) => (
-                            <div
+                            <Button
+                                p="2px"
+                                h="auto"
+                                variant="transparent"
                                 key={member.id}
                                 style={{
                                     border: form.values.defaultFilters.assignedToId === member.id ? "2px solid var(--tasklist-color)" : "2px solid transparent",
@@ -109,7 +112,7 @@ export const BehaviorTab = ({ form, household, allowedMembers }: BehaviorTabProp
                                         {member.firstName?.[0]?.toUpperCase()}
                                     </Avatar>
                                 </Tooltip>
-                            </div>
+                            </Button>
                         ))}
                     </Group>
                 </Stack>

@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { ActionIcon, Progress, Tooltip } from "@mantine/core";
+import { ActionIcon, Progress, Title, Tooltip } from "@mantine/core";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { type TasklistType } from "@/store/taskSlice";
+import { useIsSmallScreen } from "@/hooks";
 
 interface TitleComponentProps {
     percent: number;
@@ -15,6 +16,7 @@ export const MobileTasklistTitleComponent = ({
     tasklist,
     setShowTasklistSettings
 }: TitleComponentProps) => {
+    const isSmall = useIsSmallScreen(425);
     const navigate = useNavigate();
 
     return (
@@ -26,7 +28,7 @@ export const MobileTasklistTitleComponent = ({
                             <ChevronLeftRoundedIcon />
                         </ActionIcon>
                     </Tooltip>
-                    <span className="title-announcements-title">{tasklist.title}</span>
+                    <Title order={1} lineClamp={1} className={`title-announcements-title${isSmall ? " smaller-header" : ""}`}>{tasklist.title}</Title>
                 </div>
                 <Tooltip label="Tasklist settings">
                     <ActionIcon
