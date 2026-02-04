@@ -42,7 +42,6 @@ class Reminder(db.Model):
 
     created_by = db.relationship("User", foreign_keys=[created_by_id])
     household = db.relationship("Household", back_populates="reminders")
-    created_by_user = db.relationship("User", foreign_keys=[created_by_id])
     assigned_to_user = db.relationship("User", foreign_keys=[assigned_to_id])
 
     __table_args__ = (

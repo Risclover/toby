@@ -24,6 +24,7 @@ class Household(db.Model):
     )
     shopping_lists = db.relationship("ShoppingList", back_populates="household")
     tasklists = db.relationship("Tasklist", back_populates="household")
+    reminders = db.relationship("Reminder", back_populates="household", cascade="all, delete-orphan")
 
     def to_dict(self):
         return {
