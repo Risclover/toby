@@ -227,14 +227,27 @@ def get_task_stats(id):
         print(f"Stats Error for User {id}: {e}")
         return jsonify({"error": str(e)}), 500
 
-@user_routes.route("/<int:id>/reminders", methods=["GET"])
-def get_user_reminders(id):
+@user_routes.route("/<int:user_id>/reminders", methods=["GET"])
+def get_user_reminders(user_id):
     """
-    Retrieve all reminders for a specific user
+    Retrieve all active reminders for a specific user.
+    Active = triggered, not seen, not expired
     """
-    user = User.query.get(id)
+    user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    reminders = Reminder.query.filter_by(assigned_to_id=id).all()
-    return jsonify([reminder.to_dict() for reminder in reminders]), 200
+    now = datetime.utcnow()
+    reminders = (
+        Reminder.query
+        .filter(
+            Reminder.assigned_to_id == user_id,
+            (Reminder.trigger_at == None) | (Reminder.trigger_at <= now),
+            (Reminder.expires_at == None) | (Reminder.expires_at > now),
+            Reminder.seen == False
+        )
+        .order_by(Reminder.trigger_at.asc().nulls_last(), Reminder.due_at.asc().nulls_last())
+        .all()
+    )
+
+    return jsonify([r.to_dict() for r in reminders]), 200

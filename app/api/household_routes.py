@@ -7,6 +7,7 @@ from sqlalchemy import outerjoin, or_, and_
 import base64
 from datetime import datetime, timedelta
 import json
+from app.api.reminder_routes import create_reminder, ReminderType
 
 household_routes = Blueprint('households', __name__)
 
@@ -210,16 +211,57 @@ def list_announcements(household_id: int):
     })
 
 
-@household_routes.route("/<int:id>/reminders", methods=["GET"])
-def get_household_reminders(id):
+@household_routes.route("/<int:household_id>/reminders", methods=["GET"])
+def get_household_reminders(household_id):
     """
-    Retrieve household reminders
+    Retrieve all active reminders for a household
+    Active = triggered, not seen, not expired
     """
-    household = Household.query.get(id)
-
+    household = Household.query.get(household_id)
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    reminders = [reminder.to_dict() for reminder in household.reminders]
+    now = datetime.utcnow()
+    reminders = (
+        Reminder.query
+        .filter(
+            Reminder.household_id == household_id,
+            (Reminder.trigger_at == None) | (Reminder.trigger_at <= now),
+            (Reminder.expires_at == None) | (Reminder.expires_at > now),
+            Reminder.seen == False
+        )
+        .order_by(Reminder.trigger_at.asc().nulls_last(), Reminder.due_at.asc().nulls_last())
+        .all()
+    )
 
-    return jsonify(reminders), 200
+    return jsonify([r.to_dict() for r in reminders]), 200
+
+@household_routes.route("/<int:household_id>/reminders", methods=["POST"])
+@login_required
+def create_manual_reminder(household_id):
+    household = Household.query.get(household_id)
+    if not household:
+        return jsonify({"error": "Household not found"}), 404
+
+    # Membership check
+    if current_user not in household.members:
+        return jsonify({"error": "Forbidden"}), 403
+
+    data = request.get_json()
+
+    reminder = Reminder(
+        household_id=household_id,
+        created_by_id=current_user.id,
+        assigned_to_id=data.get("assignedToId"),
+        body=data["body"],
+        reminder_type=ReminderType.custom,
+        is_automatic=False,
+        trigger_at=parse_datetime(data.get("triggerAt")),
+        due_at=parse_datetime(data.get("dueAt")),
+        expires_at=parse_datetime(data.get("expiresAt")),
+    )
+
+    db.session.add(reminder)
+    db.session.commit()
+
+    return jsonify(reminder.to_dict()), 201

@@ -13,25 +13,31 @@ class Reminder(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
+    # Foreign keys
     household_id = db.Column(db.Integer, db.ForeignKey("households.id", ondelete="CASCADE"), nullable=False, index=True)
     created_by_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     assigned_to_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
 
+    # Core details
     body = db.Column(db.Text, nullable=False)
     reminder_type = db.Column(db.Enum(ReminderType), nullable=False)
     is_automatic = db.Column(db.Boolean, nullable=False, default=False)
+    seen = db.Column(db.Boolean, nullable=False, default=False)
 
+    # Source entity (if applicable)
     source_entity_id = db.Column(db.Integer, nullable=True)
     source_entity_type = db.Column(db.String(50), nullable=True)
 
-    seen = db.Column(db.Boolean, nullable=False, default=False)
+    # Timestamps
     due_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True)
     trigger_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True)
     expires_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True)
 
+    # Creation and update tracking
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
+    # Relationships
     created_by = db.relationship("User", foreign_keys=[created_by_id])
     household = db.relationship("Household", back_populates="reminders")
     assigned_to_user = db.relationship("User", foreign_keys=[assigned_to_id])
