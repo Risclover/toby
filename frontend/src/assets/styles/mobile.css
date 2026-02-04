@@ -3,7 +3,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 1rem;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0;
     /* background: hsl(232deg 85% 18%) 0%; */
     color: white;
     /* border-bottom: 1px solid lightgrey; */
@@ -76,7 +76,7 @@
     font-weight: 500;
     margin: 0 1rem;
     line-height: 1;
-    height: 60px;
+    height: 55px;
     flex-wrap: wrap;
 }
 

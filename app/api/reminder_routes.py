@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, abort
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app.extensions import db
 from app.models import Reminder, User, Household, ReminderType
 from datetime import datetime, timedelta, timezone
@@ -68,7 +68,7 @@ def mark_reminder_seen(id):
 
     return jsonify(reminder.to_dict()), 200
 
-@reminder_routes.route("/<int:id>", method=["PATCH"])
+@reminder_routes.route("/<int:id>", methods=["PATCH"])
 @login_required
 def update_manual_reminder(id):
     reminder = Reminder.query.get(id)

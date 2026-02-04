@@ -7,7 +7,6 @@ from sqlalchemy import outerjoin, or_, and_
 import base64
 from datetime import datetime, timedelta
 import json
-from app.api.reminder_routes import create_reminder, ReminderType
 
 household_routes = Blueprint('households', __name__)
 

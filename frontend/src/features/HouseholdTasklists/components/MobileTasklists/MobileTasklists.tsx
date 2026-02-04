@@ -69,15 +69,15 @@ export const MobileTasklists = () => {
         <Tooltip.Group openDelay={500} closeDelay={100}>
             <Group gap="0.5rem" className="tasklists-title-right">
                 <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="Archive">
-                    <ActionIcon size="lg" radius="lg" variant="filled" color="white" c="rgb(5, 5, 73)" onClick={() => navigate("/tasklists/archived")}>
-                        <ArchivedIcon size="1.75rem" color="currentColor" />
+                    <ActionIcon size="md" radius="lg" variant="filled" color="white" c="rgb(5, 5, 73)" onClick={() => navigate("/tasklists/archived")}>
+                        <ArchivedIcon size="1.25rem" color="currentColor" />
                     </ActionIcon>
                 </Tooltip>
                 <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="Create list">
-                    <ActionIcon size="lg" radius="lg" variant="filled" color="white" c="rgb(5, 5, 73)"
+                    <ActionIcon size="md" radius="lg" variant="filled" color="white" c="rgb(5, 5, 73)"
                         onClick={() => open()}
                     >
-                        <PlusIcon style={{ width: '1.5rem', height: '1.5rem' }} />
+                        <PlusIcon style={{ width: '1.25rem', height: '1.25rem' }} />
                     </ActionIcon>
                 </Tooltip>
             </Group>
@@ -86,7 +86,7 @@ export const MobileTasklists = () => {
     return (
         <MobileLayout titleComponent={titleComponent}>
             <MobileHomeNavGrid activeTab={1} />
-            <div className="mobile-tasklists-content">
+            <div className={`mobile-tasklists-content${isSmall ? " content-padding" : ""}`}>
                 {lists.length === 0 && isSuccess &&
                     <Stack justify="center" align="center" my={isSmall ? "5rem" : ""} h={!isSmall ? "100%" : ""}>
                         <Group w="100%" justify="center" align="center">

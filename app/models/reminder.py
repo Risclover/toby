@@ -1,8 +1,9 @@
 from sqlalchemy import func, Index, UniqueConstraint
 from app.extensions import db
 from datetime import datetime
+from enum import Enum
 
-class ReminderType(enum.Enum):
+class ReminderType(Enum):
     custom = "custom"
     task_due = "task_due"
     event_starting = "event_starting"

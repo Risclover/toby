@@ -168,7 +168,11 @@
     cursor: pointer;
 }
 
-
+@media (max-width: 425px) {
+    .household-tasklists-grid {
+        gap: 0.5rem;
+    }
+}
 
 @media (width >=40rem) {
     .household-tasklists-grid {

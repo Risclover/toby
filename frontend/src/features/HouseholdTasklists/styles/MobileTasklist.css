@@ -21,7 +21,7 @@
 .mobile-tasklist-title-bar-top {
     display: flex;
     /* flex-direction: column; */
-    /* align-items: center; */
+    align-items: center;
     justify-content: space-between;
     gap: .5rem;
     font-family: "Alan Sans", sans-serif;
@@ -231,9 +231,13 @@
     }
 }
 
-@media (max-width: 575px) {
+@media (max-width: 425px) {
     .task {
         padding-left: 0;
+    }
+
+    .mobile-tasklists-content {
+        padding: 0.5rem;
     }
 }
 

@@ -4,6 +4,8 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { type TasklistType } from "@/store/taskSlice";
 import { useIsSmallScreen } from "@/hooks";
+import { SettingsIcon } from "@/assets/icons/SettingsIcon";
+
 
 interface TitleComponentProps {
     percent: number;
@@ -34,8 +36,9 @@ export const MobileTasklistTitleComponent = ({
                     <ActionIcon
                         onClick={() => setShowTasklistSettings(true)}
                         className="tasklist-settings-btn"
-                        size="compact-md"
+                        size="md"
                         variant="transparent"
+                        radius="xl"
                         color="white"
                     >
                         <SettingsRoundedIcon />
