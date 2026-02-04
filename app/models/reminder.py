@@ -2,19 +2,11 @@ from sqlalchemy import func, Index, UniqueConstraint
 from app.extensions import db
 from datetime import datetime
 
-class ReminderStatus(enum.Enum):
-    pending = "pending"
-    dismissed = "dismissed"
-    completed = "completed"
-    expired = "expired"
-
-
 class ReminderType(enum.Enum):
     custom = "custom"
     task_due = "task_due"
     event_starting = "event_starting"
     daily_check_in_missing = "daily_check_in_missing"
-
 
 class Reminder(db.Model):
     __tablename__ = "reminders"
@@ -26,13 +18,13 @@ class Reminder(db.Model):
     assigned_to_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
 
     body = db.Column(db.Text, nullable=False)
-    status = db.Column(db.Enum(ReminderStatus), nullable=False, default=ReminderStatus.pending, index=True)
     reminder_type = db.Column(db.Enum(ReminderType), nullable=False)
     is_automatic = db.Column(db.Boolean, nullable=False, default=False)
 
     source_entity_id = db.Column(db.Integer, nullable=True)
     source_entity_type = db.Column(db.String(50), nullable=True)
 
+    seen = db.Column(db.Boolean, nullable=False, default=False)
     due_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True)
     trigger_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True)
     expires_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True)
@@ -60,11 +52,11 @@ class Reminder(db.Model):
             "createdById": self.created_by_id,
             "assignedToId": self.assigned_to_id,
             "body": self.body,
-            "status": self.status,
             "reminderType": self.reminder_type,
             "isAutomatic": self.is_automatic,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
+            "seen": self.seen,
             "dueAt": self.due_at.isoformat() if self.due_at else None,
             "triggerAt": self.trigger_at.isoformat() if self.trigger_at else None,
             "expiresAt": self.expires_at.isoformat() if self.expires_at else None,

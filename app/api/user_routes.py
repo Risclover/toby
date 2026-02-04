@@ -226,3 +226,15 @@ def get_task_stats(id):
     except Exception as e:
         print(f"Stats Error for User {id}: {e}")
         return jsonify({"error": str(e)}), 500
+
+@user_routes.route("/<int:id>/reminders", methods=["GET"])
+def get_user_reminders(id):
+    """
+    Retrieve all reminders for a specific user
+    """
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    reminders = Reminder.query.filter_by(assigned_to_id=id).all()
+    return jsonify([reminder.to_dict() for reminder in reminders]), 200

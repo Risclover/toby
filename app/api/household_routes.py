@@ -208,3 +208,18 @@ def list_announcements(household_id: int):
         "hasPrevPage": page > 1,
         "totalCount": total_count,
     })
+
+
+@household_routes.route("/<int:id>/reminders", methods=["GET"])
+def get_household_reminders(id):
+    """
+    Retrieve household reminders
+    """
+    household = Household.query.get(id)
+
+    if not household:
+        return jsonify({"error": "Household not found"}), 404
+
+    reminders = [reminder.to_dict() for reminder in household.reminders]
+
+    return jsonify(reminders), 200
