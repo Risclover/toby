@@ -263,7 +263,6 @@
     width: 100%;
     border: 1px solid transparent;
     background: var(--mantine-color-indigo-0);
-    color: white;
     cursor: pointer;
 }
 

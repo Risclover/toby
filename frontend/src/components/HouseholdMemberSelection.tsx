@@ -3,6 +3,7 @@ import { Avatar, Checkbox, Collapse, Fieldset, Stack } from "@mantine/core";
 import type { UserLite } from "@/hooks/useMemberSelection";
 
 type Props = {
+    title: string;
     members?: UserLite[];
     allMembers: boolean;
     someSelected: boolean;
@@ -11,7 +12,8 @@ type Props = {
     onToggleOne: (id: number) => void;
 };
 
-export function CreateTasklistMembers({
+export function HouseholdMemberSelection({
+    title,
     members,
     allMembers,
     someSelected,
@@ -20,7 +22,7 @@ export function CreateTasklistMembers({
     onToggleOne,
 }: Props) {
     return (
-        <Fieldset legend="Who is this list for?" className="list-is-for">
+        <Fieldset legend={title} className="list-is-for">
             <Checkbox
                 color="cyan"
                 size="xs"

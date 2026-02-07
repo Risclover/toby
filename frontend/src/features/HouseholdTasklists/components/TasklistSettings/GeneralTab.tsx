@@ -25,29 +25,48 @@ export type TasklistFormValues = {
 
 export type TasklistSettingsForm = UseFormReturnType<TasklistFormValues>;
 
-type GeneralTabProps = {
-    form: TasklistSettingsForm;
-    tasklist: TasklistType | undefined;
-    tasklistId: number | undefined;
-    household: { members: User[] };
-};
 
-export const GeneralTab = ({ form, tasklist, tasklistId, household }: GeneralTabProps) => {
-    const {
-        memberOptions,
-        renderMultiSelectOption,
-        tasklistTitleRef,
-        handleToggleAllMembers,
-        handleMemberChange,
-        showDeleteConfirmation,
-        setShowDeleteConfirmation,
-        handleArchiveList,
-        handleUndoArchive,
-        handleDuplicateList,
-        handleDeleteList
-    } = useTasklistSettings({ tasklistId })
+// Define the Props interface to include everything we are passing down
+interface GeneralTabProps {
+    form: any; // Ideally replace 'any' with your actual Form type
+    tasklist: any;
+    tasklistId: number;
+    household: any;
+    // New props from the hook:
+    memberOptions: any[];
+    renderMultiSelectOption: any;
+    tasklistTitleRef: React.RefObject<HTMLInputElement>;
+    handleToggleAllMembers: (checked: boolean) => void;
+    handleMemberChange: (values: string[]) => void;
+    showDeleteConfirmation: boolean;
+    setShowDeleteConfirmation: (show: boolean) => void;
+    handleArchiveList: () => void;
+    handleUndoArchive: () => void;
+    handleDuplicateList: () => void;
+    handleDeleteList: () => void;
+    handleTitleBlur: () => void;
+}
+
+export const GeneralTab = ({
+    form,
+    tasklist,
+    tasklistId,
+    household,
+    memberOptions,
+    renderMultiSelectOption,
+    tasklistTitleRef,
+    handleToggleAllMembers,
+    handleMemberChange,
+    showDeleteConfirmation,
+    setShowDeleteConfirmation,
+    handleArchiveList,
+    handleUndoArchive,
+    handleDuplicateList,
+    handleDeleteList,
+    handleTitleBlur
+}: GeneralTabProps) => {
+
     const isSmallScreen = useIsSmallScreen();
-
     const hasMemberError = form.values.memberIds.length === 0;
 
     return (
@@ -63,6 +82,7 @@ export const GeneralTab = ({ form, tasklist, tasklistId, household }: GeneralTab
                         id="title"
                         ref={tasklistTitleRef}
                         maxLength={64}
+                        onBlur={handleTitleBlur}
                         placeholder="Weekend Grocery Run"
                         // Spread Mantine props first
                         {...form.getInputProps('title')}
@@ -93,7 +113,7 @@ export const GeneralTab = ({ form, tasklist, tasklistId, household }: GeneralTab
                     withThumbIndicator={false}
                 />
             </SettingsItem>
-            {household.members.length > 1 && (
+            {household?.members?.length > 1 && (
                 <SettingsItem
                     layout="column"
                     label="Assigned members"
@@ -114,6 +134,7 @@ export const GeneralTab = ({ form, tasklist, tasklistId, household }: GeneralTab
                             id="assigned"
                             hidePickedOptions
                             clearable
+                            c="black"
                         />
                         <div className="all-members-option">
                             <Checkbox

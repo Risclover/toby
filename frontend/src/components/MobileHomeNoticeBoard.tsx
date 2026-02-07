@@ -8,11 +8,14 @@ import { Button, FloatingIndicator, Tabs, Badge } from "@mantine/core";
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { DueTaskStat } from "@/components/DueTaskStats/DueTaskStat";
+import { Reminders } from "@/features/Reminders/components/Reminders";
+import { CreateReminder } from "@/features/Reminders/components/CreateReminder";
 
 export const MobileHomeNoticeBoard = () => {
     const navigate = useNavigate();
     const [showAnnouncements, setShowAnnouncements] = useState(false);
     const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
+    const [showCreateReminder, setShowCreateReminder] = useState(false);
     const [roofRef, setRoofRef] = useState<HTMLDivElement | null>(null);
     const [value, setValue] = useState<string | null>("reminders");
 
@@ -57,17 +60,16 @@ export const MobileHomeNoticeBoard = () => {
                             </div>
                         </div>}
                         {!showAnnouncements && <div className="mobile-home-notice-board-section">
-                            <div className="mobile-home-notice-board-content">
-                                <p>No new reminders.</p>
-                            </div>
+                            <Reminders userId={user?.id} />
                         </div>}
                     </div>
 
                     <div className="mobile-home-notice-board-footer">
-                        <Button className="add-announcement-btn" radius="xl" variant="filled" size="compact-sm" color="rgb(5, 5, 73)" onClick={() => setShowCreateAnnouncement(true)}>+ Add announcement</Button>
-                        {data?.items && data?.items.length > 0 && <Button color="rgb(5, 5, 73)" radius="xl" variant="transparent" size="compact-sm" onClick={() => navigate("/announcements")}>View all →</Button>}
+                        {value === "reminders" ? <Button className="add-announcement-btn" radius="xl" variant="filled" size="compact-sm" color="rgb(5, 5, 73)" onClick={() => setShowCreateReminder(true)}>+ New reminder</Button> : <Button className="add-announcement-btn" radius="xl" variant="filled" size="compact-sm" color="rgb(5, 5, 73)" onClick={() => setShowCreateAnnouncement(true)}>+ New announcement</Button>}
+                        {value === "announcements" && data?.items && data?.items.length > 0 && <Button color="rgb(5, 5, 73)" radius="xl" variant="transparent" size="compact-sm" onClick={() => navigate("/announcements")}>View all →</Button>}
                     </div>
 
+                    {showCreateReminder && <CreateReminder setShowCreateReminder={setShowCreateReminder} />}
                     {showCreateAnnouncement && <CreateAnnouncement opened={showCreateAnnouncement} close={() => setShowCreateAnnouncement(false)} />}
                 </div>
             </div>

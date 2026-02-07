@@ -26,6 +26,11 @@ type Props = {
 export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => {
     const { tasklistId } = useParams();
     const isSmallScreen = useIsSmallScreen();
+
+    // 1. Initialize the hook ONCE here.
+    const settings = useTasklistSettings({ setShowTasklistSettings, tasklistId: Number(tasklistId) });
+
+    // 2. Destructure the values specifically needed by this Parent component
     const {
         form,
         tasklist,
@@ -39,11 +44,10 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
         handleSubmit,
         showDeleteConfirmation,
         allowedMembers,
-    } = useTasklistSettings({ setShowTasklistSettings, tasklistId: Number(tasklistId) });
+    } = settings;
 
     const hasColorError = isTooLight(form.values.color);
 
-    console.log('tasklist:', tasklist)
     return (
         <Modal
             opened={opened}
@@ -66,12 +70,13 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
                         <Tabs.Tab className="tasklist-settings-tab" color="var(--tasklist-color)" value="appearance">Appearance</Tabs.Tab>
                     </div>
                 </Tabs.List>
+
+                {/* 3. Pass ALL settings (form, handlers, refs) down to GeneralTab */}
                 <GeneralTab
-                    form={form}
-                    tasklist={tasklist}
-                    tasklistId={tasklist?.id}
-                    household={household}
+                    {...settings}
+                    tasklistId={Number(tasklistId)}
                 />
+
                 <BehaviorTab form={form} household={household} allowedMembers={allowedMembers} />
                 <AppearanceTab form={form} />
             </Tabs>

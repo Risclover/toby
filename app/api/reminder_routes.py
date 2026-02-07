@@ -36,8 +36,8 @@ def create_automatic_reminder():
 
     reminder = Reminder(
         household_id=data["householdId"],
-        assigned_to_id=data.get("assignedToId"),
-        body=data["body"],
+        title=data.get("title"),
+        body=data["reminderBody"],
         reminder_type=ReminderType(data["reminderType"]),
         is_automatic=True,
         source_entity_type=data["sourceEntityType"],
@@ -83,18 +83,40 @@ def update_manual_reminder(id):
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json()
-    for field in ["body", "assignedToId", "triggerAt", "dueAt", "expiresAt"]:
-        if field in data:
-            if field == "assignedToId":
-                reminder.assigned_to_id = data["assignedToId"]
-            elif field == "triggerAt":
-                reminder.trigger_at = parse_datetime(data["triggerAt"])
-            elif field == "dueAt":
-                reminder.due_at = parse_datetime(data["dueAt"])
-            elif field == "expiresAt":
-                reminder.expires_at = parse_datetime(data["expiresAt"])
-            elif field == "body":
-                reminder.body = data["body"]
+
+    if "title" in data:
+        reminder.title = data["title"]
+
+    if "reminderBody" in data:
+        reminder.body = data["reminderBody"]
+
+    if "triggerAt" in data:
+        reminder.trigger_at = parse_datetime(data["triggerAt"])
+
+    if "dueAt" in data:
+        reminder.due_at = parse_datetime(data["dueAt"])
+
+    if "expiresAt" in data:
+        reminder.expires_at = parse_datetime(data["expiresAt"])
+
+    if "assignedToIds" in data:
+        assigned_user_ids = set(data["assignedToIds"])
+
+        existing_assignments = {
+            a.user_id: a for a in reminder.assignments
+        }
+        existing_user_ids = set(existing_assignments.keys())
+
+        for user_id in assigned_user_ids - existing_user_ids:
+            db.session.add(
+                ReminderAssignment(
+                    reminder_id=reminder.id,
+                    user_id=user_id
+                )
+            )
+
+        for user_id in existing_user_ids - assigned_user_ids:
+            db.session.delete(existing_assignments[user_id])
 
     db.session.commit()
     return jsonify(reminder.to_dict()), 200

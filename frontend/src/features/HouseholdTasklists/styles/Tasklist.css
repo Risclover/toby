@@ -94,8 +94,16 @@ ul.dashed>li {
     font-size: var(--text-xs) !important;
 }
 
-.mobile-tasklist-card-data-item:first-of-type {
+.task-stat-red {
     color: red;
+}
+
+.task-stat-orange {
+    color: orange;
+}
+
+.task-stat-blue {
+    color: blue;
 }
 
 .overdue-zero {

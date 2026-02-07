@@ -48,10 +48,10 @@ export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, taskl
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const { data: tasklist } = useGetTasklistQuery(Number(tasklistId));
-
+    console.log('TASKLIST:', tasklist)
     // 1. Data Transformation: Convert API Data -> Form Shape
     // We use useMemo to prevent re-calculating this default object on every render
-    const initialValues: TasklistFormValues = useMemo(() => ({
+    const initialValues: TasklistFormValues = {
         title: tasklist?.title ?? "",
         showCompleted: tasklist?.showCompleted ?? false,
         newItemPosition: tasklist?.newItemPosition ?? "bottom",
@@ -65,7 +65,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, taskl
             assignedToId: tasklist?.defaultFilters?.assignedToId ?? null,
             time: tasklist?.defaultFilters?.time ?? "all",
         },
-    }), [tasklist]);
+    };
 
     // 2. The Form Instance
     // Mantine form handles dirty checking, resetting, and validation internally.
@@ -76,14 +76,18 @@ export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, taskl
         },
     });
 
-    // 3. Sync State: Update form when backend data loads/changes
-    // This replaces the manual useEffect mapping you had before.
+    const initializedRef = useRef<number | null>(null);
+
     useEffect(() => {
-        if (tasklist) {
-            // Initialize sets the "pristine" state (what 'reset' goes back to)
-            form.initialize(initialValues);
+        if (!tasklist) return;
+
+        // Only initialize when switching to a NEW tasklist
+        if (initializedRef.current !== tasklist.id) {
+            form.setValues(initialValues);
+            form.resetDirty();
+            initializedRef.current = tasklist.id;
         }
-    }, [initialValues]); // We depend on the memoized initialValues
+    }, [tasklist?.id]);
 
     // 4. Derived Helpers
     const memberOptions = useMemo(() =>
@@ -381,6 +385,12 @@ export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, taskl
         })
     }
 
+    const handleTitleBlur = () => {
+        if (form.values.title.trim().length === 0) {
+            form.setFieldValue("title", initialValues.title);
+        }
+    }
+
     return {
         form, // We expose the whole form object
         tasklist,
@@ -403,6 +413,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, taskl
         handleArchiveList,
         handleUndoArchive,
         handleDuplicateList,
-        handleDeleteList
+        handleDeleteList,
+        handleTitleBlur
     };
 };

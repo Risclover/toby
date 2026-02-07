@@ -168,7 +168,7 @@ export const Announcements = ({
     }
     return (
         <div className="announcements-container announcement-mask-container">
-            <ScrollArea scrollbarSize={8} offsetScrollbars className="scroll-mask"
+            <ScrollArea scrollbarSize={8} w="100%" offsetScrollbars className="scroll-mask"
                 style={{ '--mask-edges': getMask() } as any}
                 onScrollPositionChange={handleScroll}
                 // Use viewportRef to detect the actual scroll width for "isEnd" logic

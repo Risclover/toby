@@ -2,7 +2,7 @@ import { Button, Modal, Stack, TextInput } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { useCreateHouseholdTasklistMutation } from "@/store/taskSlice";
 import { useState, type FormEvent } from "react";
-import { CreateTasklistMembers } from "./CreateTasklistMembers"
+import { HouseholdMemberSelection } from "../../../../components/HouseholdMemberSelection"
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useMemberSelection } from "@/hooks/useMemberSelection";
@@ -66,30 +66,29 @@ export const CreateTasklist = ({ householdId, opened, open, close }: CreateTaskl
     };
 
     return (
-        <div className="create-list">
-            <Modal radius="md" opened={opened} onClose={close} title="Create Tasklist" centered>
-                <Stack component="form" onSubmit={handleListCreation}>
-                    <TextInput
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        label="Title"
-                        placeholder='e.g., "Weekend Grocery Run"'
-                        required
-                        maxLength={64}
-                    />
-                    <CreateTasklistMembers
-                        members={household?.members}
-                        allMembers={allMembers}
-                        someSelected={someSelected}
-                        selected={selected}
-                        onToggleAll={toggleAll}
-                        onToggleOne={toggleOne}
-                    />
-                    <Button type="submit" disabled={!canSubmit} variant="filled" color="cyan">
-                        Submit
-                    </Button>
-                </Stack>
-            </Modal>
-        </div>
+        <Modal radius="md" opened={opened} onClose={close} title="Create Tasklist" centered>
+            <Stack component="form" onSubmit={handleListCreation}>
+                <TextInput
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    label="Title"
+                    placeholder='e.g., "Weekend Grocery Run"'
+                    required
+                    maxLength={64}
+                />
+                <HouseholdMemberSelection
+                    title="Who is this list for?"
+                    members={household?.members}
+                    allMembers={allMembers}
+                    someSelected={someSelected}
+                    selected={selected}
+                    onToggleAll={toggleAll}
+                    onToggleOne={toggleOne}
+                />
+                <Button type="submit" disabled={!canSubmit} variant="filled" color="cyan">
+                    Submit
+                </Button>
+            </Stack>
+        </Modal>
     );
 };

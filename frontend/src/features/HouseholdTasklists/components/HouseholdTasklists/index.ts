@@ -1,5 +1,5 @@
 export { CreateTasklist } from "./CreateTasklist";
-export { CreateTasklistMembers } from "./CreateTasklistMembers";
+export { HouseholdMemberSelection as CreateTasklistMembers } from "../../../../components/HouseholdMemberSelection";
 export { HouseholdTasklist } from "./HouseholdTasklist";
 export { HouseholdTasklists } from "./HouseholdTasklists";
 export { HouseholdTasklistTask } from "./HouseholdTasklistTask";

@@ -43,7 +43,7 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
     }
 
     return (
-        <Modal radius="md" className="announcement-modal" opened={opened} onClose={close} title="Add announcement" centered>
+        <Modal radius="md" className="announcement-modal" opened={opened} onClose={close} title="Create announcement" centered>
             <Textarea
                 classNames={{ input: styles.input }}
                 autosize
@@ -88,7 +88,9 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
                 <Button
                     className="tasklist-settings-footer-btn"
                     size="compact-sm"
-                    color="cyan.7   "
+                    variant="light"
+                    fw={400}
+                    color="rgb(5, 5, 73)"
                     onClick={handleCreateAnnouncement}
                 >
                     Save

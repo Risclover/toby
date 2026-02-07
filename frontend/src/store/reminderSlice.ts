@@ -1,10 +1,12 @@
 import { apiSlice } from './apiSlice';
+import type { User } from './authSlice';
 
-export type Reminder = {
+export type ReminderType = {
     id: number;
     householdId: number;
     createdById?: number | null;
-    assignedToId?: number | null;
+    assignedTo?: User[]; // optional array of user IDs
+    title: string;
     body: string;
     reminderType: "custom" | "task_due" | "event_starting" | "daily_check_in_missing";
     isAutomatic: boolean;

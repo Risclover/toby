@@ -28,6 +28,7 @@
     word-wrap: break-word;
     color: var(--main-background);
     font-size: var(--text-sm);
+    cursor: pointer;
 }
 
 .household-tasklist-page-task:not(.completed-task) {

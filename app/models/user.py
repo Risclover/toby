@@ -78,6 +78,9 @@ class User(db.Model, UserMixin):
         foreign_keys="Task.creator_id",
         back_populates="creator"
     )
+
+    reminder_assignments = db.relationship("ReminderAssignment", cascade="all, delete-orphan", backref="user")
+    reminders = db.relationship("Reminder", secondary="reminder_assignments", viewonly=True)
     # projects = db.relationship("ProjectMember", back_populates="user")
     # moods = db.relationship("MoodCheckin", back_populates="user")
 
@@ -109,7 +112,11 @@ class User(db.Model, UserMixin):
             "dailyCheckin": self.daily_checkin,
             "lastCheckin": self.last_checkin,
             "householdId": self.household_id,
-            "featuredTasklistId": self.featured_tasklist_id
+            "featuredTasklistId": self.featured_tasklist_id,
+            "reminders": [
+                assignment.reminder.to_dict_for_user(assignment)
+                for assignment in self.reminder_assignments
+            ]
         }
 
     def to_dict_with_mood(self):

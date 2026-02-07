@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen
+from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy import outerjoin, or_, and_
 import base64
 from datetime import datetime, timedelta
+from app.utils.parse_datetime import parse_datetime
 import json
 
 household_routes = Blueprint('households', __name__)
@@ -24,7 +25,8 @@ def decode_cursor(cursor: str) -> dict:
 @household_routes.route("/<int:id>")
 def get_household(id):
     household = Household.query.get(id)
-
+    if not household:
+        return jsonify({"error": "Household not found"}), 404
     return jsonify(household.to_dict())
 
 @household_routes.route("/<int:household_id>/tasklists", methods=["GET"])
@@ -242,17 +244,17 @@ def create_manual_reminder(household_id):
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    # Membership check
     if current_user not in household.members:
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json()
+    assigned_user_ids = data.get("assignedToIds", [])
 
     reminder = Reminder(
         household_id=household_id,
         created_by_id=current_user.id,
-        assigned_to_id=data.get("assignedToId"),
-        body=data["body"],
+        title=data.get("title"),
+        body=data.get("reminderBody"),
         reminder_type=ReminderType.custom,
         is_automatic=False,
         trigger_at=parse_datetime(data.get("triggerAt")),
@@ -261,6 +263,15 @@ def create_manual_reminder(household_id):
     )
 
     db.session.add(reminder)
+    db.session.flush()  # <-- important, gets reminder.id
+
+    for user_id in assigned_user_ids:
+        assignment = ReminderAssignment(
+            reminder_id=reminder.id,
+            user_id=user_id,
+        )
+        db.session.add(assignment)
+
     db.session.commit()
 
     return jsonify(reminder.to_dict()), 201

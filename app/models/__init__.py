@@ -11,4 +11,4 @@ from .announcement import Announcement, AnnouncementSeen
 from .event import Event
 from .checkin import Checkin
 from .mood import Mood
-from .reminder import Reminder, ReminderType
+from .reminder import Reminder, ReminderType, ReminderAssignment

@@ -113,10 +113,22 @@ export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                 <div className="mobile-tasklist-card-footer">
                     <MemberAvatarGroup members={listMembers} />
                     <div className="mobile-tasklist-card-data">
-                        <Tooltip.Group openDelay={300}>
-                            <TasklistCardTooltip label="Overdue" overdue={overdue}><OverdueIcon size={16} color="currentColor" /> {overdue}</TasklistCardTooltip>
-                            <TasklistCardTooltip label="Due today"><TodayIcon size={16} color="currentColor" /> {dueToday}</TasklistCardTooltip>
-                            <TasklistCardTooltip label="Due soon"><SoonIcon size={16} color="currentColor" /> {dueSoon}</TasklistCardTooltip>
+                        <Tooltip.Group openDelay={300} closeDelay={100}>
+
+                            {/* 1. Pass the desired color to the wrapper */}
+                            <TasklistCardTooltip label="Overdue" stat={overdue} color="var(--mantine-color-red-7)">
+                                {/* 2. Set Icon color to "currentColor" so it inherits the wrapper's color (red OR grey) */}
+                                <OverdueIcon size="16px" color="currentColor" /> {overdue}
+                            </TasklistCardTooltip>
+
+                            <TasklistCardTooltip label="Due today" stat={dueToday} color="var(--mantine-color-orange-5)">
+                                <TodayIcon size="16px" color="currentColor" /> {dueToday}
+                            </TasklistCardTooltip>
+
+                            <TasklistCardTooltip label="Due soon" stat={dueSoon} color="var(--mantine-color-blue-4)">
+                                <SoonIcon size="16px" color="currentColor" /> {dueSoon}
+                            </TasklistCardTooltip>
+
                         </Tooltip.Group>
                     </div>
                 </div>
