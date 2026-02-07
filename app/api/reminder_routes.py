@@ -43,7 +43,6 @@ def create_automatic_reminder():
         source_entity_type=data["sourceEntityType"],
         source_entity_id=data["sourceEntityId"],
         trigger_at=parse_datetime(data.get("triggerAt")),
-        due_at=parse_datetime(data.get("dueAt")),
         expires_at=parse_datetime(data.get("expiresAt")),
     )
 
@@ -92,9 +91,6 @@ def update_manual_reminder(id):
 
     if "triggerAt" in data:
         reminder.trigger_at = parse_datetime(data["triggerAt"])
-
-    if "dueAt" in data:
-        reminder.due_at = parse_datetime(data["dueAt"])
 
     if "expiresAt" in data:
         reminder.expires_at = parse_datetime(data["expiresAt"])

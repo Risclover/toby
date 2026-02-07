@@ -231,7 +231,7 @@ def get_household_reminders(household_id):
             (Reminder.expires_at == None) | (Reminder.expires_at > now),
             Reminder.seen == False
         )
-        .order_by(Reminder.trigger_at.asc().nulls_last(), Reminder.due_at.asc().nulls_last())
+        .order_by(Reminder.trigger_at.asc().nulls_last())
         .all()
     )
 
@@ -258,7 +258,6 @@ def create_manual_reminder(household_id):
         reminder_type=ReminderType.custom,
         is_automatic=False,
         trigger_at=parse_datetime(data.get("triggerAt")),
-        due_at=parse_datetime(data.get("dueAt")),
         expires_at=parse_datetime(data.get("expiresAt")),
     )
 

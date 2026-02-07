@@ -261,7 +261,6 @@ def get_user_reminders(user_id):
         )
         .order_by(
             Reminder.trigger_at.asc().nulls_last(),
-            Reminder.due_at.asc().nulls_last()
         )
         .all()
     )
