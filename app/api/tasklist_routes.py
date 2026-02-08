@@ -4,6 +4,7 @@ from app.models import Tasklist, Task, User, Household, TasklistMember
 from app.extensions import db
 from flask_login import current_user, login_required
 from app.models.tasklist import SortOrder
+from app.utils.reminder_utils import create_task_due_reminders
 
 tasklist_routes = Blueprint("tasklists", __name__)
 
@@ -88,45 +89,49 @@ def create_tasklist():
 
     return jsonify(tasklist.to_dict()), 201
 
-
 @tasklist_routes.route("/<int:id>/tasks", methods=["POST"])
 def add_task(id):
-    """
-    Add a task to a specific task list, appended to the end (by sort_index).
-    """
     data = request.get_json() or {}
-    tasklist = Tasklist.query.get_or_404(id)  # ensures list exists
+    tasklist = Tasklist.query.get_or_404(id)
 
     new_sort_index = 0
-
     if tasklist.new_item_position == "top":
         min_idx = (
             db.session.query(db.func.coalesce(db.func.min(Task.sort_index), 1))
-                .filter(Task.list_id == id)
-                .scalar()
+            .filter(Task.list_id == id)
+            .scalar()
         )
         new_sort_index = min_idx - 1
     else:
         max_idx = (
             db.session.query(db.func.coalesce(db.func.max(Task.sort_index), -1))
-                .filter(Task.list_id == id)
-                .scalar()
+            .filter(Task.list_id == id)
+            .scalar()
         )
         new_sort_index = max_idx + 1
 
+    due_date = None
+    if data.get("due_date"):
+        due_date = date.fromisoformat(data["due_date"])
+
     task = Task(
         title=data["title"],
-        creator_id=current_user.get_id(),
+        creator_id=current_user.id,
         description=data.get("description"),
         status=data.get("status", "pending"),
-        is_important=data.get("isImportant", False), 
-        due_date=data.get("due_date"),         # parse to date/datetime if needed
+        is_important=data.get("isImportant", False),
+        due_date=due_date,
         assigned_to_id=data.get("assigned_to_id"),
         list_id=id,
-        sort_index=new_sort_index
+        sort_index=new_sort_index,
     )
 
     db.session.add(task)
+    db.session.flush()  # get task.id
+
+    # create automatic reminders
+    create_task_due_reminders(task)
+
     db.session.commit()
     return jsonify(task.to_dict()), 201
 

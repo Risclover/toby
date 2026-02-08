@@ -7,7 +7,7 @@ import { useState } from "react";
 
 type Props = {
     setShowCreateReminder: (val: boolean) => void;
-    members?: UserLite[];
+    members?: User[];
     allMembers: boolean;
     someSelected: boolean;
     selected: Set<number>;
@@ -48,9 +48,7 @@ export const CreateReminder = ({ setShowCreateReminder }: Props) => {
             sourceEntityId: null,
             sourceEntityType: null,
             seen: false,
-            dueAt: null,
             triggerAt: null,
-            expiresAt: null,
         }
         const data = await createReminder({
             householdId: household?.id, ...payload

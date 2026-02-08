@@ -61,7 +61,6 @@ export const Reminder = ({ reminderId, reminder }: Props) => {
                 <div className="reminder-body">
                     <div className="reminder-space"></div>
                     <div className="reminder-message">{reminder.body}</div>
-                    {reminder.dueAt !== null && <div className="reminder-due">Due: {reminder.dueAt}</div>}
                 </div>
             </div>
 

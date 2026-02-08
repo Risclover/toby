@@ -3,6 +3,7 @@ from app.models import Task
 from app.extensions import db
 from datetime import datetime, date
 from flask_login import current_user, login_required
+from app.utils.reminder_utils import create_task_due_reminders
 
 task_routes = Blueprint("tasks", __name__)
 
@@ -51,18 +52,17 @@ def update_task(id):
             setattr(task, field, data[field])
 
     if "notes" in data:
-        setattr(task, "notes", data["notes"])
+        task.notes = data["notes"]
 
     if "assignedToId" in data:
-        setattr(task, "assigned_to_id", data["assignedToId"])
+        task.assigned_to_id = data["assignedToId"]
 
     if "dueDate" in data:
         s = data["dueDate"]
-        if not s:
-            task.due_date = None
-        else:
-            # expect "YYYY-MM-DD"
-            task.due_date = date.fromisoformat(s)
+        task.due_date = date.fromisoformat(s) if s else None
+
+    # create or update automatic reminders
+    create_task_due_reminders(task)
 
     db.session.commit()
     db.session.refresh(task)

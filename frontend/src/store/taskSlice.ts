@@ -320,7 +320,7 @@ export const taskSlice = apiSlice.injectEndpoints({
             }),
 
             async onQueryStarted({ taskId, listId, householdId, ...patch }, { dispatch, getState, queryFulfilled }) {
-                // Optimistic Update for the Tasklist
+                // Optimistic Update 1: Singular Tasklist View
                 const p1 = dispatch(
                     taskSlice.util.updateQueryData("getTasklist", listId, (draft: any) => {
                         const task = draft?.tasks?.find((x: any) => x.id === taskId);
@@ -333,30 +333,47 @@ export const taskSlice = apiSlice.injectEndpoints({
                     })
                 );
 
-                try { await queryFulfilled; } catch { p1.undo(); }
+                // Optimistic Update 2: Household Dashboard View (Fixes Card Stats)
+                // We attempt to find householdId from the cache if not passed in args
+                if (householdId == null) {
+                    const state = getState() as any;
+                    const listData = taskSlice.endpoints.getTasklist.select(listId)(state)?.data;
+                    householdId = listData?.householdId;
+                }
+
+                const p2 = householdId != null
+                    ? dispatch(
+                        householdSlice.util.updateQueryData("getHouseholdTasklists", householdId, (lists: any[] | undefined) => {
+                            const list = lists?.find(l => l.id === listId);
+                            const task = list?.tasks?.find((x: any) => x.id === taskId);
+                            if (task) {
+                                Object.entries(patch).forEach(([key, value]) => {
+                                    if (value !== undefined) task[key] = value;
+                                });
+                                task.updatedAt = new Date().toISOString();
+                            }
+                        })
+                    )
+                    : { undo: () => { } };
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    p1.undo();
+                    p2.undo?.();
+                }
             },
 
-            // Note the destructuring of the 4th argument: { getState }
-            invalidatesTags: (result, error, { taskId, listId, householdId }, { getState }) => {
-                // Since you don't have an auth reducer, we select from the 'authenticate' endpoint cache
-                const state = getState() as RootState;
-                const authResult = authSlice.endpoints.authenticate.select()(state);
-                const userId = authResult.data?.id || authResult.data?.user?.id;
-
+            invalidatesTags: (result, error, { taskId, listId, householdId }) => {
                 const tags: any[] = [
                     { type: "Tasklist", id: listId },
                     { type: "Tasklist", id: "LIST" },
                     { type: "Task", id: taskId },
-
+                    "UserTaskStats" // 👈 Simple string tag ensures Global Stats update reliably
                 ];
 
                 if (householdId != null) {
                     tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
-                }
-
-                // Trigger refetch of the 3 stat cards
-                if (userId) {
-                    tags.push({ type: "UserTaskStats", id: userId });
                 }
 
                 return tags;

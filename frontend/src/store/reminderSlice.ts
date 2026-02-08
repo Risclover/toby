@@ -1,52 +1,88 @@
 import { apiSlice } from './apiSlice';
 import type { User } from './authSlice';
 
-export type ReminderType = {
+/**
+ * Reminder as returned from:
+ * - GET /users/:id/reminders
+ * - GET /households/:id/reminders
+ */
+export type Reminder = {
     id: number;
     householdId: number;
+
     createdById?: number | null;
-    assignedTo?: User[]; // optional array of user IDs
-    title: string;
-    body: string;
-    reminderType: "custom" | "task_due" | "event_starting" | "daily_check_in_missing";
-    isAutomatic: boolean;
-    sourceEntityId?: number | null;
-    sourceEntityType?: string | null;
-    seen: boolean;
-    dueAt?: string | null;
-    triggerAt?: string | null;
-    expiresAt?: string | null;
-    createdAt: string;
-    updatedAt: string;
     createdBy?: {
         id: number;
         firstName: string;
         profileImg?: string | null;
     } | null;
+
+    title?: string | null;
+    body: string;
+
+    reminderType: "custom" | "task_due" | "event_starting" | "daily_check_in_missing";
+    isAutomatic: boolean;
+
+    // Automatic reminder metadata
+    sourceEntityId?: number | null;
+    sourceEntityType?: string | null;
+
+    triggerAt?: string | null;
+    deliveredAt?: string | null;
+    isActive: boolean;
+
+    createdAt: string;
+    updatedAt: string;
+
+    // Who this reminder is assigned to (household view)
+    assignedTo?: User[];
+
+    // User-specific view (user reminders endpoint)
+    currentUserAssignment?: {
+        seen: boolean;
+    };
 };
 
 export const reminderSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        // GET reminders for a household
-        getUserReminders: builder.query({
+
+        /**
+         * Get reminders visible to a specific user
+         * (triggered, active, not seen by THIS user)
+         */
+        getUserReminders: builder.query<Reminder[], number>({
             query: (userId) => `/users/${userId}/reminders`,
-            providesTags: (result = [], error, arg) =>
-                result
-                    ? [...result.map(({ id }) => ({ type: 'Reminders', id })), { type: 'Reminders', id: 'LIST' }]
+            providesTags: (result = []) =>
+                result.length
+                    ? [
+                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
+                        { type: 'Reminders', id: 'LIST' },
+                    ]
                     : [{ type: 'Reminders', id: 'LIST' }],
         }),
 
-        // Fetch all reminders for a household
-        getHouseholdReminders: builder.query({
+        /**
+         * Get all reminders for a household
+         * (includes automatic + manual)
+         */
+        getHouseholdReminders: builder.query<Reminder[], number>({
             query: (householdId) => `/households/${householdId}/reminders`,
-            providesTags: (result = [], error, arg) =>
-                result
-                    ? [...result.map(({ id }) => ({ type: 'Reminders', id })), { type: 'Reminders', id: 'LIST' }]
+            providesTags: (result = []) =>
+                result.length
+                    ? [
+                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
+                        { type: 'Reminders', id: 'LIST' },
+                    ]
                     : [{ type: 'Reminders', id: 'LIST' }],
         }),
 
-        // Create manual reminder
-        createManualReminder: builder.mutation({
+        /**
+         * Create a MANUAL reminder only
+         */
+        createManualReminder: builder.mutation<
+            Reminder,
+            { householdId: number; title?: string; body: string; triggerAt?: string; assignedToIds?: number[] }
+        >({
             query: ({ householdId, ...body }) => ({
                 url: `/households/${householdId}/reminders`,
                 method: 'POST',
@@ -55,8 +91,10 @@ export const reminderSlice = apiSlice.injectEndpoints({
             invalidatesTags: [{ type: 'Reminders', id: 'LIST' }],
         }),
 
-        // Mark reminder as seen
-        markReminderSeen: builder.mutation({
+        /**
+         * Mark reminder as seen (user-specific)
+         */
+        markReminderSeen: builder.mutation<void, number>({
             query: (id) => ({
                 url: `/reminders/${id}/seen`,
                 method: 'PATCH',
@@ -64,8 +102,19 @@ export const reminderSlice = apiSlice.injectEndpoints({
             invalidatesTags: (result, error, id) => [{ type: 'Reminders', id }],
         }),
 
-        // Update manual reminder
-        updateManualReminder: builder.mutation({
+        /**
+         * Update MANUAL reminder only
+         */
+        updateManualReminder: builder.mutation<
+            Reminder,
+            {
+                id: number;
+                title?: string;
+                reminderBody?: string;
+                triggerAt?: string | null;
+                assignedToIds?: number[];
+            }
+        >({
             query: ({ id, ...body }) => ({
                 url: `/reminders/${id}`,
                 method: 'PATCH',
@@ -74,8 +123,10 @@ export const reminderSlice = apiSlice.injectEndpoints({
             invalidatesTags: (result, error, { id }) => [{ type: 'Reminders', id }],
         }),
 
-        // Delete manual reminder
-        deleteManualReminder: builder.mutation({
+        /**
+         * Delete MANUAL reminder only
+         */
+        deleteManualReminder: builder.mutation<{ message: string }, number>({
             query: (id) => ({
                 url: `/reminders/${id}`,
                 method: 'DELETE',

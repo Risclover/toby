@@ -32,7 +32,7 @@ export const Reminders = ({ userId }: Props) => {
 
     const [showCreateReminder, setShowCreateReminder] = useState(false);
     const { data: reminders = [] } = useGetUserRemindersQuery(userId);
-
+    console.log('reminders:', reminders);
     // FIX: Create a sorted copy of the reminders
     // We use slice() to copy the array, then reverse() or sort()
     // useMemo prevents re-sorting on every single render unless reminders change

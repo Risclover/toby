@@ -29,15 +29,12 @@ class Reminder(db.Model):
     source_entity_id = db.Column(db.Integer, nullable=True) # e.g. task_id, event_id, etc. - helps link back to the original source that triggered this reminder (if any)
     source_entity_type = db.Column(db.String(50), nullable=True) # e.g. "task", "event", "daily_check_in", etc. - helps clarify the type of source entity for this reminder (if any)
 
-    # Timestamps
-    trigger_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True) # -> when scheduler fires
-    expires_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True) # -> last moment it's valid
-
     # Creation and update tracking
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, nullable=False) # When the reminder was created
     updated_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False) # When the reminder was last updated (e.g. title/body edited, trigger time changed, etc.)
 
     # Automatic reminder lifecycle
+    trigger_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True) # -> when scheduler fires
     is_active = db.Column(db.Boolean, nullable=False, default=True, index=True) # Whether or not it's currently active; False means it was "Deactivated" (e.g. task details were edited)
     delivered_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True) # When the reminder was actually delivered to users (via scheduler)
 
@@ -55,7 +52,7 @@ class Reminder(db.Model):
             "trigger_at",
             "reminder_type",
             name="uq_auto_reminder_instance",
-        )
+        ),
     )
     
     def to_dict(self):
@@ -70,7 +67,8 @@ class Reminder(db.Model):
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
             "triggerAt": self.trigger_at.isoformat() if self.trigger_at else None,
-            "expiresAt": self.expires_at.isoformat() if self.expires_at else None,
+            "isActive": self.is_active,
+            "deliveredAt": self.delivered_at.isoformat() if self.delivered_at else None,
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
             "createdBy": {
@@ -103,7 +101,8 @@ class Reminder(db.Model):
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
             "triggerAt": self.trigger_at.isoformat() if self.trigger_at else None,
-            "expiresAt": self.expires_at.isoformat() if self.expires_at else None,
+            "isActive": self.is_active,
+            "deliveredAt": self.delivered_at.isoformat() if self.delivered_at else None,
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
             "createdBy": {

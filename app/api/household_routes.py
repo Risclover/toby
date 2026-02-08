@@ -226,9 +226,8 @@ def get_household_reminders(household_id):
     reminders = (
         Reminder.query
         .filter(
-            Reminder.household_id == household_id,
+            Reminder.hodusehold_id == household_id,
             (Reminder.trigger_at == None) | (Reminder.trigger_at <= now),
-            (Reminder.expires_at == None) | (Reminder.expires_at > now),
             Reminder.seen == False
         )
         .order_by(Reminder.trigger_at.asc().nulls_last())
@@ -258,7 +257,6 @@ def create_manual_reminder(household_id):
         reminder_type=ReminderType.custom,
         is_automatic=False,
         trigger_at=parse_datetime(data.get("triggerAt")),
-        expires_at=parse_datetime(data.get("expiresAt")),
     )
 
     db.session.add(reminder)
