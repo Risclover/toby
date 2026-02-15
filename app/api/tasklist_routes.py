@@ -5,6 +5,8 @@ from app.extensions import db
 from flask_login import current_user, login_required
 from app.models.tasklist import SortOrder
 from app.utils.reminder_utils import create_task_due_reminders
+import pytz
+from datetime import datetime, date
 
 tasklist_routes = Blueprint("tasklists", __name__)
 
@@ -94,6 +96,7 @@ def add_task(id):
     data = request.get_json() or {}
     tasklist = Tasklist.query.get_or_404(id)
 
+    # determine sort_index
     new_sort_index = 0
     if tasklist.new_item_position == "top":
         min_idx = (
@@ -110,9 +113,15 @@ def add_task(id):
         )
         new_sort_index = max_idx + 1
 
-    due_date = None
+    # parse due_date in UTC
+    due_date_utc = None
+    timezone_str = data.get("timezone") or current_user.timezone or "UTC"
+    user_tz = pytz.timezone(timezone_str)
+
     if data.get("due_date"):
-        due_date = date.fromisoformat(data["due_date"])
+        # convert user's local due date → UTC
+        local_due_date = datetime.fromisoformat(data["due_date"])
+        due_date_utc = user_tz.localize(local_due_date).astimezone(pytz.UTC).date()
 
     task = Task(
         title=data["title"],
@@ -120,7 +129,7 @@ def add_task(id):
         description=data.get("description"),
         status=data.get("status", "pending"),
         is_important=data.get("isImportant", False),
-        due_date=due_date,
+        due_date=due_date_utc,
         assigned_to_id=data.get("assigned_to_id"),
         list_id=id,
         sort_index=new_sort_index,
@@ -134,6 +143,7 @@ def add_task(id):
 
     db.session.commit()
     return jsonify(task.to_dict()), 201
+
 
 @tasklist_routes.route("/<int:list_id>/tasks/<int:id>", methods=["DELETE"])
 def delete_task(list_id, id):

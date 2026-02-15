@@ -1,5 +1,7 @@
 # app/models/shopping_list.py
 from app.extensions import db
+from app.utils.timezone import utc_datetime_to_local
+from flask_login import current_user
 
 class ShoppingList(db.Model):
     __tablename__ = "shopping_lists"
@@ -27,8 +29,6 @@ class ShoppingList(db.Model):
     household = db.relationship("Household", back_populates="shopping_lists")
 
     __table_args__ = (
-        # Optional: make category names unique within a list
-        # (enforced on ShoppingCategory below)
         db.Index("ix_shopping_lists_household_id_id", "household_id", "id"),
     )
 
@@ -38,8 +38,8 @@ class ShoppingList(db.Model):
             "title": self.title,
             "householdId": self.household_id,
             "categories": [category.to_dict() for category in self.categories],
-            "createdAt": self.created_at,
-            "updatedAt": self.updated_at,
+            "createdAt": utc_datetime_to_local(current_user, self.created_at).isoformat() if self.created_at else None,
+            "updatedAt": utc_datetime_to_local(current_user, self.updated_at).isoformat() if self.updated_at else None,
             "items": [item.to_dict() for item in self.items]
         }
 

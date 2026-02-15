@@ -1,13 +1,16 @@
 import { Avatar, Button, Drawer, Group, Select, Textarea } from "@mantine/core"
+import { DatePickerInput } from '@mantine/dates';
+
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded';
-import { DatePickerInput } from '@mantine/dates';
+
 import dayjs from 'dayjs';
-import { useTaskDetails } from "../../hooks/useTaskDetails";
-import { TrashIcon } from "@/assets/icons/TrashIcon";
-import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
 import isToday from 'dayjs/plugin/isToday';
 import isYesterday from 'dayjs/plugin/isYesterday';
+
+import { useTaskDetails } from "../../hooks/useTaskDetails";
+import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
+import { TrashIcon } from "@/assets/icons/TrashIcon";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -22,7 +25,7 @@ type Props = {
 
 export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Props) => {
     const {
-        taskDetailsProps,
+        form,
         taskError,
         data,
         selected,
@@ -30,7 +33,8 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
         handleConfirmTaskDeletion,
         showTaskDeletion,
         setShowTaskDeletion,
-        getFooterText
+        getFooterText,
+        isSubmitting,
     } = useTaskDetails({ taskId, listId, householdId: householdId!, close });
 
     return (
@@ -59,19 +63,18 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                 <div>
                     <p className="task-details-label">Task:</p>
                     <Textarea
+                        id="title"
                         minRows={2}
                         maxRows={20}
                         maxLength={255}
                         autosize
-                        value={taskDetailsProps.title.value}
-                        onChange={taskDetailsProps.title.onChange}
                         placeholder="Write task here"
+                        {...form.getInputProps("title")}
                     />
                     {taskError && <div className="error-message">{taskError}</div>}
 
                     <p className="task-details-label">Due date:</p>
                     <DatePickerInput
-                        value={taskDetailsProps.dueDate.value}
                         placeholder="Add due date"
                         leftSection={<CalendarMonthRoundedIcon />}
                         leftSectionWidth="40px"
@@ -90,55 +93,88 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                             date ? `Due ${dayjs(date).format(format)}` : ""
                         }
                         firstDayOfWeek={0}
-                        onChange={taskDetailsProps.dueDate.onChange}
                         className="tasklist-date-picker"
+                        {...form.getInputProps("dueDate")}
                     />
                     <p className="task-details-label">Assigned To:</p>
                     <Select
-                        value={taskDetailsProps.assigned.value}                      // string | null
-                        onChange={taskDetailsProps.assigned.onChange}       // (val: string | null) => void
                         data={data}
                         clearable
                         placeholder="Assign to member"
-                        styles={{
-                            section: { color: "var(--tasklist-color)" }
-                        }}
-                        // Avatar in the INPUT when selected:
-                        leftSection={
-                            selected ? <Avatar src={selected.profileImg} radius="xl" size="xs" /> : <PersonAddAltRoundedIcon />
-                        }
-                        leftSectionWidth="40px"
-                        // Avatar in EACH OPTION row:
+                        value={form.values.assignedToId == null ? null : String(form.values.assignedToId)}
+                        onChange={(val) => form.setFieldValue("assignedToId", val ? Number(val) : null)}
                         renderOption={({ option }: any) => (
-                            <Group gap="sm" wrap="nowrap">
-                                <Avatar src={option.profileImg} radius="xl" size="xs" />
+                            <Group gap="sm" wrap="nowrap" align="center">
+                                <Avatar src={option.profileImg} radius="xl" size="1.25rem" />
                                 <span>{option.label}</span>
                             </Group>
                         )}
-
-                        nothingFoundMessage="No members"
+                        leftSection={
+                            selected ? (
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                    <Avatar src={selected.profileImg} radius="xl" size="1.25rem" />
+                                </div>
+                            ) : (
+                                <PersonAddAltRoundedIcon />
+                            )
+                        }
                     />
                     <p className="task-details-label">Notes:</p>
 
                     <Textarea
-                        value={taskDetailsProps.notes.value}
-                        onChange={taskDetailsProps.notes.onChange}
                         placeholder="Add task notes"
                         minRows={3}
                         maxRows={35}
                         autosize
+                        {...form.getInputProps("notes")}
                     />
                     <Group justify="flex-end" mt="md">
-                        <Button className="tasklist-settings-footer-btn" variant="outline" color="var(--tasklist-color)" onClick={() => close()}>Cancel</Button>
-                        <Button className="tasklist-settings-footer-btn" variant="filled" color="var(--tasklist-color)" onClick={handleSaveTaskDetails}>Save</Button>
+                        <Button
+                            className="tasklist-settings-footer-btn"
+                            variant="outline"
+                            color="var(--tasklist-color)"
+                            onClick={() => form.reset()}
+                            disabled={!form.isDirty() || !form.isValid()}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className="tasklist-settings-footer-btn"
+                            variant="filled"
+                            color="var(--tasklist-color)"
+                            onClick={handleSaveTaskDetails}
+                            loading={isSubmitting}
+                            loaderProps={{ children: 'Saving...' }}
+                            disabled={!form.isDirty() || !form.isValid()}
+                        >
+                            Update
+                        </Button>
                     </Group>
                 </div>
             </div>
             <div className="task-details-footer">
                 <span className="task-details-date">{getFooterText()}</span>
-                <Button variant="subtle" radius="xs" size="xs" color="var(--tasklist-color)" className="delete-task-btn" onClick={handleConfirmTaskDeletion}><TrashIcon /></Button>
+                <Button
+                    variant="subtle"
+                    radius="xs"
+                    size="xs"
+                    color="var(--tasklist-color)"
+                    className="delete-task-btn"
+                    onClick={handleConfirmTaskDeletion}
+                >
+                    <TrashIcon />
+                </Button>
             </div>
-            {showTaskDeletion && <TaskDeletionConfirmation title={taskDetailsProps.title.value} opened={showTaskDeletion} onClose={() => setShowTaskDeletion(false)} listId={listId} taskId={taskId} />}
-        </Drawer>
+            {
+                showTaskDeletion &&
+                <TaskDeletionConfirmation
+                    title={form.values.title}
+                    opened={showTaskDeletion}
+                    onClose={() => setShowTaskDeletion(false)}
+                    listId={listId}
+                    taskId={taskId}
+                />
+            }
+        </Drawer >
     )
 }

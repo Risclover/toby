@@ -32,15 +32,24 @@ def local_date_to_utc_datetime(user, local_date, at_time=None):
 def utc_datetime_to_local(user, utc_dt):
     """
     Convert a UTC datetime to the user's local timezone.
-    
-    :param user: User object with 'timezone' attribute
-    :param utc_dt: datetime in UTC
-    :return: datetime in user's local timezone
+    Returns a NAIVE datetime (tzinfo=None) so the frontend displays 
+    the exact clock time regardless of the browser's location.
     """
     if utc_dt is None:
         return None
+
+    if utc_dt.tzinfo is None:
+        from datetime import timezone
+        utc_dt = utc_dt.replace(tzinfo=timezone.utc)
+
     user_tz = get_user_timezone(user)
-    return utc_dt.astimezone(user_tz)
+    
+    # 1. Convert to the user's specific timezone
+    localized_dt = utc_dt.astimezone(user_tz)
+    
+    # 2. STRIP the timezone info. 
+    # This prevents the browser from converting it back to the device's local time.
+    return localized_dt.replace(tzinfo=None)
 
 
 def now_utc():

@@ -23,6 +23,9 @@ export const useHouseholdTasklistLogic = ({
         });
     }, [uncompleted]);
 
+    console.log('list:', list);
+    console.log('tasksSorted:', tasksSorted);
+
     // 2. Member Filter Logic
     const listMembers = useMemo(() =>
         householdMembers?.filter((m: any) => list?.memberIds?.includes(m?.id)) ?? [],

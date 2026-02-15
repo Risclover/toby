@@ -40,8 +40,11 @@
 }
 
 .reminder-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: var(--text-sm);
-    border-top: 1px solid var(--mantine-color-gray-3);
+    /* border-top: 1px solid var(--mantine-color-gray-3); */
     padding-top: 0.5rem;
 }
 

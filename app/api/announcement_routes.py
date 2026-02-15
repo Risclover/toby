@@ -7,6 +7,7 @@ from app.models import Announcement, AnnouncementSeen, Household
 from datetime import datetime, timedelta, timezone
 import base64
 import pytz
+from app.utils.timezone import utc_datetime_to_local
 
 announcement_routes = Blueprint("announcements", __name__)
 
@@ -33,7 +34,8 @@ def create_announcement():
         household_id=household_id,
         user_id=user_id,
         message=message,
-        is_important=is_important
+        is_important=is_important,
+        created_at=datetime.now(timezone.utc)
     )
 
     db.session.add(announcement)
@@ -47,7 +49,9 @@ def create_announcement():
     db.session.add(seen_record)
     db.session.commit()
 
-    return jsonify(announcement.to_dict()), 201
+    # Convert createdAt to user's local time here
+    announcement_dict = announcement.to_dict(user=current_user)
+    return jsonify(announcement_dict), 201
 
 @announcement_routes.route("/<int:announcement_id>", methods=["DELETE"])
 def delete_announcement(announcement_id: int):
@@ -95,7 +99,8 @@ def update_announcement(announcement_id: int):
     announcement.is_important = is_important
     db.session.commit()
 
-    return jsonify(announcement.to_dict())
+    ann_dict = announcement.to_dict(user=current_user)
+    return jsonify(ann_dict)
 
 @announcement_routes.route("/<int:announcement_id>/seen", methods=["GET"])
 def check_announcement_seen(announcement_id: int):
@@ -117,10 +122,11 @@ def check_announcement_seen(announcement_id: int):
 
     seen_by_current = seen_record is not None
 
+    seen_at_local = utc_datetime_to_local(current_user, seen_record.seen_at) if seen_record else None
     return jsonify({
         "announcementId": announcement_id,
         "seenByCurrent": seen_by_current,
-        "seenAt": seen_record.seen_at.isoformat() if seen_record else None
+        "seenAt": seen_at_local.isoformat() if seen_at_local else None
     })
 
 @announcement_routes.route("/<int:announcement_id>/seen", methods=["POST"])
@@ -149,10 +155,12 @@ def mark_announcement_seen(announcement_id: int):
         db.session.add(seen_record)
         db.session.commit()
 
+    seen_at_local = utc_datetime_to_local(current_user, seen_record.seen_at)
+
     return jsonify({
         "announcementId": announcement_id,
         "seenByCurrent": True,
-        "seenAt": seen_record.seen_at.isoformat()
+        "seenAt": seen_at_local.isoformat()
     })
 
 @announcement_routes.route("/<int:announcement_id>/seen", methods=["DELETE"])
@@ -219,4 +227,6 @@ def toggle_importance(id):
     
     announcement.is_important = not announcement.is_important
     db.session.commit()
-    return jsonify(announcement.to_dict())
+    
+    ann_dict = announcement.to_dict(user=current_user)
+    return jsonify(ann_dict)

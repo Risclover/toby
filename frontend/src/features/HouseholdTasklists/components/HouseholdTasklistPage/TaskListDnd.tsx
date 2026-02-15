@@ -158,7 +158,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                         size="compact-xs"
                         color="var(--tasklist-color)"
                     >
-                        {task?.isImportant ? <StarIcon size="24px" color="var(--tasklist-color)" /> : <StarIconOutline color="var(--tasklist-color)" size="24px" />}
+                        {task?.isImportant ? <StarIcon size="20px" color="var(--tasklist-color)" /> : <StarIconOutline color="var(--tasklist-color)" size="20px" />}
                     </ActionIcon>
                     {showReorderMode && tasks && (isMobile || isSmall) && tasks?.length > 1 && canReorder && (<div className={`task-row-move-btns show-task-btns`}>
                         <Button

@@ -1,6 +1,7 @@
 from sqlalchemy import func, Index, UniqueConstraint
 from app.extensions import db
-   
+from app.utils.timezone import utc_datetime_to_local
+
 class Announcement(db.Model):
     __tablename__ = "announcements"
 
@@ -15,14 +16,18 @@ class Announcement(db.Model):
     creator = db.relationship("User", foreign_keys=[user_id])
     household = db.relationship("Household", back_populates="announcements")
     
-    def to_dict(self):
+    def to_dict(self, user=None):
+        # Remove the conversion logic.
+        # We want to send the raw UTC time to the frontend.
+        created_at_local = utc_datetime_to_local(user, self.created_at) if user else self.created_at
         return {
             "id": self.id,
             "householdId": self.household_id,
             "userId": self.user_id,
             "message": self.message,
             "isImportant": self.is_important,
-            "createdAt": self.created_at.isoformat() if self.created_at else None,
+            # Ensure it has the Z suffix to indicate UTC
+            "createdAt": created_at_local.isoformat() if created_at_local else None,
             "creator": {
                 "id": self.creator.id,
                 "firstName": self.creator.first_name,

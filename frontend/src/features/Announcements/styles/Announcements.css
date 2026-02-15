@@ -93,9 +93,11 @@
     cursor: pointer;
 }
 
-.single-announcement-timestamp {
+.single-announcement-timestamp,
+.single-reminder-timestamp {
     /* color: rgb(195, 193, 219); */
     font-size: 11px;
+    font-style: italic;
 }
 
 .single-announcement-header img {

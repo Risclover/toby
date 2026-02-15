@@ -196,7 +196,7 @@ class Tasklist(db.Model):
         
         return duplicate
 
-    def to_dict(self, include_tasks: bool = True, include_members: bool = True):
+    def to_dict(self):
         try:
             viewer = current_user
         except:
@@ -222,10 +222,10 @@ class Tasklist(db.Model):
             "householdId": self.household_id,
             "scope": self.scope,
             "allMembers": self.all_members,
-            "memberIds": self.audience_user_ids() if include_members else None,
+            "memberIds": self.audience_user_ids(),
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
-            "tasks": [t.to_dict() for t in self.tasks] if include_tasks else [],
+            "tasks": [t.to_dict() for t in self.tasks],
             "isFeatured": self.id == viewer.featured_tasklist_id if (viewer and hasattr(viewer, 'featured_tasklist_id')) else False
         }
 

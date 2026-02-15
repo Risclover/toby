@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify, abort
 from sqlalchemy import and_
 from app.extensions import db
 from app.models import Household, Event
-from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+from app.utils.timezone import utc_datetime_to_local
 
 event_routes = Blueprint('events', __name__)
 
@@ -19,6 +19,19 @@ def parse_iso8601(value: str) -> datetime:
         abort(400, description='Invalid ISO datetime format')
 
 
+def event_to_local_dict(event, user):
+    """
+    Convert event datetimes to user's local timezone for JSON response.
+    """
+    d = event.to_dict()
+    d["startUtc"] = utc_datetime_to_local(user, event.start_utc).isoformat() if event.start_utc else None
+    d["endUtc"]   = utc_datetime_to_local(user, event.end_utc).isoformat() if event.end_utc else None
+    d["createdAt"] = utc_datetime_to_local(user, event.created_at).isoformat() if event.created_at else None
+    return d
+
+
+# -------------------- Routes -------------------- #
+
 @event_routes.get('/households/<int:hid>/events')
 def get_household_events(hid: int):
     Household.query.get_or_404(hid)
@@ -30,9 +43,7 @@ def get_household_events(hid: int):
     q = Event.query.filter(Event.household_id == hid)
 
     if fetch_all:
-        # all scheduled events
         q = q.filter(Event.start_utc.isnot(None), Event.end_utc.isnot(None))
-
     else:
         if not start_s or not end_s:
             abort(400, description='start and end query params are required (or pass all=1)')
@@ -42,12 +53,12 @@ def get_household_events(hid: int):
             abort(400, description='start must be before end')
 
         q = q.filter(
-            Event.start_utc < end,   # starts before window end
-            Event.end_utc > start,   # ends after window start (strict!)
+            Event.start_utc < end,
+            Event.end_utc > start,
         )
 
     events = q.order_by(Event.start_utc.asc()).all()
-    return jsonify([e.to_dict() for e in events]), 200
+    return jsonify([event_to_local_dict(e, current_user) for e in events]), 200
 
 
 @event_routes.post('/households/<int:hid>/events')
@@ -102,18 +113,17 @@ def create_event_for_household(hid: int):
     )
     db.session.add(ev)
     db.session.commit()
-    return jsonify(ev.to_dict()), 201
+    return jsonify(event_to_local_dict(ev, current_user)), 201
+
 
 @event_routes.route("/households/<int:hid>/events/<int:event_id>", methods=["DELETE"])
 def delete_event(hid: int, event_id: int):
     Household.query.get_or_404(hid)
-
     ev = Event.query.filter_by(id=event_id, household_id=hid).first_or_404()
-
     db.session.delete(ev)
     db.session.commit()
-
     return ("", 204)
+
 
 @event_routes.route("/households/<int:hid>/events/<int:event_id>", methods=["PATCH", "PUT"])
 def update_event(hid: int, event_id: int):
@@ -135,35 +145,29 @@ def update_event(hid: int, event_id: int):
         # Case A: timed (startUtc/endUtc) present -> both required
         if ('startUtc' in data) or ('endUtc' in data):
             start_s = data.get('startUtc')
-            end_s = data.get('endUtc')
+            end_s   = data.get('endUtc')
 
             if not (start_s and end_s):
                 abort(400, description='Provide both startUtc and endUtc, or neither.')
 
-            try:
-                start = parse_iso8601(start_s)
-                end   = parse_iso8601(end_s)
-            except Exception:
-                abort(400, description='Invalid ISO8601 for startUtc/endUtc')
+            start = parse_iso8601(start_s)
+            end   = parse_iso8601(end_s)
 
             if start >= end:
                 abort(400, description='startUtc must be before endUtc')
 
-            # Timed updates: keep UTC instants as provided
             event.start_utc = start
             event.end_utc   = end
             event.has_time  = True
 
-            # tzid is metadata for timed events; if provided, store it
             if tzid_in:
-                # ensure valid tz
                 try:
                     ZoneInfo(tzid_in)
                 except Exception:
                     abort(400, description='Invalid tzid')
                 event.tzid = tzid_in
 
-        # Case B: all-day (date) present → recompute day bounds in given/existing tz
+        # Case B: all-day (date) present → recompute day bounds
         elif 'date' in data:
             date_s = data.get('date')
             try:
@@ -185,7 +189,7 @@ def update_event(hid: int, event_id: int):
             event.tzid      = tzid_use
 
     else:
-        # No explicit schedule change, but tzid might still be provided.
+        # No explicit schedule change, but tzid might still be provided
         if tzid_in:
             try:
                 new_tz = ZoneInfo(tzid_in)
@@ -196,8 +200,6 @@ def update_event(hid: int, event_id: int):
                 # Timed events: change tz metadata only; keep UTC instants
                 event.tzid = tzid_in
             else:
-                # All-day events: keep the *local date* the same but recompute UTC bounds in the new tz.
-                # Derive the current local date in old tz, then rebuild day bounds under new tz.
                 old_tz = ZoneInfo(event.tzid or 'UTC')
                 local_start_old = event.start_utc.astimezone(old_tz)
                 local_date = local_start_old.date()
@@ -210,7 +212,7 @@ def update_event(hid: int, event_id: int):
                 event.start_utc = new_local_start.astimezone(ZoneInfo("UTC"))
                 event.end_utc   = new_local_end.astimezone(ZoneInfo("UTC"))
                 event.tzid      = tzid_in
-                event.has_time  = False  # stays all-day
+                event.has_time  = False
 
     db.session.commit()
-    return jsonify(ev.to_dict()), 200
+    return jsonify(event_to_local_dict(event, current_user)), 200

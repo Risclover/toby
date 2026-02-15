@@ -1,5 +1,7 @@
 # app/models/shopping_item.py
 from app.extensions import db
+from app.utils.timezone import utc_datetime_to_local
+from flask_login import current_user
 
 class ShoppingItem(db.Model):
     __tablename__ = "shopping_items"
@@ -30,8 +32,8 @@ class ShoppingItem(db.Model):
             "name": self.name,
             "quantity": self.quantity,
             "purchased": self.purchased,
-            "createdAt": self.created_at,
-            "updatedAt": self.updated_at,
+            "createdAt": utc_datetime_to_local(current_user, self.created_at).isoformat() if self.created_at else None,
+            "updatedAt": utc_datetime_to_local(current_user, self.updated_at).isoformat() if self.updated_at else None,
         }
 
     def __repr__(self):

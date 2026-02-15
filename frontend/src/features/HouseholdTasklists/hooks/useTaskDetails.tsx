@@ -1,11 +1,14 @@
+import { useEffect, useMemo, useRef, useState, type ChangeEventHandler } from "react";
+import { isNotEmpty, useForm } from "@mantine/form";
+import dayjs from "dayjs";
+
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useGetTasklistQuery, useUpdateTaskMutation } from "@/store/taskSlice";
-import dayjs from "dayjs";
-import { useState, type ChangeEventHandler } from "react";
 
 type Member = {
     id: number;
     firstName: string;
+    lastName: string;
     profileImg: string | null;
 }
 
@@ -16,7 +19,14 @@ type Props = {
     close: () => void;
 }
 
-export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) => {
+export type TaskDetailsFormValues = {
+    title: string | undefined;
+    dueDate: string | Date | null | undefined;
+    assignedToId: number | null;
+    notes: string | undefined;
+}
+
+export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
     // Mutations
     const [updateTask] = useUpdateTaskMutation();
 
@@ -30,19 +40,48 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
     })
 
     // Local state
-    const [taskTitle, setTaskTitle] = useState<string>(task?.title ?? "");
-    const [assignedTo, setAssignedTo] = useState<string | null>(String(task?.assignedToId));
-    const [dateValue, setDateValue] = useState<string | Date | undefined | null>(task?.dueDate);
-    const [taskNote, setTaskNote] = useState<string>(task?.notes ?? "");
     const [taskError, setTaskError] = useState<string>("");
     const [showTaskDeletion, setShowTaskDeletion] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    const initialValues: TaskDetailsFormValues = {
+        title: task?.title.trim(),
+        notes: task?.notes?.trim(),
+        assignedToId: String(task?.assignedToId) ? Number(task?.assignedToId) : null,
+        dueDate: task?.dueDate instanceof Date ? dayjs(task?.dueDate).format("YYYY-MM-DD") : task?.dueDate,
+    }
+
+    const form = useForm<TaskDetailsFormValues>({
+        initialValues,
+        validate: {
+            title: isNotEmpty("You must give this task a title."),
+        }
+    })
+
+    const initializedRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        if (!task) return;
+
+        if (initializedRef.current !== task.id) {
+            form.setValues(initialValues);
+            form.resetDirty();
+            initializedRef.current = task.id;
+        }
+    }, [task?.id])
 
     // Derived data
-    const membersList =
+    const membersList = useMemo(() =>
         household?.members
             ?.filter((m: Member) => tasklist?.memberIds?.includes(m.id))
-            .map((m: Member) => ({ id: m.id, firstName: m.firstName, profileImg: m.profileImg }))
-        ?? [];
+            .map((m: Member) => ({
+                id: m.id,
+                value: String(m.id),
+                label: `${m.firstName} ${m.lastName}`,
+                firstName: `${m.firstName}`,
+                profileImg: `${m.profileImg}`
+            }))
+        ?? [], [household]);
 
     const data = membersList.map((m: Member) => ({
         value: String(m.id),
@@ -50,7 +89,7 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
         profileImg: m.profileImg, // keep raw data for renderOption
     }));
 
-    const selected = data.find((d: { value: string | null; }) => d.value === assignedTo) || null;
+    const selected = data.find((d: { value: string | null; }) => d.value === String(form.values.assignedToId)) || null;
 
     let taskDate = new Date(task?.createdAt ?? new Date());
     const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' } as const;
@@ -58,50 +97,65 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
     // Handlers
     const handleUpdateTitle = async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (!task) return;
-        setTaskTitle(event.target.value);
+        form.setFieldValue("title", event.target.value);
     };
 
     const handleUpdateDueDate = (val: string | Date | null | undefined) => {
         const dueDate: string | null = val == null ? null : typeof val === "string" ? val.slice(0, 10) : dayjs(val).format("YYYY-MM-DD");
 
-        setDateValue(dueDate);
+        form.setFieldValue("dueDate", dueDate);
     };
 
     const handleUpdateAssignedTo = (val: string | null) => {
-        setAssignedTo(val);
+        form.setFieldValue("assignedToId", Number(val));
     };
 
     const handleUpdateNotes: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-        setTaskNote(e.target.value);
+        form.setFieldValue("notes", e.target.value);
     }
 
     const handleSaveTaskDetails = async () => {
         if (!task) return;
+        if (!form.isValid()) {
+            form.validate();
+            return;
+        }
 
-        if (taskTitle.trim().length === 0) {
+        setIsSubmitting(true);
+
+        if (form.values.title?.trim().length === 0) {
             setTaskError("Title cannot be empty.");
             return;
         }
 
-        await updateTask({
+        const payload = {
             taskId: task.id,
-            title: taskTitle.trim(),
+            title: form.values.title?.trim(),
             listId: task.listId,
-            householdId,
-            notes: taskNote.trim(),
-            assignedToId: assignedTo ? Number(assignedTo) : null,
-            dueDate: dateValue instanceof Date ? dayjs(dateValue).format("YYYY-MM-DD") : dateValue,
-        });
+            householdId: householdId,
+            notes: form.values.notes?.trim(),
+            assignedToId: task?.assignedToId ?? null,
+            dueDate: form.values.dueDate instanceof Date ? dayjs(form.values.dueDate).format("YYYY-MM-DD") : form.values.dueDate,
+        }
 
-        close();
+        try {
+            await Promise.all([
+                updateTask(payload).unwrap(),
+                new Promise(resolve => setTimeout(resolve, 400)) // 800ms minimum
+            ]);
+            setIsSubmitting(false);
+        } catch (error) {
+            console.error("Failed to update task:", error);
+            setIsSubmitting(false);
+        }
     }
 
     // Props for task details inputs
     const taskDetailsProps = {
-        title: { value: taskTitle, onChange: handleUpdateTitle },
-        dueDate: { value: dateValue, onChange: handleUpdateDueDate },
-        assigned: { value: assignedTo, onChange: handleUpdateAssignedTo },
-        notes: { value: taskNote, onChange: handleUpdateNotes },
+        title: { value: form.values.title, onChange: handleUpdateTitle },
+        dueDate: { value: form.values.dueDate, onChange: handleUpdateDueDate },
+        assigned: { value: form.values.assignedToId, onChange: handleUpdateAssignedTo },
+        notes: { value: form.values.notes, onChange: handleUpdateNotes },
     }
 
     const handleConfirmTaskDeletion = () => {
@@ -136,7 +190,10 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
         return formatStatusDate(taskDate, "Created");
     };
 
+    if (!task) return null;
+
     return {
+        form,
         taskDetailsProps,
         taskError,
         data,
@@ -147,7 +204,8 @@ export const useTaskDetails = ({ taskId, listId, householdId, close }: Props) =>
         showTaskDeletion,
         setShowTaskDeletion,
         handleConfirmTaskDeletion,
-        getFooterText
+        getFooterText,
+        isSubmitting,
     }
 
 }

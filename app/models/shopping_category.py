@@ -1,5 +1,7 @@
 # app/models/shopping_category.py
 from app.extensions import db
+from app.utils.timezone import utc_datetime_to_local
+from flask_login import current_user
 
 class ShoppingCategory(db.Model):
     __tablename__ = "shopping_categories"
@@ -11,7 +13,6 @@ class ShoppingCategory(db.Model):
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
     shopping_list = db.relationship("ShoppingList", back_populates="categories")
-    # Parent -> children: a category owns many items
     items = db.relationship(
         "ShoppingItem",
         back_populates="category",
@@ -20,7 +21,6 @@ class ShoppingCategory(db.Model):
     )
 
     __table_args__ = (
-        # Ensure each list can’t have duplicate category names
         db.UniqueConstraint("list_id", "name", name="uq_category_list_id_name"),
     )
 
@@ -29,12 +29,10 @@ class ShoppingCategory(db.Model):
             "id": self.id,
             "name": self.name,
             "listId": self.list_id,
-            "items": [item.to_dict() for item in self.items],
-            "createdAt": self.created_at,
-            "updatedAt": self.updated_at,
+            "createdAt": utc_datetime_to_local(current_user, self.created_at).isoformat() if self.created_at else None,
+            "updatedAt": utc_datetime_to_local(current_user, self.updated_at).isoformat() if self.updated_at else None,
+            "items": [item.to_dict() for item in self.items] if include_items else [],
         }
-        if include_items:
-            base["items"] = [i.to_dict() for i in self.items]
         return base
 
     def __repr__(self):

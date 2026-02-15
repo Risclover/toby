@@ -1,7 +1,8 @@
 from sqlalchemy import func, Index, UniqueConstraint
 from app.extensions import db
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
+from app.utils.timezone import utc_datetime_to_local
 
 # Reminder model captures both user-created and system-generated reminders for various household-related events (e.g. task due, event starting, daily check-in missed, etc.) - helps with consistent reminder management and potential future analytics on reminder types and effectiveness
 class ReminderType(Enum):
@@ -66,7 +67,7 @@ class Reminder(db.Model):
             "isAutomatic": self.is_automatic,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
-            "triggerAt": self.trigger_at.isoformat() if self.trigger_at else None,
+            "triggerAt": self.trigger_at.astimezone(timezone.utc).isoformat() if self.trigger_at else None,
             "isActive": self.is_active,
             "deliveredAt": self.delivered_at.isoformat() if self.delivered_at else None,
             "createdAt": self.created_at.isoformat() if self.created_at else None,
@@ -87,29 +88,47 @@ class Reminder(db.Model):
         }
 
     def to_dict_for_user(self, assignment):
-        """
-        Returns a JSON-safe version for a specific user's view of this reminder.
-        """
+        user = assignment.user
+
         return {
             "id": self.id,
             "householdId": self.household_id,
             "createdById": self.created_by_id,
             "title": self.title,
             "body": self.body,
-            "reminderType": self.reminder_type.value,  # ✅ Use .value
+            "reminderType": self.reminder_type.value,
             "isAutomatic": self.is_automatic,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
-            "triggerAt": self.trigger_at.isoformat() if self.trigger_at else None,
+
+            "triggerAt": (
+                utc_datetime_to_local(user, self.trigger_at).isoformat()
+                if self.trigger_at else None
+            ),
+
+            "deliveredAt": (
+                utc_datetime_to_local(user, self.delivered_at).isoformat()
+                if self.delivered_at else None
+            ),
+
+            "createdAt": (
+                utc_datetime_to_local(user, self.created_at).isoformat()
+                if self.created_at else None
+            ),
+
+            "updatedAt": (
+                utc_datetime_to_local(user, self.updated_at).isoformat()
+                if self.updated_at else None
+            ),
+
             "isActive": self.is_active,
-            "deliveredAt": self.delivered_at.isoformat() if self.delivered_at else None,
-            "createdAt": self.created_at.isoformat() if self.created_at else None,
-            "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
+
             "createdBy": {
                 "id": self.created_by.id,
                 "firstName": self.created_by.first_name,
                 "profileImg": self.created_by.profile_img,
             } if self.created_by else None,
+
             "assignedTo": [
                 {
                     "id": a.user.id,
@@ -118,6 +137,7 @@ class Reminder(db.Model):
                 }
                 for a in self.assignments
             ],
+
             "currentUserAssignment": {
                 "seen": assignment.seen
             }

@@ -1,6 +1,8 @@
-
+# app/models/task.py
 from app.extensions import db
-from datetime import datetime 
+from datetime import datetime
+from app.utils.timezone import utc_datetime_to_local
+from flask_login import current_user
 
 class Task(db.Model):
     __tablename__ = "tasks"
@@ -26,7 +28,6 @@ class Task(db.Model):
         foreign_keys=[assigned_to_id],
         back_populates="tasks"
     )
-
     creator = db.relationship(
         "User", 
         foreign_keys=[creator_id],   
@@ -46,9 +47,9 @@ class Task(db.Model):
             "assignedToId": self.assigned_to_id,
             "notes": self.notes,
             "sortIndex": self.sort_index,
-            "createdAt": self.created_at,
-            "updatedAt": self.updated_at,
-            "completedAt": self.completed_at.isoformat() if self.completed_at else None,
+            "createdAt": utc_datetime_to_local(current_user, self.created_at).isoformat() if self.created_at else None,
+            "updatedAt": utc_datetime_to_local(current_user, self.updated_at).isoformat() if self.updated_at else None,
+            "completedAt": utc_datetime_to_local(current_user, self.completed_at).isoformat() if self.completed_at else None,
         }
 
     def __repr__(self):

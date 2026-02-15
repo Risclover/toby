@@ -6,7 +6,9 @@ import { AlarmIcon } from "@/assets/icons/AlarmIcon";
 import { EventIcon } from "@/assets/icons/EventIcon";
 import { CheckCircleIcon } from "@/assets/icons/CheckCircleIcon";
 import { NewsIcon } from "@/assets/icons/NewsIcon";
-import { useAuthenticateQuery, useGetHouseholdQuery } from "@/store";
+import { useAuthenticateQuery, useGetHouseholdQuery, type User } from "@/store";
+import dayjs from "dayjs";
+import { formatAnnouncementTimestamp } from "@/features/Announcements";
 
 type Props = {
     reminderId: number;
@@ -48,6 +50,11 @@ export const Reminder = ({ reminderId, reminder }: Props) => {
 
     // REMOVED: const assignees = ... (Don't transform this into a string here)
 
+    const userTimezone = user?.timezone; // Make sure this exists on your user object
+
+    // Pass it to the helper
+    const formattedTimestamp = formatAnnouncementTimestamp(reminder.createdAt ?? null, userTimezone);
+
     return (
         <div className={`reminder-item`} style={{ borderLeft: `4px solid ${color}` }}>
             <div className="reminder-main">
@@ -65,7 +72,7 @@ export const Reminder = ({ reminderId, reminder }: Props) => {
             </div>
 
             <div className="reminder-footer">
-                {!reminder.isAutomatic && (
+                {!reminder.isAutomatic ? (
                     <div className="reminder-created-by" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {/* Creator */}
                         <Tooltip label={`Created by ${reminder.createdBy?.firstName}`}>
@@ -78,7 +85,7 @@ export const Reminder = ({ reminderId, reminder }: Props) => {
                         {reminder.assignedTo && reminder.assignedTo.length > 0 ? (
                             <div> {/* Negative gap for overlap effect */}
                                 <Avatar.Group spacing="sm">
-                                    {reminder.assignedTo.map((assignee) => (
+                                    {reminder.assignedTo.map((assignee: User) => (
                                         <Tooltip key={assignee.id} label={assignee.firstName}>
                                             <Avatar
                                                 size={24}
@@ -92,8 +99,11 @@ export const Reminder = ({ reminderId, reminder }: Props) => {
                         ) : (
                             <span style={{ fontSize: '0.85rem', color: '#666' }}>everyone</span>
                         )}
-                    </div>
-                )}
+                    </div>)
+                    : <div></div>}
+                <div className="single-reminder-timestamp">                Added {formattedTimestamp
+                    ? `${formattedTimestamp.day} · ${formattedTimestamp.time}`
+                    : ""}</div>
             </div>
         </div>
     )

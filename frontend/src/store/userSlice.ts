@@ -1,4 +1,5 @@
 import { apiSlice } from "./apiSlice";
+import { authSlice } from "./authSlice";
 import { householdSlice } from "./householdSlice";
 import type { MoodKey } from "./moodSlice";
 
@@ -154,6 +155,37 @@ export const userSlice = apiSlice.injectEndpoints({
             query: (userId) => `/users/${userId}/task_stats`,
             providesTags: (result, error, userId) => [{ type: "UserTaskStats", id: userId }],
         }),
+
+        updateTimezone: builder.mutation<{ id: number; timezone: string }, string>({
+            query: (timezone) => ({
+                url: "/users/me/timezone",
+                method: "PUT",
+                body: { timezone },
+            }),
+            async onQueryStarted(timezone, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+
+                    // Update the cached current user in authSlice
+                    dispatch(
+                        authSlice.util.updateQueryData("authenticate", undefined, (draft: any) => {
+                            draft.timezone = data.timezone;
+                        })
+                    );
+
+                    // Optional: update the getUser cache if components rely on that
+                    if (data.id) {
+                        dispatch(
+                            userSlice.util.updateQueryData("getUser", data.id, (draft: any) => {
+                                draft.timezone = data.timezone;
+                            })
+                        );
+                    }
+                } catch (err) {
+                    console.error("Failed to update timezone:", err);
+                }
+            },
+        })
     }),
 });
 
@@ -169,4 +201,5 @@ export const {
     useGetUserMoodQuery,
     useFeatureTasklistMutation,
     useGetUserTaskStatsQuery,
+    useUpdateTimezoneMutation
 } = userSlice;

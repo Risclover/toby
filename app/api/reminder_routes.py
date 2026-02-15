@@ -1,11 +1,14 @@
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, request, jsonify, abort, current_app
 from flask_login import current_user, login_required
 from app.extensions import db
-from app.models import Reminder, User, Household, ReminderType
-from datetime import datetime, timedelta, timezone
+from app.models import Reminder, User, Household, ReminderType, ReminderAssignment
+from datetime import datetime, timezone
 from app.utils.parse_datetime import parse_datetime
+from app.utils.timezone import get_user_timezone
+import pytz
 
 reminder_routes = Blueprint("reminders", __name__)
+
 
 def deactivate_automatic_reminders(source_type, source_id):
     Reminder.query.filter_by(
@@ -13,20 +16,19 @@ def deactivate_automatic_reminders(source_type, source_id):
         source_entity_id=source_id,
         is_automatic=True,
         is_active=True,
-    ).update({ "is_active": False })
+    ).update({"is_active": False})
     db.session.commit()
+
 
 @reminder_routes.route("/<int:id>", methods=["GET"])
 def get_reminder(id):
-    """
-    Fetch specific reminder by id
-    """
     reminder = Reminder.query.get(id)
 
     if not reminder:
         abort(404, description="Reminder not found")
 
-    return jsonify(reminder.to_dict()), 201
+    return jsonify(reminder.to_dict()), 200
+
 
 @reminder_routes.route("/internal", methods=["POST"])
 def create_or_update_automatic_reminder():
@@ -46,9 +48,19 @@ def create_or_update_automatic_reminder():
         if field not in data:
             return jsonify({"error": f"Missing {field}"}), 400
 
-    trigger_at = parse_datetime(data.get("triggerAt"))
+    # ---- TIMEZONE FIX (A) START ----
+    trigger_at = None
+    if data.get("triggerAt"):
+        parsed = parse_datetime(data["triggerAt"])
 
-    # Try to find an existing automatic reminder for this source
+        if parsed.tzinfo is None:
+            # assume creator's timezone, then convert to UTC
+            user_tz = get_user_timezone(current_user)
+            parsed = user_tz.localize(parsed)
+
+        trigger_at = parsed.astimezone(pytz.UTC)
+    # ---- TIMEZONE FIX (A) END ----
+
     reminder = Reminder.query.filter_by(
         household_id=data["householdId"],
         source_entity_type=data["sourceEntityType"],
@@ -59,7 +71,6 @@ def create_or_update_automatic_reminder():
     ).first()
 
     if reminder:
-        # Update existing
         reminder.title = data.get("title")
         reminder.body = data["body"]
         reminder.is_active = True
@@ -79,6 +90,7 @@ def create_or_update_automatic_reminder():
     db.session.commit()
     return jsonify(reminder.to_dict()), 201
 
+
 @reminder_routes.route("/<int:id>/seen", methods=["PATCH"])
 @login_required
 def mark_reminder_seen(id):
@@ -94,6 +106,7 @@ def mark_reminder_seen(id):
     db.session.commit()
 
     return jsonify({"success": True}), 200
+
 
 @reminder_routes.route("/<int:id>", methods=["PATCH"])
 @login_required
@@ -111,26 +124,32 @@ def update_manual_reminder(id):
 
     data = request.get_json()
 
-    # Update basic fields
     if "title" in data:
         reminder.title = data["title"]
 
     if "reminderBody" in data:
         reminder.body = data["reminderBody"]
 
+    # ---- TIMEZONE FIX (A) START ----
     if "triggerAt" in data:
-        reminder.trigger_at = parse_datetime(data["triggerAt"])
+        parsed = parse_datetime(data["triggerAt"])
 
-    # Update assignments
+        if parsed is None:
+            reminder.trigger_at = None
+        else:
+            if parsed.tzinfo is None:
+                user_tz = get_user_timezone(current_user)
+                parsed = user_tz.localize(parsed)
+
+            reminder.trigger_at = parsed.astimezone(pytz.UTC)
+    # ---- TIMEZONE FIX (A) END ----
+
     if "assignedToIds" in data:
         assigned_user_ids = set(data["assignedToIds"])
 
-        existing_assignments = {
-            a.user_id: a for a in reminder.assignments
-        }
+        existing_assignments = {a.user_id: a for a in reminder.assignments}
         existing_user_ids = set(existing_assignments.keys())
 
-        # Newly added users → seen = False
         for user_id in assigned_user_ids - existing_user_ids:
             db.session.add(
                 ReminderAssignment(
@@ -140,12 +159,12 @@ def update_manual_reminder(id):
                 )
             )
 
-        # Removed users → delete assignment
         for user_id in existing_user_ids - assigned_user_ids:
             db.session.delete(existing_assignments[user_id])
 
     db.session.commit()
     return jsonify(reminder.to_dict()), 200
+
 
 @reminder_routes.route("/<int:id>", methods=["DELETE"])
 @login_required
@@ -165,12 +184,3 @@ def delete_manual_reminder(id):
     db.session.commit()
 
     return jsonify({"message": "Reminder deleted"}), 200
-
-def deactivate_automatic_reminders(source_type, source_id):
-    Reminder.query.filter_by(
-        source_entity_type=source_type,
-        source_entity_id=source_id,
-        is_automatic=True,
-        is_active=True,
-    ).update({ "is_active": False })
-    db.session.commit()

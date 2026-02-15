@@ -148,6 +148,13 @@ type UpdateTaskPatch = Partial<
 
 type TasklistTag = { type: "Tasklist"; id: number | string };
 
+// Converts Date or string → YYYY-MM-DD (no timezone shift)
+const toDateOnlyString = (value?: string | Date | null): string | null => {
+    if (!value) return null;
+    if (typeof value === "string") return value.split("T")[0];
+    return value.toISOString().split("T")[0];
+};
+
 export const taskSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getTask: builder.query({
@@ -312,72 +319,47 @@ export const taskSlice = apiSlice.injectEndpoints({
             },
         }),
 
-        updateTask: builder.mutation<Task, { taskId: number; listId: number; householdId?: number } & UpdateTaskPatch>({
-            query: ({ taskId, listId, householdId, ...patch }) => ({
+        updateTask: builder.mutation<
+            Task,
+            { taskId: number; listId: number; householdId?: number } & UpdateTaskPatch
+        >({
+            query: ({ taskId, ...patch }) => ({
                 url: `/tasks/${taskId}`,
                 method: "PATCH",
-                body: patch,
+                body: {
+                    ...patch,
+                    dueDate: toDateOnlyString(patch.dueDate), // ✅ FIX
+                },
             }),
 
-            async onQueryStarted({ taskId, listId, householdId, ...patch }, { dispatch, getState, queryFulfilled }) {
-                // Optimistic Update 1: Singular Tasklist View
+            async onQueryStarted(
+                { taskId, listId, householdId, ...patch },
+                { dispatch, getState, queryFulfilled }
+            ) {
+                const normalizedPatch = {
+                    ...patch,
+                    dueDate: toDateOnlyString(patch.dueDate),
+                };
+
                 const p1 = dispatch(
-                    taskSlice.util.updateQueryData("getTasklist", listId, (draft: any) => {
-                        const task = draft?.tasks?.find((x: any) => x.id === taskId);
-                        if (task) {
-                            Object.entries(patch).forEach(([key, value]) => {
-                                if (value !== undefined) task[key] = value;
-                            });
-                            task.updatedAt = new Date().toISOString();
-                        }
+                    taskSlice.util.updateQueryData("getTasklist", listId, (draft) => {
+                        const task = draft?.tasks?.find((t) => t.id === taskId);
+                        if (task) Object.assign(task, normalizedPatch);
                     })
                 );
-
-                // Optimistic Update 2: Household Dashboard View (Fixes Card Stats)
-                // We attempt to find householdId from the cache if not passed in args
-                if (householdId == null) {
-                    const state = getState() as any;
-                    const listData = taskSlice.endpoints.getTasklist.select(listId)(state)?.data;
-                    householdId = listData?.householdId;
-                }
-
-                const p2 = householdId != null
-                    ? dispatch(
-                        householdSlice.util.updateQueryData("getHouseholdTasklists", householdId, (lists: any[] | undefined) => {
-                            const list = lists?.find(l => l.id === listId);
-                            const task = list?.tasks?.find((x: any) => x.id === taskId);
-                            if (task) {
-                                Object.entries(patch).forEach(([key, value]) => {
-                                    if (value !== undefined) task[key] = value;
-                                });
-                                task.updatedAt = new Date().toISOString();
-                            }
-                        })
-                    )
-                    : { undo: () => { } };
 
                 try {
                     await queryFulfilled;
                 } catch {
                     p1.undo();
-                    p2.undo?.();
                 }
             },
 
-            invalidatesTags: (result, error, { taskId, listId, householdId }) => {
-                const tags: any[] = [
-                    { type: "Tasklist", id: listId },
-                    { type: "Tasklist", id: "LIST" },
-                    { type: "Task", id: taskId },
-                    "UserTaskStats" // 👈 Simple string tag ensures Global Stats update reliably
-                ];
-
-                if (householdId != null) {
-                    tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
-                }
-
-                return tags;
-            },
+            invalidatesTags: (_r, _e, { taskId, listId }) => [
+                { type: "Tasklist", id: listId },
+                { type: "Task", id: taskId },
+                "UserTaskStats",
+            ],
         }),
 
         toggleTaskImportance: builder.mutation<Task, ToggleImportanceRequest>({

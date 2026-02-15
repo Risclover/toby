@@ -22,7 +22,7 @@ type Props = {
         id: number;
         householdId: number;
         message: string;
-        createdAt?: string | null | undefined;
+        createdAt?: string | null | undefined; // ISO string with timezone offset
         isImportant: boolean;
         seenByCurrent?: boolean | undefined;
     };
@@ -34,8 +34,14 @@ type Props = {
 export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, onCloseMenu }: Props) => {
     const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
     const wrapperRef = useRef<HTMLDivElement | null>(null);
-    const { data: user } = useAuthenticateQuery();
     useOutsideClick(wrapperRef, () => onCloseMenu(), isMenuOpen);
+
+    // parse and format timestamp once
+    const { data: user } = useAuthenticateQuery();
+    const userTimezone = user?.timezone; // Make sure this exists on your user object
+
+    // Pass it to the helper
+    const formattedTimestamp = formatAnnouncementTimestamp(announcement.createdAt ?? null, userTimezone);
 
     return (
         <div className={`single-announcement${announcement?.isImportant ? " important-announcement" : ""}`}>
@@ -44,24 +50,58 @@ export const Announcement = ({ creator, announcement, isMenuOpen, onToggleMenu, 
                     <Avatar component={Link} to={`/users/${creator?.id}`} target="_blank" src={creator?.profileImg} radius="xl" size="sm" />
                     <div className="single-announcement-header-info">
                         <Link target="_blank" to={`/users/${creator?.id}`} className="single-announcement-creator">{creator?.firstName}</Link>
-                        <span className="single-announcement-timestamp">{(() => {
-                            const ts = formatAnnouncementTimestamp(announcement.createdAt ?? null);
-                            return typeof ts === "string" ? ts : `${ts?.day} · ${ts?.time}`;
-                        })()}</span>
+                        <span className="single-announcement-timestamp">
+                            {formattedTimestamp
+                                ? `${formattedTimestamp.day} · ${formattedTimestamp.time}`
+                                : ""}
+                        </span>
                     </div>
                 </div>
                 <div className="single-announcement-header-right">
-                    {announcement?.isImportant && <div className="single-announcement-importance-label">
-                        <StarIcon color="rgb(230, 176, 2)" size="18px" />
-                    </div>}
-                    {!announcement.seenByCurrent && <div className="single-announcement-new-label"><Brightness1RoundedIcon /></div>}
-                    {user.id === creator.id && <AnnouncementMenu ref={wrapperRef} announcement={announcement} onCloseMenu={onCloseMenu} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
+                    {announcement?.isImportant && (
+                        <div className="single-announcement-importance-label">
+                            <StarIcon color="rgb(230, 176, 2)" size="18px" />
+                        </div>
+                    )}
+                    {!announcement.seenByCurrent && (
+                        <div className="single-announcement-new-label">
+                            <Brightness1RoundedIcon />
+                        </div>
+                    )}
+                    {user.id === creator.id && (
+                        <AnnouncementMenu
+                            ref={wrapperRef}
+                            announcement={announcement}
+                            onCloseMenu={onCloseMenu}
+                            setOpenDeleteConfirmation={setOpenDeleteConfirmation}
+                        />
+                    )}
                 </div>
-                {isMenuOpen && <AnnouncementMenu ref={wrapperRef} announcement={announcement} onCloseMenu={onCloseMenu} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
-                {openDeleteConfirmation && <AnnouncementDeleteConfirmation announcement={announcement} openDeleteConfirmation={openDeleteConfirmation} setOpenDeleteConfirmation={setOpenDeleteConfirmation} />}
+                {isMenuOpen && (
+                    <AnnouncementMenu
+                        ref={wrapperRef}
+                        announcement={announcement}
+                        onCloseMenu={onCloseMenu}
+                        setOpenDeleteConfirmation={setOpenDeleteConfirmation}
+                    />
+                )}
+                {openDeleteConfirmation && (
+                    <AnnouncementDeleteConfirmation
+                        announcement={announcement}
+                        openDeleteConfirmation={openDeleteConfirmation}
+                        setOpenDeleteConfirmation={setOpenDeleteConfirmation}
+                    />
+                )}
             </div>
 
-            <Text lineClamp={3} c="black" size="sm" className={`announcement-message${!announcement.seenByCurrent ? " new-announcement" : ""}`}>{announcement?.message}</Text>
+            <Text
+                lineClamp={3}
+                c="black"
+                size="sm"
+                className={`announcement-message${!announcement.seenByCurrent ? " new-announcement" : ""}`}
+            >
+                {announcement?.message}
+            </Text>
         </div>
-    )
-}
+    );
+};

@@ -5,8 +5,9 @@ from app.models import Household, Tasklist, TasklistMember, Announcement, Announ
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy import outerjoin, or_, and_
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.utils.parse_datetime import parse_datetime
+from app.utils.timezone import utc_datetime_to_local
 import json
 
 household_routes = Blueprint('households', __name__)
@@ -22,20 +23,26 @@ def decode_cursor(cursor: str) -> dict:
     except Exception:
         raise ValueError("Invalid cursor")
 
+# --------------------
+# HOUSEHOLD
+# --------------------
 @household_routes.route("/<int:id>")
 def get_household(id):
     household = Household.query.get(id)
     if not household:
         return jsonify({"error": "Household not found"}), 404
-    return jsonify(household.to_dict())
 
+    h_dict = household.to_dict()
+    # convert createdAt to user tz
+    h_dict["createdAt"] = utc_datetime_to_local(current_user, household.created_at).isoformat()
+    return jsonify(h_dict)
+
+# --------------------
+# TASKLISTS
+# --------------------
 @household_routes.route("/<int:household_id>/tasklists", methods=["GET"])
 @login_required
 def get_household_tasklists(household_id):
-    """
-    Fetch tasklists for a specific household, filtered by archived status.
-    Ensures the current user actually belongs to the household.
-    """
     is_archived = request.args.get("is_archived") == "true"
 
     household = Household.query.get(household_id)
@@ -50,28 +57,32 @@ def get_household_tasklists(household_id):
         is_archived=is_archived
     ).options(joinedload(Tasklist.archiver)).all()
 
-    return jsonify([t.to_dict() for t in lists]), 200
+    # convert createdAt in each tasklist to user tz if needed
+    tasklists = []
+    for t in lists:
+        t_dict = t.to_dict()
+        if hasattr(t, "created_at") and t.created_at:
+            t_dict["createdAt"] = utc_datetime_to_local(current_user, t.created_at).isoformat()
+        tasklists.append(t_dict)
+
+    return jsonify(tasklists), 200
 
 @household_routes.route("/<int:household_id>/tasklists", methods=["POST"])
+@login_required
 def create_household_tasklist(household_id):
-    # 1) Household must exist
     household = Household.query.get(household_id)
-
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    # 2) Must be a member (tweak if you support multi-household users)
     if current_user.household_id != household_id:
         return jsonify({"error": "Forbidden"}), 403
 
-    # 3) Validate payload
     data = request.get_json() or {}
     title = (data.get("title") or "").strip()
     if not title:
         return jsonify({"error": "Title is required"}), 400
 
     all_members = data.get("allMembers")
-
     if all_members is None:
         all_members = True
     elif not isinstance(all_members, bool):
@@ -87,42 +98,54 @@ def create_household_tasklist(household_id):
         if bad:
             return jsonify({"error": "memberIds must belong to the household", "invalid": bad}), 400
 
-
-    # 4) Create list + (optional) audience rows
     tasklist = Tasklist(title=title, household_id=household_id, all_members=all_members)
     db.session.add(tasklist)
-    db.session.flush()  # get tl.id now
+    db.session.flush()
 
     if not all_members:
         links = [TasklistMember(tasklist_id=tasklist.id, user_id=user_id) for user_id in set(member_ids)]
         db.session.add_all(links)
 
     db.session.commit()
-    return jsonify(tasklist.to_dict(include_tasks=False, include_members=True)), 201
+    t_dict = tasklist.to_dict()
+    if hasattr(tasklist, "created_at") and tasklist.created_at:
+        t_dict["createdAt"] = utc_datetime_to_local(current_user, tasklist.created_at).isoformat()
 
+    return jsonify(t_dict), 201
+
+# --------------------
+# SHOPPING LISTS
+# --------------------
 @household_routes.route("/<int:id>/shopping")
 def get_household_shopping_lists(id):
     household = Household.query.get(id)
-
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    return jsonify([sl.to_dict() for sl in household.shopping_lists]), 200
+    shopping_lists = []
+    for sl in household.shopping_lists:
+        sl_dict = sl.to_dict()
+        if hasattr(sl, "created_at") and sl.created_at:
+            sl_dict["createdAt"] = utc_datetime_to_local(current_user, sl.created_at).isoformat()
+        shopping_lists.append(sl_dict)
+
+    return jsonify(shopping_lists), 200
 
 @household_routes.route("/<int:household_id>/shopping/<int:shopping_list_id>")
 def get_household_shopping_list(household_id, shopping_list_id):
     household = Household.query.get(household_id)
-
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
     shopping_list = next((sl for sl in household.shopping_lists if sl.id == shopping_list_id), None)
-    
     if not shopping_list:
         return jsonify({"error": "Shopping list not found in this household"}), 404
 
-    return jsonify(shopping_list.to_dict()), 200
+    sl_dict = shopping_list.to_dict()
+    if hasattr(shopping_list, "created_at") and shopping_list.created_at:
+        sl_dict["createdAt"] = utc_datetime_to_local(current_user, shopping_list.created_at).isoformat()
 
+    return jsonify(sl_dict)
 
 # --------------------
 # ANNOUNCEMENTS
@@ -133,14 +156,14 @@ def list_announcements(household_id: int):
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    user_id = int(current_user.get_id())
+    user_id = current_user.id
     limit = int(request.args.get("limit", 10))
     page = int(request.args.get("page", 1))
     search = (request.args.get("search") or "").strip()
     sort = request.args.get("sort", "")
-    importance = request.args.get("important")  # "true" or None
+    importance = request.args.get("important")
     creator_id = request.args.get("creator_id")
-    time_filter = request.args.get("time")  # "today", "7days", "30days", "all"
+    time_filter = request.args.get("time")
 
     seen_alias = aliased(AnnouncementSeen)
 
@@ -156,40 +179,46 @@ def list_announcements(household_id: int):
         .filter(Announcement.household_id == household_id)
     )
 
-    # Search filter
     if search:
         q = q.filter(Announcement.message.ilike(f"%{search}%"))
 
-    # Importance filter
     if importance == "true":
         q = q.filter(Announcement.is_important == True)
 
-    # Creator filter
     if creator_id:
         q = q.filter(Announcement.user_id == int(creator_id))
 
-    # Time filter
     if time_filter and time_filter != "all":
-        now = datetime.utcnow()
+        # 1. Get the current time in UTC
+        now_utc = datetime.now(timezone.utc)
+        
+        # 2. Convert to User's Local Time to understand what "Today" means to them
+        user_tz = get_user_timezone(current_user)
+        now_user_local = now_utc.astimezone(user_tz)
+
         if time_filter == "today":
-            start_time = datetime(now.year, now.month, now.day)
+            # 3. Find "Midnight" (00:00) in the USER'S local time
+            start_of_day_local = now_user_local.replace(hour=0, minute=0, second=0, microsecond=0)
+            
+            # 4. Convert that "User Midnight" back to UTC so the DB understands it
+            start_time = start_of_day_local.astimezone(timezone.utc)
+            
         elif time_filter == "7days":
-            start_time = now - timedelta(days=7)
+            start_time = now_utc - timedelta(days=7)
         elif time_filter == "30days":
-            start_time = now - timedelta(days=30)
+            start_time = now_utc - timedelta(days=30)
+            
         q = q.filter(Announcement.created_at >= start_time)
 
-    # Sort
     if sort == "Newest":
         q = q.order_by(Announcement.created_at.desc(), Announcement.id.desc())
     elif sort == "Oldest":
         q = q.order_by(Announcement.created_at.asc(), Announcement.id.asc())
     elif sort == "Important first":
         q = q.order_by(Announcement.is_important.desc(), Announcement.created_at.desc(), Announcement.id.desc())
-    else:  # default newest
+    else:
         q = q.order_by(Announcement.created_at.desc(), Announcement.id.desc())
 
-    # Pagination
     total_count = q.count()
     total_pages = (total_count + limit - 1) // limit
     offset = (page - 1) * limit
@@ -197,9 +226,18 @@ def list_announcements(household_id: int):
 
     items = []
     for ann, seen_at in rows:
-        data = ann.to_dict()
+        # Assumes ann.to_dict() returns createdAt in UTC
+        data = ann.to_dict(user=current_user)
+        
+        # Consistent UTC handling for seenAt
         data["seenByCurrent"] = seen_at is not None
-        data["seenAt"] = seen_at.isoformat() if seen_at else None
+        if seen_at:
+            if seen_at.tzinfo is None:
+                seen_at = seen_at.replace(tzinfo=timezone.utc)
+            data["seenAt"] = seen_at.isoformat()
+        else:
+            data["seenAt"] = None
+            
         items.append(data)
 
     return jsonify({
@@ -211,13 +249,11 @@ def list_announcements(household_id: int):
         "totalCount": total_count,
     })
 
-
+# --------------------
+# REMINDERS
+# --------------------
 @household_routes.route("/<int:household_id>/reminders", methods=["GET"])
 def get_household_reminders(household_id):
-    """
-    Retrieve all active reminders for a household
-    Active = triggered, not seen, not expired
-    """
     household = Household.query.get(household_id)
     if not household:
         return jsonify({"error": "Household not found"}), 404
@@ -234,7 +270,16 @@ def get_household_reminders(household_id):
         .all()
     )
 
-    return jsonify([r.to_dict() for r in reminders]), 200
+    reminders_list = []
+    for r in reminders:
+        r_dict = r.to_dict()
+        if hasattr(r, "created_at") and r.created_at:
+            r_dict["createdAt"] = utc_datetime_to_local(current_user, r.created_at).isoformat()
+        if hasattr(r, "trigger_at") and r.trigger_at:
+            r_dict["triggerAt"] = utc_datetime_to_local(current_user, r.trigger_at).isoformat()
+        reminders_list.append(r_dict)
+
+    return jsonify(reminders_list), 200
 
 @household_routes.route("/<int:household_id>/reminders", methods=["POST"])
 @login_required
@@ -271,4 +316,10 @@ def create_manual_reminder(household_id):
 
     db.session.commit()
 
-    return jsonify(reminder.to_dict()), 201
+    r_dict = reminder.to_dict()
+    if hasattr(reminder, "created_at") and reminder.created_at:
+        r_dict["createdAt"] = utc_datetime_to_local(current_user, reminder.created_at).isoformat()
+    if hasattr(reminder, "trigger_at") and reminder.trigger_at:
+        r_dict["triggerAt"] = utc_datetime_to_local(current_user, reminder.trigger_at).isoformat()
+
+    return jsonify(r_dict), 201

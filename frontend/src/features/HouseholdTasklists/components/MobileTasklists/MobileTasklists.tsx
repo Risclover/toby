@@ -57,6 +57,7 @@ export const MobileTasklists = () => {
             </Center>
         );
     }
+    console.log('listsss:', allLists)
 
     // 4. If we get here, we are GUARANTEED to have data or an error
     if (isError) return <Text>Error loading tasks.</Text>;

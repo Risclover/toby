@@ -7,6 +7,8 @@ from app.s3_helpers import (
     upload_file_to_s3, allowed_file, get_unique_filename)
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo 
+from pytz import all_timezones  # for validating IANA timezones
+
 
 user_routes = Blueprint('users', __name__)
 
@@ -255,3 +257,21 @@ def get_user_reminders(user_id):
         assignment.reminder.to_dict_for_user(assignment)
         for assignment in assignments
     ]), 200
+
+@user_routes.route("/me/timezone", methods=["PUT"])
+def update_user_timezone():
+    user = User.query.get(current_user.id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.get_json() or {}
+    timezone = (data.get("timezone") or "").strip()
+
+    # Validate timezone
+    if timezone not in all_timezones:
+        return jsonify({"error": "Invalid timezone"}), 400
+
+    user.timezone = timezone
+    db.session.commit()
+
+    return jsonify(user.to_dict()), 200

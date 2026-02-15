@@ -1,44 +1,38 @@
+// app/utils/formatAnnouncementTimestamp.ts
 import { differenceInCalendarDays, format, parseISO, isSameYear } from "date-fns";
+import { toZonedTime } from "date-fns-tz"; // CHANGED: utcToZonedTime -> toZonedTime
 
-export function formatAnnouncementTimestamp(iso?: string | null): { day: string; time: string } | "" {
+export function formatAnnouncementTimestamp(
+    iso?: string | null,
+    timeZone?: string
+): { day: string; time: string } | "" {
     if (!iso) return "";
 
-    const date = parseISO(iso);
+    const date = new Date(iso);
     if (isNaN(date.getTime())) return "";
 
+    // If a timezone is provided, convert the UTC date to that timezone.
+    // toZonedTime returns a Date object shifted so that it "looks" like the 
+    // target time when printed/formatted as local time.
+    const zonedDate = timeZone ? toZonedTime(date, timeZone) : date;
+
+    // We also need "now" in that same timezone to compare days correctly
+    // (e.g., it might be "Tomorrow" in Tokyo while "Today" in LA)
     const now = new Date();
-    console.log('now:', now);
-    console.log('date:', date);
-    // How many whole calendar days between "now" and "date"
-    const diffDays = differenceInCalendarDays(
-        now, date
-    );
+    const zonedNow = timeZone ? toZonedTime(now, timeZone) : now;
+
+    const diffDays = differenceInCalendarDays(zonedNow, zonedDate);
 
     let dayPart: string;
 
-    if (diffDays === 0) {
-        // Today
-        dayPart = "Today";
-    } else if (diffDays === 1) {
-        // Yesterday
-        dayPart = "Yesterday";
-    } else if (diffDays >= 2 && diffDays <= 6) {
-        // Mon, Tue, Wed...
-        dayPart = format(date, "EEE"); // short weekday
-    } else {
-        // Older 
-        if (isSameYear(now, date)) {
-            // Mar 20 
-            dayPart = format(date, "MMM d");
-        } else {
-            // Mar 20, 2024 
-            dayPart = format(date, "MMM d, yyyy");
-        }
-    }
+    if (diffDays === 0) dayPart = "Today";
+    else if (diffDays === 1) dayPart = "Yesterday";
+    else if (diffDays >= 2 && diffDays <= 6) dayPart = format(zonedDate, "EEE");
+    else dayPart = isSameYear(zonedNow, zonedDate)
+        ? format(zonedDate, "MMM d")
+        : format(zonedDate, "MMM d, yyyy");
 
-    // Time part: "8:04 pm"
-    const timePart = format(date, "h:mm a").toLowerCase();
+    const timePart = format(zonedDate, "h:mm a").toLowerCase();
 
     return { day: dayPart, time: timePart };
-
 }

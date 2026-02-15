@@ -62,6 +62,8 @@ export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
         householdMembers: household?.members
     });
 
+    console.log('LIST::', list)
+
     // 3. Mobile Tasklist Drag/Move Hook
     const { tasks, moveTask } = useMobileTasklist({ initialTasks: tasksSorted });
 
