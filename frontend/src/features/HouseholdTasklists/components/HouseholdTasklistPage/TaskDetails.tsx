@@ -11,6 +11,7 @@ import isYesterday from 'dayjs/plugin/isYesterday';
 import { useTaskDetails } from "../../hooks/useTaskDetails";
 import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
 import { TrashIcon } from "@/assets/icons/TrashIcon";
+import { useIsSmallScreen } from "@/hooks";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -24,6 +25,8 @@ type Props = {
 };
 
 export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Props) => {
+    const isSmallScreen = useIsSmallScreen();
+
     const {
         form,
         taskError,
@@ -75,6 +78,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
 
                     <p className="task-details-label">Due date:</p>
                     <DatePickerInput
+                        dropdownType={isSmallScreen && "modal"}
                         placeholder="Add due date"
                         leftSection={<CalendarMonthRoundedIcon />}
                         leftSectionWidth="40px"

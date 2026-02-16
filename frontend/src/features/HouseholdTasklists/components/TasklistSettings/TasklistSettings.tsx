@@ -1,5 +1,5 @@
 import { Button, Group, Modal, Tabs } from "@mantine/core";
-import { useTasklistSettings } from "../../hooks/useTasklistSettings";
+import { useTasklistSettings } from "../../hooks";
 import { GeneralTab } from "./GeneralTab";
 import { BehaviorTab } from "./BehaviorTab";
 import { AppearanceTab } from "./AppearanceTab";
@@ -39,7 +39,7 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
         setShowDiscardWarning,
         showDiscardWarning,
         handleDiscardConfirmation,
-        resetToDefault,
+        resetToDefaults,
         isSubmitting,
         handleSubmit,
         showDeleteConfirmation,
@@ -83,7 +83,7 @@ export const TasklistSettings = ({ opened, setShowTasklistSettings }: Props) => 
 
             <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}>
                 <Group justify="space-between" w="100%">
-                    <Button size="compact-sm" variant="transparent" color="var(--tasklist-color)" onClick={resetToDefault}>Reset to default</Button>
+                    <Button size="compact-sm" variant="transparent" color="var(--tasklist-color)" onClick={resetToDefaults}>Reset to default</Button>
                     <Group gap="0.5rem">
                         <Button
                             color="var(--tasklist-color)"
