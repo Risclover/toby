@@ -85,7 +85,7 @@ class User(db.Model, UserMixin):
     # projects = db.relationship("ProjectMember", back_populates="user")
     # moods = db.relationship("MoodCheckin", back_populates="user")
 
-    settings = db.relationship('UserSettings', back_populates='user', uselist=False)
+    settings = db.relationship('UserSetting', back_populates='user', uselist=False)
 
     # Password management
     @property

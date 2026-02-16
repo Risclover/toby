@@ -4,7 +4,7 @@ from app.models import ShoppingCategory, ShoppingList
 from app.extensions import db
 from sqlalchemy import func
 
-shopping_category_routes = Blueprint("shopping_categories", __name__)
+shopping_category_routes = Blueprint("shopping-categories", __name__)
 
 @shopping_category_routes.route("", methods=["GET"])
 def get_list_categories():

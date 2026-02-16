@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from app.models import ShoppingItem, ShoppingCategory
 from app.extensions import db
 
-shopping_item_routes = Blueprint("shopping_items", __name__)
+shopping_item_routes = Blueprint("shopping-items", __name__)
 
 @shopping_item_routes.route("/<int:id>")
 def get_shopping_item(id):

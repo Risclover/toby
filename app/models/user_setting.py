@@ -29,14 +29,14 @@ class FeaturedListView(str, Enum):
     COMPACT = "compact"
 
 
-class UserSettings(db.Model):
+class UserSetting(db.Model):
     __tablename__ = "user_settings"
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False)
 
     # Featured tasklist settings
-    featured_tasklist_rotation = db.Column(db.Enum(FeaturedListRotation), default=FeaturedListRotation.AUTO_ROTATE, nullable=False)
+    featured_tasklist_rotation = db.Column(db.Enum(FeaturedTasklistRotation), default=FeaturedTasklistRotation.AUTO_ROTATE, nullable=False)
     featured_tasklist_assignee_filter = db.Column(db.Enum(TaskAssigneeFilter), default=TaskAssigneeFilter.ALL_TASKS, nullable=False)
     featured_tasklist_urgency_filter = db.Column(db.Enum(TaskUrgencyFilter), default=TaskUrgencyFilter.ALL, nullable=False)
     feautred_tasklist_important_only = db.Column(db.Boolean, default=False)

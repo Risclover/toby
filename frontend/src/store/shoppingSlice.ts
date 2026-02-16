@@ -19,10 +19,10 @@ export const shoppingSlice = apiSlice
         endpoints: (builder) => ({
             /* -------------------- Lists -------------------- */
 
-            // NOTE: Your backend snippet doesn't show GET /shopping_lists
+            // NOTE: Your backend snippet doesn't show GET /shopping-lists
             // Keep this if you have that route elsewhere; otherwise remove it.
             getShoppingLists: builder.query<any, void>({
-                query: () => ({ url: "/shopping_lists", method: "GET" }),
+                query: () => ({ url: "/shopping-lists", method: "GET" }),
                 providesTags: (result) =>
                     result
                         ? [
@@ -33,22 +33,22 @@ export const shoppingSlice = apiSlice
             }),
 
             getShoppingList: builder.query<any, number>({
-                query: (id) => ({ url: `/shopping_lists/${id}`, method: "GET" }),
+                query: (id) => ({ url: `/shopping-lists/${id}`, method: "GET" }),
                 providesTags: (_res, _err, id) => [{ type: "ShoppingList", id }],
             }),
 
             createShoppingList: builder.mutation<any, { title: string; userId?: number; householdId?: number }>({
-                query: (body) => ({ url: `/shopping_lists/`, method: "POST", body }),
+                query: (body) => ({ url: `/shopping-lists/`, method: "POST", body }),
                 invalidatesTags: [{ type: "ShoppingList", id: "LIST" }],
             }),
 
             editShoppingList: builder.mutation<any, { listId: number; title: string }>({
-                query: ({ listId, title }) => ({ url: `/shopping_lists/${listId}`, method: "PUT", body: { title } }),
+                query: ({ listId, title }) => ({ url: `/shopping-lists/${listId}`, method: "PUT", body: { title } }),
                 invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingList", id: listId }],
             }),
 
             deleteShoppingList: builder.mutation<{ message: string }, { listId: number }>({
-                query: ({ listId }) => ({ url: `/shopping_lists/${listId}`, method: "DELETE" }),
+                query: ({ listId }) => ({ url: `/shopping-lists/${listId}`, method: "DELETE" }),
                 invalidatesTags: (_r, _e, { listId }) => [
                     { type: "ShoppingList", id: listId },
                     { type: "ShoppingList", id: "LIST" },
@@ -58,7 +58,7 @@ export const shoppingSlice = apiSlice
             /* -------------------- Items -------------------- */
 
             getShoppingItems: builder.query<ShoppingItem[], number>({
-                query: (listId) => `/shopping_lists/${listId}/items`,
+                query: (listId) => `/shopping-lists/${listId}/items`,
                 providesTags: (_res, _err, listId) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
             }),
 
@@ -68,7 +68,7 @@ export const shoppingSlice = apiSlice
                 { listId: number; name: string; categoryId: number | null; quantity?: number; purchased?: boolean }
             >({
                 query: ({ listId, name, categoryId, quantity = 1, purchased = false }) => ({
-                    url: `/shopping_lists/${listId}/items`,
+                    url: `/shopping-lists/${listId}/items`,
                     method: "POST",
                     body: { name, categoryId, quantity, purchased },
                 }),
@@ -104,14 +104,14 @@ export const shoppingSlice = apiSlice
 
             // Fetch a single item (useful after edits if you want to re-sync)
             getShoppingItem: builder.query<ShoppingItem, number>({
-                query: (itemId) => `/shopping_items/${itemId}`,
+                query: (itemId) => `/shopping-items/${itemId}`,
                 providesTags: (_r, _e, itemId) => [{ type: "ShoppingItem", id: itemId }],
             }),
 
             // Toggle purchased — backend flips value itself; send NO body.
             toggleShoppingItem: builder.mutation<ShoppingItem, { itemId: number; listId: number, purchased: boolean }>({
                 query: ({ itemId }) => ({
-                    url: `/shopping_items/${itemId}/toggle`,
+                    url: `/shopping-items/${itemId}/toggle`,
                     method: "PUT",
                 }),
                 async onQueryStarted({ itemId, listId }, { dispatch, queryFulfilled }) {
@@ -130,13 +130,13 @@ export const shoppingSlice = apiSlice
                 invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
             }),
 
-            // Explicit “set purchased” via general PUT (hits /shopping_items/<id> with { purchased })
+            // Explicit “set purchased” via general PUT (hits /shopping-items/<id> with { purchased })
             setShoppingItemPurchased: builder.mutation<
                 ShoppingItem,
                 { itemId: number; listId: number; purchased: boolean }
             >({
                 query: ({ itemId, purchased }) => ({
-                    url: `/shopping_items/${itemId}`,
+                    url: `/shopping-items/${itemId}`,
                     method: "PUT",
                     body: { purchased },
                 }),
@@ -157,7 +157,7 @@ export const shoppingSlice = apiSlice
             }),
 
             deleteShoppingItem: builder.mutation<{ message?: string }, { itemId: number; listId: number }>({
-                query: ({ itemId }) => ({ url: `/shopping_items/${itemId}`, method: "DELETE" }),
+                query: ({ itemId }) => ({ url: `/shopping-items/${itemId}`, method: "DELETE" }),
                 async onQueryStarted({ itemId, listId }, { dispatch, queryFulfilled }) {
                     const patch = dispatch(
                         shoppingSlice.util.updateQueryData("getShoppingItems", listId, (draft) => {
@@ -181,7 +181,7 @@ export const shoppingSlice = apiSlice
                 { itemId: number; listId: number; category: string | null }
             >({
                 query: ({ itemId, category }) => ({
-                    url: `/shopping_items/${itemId}/category`,
+                    url: `/shopping-items/${itemId}/category`,
                     method: "PUT",
                     body: { category }, // backend: string name in this list, or null to unset
                 }),
@@ -211,7 +211,7 @@ export const shoppingSlice = apiSlice
 
             editShoppingItemQuantity: builder.mutation<ShoppingItem, { itemId: number; listId: number; quantity: number }>({
                 query: ({ itemId, quantity }) => ({
-                    url: `/shopping_items/${itemId}/quantity`,
+                    url: `/shopping-items/${itemId}/quantity`,
                     method: "PUT",
                     body: { quantity },
                 }),
@@ -232,7 +232,7 @@ export const shoppingSlice = apiSlice
             }),
 
             editShoppingItemName: builder.mutation<ShoppingItem, { itemId: number; listId: number; name: string }>({
-                query: ({ itemId, name }) => ({ url: `/shopping_items/${itemId}/name`, method: "PUT", body: { name } }),
+                query: ({ itemId, name }) => ({ url: `/shopping-items/${itemId}/name`, method: "PUT", body: { name } }),
                 async onQueryStarted({ itemId, listId, name }, { dispatch, queryFulfilled }) {
                     const patch = dispatch(
                         shoppingSlice.util.updateQueryData("getShoppingItems", listId, (draft) => {
@@ -250,7 +250,7 @@ export const shoppingSlice = apiSlice
             }),
 
             editShoppingItemNotes: builder.mutation<ShoppingItem, { itemId: number; listId: number; notes: string | null }>({
-                query: ({ itemId, notes }) => ({ url: `/shopping_items/${itemId}/notes`, method: "PUT", body: { notes } }),
+                query: ({ itemId, notes }) => ({ url: `/shopping-items/${itemId}/notes`, method: "PUT", body: { notes } }),
                 async onQueryStarted({ itemId, listId, notes }, { dispatch, queryFulfilled }) {
                     const patch = dispatch(
                         shoppingSlice.util.updateQueryData("getShoppingItems", listId, (draft) => {
@@ -270,12 +270,12 @@ export const shoppingSlice = apiSlice
             /* -------------------- Categories -------------------- */
 
             getShoppingListCategories: builder.query<any[], number>({
-                query: (listId) => `/shopping_lists/${listId}/categories`,
+                query: (listId) => `/shopping-lists/${listId}/categories`,
                 providesTags: (_res, _err, listId) => [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
             }),
 
             getShoppingItemCategory: builder.query<any, number>({
-                query: (itemId) => `/shopping_items/${itemId}/category`,
+                query: (itemId) => `/shopping-items/${itemId}/category`,
                 providesTags: (_res, _err, itemId) => [{ type: "ShoppingCategory", id: `ITEM_${itemId}` }],
             }),
         }),

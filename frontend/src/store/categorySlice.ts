@@ -13,7 +13,7 @@ export const shoppingCategorySlice = apiSlice.injectEndpoints({
         // GET ""  — your Flask endpoint expects JSON in the request body with { shoppingListId }
         getShoppingCategories: builder.query<ShoppingCategory[], number>({
             query: (listId) => ({
-                url: "/shopping_categories",
+                url: "/shopping-categories",
                 method: "GET",
                 body: { shoppingListId: listId }, // Flask code reads request.get_json() even for GET
             }),
@@ -32,7 +32,7 @@ export const shoppingCategorySlice = apiSlice.injectEndpoints({
             { listId: number; name: string }
         >({
             query: ({ listId, name }) => ({
-                url: `/shopping_categories`,
+                url: `/shopping-categories`,
                 method: "POST",
                 body: { name, listId },
             }),
@@ -93,7 +93,7 @@ export const shoppingCategorySlice = apiSlice.injectEndpoints({
             { id: number; listId: number }
         >({
             query: ({ id }) => ({
-                url: `/shopping_categories/${id}`,
+                url: `/shopping-categories/${id}`,
                 method: "DELETE",
             }),
             async onQueryStarted({ id, listId }, { dispatch, queryFulfilled }) {
@@ -132,7 +132,7 @@ export const shoppingCategorySlice = apiSlice.injectEndpoints({
             { categoryId: number; listId: number; name: string }
         >({
             query: ({ categoryId, name }) => ({
-                url: `/shopping_categories/${categoryId}`,
+                url: `/shopping-categories/${categoryId}`,
                 method: "PUT",
                 body: { name },
             }),
