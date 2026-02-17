@@ -41,7 +41,6 @@ export const HouseholdTasklists = () => {
                 <CreateTasklist householdId={householdId} />
             </div>
 
-            {isFetching && <div>Loading...</div>}
 
             <div className="household-tasklists-grid">
                 {lists.map(list => {

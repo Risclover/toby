@@ -1,6 +1,8 @@
 import { ActionIcon, Tabs, Tooltip } from "@mantine/core"
-import type { JSX, ReactNode } from "react";
+import { useState, type JSX, type ReactNode } from "react";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import { FeaturedListSettings } from "../FeaturedListSettings/FeaturedListSettings";
+import { useAuthenticateQuery } from "@/store";
 
 type Props = {
     tabs: TabsObject;
@@ -14,6 +16,8 @@ type TabsObject = {
 }
 
 export const HomepageCollapseCardTabs = ({ tabs, tabColor, children }: Props) => {
+    const { data: user } = useAuthenticateQuery();
+    const [showFeaturedListSettings, setShowFeaturedListSettings] = useState(false);
     return (
         <div className="homepage-collapse-card-tabs-container">
             <Tabs
@@ -29,6 +33,7 @@ export const HomepageCollapseCardTabs = ({ tabs, tabColor, children }: Props) =>
                             size="sm"
                             variant="subtle"
                             color="cyan.6"
+                            onClick={() => setShowFeaturedListSettings(true)}
                         >
                             <SettingsRoundedIcon fontSize="small" />
                         </ActionIcon>
@@ -38,6 +43,8 @@ export const HomepageCollapseCardTabs = ({ tabs, tabColor, children }: Props) =>
                 {children}
                 {/* {Object.values(tabs).map((tab) => <HomepageCollapseCardTab value={tab.value}>{tab.body}</HomepageCollapseCardTab>)} */}
             </Tabs>
+
+            {showFeaturedListSettings && <FeaturedListSettings key={`${user?.featuredTasklistId}`} opened={showFeaturedListSettings} handleClose={() => setShowFeaturedListSettings(false)} />}
         </div>
     )
 }

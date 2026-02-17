@@ -1,3 +1,4 @@
+import type { TasklistType } from ".";
 import { apiSlice } from "./apiSlice";
 
 export type FeaturedListRotation = "manual" | "auto_rotate" | "most_due_soon";
@@ -7,14 +8,15 @@ export type FeaturedTaskSortOrder = "due_date" | "priority" | "manual" | "assign
 export type FeaturedListView = "detailed" | "compact";
 
 export interface FeaturedTasklistSettings {
+    featuredTasklist: string | null;
     rotation: FeaturedListRotation;
     assigneeFilter: TaskAssigneeFilter;
     urgencyFilter: TaskUrgencyFilter;
-    showStarredOnly: boolean;
+    importantOnly: boolean;
     maxItems: number;
     showCompleted: boolean;
     sortOrder: FeaturedTaskSortOrder;
-    view: FeaturedListView;
+    view: FeaturedListView | string;
     showProgress: boolean;
     showQuickAdd: boolean;
 }
@@ -32,7 +34,7 @@ export const userSettingsSlice = apiSlice.injectEndpoints({
             providesTags: ["UserSettings"]
         }),
 
-        updateUserSettings: builder.mutation<UserSettings, Partial<UserSettings>>({
+        updateUserSettings: builder.mutation<FeaturedTasklistSettings, Partial<FeaturedTasklistSettings>>({
             query: (data) => ({
                 url: "/user-settings",
                 method: "PUT",

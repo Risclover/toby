@@ -1,6 +1,7 @@
 import { Box, Checkbox, Flex, Group, rem, Stack, Text } from "@mantine/core";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { StarIcon } from "@/assets/icons/StarIcon";
+import type { FeaturedListView } from "@/store/userSettingSlice";
 
 function MiniLine({ width, height, opacity = 1, marginTop, color = 'currentColor' }: { width: string | number; height: string | number; opacity?: number; marginTop?: string | number; color?: string; }) {
     return (
@@ -58,7 +59,7 @@ function DetailedTask() {
                 </Stack>
 
                 {/* Real Star Icon (Top aligned) */}
-                <Text c="var(--tasklist-color)"><StarIcon size={10} /></Text>
+                <Text c="var(--tasklist-color)"><StarIcon size="10px" /></Text>
             </Flex>
         </Box>
     );
@@ -77,7 +78,7 @@ function CompactTask() {
                 </Box>
 
                 {/* Real Star Icon */}
-                <Text c="var(--tasklist-color)"><StarIcon size={10} /></Text>
+                <Text c="var(--tasklist-color)"><StarIcon size="10px" /></Text>
             </Flex>
         </Box>
     );
@@ -118,7 +119,7 @@ function PreviewWindow({ label, onClick, onKeyDown, activeTaskDisplay, children 
     );
 }
 
-export function TaskViewSelector({ activeTaskDisplay, setActiveTaskDisplay }: { activeTaskDisplay: string | undefined; setActiveTaskDisplay: (val: string) => void }) {
+export function TaskViewSelector({ activeTaskDisplay, setActiveTaskDisplay }: { activeTaskDisplay: string | undefined; setActiveTaskDisplay: (val: string | FeaturedListView) => void }) {
     const isSmallScreen = useIsSmallScreen();
     return (
         <Flex m="auto" gap={isSmallScreen ? 20 : 30} justify="center" wrap="wrap">

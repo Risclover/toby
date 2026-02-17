@@ -113,15 +113,15 @@ export const userSlice = apiSlice.injectEndpoints({
             providesTags: (_result, _error, userId) => [{ type: "User", id: userId }],
         }),
 
-        featureTasklist: builder.mutation<void, { householdId: number; listId: number; userId: number }>({
+        featureTasklist: builder.mutation({
             query: ({ userId, listId }) => ({
                 url: `/users/${userId}/featured-list`,
                 method: 'PATCH',
                 body: { listId },
             }),
+            invalidatesTags: ['User', 'UserSettings'],
             async onQueryStarted({ householdId, listId, userId }, { dispatch, queryFulfilled }) {
-
-                // 1. Optimistically update the Household API cache
+                // ... existing listPatch code ...
                 const listPatch = dispatch(
                     householdSlice.util.updateQueryData('getHouseholdTasklists', householdId, (draft) => {
                         draft.forEach((list: any) => {
@@ -132,21 +132,29 @@ export const userSlice = apiSlice.injectEndpoints({
                         });
                     })
                 );
-
-                // 2. Optimistically update the User API cache
+                // FIX: Use camelCase property name
                 const userPatch = dispatch(
                     userSlice.util.updateQueryData('getUser', userId, (draft: any) => {
-                        const wasAlreadyFeatured = draft.featured_tasklist_id === listId;
-                        draft.featured_tasklist_id = wasAlreadyFeatured ? null : listId;
+                        const wasAlreadyFeatured = draft.featuredTasklistId === listId; // Changed
+                        draft.featuredTasklistId = wasAlreadyFeatured ? null : listId;  // Changed
+                    })
+                );
+
+                // FIX: Use camelCase property name
+                const authPatch = dispatch(
+                    authSlice.util.updateQueryData('authenticate', undefined, (draft: any) => {
+                        if (!draft) return;
+                        const wasAlreadyFeatured = draft.featuredTasklistId === listId; // Changed
+                        draft.featuredTasklistId = wasAlreadyFeatured ? null : listId;  // Changed
                     })
                 );
 
                 try {
                     await queryFulfilled;
                 } catch {
-                    // Roll back both caches if the server fails
                     listPatch.undo();
                     userPatch.undo();
+                    authPatch.undo();
                 }
             },
         }),

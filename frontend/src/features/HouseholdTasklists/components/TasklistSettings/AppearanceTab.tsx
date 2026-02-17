@@ -1,4 +1,4 @@
-import { ColorInput, Input, Tabs } from "@mantine/core";
+import { ColorInput, Input, Space, Tabs } from "@mantine/core";
 import type { TasklistSettingsForm } from "./GeneralTab";
 import ColorizeRoundedIcon from "@mui/icons-material/ColorizeRounded";
 import { TaskViewSelector } from "./TaskViewSelector";
@@ -38,6 +38,7 @@ export const AppearanceTab = ({ form }: AppearanceTabProps) => {
                 <div className="input-label-description">
                     <Input.Label>Task Display</Input.Label>
                 </div>
+                <Space h="xs" />
                 <TaskViewSelector
                     activeTaskDisplay={form.values.viewMode}
                     setActiveTaskDisplay={(val: string) => form.setFieldValue('viewMode', val)}

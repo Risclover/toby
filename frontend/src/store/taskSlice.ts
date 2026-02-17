@@ -306,7 +306,7 @@ export const taskSlice = apiSlice.injectEndpoints({
             // Now householdId will be available here!
             invalidatesTags: (_res, _err, { listId, householdId }): TasklistTag[] => {
                 const tags: TasklistTag[] = [{ type: "Tasklist", id: listId }];
-
+                tags.push('User' as any);
                 if (householdId != null) {
                     tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
                 } else {

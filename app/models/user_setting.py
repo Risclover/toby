@@ -39,7 +39,7 @@ class UserSetting(db.Model):
     featured_tasklist_rotation = db.Column(db.Enum(FeaturedTasklistRotation), default=FeaturedTasklistRotation.AUTO_ROTATE, nullable=False)
     featured_tasklist_assignee_filter = db.Column(db.Enum(TaskAssigneeFilter), default=TaskAssigneeFilter.ALL_TASKS, nullable=False)
     featured_tasklist_urgency_filter = db.Column(db.Enum(TaskUrgencyFilter), default=TaskUrgencyFilter.ALL, nullable=False)
-    feautred_tasklist_important_only = db.Column(db.Boolean, default=False)
+    featured_tasklist_important_only = db.Column(db.Boolean, default=False)
     featured_tasklist_max_items = db.Column(db.Integer, default=5, nullable=False)
     featured_tasklist_show_completed = db.Column(db.Boolean, default=False)
     featured_tasklist_sort_order = db.Column(db.Enum(FeaturedTaskSortOrder), default=FeaturedTaskSortOrder.DUE_DATE, nullable=False)

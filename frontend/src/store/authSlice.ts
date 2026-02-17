@@ -10,6 +10,7 @@ export interface User {
     displayName?: string;
     createdAt: string;
     householdId?: number;
+    featuredTasklistId: number;
 }
 
 interface Household {

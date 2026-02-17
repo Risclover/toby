@@ -447,12 +447,20 @@ textarea.editable-title.is-editing {
 }
 
 .tasklist-settings-section {
-    padding: 0.5rem 0;
+    padding: 11px 14px;
+    border-radius: 0.5rem;
+}
+
+.collapse-special {
     gap: 1rem;
-    display: inline-flex;
-    align-items: flex-start;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
     width: 100%;
+}
+
+.tasklist-settings-section:hover {
+    background-color: #f4f4f8;
 }
 
 .tasklist-settings-section .mantine-Input-wrapper,
@@ -494,7 +502,7 @@ textarea.editable-title.is-editing {
     align-items: flex-start;
 }
 
-.tasklist-settings-section:has(.mobile-announcements-filter-drawer) {
+.collapse-special:has(.mobile-announcements-filter-drawer) {
     flex-direction: column;
 }
 
@@ -512,6 +520,7 @@ textarea.editable-title.is-editing {
 
 .view-tasklist-section {
     flex-direction: column;
+    justify-content: center;
 }
 
 .tasklist-settings-save-btn {

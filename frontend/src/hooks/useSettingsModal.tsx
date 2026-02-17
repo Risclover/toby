@@ -2,22 +2,17 @@ import { useForm, type UseFormInput, type UseFormReturnType } from "@mantine/for
 import { useEffect, useRef, useState } from "react";
 
 
-export type UseSettingsModalOptions<TValues extends Record<string, unknown>> = {
-    /**
-     * The ID of the entity being edited. The hook watches this value and reinitializes the form whenever it changes, so switching from list A to list B always starts clean.
-     */
+export type UseSettingsModalOptions<TValues> = {
     entityId: number | undefined;
     initialValues: TValues;
     defaultValues?: Partial<TValues>;
     validate?: UseFormInput<TValues>["validate"];
     onSubmit: (values: TValues) => Promise<void>;
     onClose: () => void;
-
-    // Minimum time (ms) to hold the loading spinner even if the request resolves instantly - prevents a jarring flash. Defaults to 400.
     minimumLoadingMs?: number;
 }
 
-export type UseSettingsModalReturn<TValues extends Record<string, unknown>> = {
+export type UseSettingsModalReturn<TValues> = {
     form: UseFormReturnType<TValues>;
     isSubmitting: boolean;
     showDiscardWarning: boolean;
@@ -30,7 +25,7 @@ export type UseSettingsModalReturn<TValues extends Record<string, unknown>> = {
     handleResetToDefaults: () => void;
 }
 
-export function useSettingsModal<TValues extends Record<string, unknown>>({
+export function useSettingsModal<TValues>({
     entityId,
     initialValues,
     defaultValues,
