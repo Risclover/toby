@@ -151,6 +151,7 @@ def get_household_shopping_list(household_id, shopping_list_id):
 # ANNOUNCEMENTS
 # --------------------
 @household_routes.route("/<int:household_id>/announcements")
+@login_required
 def list_announcements(household_id: int):
     household = Household.query.get(household_id)
     if not household:

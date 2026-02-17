@@ -1,17 +1,20 @@
-import type { TasklistType } from ".";
 import { apiSlice } from "./apiSlice";
 
 export type FeaturedListRotation = "manual" | "auto_rotate" | "most_due_soon";
-export type TaskAssigneeFilter = "just_me" | "all_tasks";
-export type TaskUrgencyFilter = "all" | "overdue_only" | "due_today" | "due_this_week";
 export type FeaturedTaskSortOrder = "due_date" | "priority" | "manual" | "assignee";
 export type FeaturedListView = "detailed" | "compact";
 
+interface FeaturedTasklistUrgencyFilter {
+    overdue: boolean;
+    dueToday: boolean;
+    dueSoon: boolean;
+}
+
 export interface FeaturedTasklistSettings {
-    featuredTasklist: string | null;
+    featuredTasklistId: number | null;
     rotation: FeaturedListRotation;
-    assigneeFilter: TaskAssigneeFilter;
-    urgencyFilter: TaskUrgencyFilter;
+    justMeFilter: boolean;
+    urgencyFilter: FeaturedTasklistUrgencyFilter;
     importantOnly: boolean;
     maxItems: number;
     showCompleted: boolean;

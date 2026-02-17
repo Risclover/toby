@@ -25,7 +25,6 @@ class User(db.Model, UserMixin):
     daily_checkin = db.Column(db.Boolean, default=False, nullable=False)
     last_checkin = db.Column(db.DateTime, nullable=True)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
-    featured_tasklist_id = db.Column(db.Integer, db.ForeignKey("tasklists.id", ondelete="SET NULL"), nullable=True)
 
     # Relationships
     user_mood = db.relationship(
@@ -41,18 +40,11 @@ class User(db.Model, UserMixin):
     )
     tasklist_memberships = db.relationship("TasklistMember", back_populates="user", cascade="all, delete-orphan")
     lists_participating = db.relationship(
-    "Tasklist",
-    secondary=lambda: TasklistMember.__table__,  # ✅ a Table
-    back_populates="members",
-    lazy="selectin",
-    viewonly=True,  # write via TasklistMember rows
-    )
-
-    # habits = db.relationship("HabitLog", back_populates="habit_user")
-    featured_tasklist = db.relationship(
-        'Tasklist', 
-        foreign_keys=[featured_tasklist_id],
-        # No backref here, let's keep this one-way for now to simplify
+        "Tasklist",
+        secondary=lambda: TasklistMember.__table__,  # ✅ a Table
+        back_populates="members",
+        lazy="selectin",
+        viewonly=True,  # write via TasklistMember rows
     )
 
     tasklists = db.relationship(
@@ -116,7 +108,6 @@ class User(db.Model, UserMixin):
             "lastCheckin": self.last_checkin,
             "timezone": self.timezone,
             "householdId": self.household_id,
-            "featuredTasklistId": self.featured_tasklist_id,
             "reminders": [
                 assignment.reminder.to_dict_for_user(assignment)
                 for assignment in self.reminder_assignments

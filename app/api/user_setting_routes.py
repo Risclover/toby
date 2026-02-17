@@ -30,10 +30,12 @@ def update_user_settings():
 
     if 'featuredTasklist' in data:
         tasklist_data = data['featuredTasklist']
+        
+        # 1. Handle flat fields
         field_mapping = {
+            "featuredTasklistId": "featured_tasklist_id",
             "rotation": "featured_tasklist_rotation",
-            "assigneeFilter": "featured_tasklist_assignee_filter",
-            "urgencyFilter": "featured_tasklist_urgency_filter",
+            "justMeFilter": "featured_tasklist_filter_just_me",
             "importantOnly": "featured_tasklist_important_only",
             "maxItems": "featured_tasklist_max_items",
             "showCompleted": "featured_tasklist_show_completed",
@@ -46,6 +48,16 @@ def update_user_settings():
         for json_key, model_attr in field_mapping.items():
             if json_key in tasklist_data:
                 setattr(user_settings, model_attr, tasklist_data[json_key])
+
+        # 2. Handle nested urgency filter explicitly
+        if 'urgencyFilter' in tasklist_data:
+            urgency_data = tasklist_data['urgencyFilter']
+            if 'overdue' in urgency_data:
+                user_settings.featured_tasklist_filter_overdue = urgency_data['overdue']
+            if 'dueToday' in urgency_data:
+                user_settings.featured_tasklist_filter_due_today = urgency_data['dueToday']
+            if 'dueSoon' in urgency_data:
+                user_settings.featured_tasklist_filter_due_soon = urgency_data['dueSoon']
     
     db.session.commit()
     return jsonify(user_settings.to_dict()), 200

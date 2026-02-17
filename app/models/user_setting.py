@@ -36,9 +36,12 @@ class UserSetting(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False)
 
     # Featured tasklist settings
+    featured_tasklist_id = db.Column(db.Integer, db.ForeignKey("tasklists.id", ondelete="SET NULL"), nullable=True)
     featured_tasklist_rotation = db.Column(db.Enum(FeaturedTasklistRotation), default=FeaturedTasklistRotation.AUTO_ROTATE, nullable=False)
-    featured_tasklist_assignee_filter = db.Column(db.Enum(TaskAssigneeFilter), default=TaskAssigneeFilter.ALL_TASKS, nullable=False)
-    featured_tasklist_urgency_filter = db.Column(db.Enum(TaskUrgencyFilter), default=TaskUrgencyFilter.ALL, nullable=False)
+    featured_tasklist_filter_just_me = db.Column(db.Boolean, default=False)
+    featured_tasklist_filter_overdue = db.Column(db.Boolean, default=False)
+    featured_tasklist_filter_due_today = db.Column(db.Boolean, default=False)
+    featured_tasklist_filter_due_soon = db.Column(db.Boolean, default=False)
     featured_tasklist_important_only = db.Column(db.Boolean, default=False)
     featured_tasklist_max_items = db.Column(db.Integer, default=5, nullable=False)
     featured_tasklist_show_completed = db.Column(db.Boolean, default=False)
@@ -49,15 +52,21 @@ class UserSetting(db.Model):
 
     # Relationship
     user = db.relationship("User", back_populates="settings", uselist=False)
+    featured_tasklist = db.relationship("Tasklist", foreign_keys=[featured_tasklist_id], uselist=False)
 
     def to_dict(self):
         return {
             "id": self.id,
             "userId": self.user_id,
             "featuredTasklist": {
+                "featuredTasklistId": self.featured_tasklist_id,
                 "rotation": self.featured_tasklist_rotation,
-                "assigneeFilter": self.featured_tasklist_assignee_filter,
-                "urgencyFilter": self.featured_tasklist_urgency_filter,
+                "justMeFilter": self.featured_tasklist_filter_just_me,
+                "urgencyFilter": {
+                    "overdue": self.featured_tasklist_filter_overdue,
+                    "dueToday": self.featured_tasklist_filter_due_today,
+                    "dueSoon": self.featured_tasklist_filter_due_soon
+                },
                 "importantOnly": self.featured_tasklist_important_only,
                 "maxItems": self.featured_tasklist_max_items,
                 "showCompleted": self.featured_tasklist_show_completed,
