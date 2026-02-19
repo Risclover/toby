@@ -22,7 +22,6 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Pr
 
     const initialValues = useMemo<FeaturedTasklistSettings>(() => ({
         featuredTasklistId: userSettings?.featuredTasklist.featuredTasklistId ?? null,
-        rotation: userSettings?.featuredTasklist.rotation ?? false,
         justMeFilter: userSettings?.featuredTasklist.justMeFilter ?? false,
         urgencyFilter: {
             overdue: userSettings?.featuredTasklist.urgencyFilter.overdue ?? false,
@@ -40,7 +39,6 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Pr
 
     const defaultValues: FeaturedTasklistSettings = {
         featuredTasklistId: userSettings?.featuredTasklist.featuredTasklistId,
-        rotation: false,
         justMeFilter: false,
         urgencyFilter: {
             overdue: false,

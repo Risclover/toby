@@ -13,7 +13,6 @@ interface FeaturedTasklistUrgencyFilter {
 
 export interface FeaturedTasklistSettings {
     featuredTasklistId: number | null | undefined;
-    rotation: boolean;
     justMeFilter: boolean;
     urgencyFilter: FeaturedTasklistUrgencyFilter;
     importantOnly: boolean;

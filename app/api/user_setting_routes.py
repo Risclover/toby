@@ -34,7 +34,6 @@ def update_user_settings():
         # 1. Handle flat fields
         field_mapping = {
             "featuredTasklistId": "featured_tasklist_id",
-            "rotation": "featured_tasklist_rotation",
             "justMeFilter": "featured_tasklist_filter_just_me",
             "importantOnly": "featured_tasklist_important_only",
             "maxItems": "featured_tasklist_max_items",

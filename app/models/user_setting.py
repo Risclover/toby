@@ -41,7 +41,6 @@ class UserSetting(db.Model):
 
     # Featured tasklist settings
     featured_tasklist_id = db.Column(db.Integer, db.ForeignKey("tasklists.id", ondelete="SET NULL"), nullable=True)
-    featured_tasklist_rotation = db.Column(db.Boolean, default=False)
     featured_tasklist_filter_just_me = db.Column(db.Boolean, default=False)
     featured_tasklist_filter_overdue = db.Column(db.Boolean, default=False)
     featured_tasklist_filter_due_today = db.Column(db.Boolean, default=False)
@@ -64,7 +63,6 @@ class UserSetting(db.Model):
             "userId": self.user_id,
             "featuredTasklist": {
                 "featuredTasklistId": self.featured_tasklist_id,
-                "rotation": self.featured_tasklist_rotation,
                 "justMeFilter": self.featured_tasklist_filter_just_me,
                 "urgencyFilter": {
                     "overdue": self.featured_tasklist_filter_overdue,
