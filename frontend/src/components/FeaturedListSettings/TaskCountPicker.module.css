@@ -50,7 +50,7 @@
 .indicator {
     position: absolute;
     z-index: 1;
-    background-color: var(--mantine-color-cyan-6);
+    background-color: var(--tasklist-color);
     /* Or any theme color like cyan.6 */
     border-radius: 0.25rem;
     box-shadow: var(--mantine-shadow-sm);

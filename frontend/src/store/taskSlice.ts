@@ -116,7 +116,7 @@ export interface DeleteListRequest {
 
 export interface CompleteTaskRequest {
     taskId?: number;
-    listId: number;
+    listId: number | undefined;
     completed: boolean;
     householdId?: number;
 }

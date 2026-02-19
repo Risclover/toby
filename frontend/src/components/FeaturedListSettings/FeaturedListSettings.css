@@ -36,15 +36,12 @@
     width: 100%;
 }
 
+
 .homepage-lists-tasklist .mantine-Checkbox-root,
 .homepage-lists-tasklist .mantine-Checkbox-body,
 .homepage-lists-tasklist .mantine-Checkbox-labelWrapper,
 .homepage-lists-tasklist .mantine-Checkbox-label {
     width: 100%;
-    cursor: pointer !important;
-}
-
-.homepage-lists-tasklist li {
     cursor: pointer !important;
 }
 
@@ -89,6 +86,167 @@
     font-weight: 600;
 }
 
-.urgency-collapse {
-    display: block;
+.urgency-collapse {}
+
+.settings-section-container .mantine-Chip-checkIcon {
+    height: auto;
+}
+
+.settings-section-container .mantine-Group-root {
+    height: auto;
+}
+
+/* Overdue chip (red) */
+.settings-section-container .overdue-chip .mantine-Chip-label:where([data-checked]) {
+    color: var(--mantine-color-red-9);
+    background: color-mix(in srgb, var(--mantine-color-red-5), transparent 90%);
+}
+
+.settings-section-container .overdue-chip .mantine-Chip-label:not([data-checked]),
+.settings-section-container .today-chip .mantine-Chip-label:not([data-checked]),
+.settings-section-container .soon-chip .mantine-Chip-label:not([data-checked]) {
+    background: var(--mantine-color-gray-3);
+}
+
+.settings-section-container .overdue-chip .mantine-Chip-label:where([data-checked]) {
+    border: 1px solid var(--mantine-color-red-7);
+}
+
+.settings-section-container .overdue-chip .mantine-Chip-label:hover {
+    background: color-mix(in srgb, var(--mantine-color-red-7), transparent 88%);
+    color: var(--mantine-color-red-9);
+
+}
+
+/* Due today chip (orange) */
+.settings-section-container .today-chip .mantine-Chip-label:where([data-checked]) {
+    color: var(--mantine-color-orange-9);
+    background: color-mix(in srgb, var(--mantine-color-orange-5), transparent 90%);
+}
+
+.settings-section-container .today-chip .mantine-Chip-label:hover {
+    background: color-mix(in srgb, var(--mantine-color-orange-7), transparent 88%);
+    color: var(--mantine-color-orange-9);
+
+}
+
+.settings-section-container .today-chip .mantine-Chip-label:where([data-checked]) {
+    border: 1px solid var(--mantine-color-orange-7);
+}
+
+/* Due soon chip (blue) */
+.settings-section-container .soon-chip .mantine-Chip-label:where([data-checked]) {
+    color: var(--mantine-color-blue-9);
+    background: color-mix(in srgb, var(--mantine-color-blue-5), transparent 90%);
+}
+
+.settings-section-container .soon-chip .mantine-Chip-label:hover {
+    background: color-mix(in srgb, var(--mantine-color-blue-7), transparent 88%);
+    color: var(--mantine-color-blue-9);
+
+}
+
+.settings-section-container .soon-chip .mantine-Chip-label:where([data-checked]) {
+    border: 1px solid var(--mantine-color-blue-7);
+}
+
+.featured-tasklist-title {
+    padding: 0.25rem;
+    margin: 0 .75rem;
+    padding-top: .5rem;
+    font-family: var(--font-family-sora);
+    /* text-transform: uppercase; */
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    /* font-weight: 500; */
+    color: var(--mantine-color-dark-9);
+    max-width: 100%;
+    border-bottom: 1px solid var(--mantine-color-gray-3);
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}
+
+.featured-tasklist-title-top {
+    /* font-weight: 500; */
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    flex-wrap: nowrap;
+
+}
+
+.featured-tasklist-title svg {
+    cursor: pointer;
+}
+
+.featured-tasklist-title span:first-child {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.m_d57069b5:where([data-autosize]) .m_b1336c6 {
+    min-width: 0 !important;
+}
+
+
+.mantine-Select-option {
+    /* Ensure the option itself is a flex container (usually is by default) */
+    display: flex;
+    align-items: center;
+    /* Prevent the container from growing infinitely */
+    min-width: 0;
+}
+
+/* Target the text span inside the option */
+.mantine-Select-option span,
+.mantine-Input-input {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Allow the text to shrink */
+    flex: 1;
+    /* Crucial for flex children to allow truncation */
+    min-width: 0;
+}
+
+.featured-tasklist-title-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 11.5px;
+    letter-spacing: normal;
+    gap: 0.5rem;
+    line-height: 1.4;
+}
+
+.featured-tasklist-title-progress .progress-left>div {
+    background: var(--mantine-color-gray-1) !important;
+}
+
+.featured-tasklist-quick-add {
+    background: var(--mantine-color-gray-1);
+    padding: 0.25rem;
+}
+
+.featured-tasklist-quick-add input {
+    width: 100%;
+    outline: none;
+    padding-right: 10px;
+}
+
+.featured-tasklist-input-container {
+    background: white;
+    display: flex;
+    align-items: center;
+    border-radius: 0.25rem;
+    font-family: var(--font-family-sora);
+    padding: 0.25rem 0.5rem;
+}
+
+.featured-tasklist-input-container button {
+    flex-shrink: 0;
 }

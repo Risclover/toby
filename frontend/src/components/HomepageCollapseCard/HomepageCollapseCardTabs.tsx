@@ -27,7 +27,7 @@ export const HomepageCollapseCardTabs = ({ tabs, tabColor, children }: Props) =>
                     <div style={{ display: "flex" }}>
                         {Object.values(tabs).map((tab) => <Tabs.Tab color={tabColor} className="homepage-collapse-card-tab" value={tab.value}>{tab.value}</Tabs.Tab>)}
                     </div>
-                    <Tooltip label="Featured list settings">
+                    <Tooltip label="Featured list settings" openDelay={500} withArrow>
                         <ActionIcon
                             // onClick={() => setShowTasklistSettings(true)}
                             size="sm"
@@ -44,7 +44,7 @@ export const HomepageCollapseCardTabs = ({ tabs, tabColor, children }: Props) =>
                 {/* {Object.values(tabs).map((tab) => <HomepageCollapseCardTab value={tab.value}>{tab.body}</HomepageCollapseCardTab>)} */}
             </Tabs>
 
-            {showFeaturedListSettings && <FeaturedListSettings key={`${user?.featuredTasklistId}`} opened={showFeaturedListSettings} handleClose={() => setShowFeaturedListSettings(false)} />}
+            {showFeaturedListSettings && <FeaturedListSettings key={`${user?.featuredTasklistId}`} opened={showFeaturedListSettings} setShowFeaturedListSettings={setShowFeaturedListSettings} />}
         </div>
     )
 }

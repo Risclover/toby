@@ -20,13 +20,17 @@ class FeaturedTaskSortOrder(str, Enum):
     DUE_DATE = "due_date"
     IMPORTANCE = "importance"
     MANUAL = "manual"
-    NEWEST = "neweset"
+    NEWEST = "newest"
     OLDEST = "oldest"
     ALPHABETICAL = "alphabetical"
 
 class FeaturedListView(str, Enum):
     DETAILED = "detailed"
     COMPACT = "compact"
+
+class NewItemPosition(str, Enum):
+    TOP = 'top'
+    BOTTOM = 'bottom'
 
 
 class UserSetting(db.Model):
@@ -37,7 +41,7 @@ class UserSetting(db.Model):
 
     # Featured tasklist settings
     featured_tasklist_id = db.Column(db.Integer, db.ForeignKey("tasklists.id", ondelete="SET NULL"), nullable=True)
-    featured_tasklist_rotation = db.Column(db.Enum(FeaturedTasklistRotation), default=FeaturedTasklistRotation.AUTO_ROTATE, nullable=False)
+    featured_tasklist_rotation = db.Column(db.Boolean, default=False)
     featured_tasklist_filter_just_me = db.Column(db.Boolean, default=False)
     featured_tasklist_filter_overdue = db.Column(db.Boolean, default=False)
     featured_tasklist_filter_due_today = db.Column(db.Boolean, default=False)
@@ -73,6 +77,6 @@ class UserSetting(db.Model):
                 "sortOrder": self.featured_tasklist_sort_order,
                 "view": self.featured_tasklist_view,
                 "showProgress": self.featured_tasklist_show_progress,
-                "showQuickAdd": self.featured_tasklist_show_quick_add
+                "showQuickAdd": self.featured_tasklist_show_quick_add,
             }
         }

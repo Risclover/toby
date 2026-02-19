@@ -42,7 +42,7 @@ def update_user_settings():
             "sortOrder": "featured_tasklist_sort_order",
             "view": "featured_tasklist_view",
             "showProgress": "featured_tasklist_show_progress",
-            "showQuickAdd": "featured_tasklist_show_quick_add"
+            "showQuickAdd": "featured_tasklist_show_quick_add",
         }
 
         for json_key, model_attr in field_mapping.items():
@@ -75,3 +75,31 @@ def reset_user_settings():
     db.session.commit()
 
     return jsonify(user_settings.to_dict()), 200
+
+@user_setting_routes.route("/featured-tasklist", methods=["PATCH"])
+@login_required
+def toggle_featured_tasklist():
+    user_settings = UserSetting.query.filter_by(user_id=current_user.id).first()
+
+    if not user_settings:
+        user_settings = UserSetting(user_id=current_user.id)
+        db.session.add(user_settings)
+
+    data = request.get_json() or {}
+    tasklist_id = data.get('tasklistId')
+
+    if not tasklist_id:
+        return jsonify({"error": "No tasklist ID provided"}), 400
+
+    if user_settings.featured_tasklist_id == tasklist_id:
+        user_settings.featured_tasklist_id = None
+    else:
+        user_settings.featured_tasklist_id = tasklist_id
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Featured tasklist updated",
+        "featuredTasklistId": user_settings.featured_tasklist_id,
+        "userSettings": user_settings.to_dict()
+    }), 200

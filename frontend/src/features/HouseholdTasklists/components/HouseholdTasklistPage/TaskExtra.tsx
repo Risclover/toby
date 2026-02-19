@@ -62,11 +62,11 @@ export const TaskExtra = ({ task, householdId, listId }: Props) => {
         </div>}
         {dateLabel !== null && <div className="extra">
             <CalendarTodayRoundedIcon />
-            {relativeDayLabel(task?.dueDate)}
+            <span className="extra-label">{relativeDayLabel(task?.dueDate)}</span>
         </div>}
         {task.notes !== "" && task.notes !== null && <div className="extra">
             <TextSnippetIcon />
-            Notes
+            <span className="extra-label">Notes</span>
         </div>}
     </div>
 }

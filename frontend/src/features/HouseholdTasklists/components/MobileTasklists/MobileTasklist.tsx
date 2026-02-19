@@ -42,7 +42,7 @@ export const MobileTasklist = () => {
     if (tasklistId === "archived") return null;
     if (!listId) return <div>Invalid list id.</div>;
 
-    if (!tasklist) return <div>Tasklist not found.</div>;
+    if (!tasklist) return null;
 
     return (
         <MobileLayout

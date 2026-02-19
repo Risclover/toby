@@ -418,6 +418,7 @@ form {
 }
 
 .homepage-collapse-card {
+    position: relative;
     margin: .75rem;
     border-radius: .875rem;
     overflow: hidden;
@@ -485,16 +486,36 @@ form {
 }
 
 .homepage-lists-tasklist {
-    padding: 0.5rem 0.75rem;
+    padding: 0 0.75rem;
     width: 100%;
+    overflow-y: auto;
+    max-height: 250px;
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #fafafa;
+}
+
+
+.homepage-lists-tasklist-container {
+    position: relative;
 }
 
 .homepage-lists-tasklist li {
     padding: 0.42375rem 0.25rem;
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
     color: var(--mantine-color-dark-7);
+    cursor: pointer !important;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.featured-tasklist-task-left {
+    display: flex;
+    flex-direction: column;
 }
 
 .homepage-lists-tasklist li:not(:last-child) {
@@ -514,7 +535,6 @@ form {
     overflow: hidden;
     white-space: nowrap;
     flex-shrink: 0;
-    border-bottom: 1px solid grey;
     line-height: 1;
 }
 
@@ -526,4 +546,39 @@ form {
 
 .homepage-lists-tasklist-title svg {
     flex-shrink: 0;
+}
+
+.featured-completed-task {
+    text-decoration: line-through;
+    color: var(--mantine-color-gray-5) !important;
+}
+
+.featured-empty-state {
+    padding: 1rem;
+    gap: 0.15rem;
+    color: var(--mantine-color-gray-7);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.featured-info-icon svg {
+    font-size: 1rem;
+    color: var(--mantine-color-gray-6)
+}
+
+.featured-task-details {
+    margin-left: 1.75rem;
+    font-size: 11px;
+    color: var(--mantine-color-gray-7);
+}
+
+.featured-task-details .task-extra {
+    font-size: 10.5px;
+    align-items: center;
+}
+
+.featured-task-details .task-extra svg {
+    font-size: .9rem;
 }

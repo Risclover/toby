@@ -14,9 +14,9 @@ type Props = {
     children: React.ReactNode;
     collapse?: boolean;
     showUrgencyFilters?: boolean;
-    form?: FeaturedTasklistSettingsForm | null;
+    form?: FeaturedTasklistSettingsForm;
 }
-export const SettingsItem = ({ layout, label, labelRequired, error, errorBool, description, divider, collapse = false, showUrgencyFilters = false, form = null, children }: Props) => {
+export const SettingsItem = ({ layout, label, labelRequired, error, errorBool, description, divider, collapse = false, showUrgencyFilters = false, form, children }: Props) => {
     return (
         <>
             <div className={`tasklist-settings-section${layout === "column" ? " section-column" : ""}${layout === "delete" ? " delete-section" : ""}`}>
@@ -28,15 +28,10 @@ export const SettingsItem = ({ layout, label, labelRequired, error, errorBool, d
                     </div>
                     {children}
                 </div>
-                {showUrgencyFilters && <Space h="sm" />}
                 {collapse &&
                     <Collapse className="urgency-collapse" in={showUrgencyFilters} transitionDuration={100} transitionTimingFunction="ease-in-out">
-                        {showUrgencyFilters &&
-                            <Group gap="0.5rem">
-                                <FeaturedTasklistTabUrgencyFilter form={form} label="Overdue" />
-                                <FeaturedTasklistTabUrgencyFilter form={form} label="Due today" />
-                                <FeaturedTasklistTabUrgencyFilter form={form} label="Due soon" />
-                            </Group>
+                        {showUrgencyFilters && form &&
+                            <FeaturedTasklistTabUrgencyFilter form={form} />
                         }
                     </Collapse>
                 }

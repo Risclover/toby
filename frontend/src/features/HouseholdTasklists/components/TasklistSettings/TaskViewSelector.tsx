@@ -59,7 +59,7 @@ function DetailedTask() {
                 </Stack>
 
                 {/* Real Star Icon (Top aligned) */}
-                <Text c="var(--tasklist-color)"><StarIcon size="10px" /></Text>
+                <Text c="var(--tasklist-color)"><StarIcon size="10px" color="var(--tasklist-color)" /></Text>
             </Flex>
         </Box>
     );
@@ -78,7 +78,7 @@ function CompactTask() {
                 </Box>
 
                 {/* Real Star Icon */}
-                <Text c="var(--tasklist-color)"><StarIcon size="10px" /></Text>
+                <Text c="var(--tasklist-color)"><StarIcon size="10px" color="var(--tasklist-color)" /></Text>
             </Flex>
         </Box>
     );

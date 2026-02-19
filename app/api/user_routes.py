@@ -19,6 +19,7 @@ def today_local_date():
 def _d(s: str | None):
     return date.fromisoformat(s) if s else None  # expects "YYYY-MM-DD"
 
+
 @user_routes.route("/")
 def get_all_users():
     """
@@ -27,6 +28,7 @@ def get_all_users():
     users = User.query.all()
     return {"Users": [user.to_dict() for user in users]}, 200
 
+
 @user_routes.route("/<int:id>") # ex: /users/1
 def get_user(id):
     """
@@ -34,6 +36,7 @@ def get_user(id):
     """
     user = User.query.get(id)
     return user.to_dict()
+
 
 @user_routes.route("/<int:id>", methods=["PUT"])
 def update_user_details(id):
@@ -104,6 +107,7 @@ def get_user_checkins(user_id):
         "dates": [c.local_date.isoformat() for c in rows]
     }), 200
 
+
 @user_routes.route("/<int:user_id>/checkins", methods=["POST"])
 def check_in_today(user_id):
     if user_id != current_user.id: abort(403)
@@ -153,38 +157,6 @@ def get_user_mood(id):
     mood = user.user_mood.mood if user and user.user_mood else None
     return jsonify(user.to_dict_with_mood()), 200
 
-@user_routes.route("/<int:id>/featured-list", methods=['PATCH'])
-@login_required
-def update_featured_list(id):
-    # Ensure 'id' matches the variable in the route decorator
-    user = User.query.get_or_404(id)
-
-    # Security check (Good job adding this!)
-    if current_user.id != user.id:
-        return jsonify({ "error": "Unauthorized" }), 403
-
-    # Ensure we actually have JSON data
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Missing JSON body"}), 400
-
-    list_id = data.get('listId')
-
-    if not list_id:
-        return jsonify({"error": "No list ID provided"}), 400
-    
-    # Toggle logic
-    if user.featured_tasklist_id == list_id:
-        user.featured_tasklist_id = None 
-    else:
-        user.featured_tasklist_id = list_id 
-    
-    db.session.commit()
-
-    return jsonify({
-        "message": "Featured list updated",
-        "featuredTasklistId": user.featured_tasklist_id
-    }), 200
 
 @user_routes.route("/<int:id>/task_stats")
 def get_task_stats(id):
@@ -229,6 +201,7 @@ def get_task_stats(id):
         print(f"Stats Error for User {id}: {e}")
         return jsonify({"error": str(e)}), 500
 
+
 @user_routes.route("/<int:user_id>/reminders", methods=["GET"])
 @login_required
 def get_user_reminders(user_id):
@@ -257,6 +230,7 @@ def get_user_reminders(user_id):
         assignment.reminder.to_dict_for_user(assignment)
         for assignment in assignments
     ]), 200
+
 
 @user_routes.route("/me/timezone", methods=["PUT"])
 def update_user_timezone():

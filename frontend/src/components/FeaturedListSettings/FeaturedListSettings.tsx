@@ -1,52 +1,88 @@
 import { useIsSmallScreen } from "@/hooks";
 import { useSettingsModal } from "@/hooks/useSettingsModal";
-import { useAuthenticateQuery, useGetHouseholdTasklistsQuery } from "@/store";
+import { useAuthenticateQuery } from "@/store";
 import { useGetUserSettingsQuery, useUpdateUserSettingsMutation, type FeaturedTasklistSettings } from "@/store/userSettingSlice";
 import { Button, Group, Modal, Tabs } from "@mantine/core"
-import { useForm } from "@mantine/form";
 import { FeaturedTasklistTab } from "./FeaturedTasklistTab";
 import { DiscardWarning } from "@/features";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Props = {
     opened: boolean;
-    handleClose: () => void;
+    setShowFeaturedListSettings: (val: boolean) => void;
 }
-export const FeaturedListSettings = ({ opened, handleClose }: Props) => {
+export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Props) => {
     const isSmallScreen = useIsSmallScreen();
     const { data: user } = useAuthenticateQuery();
     const [updateUserSettings] = useUpdateUserSettingsMutation();
     const { data: userSettings } = useGetUserSettingsQuery();
-    const { data: tasklists } = useGetHouseholdTasklistsQuery(user?.householdId);
 
-    console.log('HI', tasklists?.filter(tasklist => tasklist.id === user.featuredTasklistId));
-    // 1. Define strictly typed values
+    const [activeTab, setActiveTab] = useState<string | null>("tasks");
+    const [pendingTab, setPendingTab] = useState<string | null>(null);
+
     const initialValues = useMemo<FeaturedTasklistSettings>(() => ({
-        featuredTasklist: user.featuredTasklistId?.toString() ?? "",
-        rotation: userSettings?.featuredTasklist.rotation ?? "auto_rotate",
-        assigneeFilter: userSettings?.featuredTasklist.assigneeFilter ?? "all_tasks",
-        urgencyFilter: userSettings?.featuredTasklist.urgencyFilter ?? "all",
+        featuredTasklistId: userSettings?.featuredTasklist.featuredTasklistId ?? null,
+        rotation: userSettings?.featuredTasklist.rotation ?? false,
+        justMeFilter: userSettings?.featuredTasklist.justMeFilter ?? false,
+        urgencyFilter: {
+            overdue: userSettings?.featuredTasklist.urgencyFilter.overdue ?? false,
+            dueToday: userSettings?.featuredTasklist.urgencyFilter.dueToday ?? false,
+            dueSoon: userSettings?.featuredTasklist.urgencyFilter.dueSoon ?? false,
+        },
         importantOnly: userSettings?.featuredTasklist.importantOnly ?? false,
         maxItems: userSettings?.featuredTasklist.maxItems ?? 5,
         showCompleted: userSettings?.featuredTasklist.showCompleted ?? false,
         sortOrder: userSettings?.featuredTasklist.sortOrder ?? "due_date",
         view: userSettings?.featuredTasklist.view ?? "compact",
         showProgress: userSettings?.featuredTasklist.showProgress ?? false,
-        showQuickAdd: userSettings?.featuredTasklist.showQuickAdd ?? false
-    }), [user.featuredTasklistId, userSettings]);
+        showQuickAdd: userSettings?.featuredTasklist.showQuickAdd ?? false,
+    }), [userSettings]);
 
-    useEffect(() => {
-        // Determine the new value (string or empty string)
-        const newFeaturedId = user?.featuredTasklistId?.toString() ?? "";
+    const defaultValues: FeaturedTasklistSettings = {
+        featuredTasklistId: userSettings?.featuredTasklist.featuredTasklistId,
+        rotation: false,
+        justMeFilter: false,
+        urgencyFilter: {
+            overdue: false,
+            dueToday: false,
+            dueSoon: false
+        },
+        importantOnly: false,
+        maxItems: -1,
+        showCompleted: false,
+        sortOrder: "due_date",
+        view: "compact",
+        showProgress: false,
+        showQuickAdd: false,
+    }
 
-        // Update the form field directly
-        form.setFieldValue('featuredTasklist', newFeaturedId);
+    const handleTabChange = (newValue: string | null) => {
+        if (form.isDirty()) {
+            setPendingTab(newValue);
+            setShowDiscardWarning(true);
+        } else {
+            setActiveTab(newValue);
+        }
+    }
 
-        // Optional: Reset dirty state if you want the "Update" button to disable
-        // form.resetDirty(); 
-    }, [user?.featuredTasklistId]); // <--- RUNS WHENEVER THE ID CHANGES
+    const onConfirmDiscard = () => {
+        // Reset the form (this discards the changes)
+        form.reset();
 
-    // 3. Keep your "Reset on Open" logic if you want
+        // Hide the warning
+        setShowDiscardWarning(false);
+
+        if (pendingTab) {
+            // If we were trying to switch tabs, do it now
+            setActiveTab(pendingTab);
+            setPendingTab(null);
+        } else {
+            // Otherwise, we were trying to close the modal
+            // (Use the hook's handler which calls onClose)
+            handleDiscardConfirmation();
+        }
+    };
+
     useEffect(() => {
         if (opened) {
             form.setValues(initialValues);
@@ -54,33 +90,25 @@ export const FeaturedListSettings = ({ opened, handleClose }: Props) => {
         }
     }, [opened]);
 
-    // 2. DELETE the manual useForm call.
-    // const form = useForm(...)  <-- REMOVE THIS
-
-    // 3. Destructure the form from your custom hook instead
     const {
-        form, // <-- Get form here
+        form,
         showDiscardWarning,
         showDeleteConfirmation,
         handleResetToDefaults,
         isSubmitting,
         handleSubmit,
+        handleClose,
         setShowDiscardWarning,
         handleDiscardConfirmation
     } = useSettingsModal({
         entityId: user?.id,
-        initialValues, // Now works without casting
-        defaultValues: {},
+        initialValues,
+        defaultValues,
         onSubmit: async (values) => {
             await updateUserSettings(values).unwrap();
         },
-        onClose: () => handleClose(),
+        onClose: () => setShowFeaturedListSettings(false),
     });
-
-    console.log('DEBUG: FeaturedListSettings Rendered');
-    console.log('DEBUG: User ID from Query:', user?.id);
-    console.log('DEBUG: Featured List ID from Query:', user?.featuredTasklistId);
-    console.log('DEBUG: Form Values:', form.values.featuredTasklist);
 
     return (
         <Modal
@@ -97,7 +125,7 @@ export const FeaturedListSettings = ({ opened, handleClose }: Props) => {
             }}
             closeOnEscape={(!showDiscardWarning && !showDeleteConfirmation)}
         >
-            <Tabs defaultValue="tasks" style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
+            <Tabs onChange={handleTabChange} value={activeTab} defaultValue="tasks" style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
                 <Tabs.List className="tasklist-settings-tablist" style={{ flexShrink: 0, padding: "0 16px", justifyContent: "space-between", alignItems: "flex-end" }}>
                     <div style={{ display: "flex" }}>
                         <Tabs.Tab className="tasklist-settings-tab" color="cyan.6" value="tasks">Tasklist</Tabs.Tab>
@@ -134,10 +162,13 @@ export const FeaturedListSettings = ({ opened, handleClose }: Props) => {
                 </Group>
             </Modal.Header>
             {
-                showDiscardWarning && <DiscardWarning opened={showDiscardWarning} setShowDiscardWarning={setShowDiscardWarning} handleClose={() => {
-                    setShowDiscardWarning(false);
-                    handleDiscardConfirmation();
-                }} />
+                showDiscardWarning && (
+                    <DiscardWarning
+                        opened={showDiscardWarning}
+                        setShowDiscardWarning={setShowDiscardWarning}
+                        handleClose={onConfirmDiscard}
+                    />
+                )
             }
         </Modal>
     )

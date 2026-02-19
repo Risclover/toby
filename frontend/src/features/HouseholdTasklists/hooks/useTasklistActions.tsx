@@ -1,16 +1,16 @@
+import { useFeatureTasklistMutation } from "@/store/userSettingSlice";
 import { useNavigate } from "react-router-dom";
-import { useFeatureTasklistMutation } from "@/store/userSlice";
 
-export const useTasklistActions = (listId: number, userId?: number, householdId?: number) => {
+export const useTasklistActions = (tasklistId: number, userId?: number, householdId?: number) => {
     const navigate = useNavigate();
     const [featureTasklist] = useFeatureTasklistMutation();
 
-    const navigateToTasklistPage = () => navigate(`/tasklists/${listId}`);
+    const navigateToTasklistPage = () => navigate(`/tasklists/${tasklistId}`);
 
     const toggleFeatured = (e?: React.MouseEvent | React.KeyboardEvent) => {
         e?.stopPropagation();
         if (userId && householdId) {
-            featureTasklist({ userId, householdId, listId });
+            featureTasklist({ householdId, tasklistId });
         }
     };
 

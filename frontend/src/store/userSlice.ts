@@ -113,52 +113,6 @@ export const userSlice = apiSlice.injectEndpoints({
             providesTags: (_result, _error, userId) => [{ type: "User", id: userId }],
         }),
 
-        featureTasklist: builder.mutation({
-            query: ({ userId, listId }) => ({
-                url: `/users/${userId}/featured-list`,
-                method: 'PATCH',
-                body: { listId },
-            }),
-            invalidatesTags: ['User', 'UserSettings'],
-            async onQueryStarted({ householdId, listId, userId }, { dispatch, queryFulfilled }) {
-                // ... existing listPatch code ...
-                const listPatch = dispatch(
-                    householdSlice.util.updateQueryData('getHouseholdTasklists', householdId, (draft) => {
-                        draft.forEach((list: any) => {
-                            const isTarget = list.id === listId;
-                            // Logic: Toggle off if already featured, otherwise set the new one
-                            const wasAlreadyFeatured = list.isFeatured && isTarget;
-                            list.isFeatured = wasAlreadyFeatured ? false : isTarget;
-                        });
-                    })
-                );
-                // FIX: Use camelCase property name
-                const userPatch = dispatch(
-                    userSlice.util.updateQueryData('getUser', userId, (draft: any) => {
-                        const wasAlreadyFeatured = draft.featuredTasklistId === listId; // Changed
-                        draft.featuredTasklistId = wasAlreadyFeatured ? null : listId;  // Changed
-                    })
-                );
-
-                // FIX: Use camelCase property name
-                const authPatch = dispatch(
-                    authSlice.util.updateQueryData('authenticate', undefined, (draft: any) => {
-                        if (!draft) return;
-                        const wasAlreadyFeatured = draft.featuredTasklistId === listId; // Changed
-                        draft.featuredTasklistId = wasAlreadyFeatured ? null : listId;  // Changed
-                    })
-                );
-
-                try {
-                    await queryFulfilled;
-                } catch {
-                    listPatch.undo();
-                    userPatch.undo();
-                    authPatch.undo();
-                }
-            },
-        }),
-
         getUserTaskStats: builder.query<{ overdue: number; due_today: number; due_soon: number }, number>({
             query: (userId) => `/users/${userId}/task_stats`,
             providesTags: (result, error, userId) => [{ type: "UserTaskStats", id: userId }],
@@ -207,7 +161,6 @@ export const {
     useUpdatePointsMutation,
     useUploadImgMutation,
     useGetUserMoodQuery,
-    useFeatureTasklistMutation,
     useGetUserTaskStatsQuery,
     useUpdateTimezoneMutation
 } = userSlice;

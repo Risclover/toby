@@ -4,7 +4,7 @@ import { useAuthenticateQuery, useGetHouseholdTasklistsQuery, useGetTasklistsQue
 import { useGetUserSettingsQuery, type FeaturedListView, type FeaturedTasklistSettings } from "@/store/userSettingSlice";
 import { Button, Checkbox, Collapse, Divider, FloatingIndicator, Group, Input, Loader, Select, Space, Switch, Tabs, Text, UnstyledButton } from "@mantine/core"
 import type { UseFormReturnType } from "@mantine/form";
-import { useState } from "react";
+import React, { useState } from "react";
 import { data } from "react-router-dom";
 import { MaxTaskCountPicker } from "./MaxTaskCountPicker";
 import "./FeaturedListSettings.css"
@@ -28,11 +28,16 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
     } = useGetHouseholdTasklistsQuery(user?.householdId);
 
     const userTasklists = tasklists?.filter(tasklist => tasklist.memberIds?.includes(user.id) || tasklist.allMembers);
-
-    const [showUrgencyFilters, setShowUrgencyFilters] = useState(false);
-
-    const handleUrgencySwitch = () => {
-        setShowUrgencyFilters(prev => !prev);
+    const { overdue, dueToday, dueSoon } = form.values.urgencyFilter;
+    const [showUrgencyFilters, setShowUrgencyFilters] = useState(overdue || dueToday || dueSoon);
+    const handleUrgencySwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.currentTarget.checked;
+        setShowUrgencyFilters(isChecked);
+        if (!isChecked) {
+            form.setFieldValue("urgencyFilter.overdue", false);
+            form.setFieldValue("urgencyFilter.dueToday", false);
+            form.setFieldValue("urgencyFilter.dueSoon", false);
+        }
     }
 
     const selectData = userTasklists?.map(t => ({
@@ -48,7 +53,7 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
     // Check if the list is EMPTY, not if a specific one is SELECTED.
     const hasTasklists = tasklists && tasklists.length > 0;
     return (
-        <Tabs.Panel value="tasks" style={{ overflowY: "auto", padding: "20px 28px", minHeight: 0 }}>
+        <Tabs.Panel value="tasks" style={{ overflowY: "auto", padding: isSmallScreen ? "1.5rem 0.75rem" : "1.75rem 1.25rem", minHeight: 0 }}>
             <SettingsSection title="tasklist">
                 <SettingsItem
                     layout="column"
@@ -59,13 +64,27 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                     <div className={!isSmallScreen ? "tasklist-settings-right" : ""}>
                         {userTasklists && userTasklists.length > 0 ? (
                             <Select
+                                styles={{
+                                    input: {
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                    }
+                                }}
+                                w="100%"
+                                maw={390}
+                                className="truncate-select"
                                 clearable
                                 placeholder="Pick a tasklist"
                                 data={userTasklists.map(t => ({ value: t.id.toString(), label: t.title }))}
-                                {...form.getInputProps("featuredTasklist")}
+                                {...form.getInputProps("featuredTasklistId")}
                                 // Ensure we handle null/empty values correctly
-                                value={form.values.featuredTasklist ? form.values.featuredTasklist.toString() : null}
-                                onChange={(val) => form.setFieldValue("featuredTasklist", val)}
+                                value={form.values.featuredTasklistId ? form.values.featuredTasklistId.toString() : null}
+                                onChange={(val) => {
+                                    // Handle conversion back to number or null
+                                    const numericVal = val ? Number(val) : null;
+                                    form.setFieldValue("featuredTasklistId", numericVal);
+                                }}
                             />
                         ) : (
                             <div className="no-tasklists-msg">
@@ -81,7 +100,7 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                     divider={true}
                 >
                     <Switch
-                        color="cyan.6"
+                        color="var(--tasklist-color)"
                         size="md"
                         withThumbIndicator={false}
                         {...form.getInputProps('rotation', { type: 'checkbox' })}
@@ -96,10 +115,10 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                     divider={false}
                 >
                     <Switch
-                        color="cyan.6"
+                        color="var(--tasklist-color)"
                         size="md"
                         withThumbIndicator={false}
-                        {...form.getInputProps('assigneeFilter', { type: 'checkbox' })}
+                        {...form.getInputProps('justMeFilter', { type: 'checkbox' })}
                     />
                 </SettingsItem>
                 <SettingsItem
@@ -109,7 +128,7 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                     divider={false}
                 >
                     <Switch
-                        color="cyan.6"
+                        color="var(--tasklist-color)"
                         size="md"
                         withThumbIndicator={false}
                         {...form.getInputProps('importantOnly', { type: 'checkbox' })}
@@ -124,7 +143,13 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                     showUrgencyFilters={showUrgencyFilters}
                     form={form}
                 >
-                    <Switch onChange={handleUrgencySwitch} color="cyan.6" size="md" withThumbIndicator={false} />
+                    <Switch
+                        onChange={handleUrgencySwitch}
+                        color="var(--tasklist-color)"
+                        size="md"
+                        withThumbIndicator={false}
+                        checked={showUrgencyFilters}
+                    />
                 </SettingsItem>
             </SettingsSection>
             <SettingsSection title="display">
@@ -135,7 +160,7 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                     divider={false}
                 >
                     <Switch
-                        color="cyan.6"
+                        color="var(--tasklist-color)"
                         size="md"
                         withThumbIndicator={false}
                         {...form.getInputProps('showCompleted', { type: 'checkbox' })}
@@ -148,7 +173,7 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                     divider={false}
                 >
                     <Switch
-                        color="cyan.6"
+                        color="var(--tasklist-color)"
                         size="md"
                         withThumbIndicator={false}
                         {...form.getInputProps('showProgress', { type: 'checkbox' })}
@@ -161,7 +186,7 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                     divider={false}
                 >
                     <Switch
-                        color="cyan.6"
+                        color="var(--tasklist-color)"
                         size="md"
                         withThumbIndicator={false}
                         {...form.getInputProps('showQuickAdd', { type: 'checkbox' })}
@@ -170,7 +195,7 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                 <div className="tasklist-settings-section view-tasklist-section">
                     <div className="input-label-description">
                         <Input.Label>View</Input.Label>
-                        <Input.Description>Task card density display</Input.Description>
+                        <Input.Description>Choose if additional details are shown</Input.Description>
                     </div>
                     <Space h="xs" />
                     <TaskViewSelector
@@ -184,13 +209,13 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                 <SettingsItem
                     layout="column"
                     label="Sort order"
-                    description="Set the default sort order."
+                    description="Set the task order"
                     divider={false}
                 >
                     <Select
                         defaultValue="manual"
                         placeholder="Sort by"
-                        {...form.getInputProps('defaultSortOrder')}
+                        {...form.getInputProps('sortOrder')}
                         data={[
                             { value: "manual", label: "Manual" },
                             { value: "alphabetical", label: "Alphabetical" },
