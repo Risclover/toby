@@ -149,13 +149,15 @@ export const HomepageListsTasklist = () => {
                                         value={taskValue}
                                         // onKeyDown={(e) => { if (e.key === "Enter" && !tasklist?.isArchived) { handleAddTask() } }}
                                         // ref={inputRef}
+                                        onKeyDown={(e) => { if (e.key === "Enter") { handleAddTask() } }}
                                         onChange={handleTitle}
                                         id="add-task"
                                         type="text"
                                         placeholder="Add a task and press Enter"
                                         maxLength={255}
+                                        ref={inputRef}
                                     />
-                                    <Button className="tasklist-settings-footer-btn" color="var(--tasklist-color)" variant="filled" size="compact-xs" onClick={handleAddTask}>Add</Button>
+                                    <Button color="var(--tasklist-color)" fw={400} variant="filled" size="xs" radius="sm" onClick={handleAddTask}>Add</Button>
                                 </div>
                             </div>
                         }

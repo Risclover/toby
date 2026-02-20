@@ -18,6 +18,7 @@ import { HomepageCollapseCardBody } from "@/components/HomepageCollapseCard/Home
 import { HomepageCollapseCardTabs } from "@/components/HomepageCollapseCard/HomepageCollapseCardTabs";
 import { HomepageCollapseCardTab } from "@/components/HomepageCollapseCard/HomepageCollapseCardTab";
 import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/HomepageListsCollapseCard";
+import { HomepageNoticeBoardCollapseCard } from "@/components/HomepageCollapseCard/HomepageNoticeBoardCollapseCard";
 
 export const MobileHome = () => {
     const mobileHomeFamilyTitle = <MobileHomeFamilyTitle />
@@ -30,11 +31,6 @@ export const MobileHome = () => {
         console.log('data:', data);
     }
 
-    const tabs = {
-        "tasks": { value: "tasks", body: <div>Hello</div> },
-        "shopping": { value: "shopping", body: <div>goodbye</div> }
-    } as const satisfies Record<string, { value: string; body: JSX.Element }>;
-
 
     return (
         <MobileLayout titleComponent={mobileHomeFamilyTitle}>
@@ -43,6 +39,7 @@ export const MobileHome = () => {
             <Button onClick={handleTimezone}>Submit</Button>
             <TaskStatusSection />
             <MobileHomeNoticeBoard />
+            <HomepageNoticeBoardCollapseCard />
             <HomepageListsCollapseCard />
         </MobileLayout>
     )

@@ -1,5 +1,5 @@
 import { useEffect, useState, type Dispatch, type JSX, type SetStateAction } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
@@ -99,10 +99,7 @@ export function Sidebar({ sidebarExpanded, setSidebarExpanded }: Props) {
     return (
         <nav className={`sidebar${sidebarExpanded ? " collapsed" : ""}`} aria-label="Primary">
             <div className="sidebar-top-section">
-                <div className="brand">
-                    <TobyIcon />
-                    <div className="title">Toby</div>
-                </div>
+                <div className="brand"><Link to="/"><TobyIcon size="2rem" color="white" /><div className="title">Toby</div></Link></div>
                 <button
                     className="collapse-btn"
                     onClick={toggle}

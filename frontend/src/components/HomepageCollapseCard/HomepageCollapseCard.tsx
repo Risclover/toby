@@ -5,12 +5,13 @@ import { HomepageCollapseCardTitle } from "./HomepageCollapseCardTitle"
 
 type Props = {
     title: string;
+    color: string;
     children: React.ReactNode;
 }
 
 const CARD_KEY = "homepage-card-open";
 
-export const HomepageCollapseCard = ({ title, children }: Props) => {
+export const HomepageCollapseCard = ({ title, color, children }: Props) => {
     const [showCard, setShowCard] = useState(() => {
         const saved = localStorage.getItem(CARD_KEY);
         // Default to TRUE if no value is saved, or parse the saved string
@@ -23,7 +24,7 @@ export const HomepageCollapseCard = ({ title, children }: Props) => {
 
     return (
         <div className="homepage-collapse-card">
-            <HomepageCollapseCardTitle dotColor="var(--mantine-color-cyan-6)" title={title} setShowCard={setShowCard} showCard={showCard} />
+            <HomepageCollapseCardTitle dotColor={color} title={title} setShowCard={setShowCard} showCard={showCard} />
             <Collapse
                 in={showCard}
                 transitionDuration={100}

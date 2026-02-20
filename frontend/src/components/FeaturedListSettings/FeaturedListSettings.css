@@ -151,8 +151,7 @@
 }
 
 .featured-tasklist-title {
-    padding: 0.25rem;
-    margin: 0 .75rem;
+    padding: 0.25rem 0.75rem;
     padding-top: .5rem;
     font-family: var(--font-family-sora);
     /* text-transform: uppercase; */
@@ -161,7 +160,8 @@
     /* font-weight: 500; */
     color: var(--mantine-color-dark-9);
     max-width: 100%;
-    border-bottom: 1px solid var(--mantine-color-gray-3);
+    /* border-bottom: 1px solid var(--mantine-color-gray-3); */
+    box-shadow: var(--mantine-shadow-xs);
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
@@ -228,8 +228,8 @@
 }
 
 .featured-tasklist-quick-add {
-    background: var(--mantine-color-gray-1);
-    padding: 0.25rem;
+    background: #f7f8fc;
+    padding: 0.5rem;
 }
 
 .featured-tasklist-quick-add input {
@@ -244,9 +244,14 @@
     align-items: center;
     border-radius: 0.25rem;
     font-family: var(--font-family-sora);
-    padding: 0.25rem 0.5rem;
+    padding: 0rem 0.5rem;
 }
 
 .featured-tasklist-input-container button {
     flex-shrink: 0;
+    font-size: 12px;
+    height: auto;
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
+    margin-right: 0;
 }

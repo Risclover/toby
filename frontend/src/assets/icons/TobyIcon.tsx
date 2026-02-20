@@ -1,8 +1,13 @@
 import { Button } from "@mantine/core"
 import { Link } from "react-router-dom"
 
-export const TobyIcon = () => {
+
+type Props = {
+    size: string;
+    color: string;
+}
+export const TobyIcon = ({ size, color }: Props) => {
     return (
-        <div className="brand"><Link to="/"><svg xmlns="http://www.w3.org/2000/svg" width="2rem" version="1.1" x="0px" y="0px" viewBox="4.49 10.08 90.95 79.85"><path d="M91.1,39.8c4-12.9,3-25.7-0.9-29.1C87,7.7,74.7,16.2,67,22.2c-7.5-2.1-21.8-4.4-34.8,2.5c-0.1,0.1-0.2,0.1-0.4,0.2  c-8.6-4.1-22.5-10.2-25.5-8.1c-4.1,2.9-1.1,25.4,7.8,36.4c-1,6.6-1.5,19.7,8.7,28.3C39,95.2,75.2,91.9,89.2,73.8  C96.8,64.1,97.5,50.6,91.1,39.8z"></path></svg><div className="title">Toby</div></Link></div>
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} fill={color} version="1.1" x="0px" y="0px" viewBox="4.49 10.08 90.95 79.85"><path d="M91.1,39.8c4-12.9,3-25.7-0.9-29.1C87,7.7,74.7,16.2,67,22.2c-7.5-2.1-21.8-4.4-34.8,2.5c-0.1,0.1-0.2,0.1-0.4,0.2  c-8.6-4.1-22.5-10.2-25.5-8.1c-4.1,2.9-1.1,25.4,7.8,36.4c-1,6.6-1.5,19.7,8.7,28.3C39,95.2,75.2,91.9,89.2,73.8  C96.8,64.1,97.5,50.6,91.1,39.8z"></path></svg>
     )
 }

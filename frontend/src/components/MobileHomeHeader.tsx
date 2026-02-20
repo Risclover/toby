@@ -14,9 +14,7 @@ export const MobileHomeHeader = () => {
             <div className="mobile-header-left">
                 {/* TASK: Animated hamburger menu icon */}
                 <MenuRoundedIcon />
-                <div className="brand">
-                    <TobyIcon />
-                </div>
+                <div className="brand"><Link to="/"><TobyIcon size="1.25rem" color="white" /><div className="title">Toby</div></Link></div>
             </div>
             <div className="mobile-header-right">
                 <div className="mobile-header-icon-btns">

@@ -9,12 +9,6 @@
     /* border-bottom: 1px solid lightgrey; */
 }
 
-.mobile-header-container .brand svg {
-    height: 1.5rem;
-    width: 1.5rem;
-    fill: white;
-}
-
 .mobile-header-container .brand {
     height: auto;
     margin: 0;
