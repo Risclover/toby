@@ -130,7 +130,7 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Pr
                         <Tabs.Tab className="tasklist-settings-tab" color="cyan.6" value="shopping">Shopping List</Tabs.Tab>
                     </div>
                 </Tabs.List>
-                <FeaturedTasklistTab form={form} />
+                <FeaturedTasklistTab form={form} handleClose={handleClose} />
             </Tabs>
             <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}>
                 <Group justify="space-between" w="100%">

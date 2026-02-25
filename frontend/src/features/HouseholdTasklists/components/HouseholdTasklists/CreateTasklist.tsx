@@ -1,28 +1,24 @@
-import { Button, Modal, Stack, TextInput } from "@mantine/core"
-import { useDisclosure } from "@mantine/hooks"
+// CreateTasklist.tsx
+import { Modal, Stack, TextInput, Button } from "@mantine/core";
 import { useCreateHouseholdTasklistMutation } from "@/store/taskSlice";
 import { useState, type FormEvent } from "react";
-import { HouseholdMemberSelection } from "../../../../components/HouseholdMemberSelection"
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useMemberSelection } from "@/hooks/useMemberSelection";
-import AddIcon from '@mui/icons-material/Add';
+import { HouseholdMemberSelection } from "@/components/HouseholdMemberSelection";
 import { useNavigate } from "react-router-dom";
+import { useCreateTasklist } from "@/contexts";
 
-type CreateTasklist = {
-    householdId: number
-    open: () => void;
-    close: () => void;
-    opened: boolean;
-}
+type Props = { householdId: number };
 
-export const CreateTasklist = ({ householdId, opened, open, close }: CreateTasklist) => {
+export const CreateTasklist = ({ householdId }: Props) => {
     const navigate = useNavigate();
+    const { state, closeCreateTasklist } = useCreateTasklist();
+
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const [title, setTitle] = useState("");
 
-    // OWN the selection state here
     const {
         allMembers,
         someSelected,
@@ -41,32 +37,28 @@ export const CreateTasklist = ({ householdId, opened, open, close }: CreateTaskl
         e.preventDefault();
         if (!canSubmit) return;
 
-        let newList;
-        if (allMembers) {
-            newList = await createTasklist({ title, householdId, allMembers: true }).unwrap();
-        } else {
-            newList = await createTasklist({
-                title,
-                householdId,
-                allMembers: false,
-                memberIds,
-            }).unwrap();
-        }
+        const newList = await createTasklist(
+            allMembers
+                ? { title, householdId, allMembers: true }
+                : { title, householdId, allMembers: false, memberIds }
+        ).unwrap();
 
-        // 1. Success! Access the ID
         const newId = newList.id;
 
-        // 2. Cleanup
         setTitle("");
         toggleAll(true);
-        close();
-
-        // 3. Navigate
-        navigate(`/tasklists/${newId}`); // Adjust path as needed
+        closeCreateTasklist();
+        navigate(`/tasklists/${newId}`);
     };
 
     return (
-        <Modal radius="md" opened={opened} onClose={close} title="Create Tasklist" centered>
+        <Modal
+            radius="md"
+            opened={state.isOpen}          // <- key line
+            onClose={closeCreateTasklist}  // <- key line
+            title="Create Tasklist"
+            centered
+        >
             <Stack component="form" onSubmit={handleListCreation}>
                 <TextInput
                     value={title}

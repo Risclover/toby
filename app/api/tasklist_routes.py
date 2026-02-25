@@ -1,6 +1,6 @@
 # routes/tasklists.py
 from flask import Blueprint, jsonify, request
-from app.models import Tasklist, Task, User, Household, TasklistMember
+from app.models import Tasklist, Task, User, Household, TasklistMember, UserSetting
 from app.extensions import db
 from flask_login import current_user, login_required
 from app.models.tasklist import SortOrder
@@ -175,6 +175,10 @@ def delete_list(id):
     Delete a task list
     """
     tasklist = Tasklist.query.get_or_404(id)
+    UserSetting.query.filter(UserSetting.featured_tasklist_id==id).update(
+        {UserSetting.featured_tasklist_id: None},
+        synchronize_session=False
+    )
     db.session.delete(tasklist)
     db.session.commit()
     return jsonify({"message": f"List {id} deleted"}), 200

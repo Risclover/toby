@@ -1,6 +1,7 @@
 import { authSlice, type RootState } from ".";
 import { apiSlice } from "./apiSlice";
 import { householdSlice } from "./householdSlice"; // 👈 add this import
+import { userSettingsSlice } from "./userSettingSlice";
 
 export interface Task {
     id: number;
@@ -290,9 +291,36 @@ export const taskSlice = apiSlice.injectEndpoints({
                 url: `/tasklists/${listId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (_res, _err, arg: DeleteListRequest) => {
-                return [{ type: "Tasklist", id: arg.listId }, { type: "Tasklist", id: "LIST" }]
-            }
+
+            async onQueryStarted({ listId }, { dispatch, queryFulfilled }) {
+                // Safeguard against undefined
+                if (listId == null) return;
+
+                // Clear featuredTasklistId if it points at this list
+                const patchSettings = dispatch(
+                    userSettingsSlice.util.updateQueryData(
+                        "getUserSettings",
+                        undefined,
+                        (draft) => {
+                            if (draft.featuredTasklist.featuredTasklistId === listId) {
+                                draft.featuredTasklist.featuredTasklistId = null;
+                            }
+                        }
+                    )
+                );
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchSettings.undo();
+                }
+            },
+
+            invalidatesTags: (_res, _err, { listId }) => [
+                { type: "Tasklist", id: listId },
+                { type: "Tasklist", id: "LIST" },
+                "UserSettings", // <- also invalidate to force a server refresh
+            ],
         }),
 
         updateTasklist: builder.mutation({

@@ -10,16 +10,19 @@ import { MaxTaskCountPicker } from "./MaxTaskCountPicker";
 import "./FeaturedListSettings.css"
 import { FeaturedTasklistTabUrgencyFilter } from "./FeaturedTasklistTabUrgencyFilter";
 import { SettingsSection } from "./SettingsSection";
+import { useCreateTasklist } from "@/contexts";
 
 
 export type FeaturedTasklistSettingsForm = UseFormReturnType<FeaturedTasklistSettings>;
 
 type Props = {
     form: FeaturedTasklistSettingsForm;
+    handleClose: () => void;
 }
 
 
-export const FeaturedTasklistTab = ({ form }: Props) => {
+export const FeaturedTasklistTab = ({ form, handleClose }: Props) => {
+    const { openCreateTasklist } = useCreateTasklist();
     const isSmallScreen = useIsSmallScreen();
     const { data: user } = useAuthenticateQuery();
     const {
@@ -52,6 +55,7 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
     // Now we know data is loaded.
     // Check if the list is EMPTY, not if a specific one is SELECTED.
     const hasTasklists = tasklists && tasklists.length > 0;
+
     return (
         <Tabs.Panel value="tasks" style={{ overflowY: "auto", padding: isSmallScreen ? "1.5rem 0.75rem" : "1.75rem 1.25rem", minHeight: 0 }}>
             <SettingsSection title="tasklist">
@@ -88,7 +92,7 @@ export const FeaturedTasklistTab = ({ form }: Props) => {
                             />
                         ) : (
                             <div className="no-tasklists-msg">
-                                Whoops! You don't have any tasklists. Want to <a className="create-tasklist-hint" href="/tasklists">create one</a>?
+                                Whoops! You don't have any tasklists. Want to <UnstyledButton className="create-tasklist-hint" onClick={() => { handleClose(); openCreateTasklist() }}>create one</UnstyledButton>?
                             </div>
                         )}
                     </div>

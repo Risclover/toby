@@ -13,8 +13,7 @@ export const NoticeBoardReminder = ({ reminder }: Props) => {
     return (
         <li className="notice-board-reminder">
             <div className="notice-board-reminder-main">
-                <div className="notice-board-reminder-title">{reminder.title}</div>
-                <div className="notice-board-reminder-body">{reminder.body}</div>
+                <div className="notice-board-reminder-body">{reminder.message}</div>
                 <div className="notice-board-reminder-details">
                     {!reminder.isAutomatic && <div className="notice-board-reminder-details-people">
                         <Tooltip label={`Created by ${reminder.createdBy?.firstName}`}>

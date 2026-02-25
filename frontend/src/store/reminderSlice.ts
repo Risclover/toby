@@ -17,8 +17,7 @@ export type Reminder = {
         profileImg?: string | null;
     } | null;
 
-    title?: string | null;
-    body: string;
+    message: string;
 
     reminderType: "custom" | "task_due" | "event_starting" | "daily_check_in_missing";
     isAutomatic: boolean;

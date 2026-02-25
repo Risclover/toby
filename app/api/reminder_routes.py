@@ -39,7 +39,7 @@ def create_or_update_automatic_reminder():
 
     required_fields = [
         "householdId",
-        "body",
+        "message",
         "reminderType",
         "sourceEntityType",
         "sourceEntityId",
@@ -71,14 +71,12 @@ def create_or_update_automatic_reminder():
     ).first()
 
     if reminder:
-        reminder.title = data.get("title")
-        reminder.body = data["body"]
+        reminder.message = data["message"]
         reminder.is_active = True
     else:
         reminder = Reminder(
             household_id=data["householdId"],
-            title=data.get("title"),
-            body=data["body"],
+            message=data["message"],
             reminder_type=ReminderType(data["reminderType"]),
             is_automatic=True,
             source_entity_type=data["sourceEntityType"],
@@ -124,11 +122,8 @@ def update_manual_reminder(id):
 
     data = request.get_json()
 
-    if "title" in data:
-        reminder.title = data["title"]
-
     if "reminderBody" in data:
-        reminder.body = data["reminderBody"]
+        reminder.message = data["reminderBody"]
 
     # ---- TIMEZONE FIX (A) START ----
     if "triggerAt" in data:

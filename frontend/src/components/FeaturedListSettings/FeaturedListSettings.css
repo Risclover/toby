@@ -255,3 +255,9 @@
     margin: 0.25rem;
     margin-right: 0;
 }
+
+@media (max-width: 575px) {
+    .no-tasklists-msg {
+        text-align: left;
+    }
+}

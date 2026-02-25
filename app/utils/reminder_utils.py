@@ -68,13 +68,12 @@ def create_task_due_reminders(task):
 
         # Body text
         due_text = "today" if trigger_at.date() == task.due_date else "in 3 days"
-        body = f"Task '{task.title}' is due {due_text}!"
+        message = f"Task '{task.title}' is due {due_text}!"
 
         reminder = Reminder(
             household_id=task.tasklist.household_id,
             created_by_id=None,  # system-generated
-            title=f'Task Due: {task.title}',
-            body=body,
+            message=message,
             reminder_type=ReminderType.task_due,
             is_automatic=True,
             source_entity_type="task",

@@ -10,18 +10,21 @@ import { MantineProvider } from '@mantine/core';
 import { PrimeReactProvider } from 'primereact/api';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { Notifications } from "@mantine/notifications"
+import { CreateTasklistProvider } from './contexts';
 
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <PrimeReactProvider>
-          <MantineProvider theme={{ primaryShade: 7 }}>
-            <Notifications />
-            <Layout />
-          </MantineProvider>
-        </PrimeReactProvider>
-      </BrowserRouter>
+      <CreateTasklistProvider>
+        <BrowserRouter>
+          <PrimeReactProvider>
+            <MantineProvider theme={{ primaryShade: 7 }}>
+              <Notifications />
+              <Layout />
+            </MantineProvider>
+          </PrimeReactProvider>
+        </BrowserRouter>
+      </CreateTasklistProvider>
     </>
   )
 }

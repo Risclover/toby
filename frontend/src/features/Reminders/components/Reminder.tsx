@@ -60,9 +60,6 @@ export const Reminder = ({ reminderId, reminder }: Props) => {
             <div className="reminder-main">
                 <div className="reminder-header">
                     <div className="reminder-icon">{icon}</div>
-                    <div className="reminder-title">
-                        {reminder.title || "Custom reminder"}
-                    </div>
 
                 </div>
                 <div className="reminder-body">

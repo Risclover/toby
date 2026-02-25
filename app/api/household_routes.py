@@ -298,9 +298,8 @@ def create_manual_reminder(household_id):
     reminder = Reminder(
         household_id=household_id,
         created_by_id=current_user.id,
-        title=data.get("title"),
-        body=data.get("reminderBody"),
-        reminder_type=ReminderType.custom,
+        message=data.get("reminderBody"),
+        reminder_type=ReminderType.CUSTOM,
         is_automatic=False,
         trigger_at=parse_datetime(data.get("triggerAt")),
     )
