@@ -1,15 +1,17 @@
 import { type Task } from "@/store/taskSlice";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Props = {
     initialTasks: Task[] | undefined;
 }
 
 export const useMobileTasklist = ({ initialTasks }: Props) => {
-    const [tasks, setTasks] = useState<Task[] | undefined>(initialTasks)
+    const [tasks, setTasks] = useState<Task[] | undefined>(initialTasks);
 
-    const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
-    const [swipedTaskId, setSwipedTaskId] = useState<number | null>(null);
+    // 🔑 Sync local state when parent-provided tasks change
+    useEffect(() => {
+        setTasks(initialTasks);
+    }, [initialTasks]);
 
     const moveTask = useCallback((dragIndex: number, hoverIndex: number) => {
         if (!initialTasks || hoverIndex < 0 || hoverIndex >= initialTasks.length) return;
@@ -22,6 +24,9 @@ export const useMobileTasklist = ({ initialTasks }: Props) => {
             return newTasks;
         });
     }, [initialTasks]);
+
+    const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
+    const [swipedTaskId, setSwipedTaskId] = useState<number | null>(null);
 
     const handleDragStart = useCallback((index: number) => {
         setSwipedTaskId(null); // Close any swiped item when dragging starts

@@ -26,7 +26,7 @@ export const HomepageListsCollapseCard = () => {
     </Tooltip>
 
     return (
-        <HomepageCollapseCard title="lists" color="var(--mantine-color-cyan-6)">
+        <HomepageCollapseCard cardKey="lists" title="lists" color="var(--mantine-color-cyan-6)">
             <HomepageCollapseCardTabs
                 tabs={tabs}
                 tabColor="var(--mantine-color-cyan-6)"

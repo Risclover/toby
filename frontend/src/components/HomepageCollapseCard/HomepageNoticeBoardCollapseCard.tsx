@@ -10,7 +10,7 @@ export const HomepageNoticeBoardCollapseCard = () => {
     const tabs = ["reminders", "announcements"];
 
     return (
-        <HomepageCollapseCard title="Notice board" color="var(--mantine-color-red-6)">
+        <HomepageCollapseCard cardKey="notice-board" title="Notice board" color="var(--mantine-color-red-6)">
             <HomepageCollapseCardTabs
                 tabs={tabs}
                 tabColor="var(--mantine-color-red-6)"

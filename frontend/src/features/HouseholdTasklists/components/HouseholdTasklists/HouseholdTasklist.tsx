@@ -107,7 +107,7 @@ export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                         {uncompleted.length === 0 && (completedCount === 0 ? "Empty list." : "🏅 All completed!")}
                     </span>
                     <ul>
-                        {tasks?.slice(0, 3).map((task: any) => (
+                        {tasksSorted?.slice(0, 3).map((task: any) => (
                             <HouseholdTasklistTask key={task.id} task={task} moveTask={moveTask} />
                         ))}
                     </ul>

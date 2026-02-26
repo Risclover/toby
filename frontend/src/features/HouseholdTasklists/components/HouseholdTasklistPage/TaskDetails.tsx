@@ -113,6 +113,9 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                                 <span>{option.label}</span>
                             </Group>
                         )}
+                        styles={{
+                            section: { color: "var(--tasklist-color)" }
+                        }}
                         leftSection={
                             selected ? (
                                 <div style={{ display: "flex", alignItems: "center" }}>

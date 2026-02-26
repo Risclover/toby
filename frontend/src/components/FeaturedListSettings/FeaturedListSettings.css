@@ -61,9 +61,10 @@
 }
 
 .create-tasklist-hint {
-    color: var(--mantine-color-cyan-6);
-    text-decoration: underline;
+    color: var(--mantine-color-cyan-6) !important;
+    text-decoration: underline !important;
     font-family: "Alan Sans", monospace;
+    font-size: var(--text-xs) !important;
 }
 
 /* - Alan Sans - IBM Plex Sans - JetBrains Mono - Libre Franklin - Noto Sans - Nunito Sans - Poppins - Roboto Condensed - Sedgwick Ave Display - Sora - Source Sans 3 - Ubuntu Mono */
@@ -165,6 +166,8 @@
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
+    position: relative;
+    z-index: 99;
 }
 
 .featured-tasklist-title-top {

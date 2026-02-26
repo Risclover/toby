@@ -8,7 +8,7 @@ type Props = {
     tabs: string[];
     tabColor: string;
     defaultTab: string;
-    featuredListSettings: ReactElement;
+    featuredListSettings?: ReactElement;
     children: ReactNode;
 }
 

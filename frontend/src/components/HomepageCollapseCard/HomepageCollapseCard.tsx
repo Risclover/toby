@@ -4,14 +4,14 @@ import { HomepageCollapseCardBody } from "./HomepageCollapseCardBody"
 import { HomepageCollapseCardTitle } from "./HomepageCollapseCardTitle"
 
 type Props = {
+    cardKey: string;
     title: string;
     color: string;
     children: React.ReactNode;
 }
 
-const CARD_KEY = "homepage-card-open";
-
-export const HomepageCollapseCard = ({ title, color, children }: Props) => {
+export const HomepageCollapseCard = ({ cardKey, title, color, children }: Props) => {
+    const CARD_KEY = `homepage-card-${cardKey}`;
     const [showCard, setShowCard] = useState(() => {
         const saved = localStorage.getItem(CARD_KEY);
         // Default to TRUE if no value is saved, or parse the saved string

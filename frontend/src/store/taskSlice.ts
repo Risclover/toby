@@ -450,50 +450,62 @@ export const taskSlice = apiSlice.injectEndpoints({
             query: ({ listId, orderedIds, setToManual }) => ({
                 url: `/tasklists/${listId}/reorder`,
                 method: "PATCH",
-                // 🚀 THE FIX: Send the flag to the backend!
                 body: { orderedIds, setToManual },
             }),
-            async onQueryStarted({ listId, orderedIds, householdId, setToManual }, { dispatch, getState, queryFulfilled }) {
+
+            async onQueryStarted(
+                { listId, orderedIds, householdId, setToManual },
+                { dispatch, getState, queryFulfilled }
+            ) {
                 // 1) Patch the single list detail
                 const p1 = dispatch(
-                    taskSlice.util.updateQueryData("getTasklist", listId, (draft: TasklistType | undefined) => {
-                        if (!draft?.tasks) return;
+                    taskSlice.util.updateQueryData(
+                        "getTasklist",
+                        listId,
+                        (draft: TasklistType | undefined) => {
+                            if (!draft?.tasks) return;
 
-                        // 🚀 OPTIMISTIC UPDATE: If we are switching to manual, 
-                        // update the draft setting so the backend doesn't reject the UI state
-                        if (setToManual) {
-                            draft.defaultSortOrder = "manual";
+                            if (setToManual) {
+                                draft.defaultSortOrder = "manual";
+                            }
+
+                            draft.tasks.sort(
+                                (a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id)
+                            );
+                            draft.tasks.forEach((t, i) => {
+                                t.sortIndex = i;
+                            });
                         }
-
-                        draft.tasks.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
-                        draft.tasks.forEach((t, i) => (t.sortIndex = i));
-                    })
+                    )
                 );
 
-                // ... (Keep your householdId inference logic here) ...
-
                 // 2) Patch the household grid
-                const p2 = householdId != null
-                    ? dispatch(
-                        householdSlice.util.updateQueryData(
-                            "getHouseholdTasklists",
-                            householdId,
-                            (lists: any[] | undefined) => {
-                                if (!lists) return;
-                                const target = lists.find((l) => l.id === listId);
-                                if (!target?.tasks) return;
+                const p2 =
+                    householdId != null
+                        ? dispatch(
+                            householdSlice.util.updateQueryData(
+                                "getHouseholdTasklists",
+                                householdId,
+                                (lists: any[] | undefined) => {
+                                    if (!lists) return;
+                                    const target = lists.find((l) => l.id === listId);
+                                    if (!target?.tasks) return;
 
-                                // 🚀 OPTIMISTIC UPDATE: Also update the mode here
-                                if (setToManual) {
-                                    target.defaultSortOrder = "manual";
+                                    if (setToManual) {
+                                        target.defaultSortOrder = "manual";
+                                    }
+
+                                    target.tasks.sort(
+                                        (a: any, b: any) =>
+                                            orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id)
+                                    );
+                                    target.tasks.forEach((t: any, i: number) => {
+                                        t.sortIndex = i;
+                                    });
                                 }
-
-                                target.tasks.sort((a: any, b: any) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
-                                target.tasks.forEach((t: any, i: number) => (t.sortIndex = i));
-                            }
+                            )
                         )
-                    )
-                    : { undo: () => { } };
+                        : { undo: () => { } };
 
                 try {
                     await queryFulfilled;
@@ -502,7 +514,22 @@ export const taskSlice = apiSlice.injectEndpoints({
                     p2.undo?.();
                 }
             },
+
+            // ✅ FIX: invalidate the relevant tasklist/household caches so cards update
+            invalidatesTags: (_res, _err, { listId, householdId }): TasklistTag[] => {
+                const tags: TasklistTag[] = [{ type: "Tasklist", id: listId }];
+
+                if (householdId != null) {
+                    tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
+                }
+
+                // Keep the list “bucket” fresh too, like in other mutations
+                tags.push({ type: "Tasklist", id: "LIST" });
+
+                return tags;
+            },
         }),
+
 
         archiveList: builder.mutation<TasklistType, ArchiveListRequest>({
             query: ({ listId }) => ({

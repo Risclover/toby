@@ -1,5 +1,5 @@
 import { RightClosedChevronIcon } from "@/assets/icons/RightClosedChevronIcon";
-import type { SetStateAction } from "react";
+import { useState, type SetStateAction } from "react";
 
 type Props = {
     title: string;
@@ -9,13 +9,14 @@ type Props = {
 }
 
 export const HomepageCollapseCardTitle = ({ title, dotColor, showCard, setShowCard }: Props) => {
+    const [active, setActive] = useState(showCard);
     const handleClick = () => {
         console.log('showCard:', showCard)
         setShowCard(prev => !prev);
     }
 
     return (
-        <div className="homepage-collapse-card-title" onClick={handleClick}>
+        <div className={`homepage-collapse-card-title${showCard ? " title-active" : ""}`} onClick={handleClick}>
             <div className="homepage-collapse-card-title-left">
                 <span style={{ backgroundColor: dotColor }} className="homepage-collapse-card-title-dot"></span>
                 {title}

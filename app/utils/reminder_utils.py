@@ -60,7 +60,7 @@ def create_task_due_reminders(task):
             source_entity_type="task",
             source_entity_id=task.id,
             trigger_at=trigger_at,
-            reminder_type=ReminderType.task_due,
+            reminder_type=ReminderType.TASK_DUE,
         ).first()
 
         if exists:
@@ -74,7 +74,7 @@ def create_task_due_reminders(task):
             household_id=task.tasklist.household_id,
             created_by_id=None,  # system-generated
             message=message,
-            reminder_type=ReminderType.task_due,
+            reminder_type=ReminderType.TASK_DUE,
             is_automatic=True,
             source_entity_type="task",
             source_entity_id=task.id,
