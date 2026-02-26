@@ -57,6 +57,19 @@ export const authSlice = apiSlice.injectEndpoints({
                 method: "GET",
                 credentials: "include"
             }),
+            // ✅ ADD THIS: Clear ALL RTK Query cache on logout
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+
+                    // ✅ Nuke entire cache after successful logout
+                    // userSettings, tasklists, featuredTasklist - all gone!
+                    dispatch(apiSlice.util.resetApiState());
+
+                } catch (error) {
+                    console.error('Logout failed:', error);
+                }
+            },
             invalidatesTags: ["Session"]
         }),
         signup: builder.mutation<
