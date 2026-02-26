@@ -16,7 +16,6 @@ type Props = {
     taskId: number;
     listId: number;
     householdId: number;
-    close: () => void;
 }
 
 export type TaskDetailsFormValues = {
@@ -134,7 +133,7 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
             listId: task.listId,
             householdId: householdId,
             notes: form.values.notes?.trim(),
-            assignedToId: task?.assignedToId ?? null,
+            assignedToId: form.values.assignedToId ?? null,
             dueDate: form.values.dueDate instanceof Date ? dayjs(form.values.dueDate).format("YYYY-MM-DD") : form.values.dueDate,
         }
 
@@ -189,8 +188,6 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
         // Ensure we pass the date object correctly (taskDate or task.createdAt)
         return formatStatusDate(taskDate, "Created");
     };
-
-    if (!task) return null;
 
     return {
         form,

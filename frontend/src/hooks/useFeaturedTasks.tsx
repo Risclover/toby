@@ -17,7 +17,7 @@ export const useFeaturedTasks = (
     currentUserId: number | undefined
 ) => {
     return useMemo(() => {
-        if (!tasks || !settings) return [];
+        if (!tasks || !settings || !tasklist) return [];
 
         const {
             showCompleted,
@@ -28,58 +28,46 @@ export const useFeaturedTasks = (
             maxItems
         } = settings;
 
-        // 1. FILTERING
-        let result = tasks.filter(task => {
+        // ✅ Preserve the original input order for manual sorting
+        const inputTasks = tasks.slice(); // shallow copy
+
+        // 1. FILTERING (same as before)
+        let result = inputTasks.filter(task => {
             // A. Completed Filter
-            // If showCompleted is false, we HIDE completed tasks.
-            // (We check status !== "completed" to be safe against other statuses)
             if (!showCompleted && task.status === "completed") {
                 return false;
             }
 
             // B. Assignee Filter (Just Me)
-            // If justMeFilter is true, task must be assigned to current user
             if (justMeFilter) {
-                // 1. Is the list explicitly shared with others?
                 const isSharedList = tasklist?.memberIds && tasklist.memberIds.length > 1;
-
-                // 2. If it IS shared, enforce task assignment
                 if (isSharedList) {
-                    // Task must be assigned specifically to me
                     if (task.assignedToId !== currentUserId) {
                         return false;
                     }
                 }
-
-                // 3. If list is private (memberIds only has me), 
-                // ALL tasks are implicitly "mine", so we don't filter them out.
             }
 
             // C. Importance Filter
-            // If importantOnly is true, task must be important
             if (importantOnly && !task.isImportant) {
                 return false;
             }
 
             // D. Urgency Filters (Overdue, Due Today, Due Soon)
             const { overdue, dueToday, dueSoon } = urgencyFilter;
-
-            // Only apply urgency logic if at least one filter is checked
             const isUrgencyActive = overdue || dueToday || dueSoon;
 
             if (isUrgencyActive) {
-                // If a task has no due date, it cannot match any urgency filter
                 if (!task.dueDate) return false;
 
-                const taskDate = task.dueDate; // Assuming YYYY-MM-DD string
+                const taskDate = task.dueDate;
                 const today = getTodayString();
-                const nextWeek = getFutureString(7); // "Soon" usually means next 7 days
+                const nextWeek = getFutureString(7);
 
                 const isOverdue = taskDate < today;
                 const isDueToday = taskDate === today;
                 const isDueSoon = taskDate > today && taskDate <= nextWeek;
 
-                // Pass if it matches ANY of the checked boxes
                 const matchesOverdue = overdue && isOverdue;
                 const matchesToday = dueToday && isDueToday;
                 const matchesSoon = dueSoon && isDueSoon;
@@ -95,16 +83,24 @@ export const useFeaturedTasks = (
         // 2. SORTING
         result.sort((a, b) => {
             // PRIMARY SORT: Incomplete first, Completed last
-            // If statuses are different, prioritize "in_progress" (incomplete)
             if (a.status !== b.status) {
-                if (a.status === "completed") return 1; // a is completed -> push down
-                if (b.status === "completed") return -1; // b is completed -> push down
+                if (a.status === "completed") return 1;
+                if (b.status === "completed") return -1;
             }
 
             // SECONDARY SORT: Apply user selected sort order
             switch (sortOrder) {
+                case "manual":
+                    // ✅ NEW: Respect the list's manual order using sortIndex + fallback to input order
+                    const indexA = a.sortIndex ?? inputTasks.findIndex(t => t.id === a.id);
+                    const indexB = b.sortIndex ?? inputTasks.findIndex(t => t.id === b.id);
+                    return indexA - indexB;
+
                 case "alphabetical":
-                    return String(a.title).localeCompare(String(b.title));
+                    return a.title.localeCompare(b.title, undefined, {
+                        numeric: true,  // ✅ Handles 1, 2, 10 correctly
+                        sensitivity: 'base'  // Case-insensitive
+                    });
 
                 case "newest":
                     return b.id - a.id;
@@ -126,12 +122,11 @@ export const useFeaturedTasks = (
         });
 
         // 3. LIMITING
-        // If maxItems is 0 or -1 (unlimited), don't slice. Otherwise, slice.
         if (maxItems > 0) {
             result = result.slice(0, maxItems);
         }
 
         return result;
 
-    }, [tasks, settings, currentUserId]);
+    }, [tasks, tasklist, settings, currentUserId]);
 };

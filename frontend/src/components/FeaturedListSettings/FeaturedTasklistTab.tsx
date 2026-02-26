@@ -217,6 +217,7 @@ export const FeaturedTasklistTab = ({ form, handleClose }: Props) => {
                     divider={false}
                 >
                     <Select
+                        allowDeselect={false}
                         defaultValue="manual"
                         placeholder="Sort by"
                         {...form.getInputProps('sortOrder')}

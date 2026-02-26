@@ -12,6 +12,8 @@ import { useTaskDetails } from "../../hooks/useTaskDetails";
 import { TaskDeletionConfirmation } from "./TaskDeletionConfirmation";
 import { TrashIcon } from "@/assets/icons/TrashIcon";
 import { useIsSmallScreen } from "@/hooks";
+import { useEffect } from "react";
+import { useGetTaskQuery } from "@/store";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -26,6 +28,7 @@ type Props = {
 
 export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Props) => {
     const isSmallScreen = useIsSmallScreen();
+    const { data: task } = useGetTaskQuery(taskId);
 
     const {
         form,
@@ -38,8 +41,12 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
         setShowTaskDeletion,
         getFooterText,
         isSubmitting,
-    } = useTaskDetails({ taskId, listId, householdId: householdId!, close });
+    } = useTaskDetails({ taskId, listId, householdId: Number(householdId) });
 
+    useEffect(() => {
+        console.log('form:', form.getValues());
+        console.log('taskInfo:', task);
+    }, [form])
     return (
         <Drawer
             title="Task Details"
