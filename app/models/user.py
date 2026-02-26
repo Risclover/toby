@@ -49,7 +49,7 @@ class User(db.Model, UserMixin):
 
     tasklists = db.relationship(
         'Tasklist', 
-        foreign_keys='Tasklist.user_id', 
+        foreign_keys='Tasklist.creator_id', 
         back_populates='user' # Changed from backref to match the Tasklist model
     )
     archived_lists = db.relationship(

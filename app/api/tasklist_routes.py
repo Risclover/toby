@@ -38,12 +38,13 @@ def get_tasklist(id):
 @login_required
 def get_tasklists(id):
     """
-    Get a specific user's or household's task lists
+    Get tasklists: creator (user_id) OR explicitly assigned (via member_links).
     """
     scope = request.args.get("scope", "user")
 
     if scope == "user":
-        lists = Tasklist.query.filter_by(user_id=current_user.id).all()
+        # Personal lists (creator always sees)
+        lists = Tasklist.query.filter_by(creator_id=current_user.id).all()
 
     elif scope == "household":
         only_archived_lists = request.args.get("archived") == "true"
@@ -51,22 +52,47 @@ def get_tasklists(id):
         if not household_id:
             return jsonify({"error": "householdId required"}), 400
 
-        # Optional but good: verify the household exists & the user belongs
         household = Household.query.get(household_id)
         if not household:
             return jsonify({"error": "Household not found"}), 404
-        if not current_user.is_member_of(household):  # implement this helper
+        if not current_user.is_member_of(household):
             return jsonify({"error": "Forbidden"}), 403
 
         if only_archived_lists:
-            lists = Tasklist.query.filter_by(household_id=household_id, is_archived=True).all()
+            lists = Tasklist.query.filter_by(
+                household_id=household_id, 
+                is_archived=True
+            ).all()
         else:
-            lists = Tasklist.query.filter_by(household_id=household_id, is_archived=False).all()
+            lists = Tasklist.query.filter_by(
+                household_id=household_id, 
+                is_archived=False
+            ).all()
 
     else:
         return jsonify({"error": "invalid scope"}), 400
 
-    return jsonify([t.to_dict() for t in lists]), 200  # [] when empty
+    # ✅ FILTER: creator (creator_id) OR assigned (member_links)
+    user_lists = []
+    for tasklist in lists:
+        # 1. CREATOR ACCESS (creator_id matches)
+        if tasklist.creator_id == current_user.id:
+            user_lists.append(tasklist)
+            continue
+
+        # 2. ASSIGNED ACCESS (via member_links table)
+        if tasklist.household_id and current_user.is_member_of(household):
+            # Check if user is in member_links for this specific tasklist
+            is_assigned = TasklistMember.query.filter_by(
+                tasklist_id=tasklist.id,
+                user_id=current_user.id
+            ).first() is not None
+            
+            # OR all_members=True
+            if tasklist.all_members or is_assigned:
+                user_lists.append(tasklist)
+
+    return jsonify([t.to_dict() for t in user_lists]), 200
 
 
 @tasklist_routes.route("", methods=["POST"])
@@ -78,7 +104,7 @@ def create_tasklist():
 
     tasklist = Tasklist(
         title=data["title"],
-        user_id=data.get("user_id"),
+        creator_id=data.get("creator_id", current_user.id),
         household_id=data.get("household_id")
     )
     
@@ -413,7 +439,7 @@ def manage_assigned_members(id):
         for user_id in new_member_ids:
             db.session.add(
                 TasklistMember(
-                    list_id=tasklist.id,
+                    tasklist_id=tasklist.id,
                     user_id=user_id,
                 )
             )

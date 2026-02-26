@@ -53,7 +53,7 @@ class Tasklist(db.Model):
 
     # Basic Info
     title = db.Column(db.String(64), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
     all_members = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -88,7 +88,7 @@ class Tasklist(db.Model):
     )
     user = db.relationship(
         "User", 
-        foreign_keys=[user_id],  # This tells Tasklist which FK to use for 'owner'
+        foreign_keys=[creator_id],  # This tells Tasklist which FK to use for 'owner'
         back_populates="tasklists" # Use back_populates instead of backref for clarity
     )
     household = db.relationship("Household", back_populates="tasklists")
@@ -108,19 +108,14 @@ class Tasklist(db.Model):
     archiver = db.relationship("User", foreign_keys=[archived_by], back_populates="archived_lists")
 
     __table_args__ = (
-        # XOR: exactly one of user_id / household_id must be non-null
-        CheckConstraint(
-            "(user_id IS NOT NULL) <> (household_id IS NOT NULL)",
-            name="ck_tasklists_exactly_one_owner",
-        ),
         # Unique title per owner
-        Index("ix_tasklists_user_id", "user_id"),
+        Index("ix_tasklists_creator_id", "creator_id"),
         Index("ix_tasklists_household_id", "household_id"),
     )
 
     @property
     def scope(self) -> str:
-        return "user" if self.user_id is not None else "household"
+        return "user" if self.creator_id is not None else "household"
 
     def audience_user_ids(self):
         if self.household_id is not None:
@@ -132,8 +127,8 @@ class Tasklist(db.Model):
             return [link.user_id for link in self.member_links]
 
         # 1. Personal lists: Only the owner
-        if self.user_id is not None:
-            return [self.user_id]
+        if self.creator_id is not None:
+            return [self.creator_id]
     
         return []
 
@@ -156,7 +151,7 @@ class Tasklist(db.Model):
             new_item_position=self.new_item_position,
             default_sort_order=self.default_sort_order,
             default_filters=deepcopy(self.default_filters) if self.default_filters else None,
-            user_id=self.user_id,
+            creator_id=self.creator_id,
             household_id=self.household_id,
             all_members=self.all_members,
         )
@@ -168,7 +163,7 @@ class Tasklist(db.Model):
         if not self.all_members:
             for member_link in self.member_links:
                 new_link = TasklistMember(
-                    list_id=duplicate.id,
+                    tasklist_id=duplicate.id,
                     user_id=member_link.user_id
                 )
                 db.session.add(new_link)
@@ -218,7 +213,7 @@ class Tasklist(db.Model):
             } if self.is_archived and self.archiver else None,
             "defaultSortOrder": self.default_sort_order,
             "defaultFilters": self.default_filters,
-            "userId": self.user_id,
+            "creatorId": self.creator_id,
             "householdId": self.household_id,
             "scope": self.scope,
             "allMembers": self.all_members,

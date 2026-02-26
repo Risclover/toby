@@ -39,7 +39,7 @@ export const CreateTasklist = ({ householdId }: Props) => {
 
         const newList = await createTasklist(
             allMembers
-                ? { title, householdId, allMembers: true }
+                ? { title, householdId, allMembers: true, }
                 : { title, householdId, allMembers: false, memberIds }
         ).unwrap();
 

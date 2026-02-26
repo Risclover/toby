@@ -52,20 +52,40 @@ def get_household_tasklists(household_id):
     if current_user.household_id != household_id:
         return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
 
+    # Get ALL household lists first
     lists = Tasklist.query.filter_by(
         household_id=household_id, 
         is_archived=is_archived
     ).options(joinedload(Tasklist.archiver)).all()
 
-    # convert createdAt in each tasklist to user tz if needed
+    # ✅ FILTER: creator (user_id) OR assigned (member_links)
+    user_lists = []
+    for tasklist in lists:
+        # 1. CREATOR ACCESS
+        if tasklist.creator_id == current_user.id:
+            user_lists.append(tasklist)
+            continue
+        
+        # 2. ASSIGNED ACCESS via member_links
+        is_assigned = TasklistMember.query.filter_by(
+            tasklist_id=tasklist.id,
+            user_id=current_user.id
+        ).first() is not None
+        
+        # OR all_members=True
+        if tasklist.all_members or is_assigned:
+            user_lists.append(tasklist)
+
+    # Convert dates + serialize
     tasklists = []
-    for t in lists:
+    for t in user_lists:  # ✅ Only user's lists
         t_dict = t.to_dict()
         if hasattr(t, "created_at") and t.created_at:
             t_dict["createdAt"] = utc_datetime_to_local(current_user, t.created_at).isoformat()
         tasklists.append(t_dict)
 
     return jsonify(tasklists), 200
+
 
 @household_routes.route("/<int:household_id>/tasklists", methods=["POST"])
 @login_required
@@ -98,7 +118,7 @@ def create_household_tasklist(household_id):
         if bad:
             return jsonify({"error": "memberIds must belong to the household", "invalid": bad}), 400
 
-    tasklist = Tasklist(title=title, household_id=household_id, all_members=all_members)
+    tasklist = Tasklist(title=title, household_id=household_id, all_members=all_members, creator_id=current_user.id)
     db.session.add(tasklist)
     db.session.flush()
 

@@ -46,7 +46,7 @@ export interface TasklistType {
         | "this_month"
         | "all";
     };
-    userId?: number;
+    creatorId?: number;
     householdId?: number;
     memberIds?: number[];
     tasks?: Task[];
@@ -62,7 +62,7 @@ type CreateTasklistBase = {
 }
 
 type CreateForUser = CreateTasklistBase & {
-    userId: number;
+    creatorId: number;
     householdId?: never;
     allMembers?: never;
     memberIds?: never;
@@ -212,12 +212,12 @@ export const taskSlice = apiSlice.injectEndpoints({
         createHouseholdTasklist: builder.mutation<TasklistType, CreateTasklistRequest>({
             query: (arg) => {
                 // user-owned
-                if ("userId" in arg) {
-                    const { title, userId } = arg;
+                if ("creatorId" in arg) {
+                    const { title, creatorId } = arg;
                     return {
                         url: "tasklists",
                         method: "POST",
-                        body: { title, user_id: userId },
+                        body: { title, creator_id: creatorId },
                     };
                 }
 
@@ -239,7 +239,7 @@ export const taskSlice = apiSlice.injectEndpoints({
                         { type: "Tasklist", id: result.id },
                         result.householdId
                             ? { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` }
-                            : { type: "Tasklist", id: `USER_${result.userId}` },
+                            : { type: "Tasklist", id: `USER_${result.creatorId}` },
                     ]
                     : [],
         }),
