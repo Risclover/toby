@@ -45,6 +45,8 @@ export * from "./eventSlice";
 export * from "./hooks";
 export * from "./householdSlice";
 export * from "./moodSlice";
+export * from "./reminderSlice";
 export * from "./shoppingSlice";
 export * from "./taskSlice";
+export * from "./userSettingSlice";
 export * from "./userSlice";

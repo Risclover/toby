@@ -7,13 +7,13 @@ import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useMemberSelection } from "@/hooks/useMemberSelection";
 import { HouseholdMemberSelection } from "@/components/HouseholdMemberSelection";
 import { useNavigate } from "react-router-dom";
-import { useCreateTasklist } from "@/contexts";
+import { useCreateTasklistModal } from "@/contexts";
 
 type Props = { householdId: number };
 
 export const CreateTasklist = ({ householdId }: Props) => {
     const navigate = useNavigate();
-    const { state, closeCreateTasklist } = useCreateTasklist();
+    const { isOpen, closeModal } = useCreateTasklistModal();
 
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
@@ -47,15 +47,15 @@ export const CreateTasklist = ({ householdId }: Props) => {
 
         setTitle("");
         toggleAll(true);
-        closeCreateTasklist();
+        closeModal();
         navigate(`/tasklists/${newId}`);
     };
 
     return (
         <Modal
             radius="md"
-            opened={state.isOpen}          // <- key line
-            onClose={closeCreateTasklist}  // <- key line
+            opened={isOpen}          // <- key line
+            onClose={closeModal}  // <- key line
             title="Create Tasklist"
             centered
         >

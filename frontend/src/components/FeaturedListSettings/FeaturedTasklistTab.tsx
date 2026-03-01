@@ -10,7 +10,7 @@ import { MaxTaskCountPicker } from "./MaxTaskCountPicker";
 import "./FeaturedListSettings.css"
 import { FeaturedTasklistTabUrgencyFilter } from "./FeaturedTasklistTabUrgencyFilter";
 import { SettingsSection } from "./SettingsSection";
-import { useCreateTasklist } from "@/contexts";
+import { useCreateTasklistModal } from "@/contexts";
 
 
 export type FeaturedTasklistSettingsForm = UseFormReturnType<FeaturedTasklistSettings>;
@@ -22,7 +22,7 @@ type Props = {
 
 
 export const FeaturedTasklistTab = ({ form, handleClose }: Props) => {
-    const { openCreateTasklist } = useCreateTasklist();
+    const { openModal } = useCreateTasklistModal();
     const isSmallScreen = useIsSmallScreen();
     const { data: user } = useAuthenticateQuery();
     const {
@@ -92,7 +92,7 @@ export const FeaturedTasklistTab = ({ form, handleClose }: Props) => {
                             />
                         ) : (
                             <div className="no-tasklists-msg">
-                                Whoops! You don't have any tasklists. Want to <UnstyledButton className="create-tasklist-hint" onClick={() => { handleClose(); openCreateTasklist() }}>create one</UnstyledButton>?
+                                Whoops! You don't have any tasklists. Want to <UnstyledButton className="create-tasklist-hint" onClick={() => { handleClose(); openModal() }}>create one</UnstyledButton>?
                             </div>
                         )}
                     </div>

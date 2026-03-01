@@ -1,3 +1,4 @@
+import 'whatwg-fetch';
 import '@testing-library/jest-dom/vitest'; // <-- adds matchers to Vitest's expect  
 import './frontend/src/test/setup';
 

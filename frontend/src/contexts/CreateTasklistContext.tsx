@@ -1,53 +1,52 @@
-import {
-    createContext,
-    useContext,
-    useState,
-    type ReactNode,
-} from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
-type CreateTasklistState = {
+interface TasklistData {
+    title?: string;
+    body?: string;
+}
+
+interface CreateTasklistModalContextType {
     isOpen: boolean;
-    initialTitle?: string;
-};
+    TasklistData: TasklistData | null;
+    openModal: (data?: TasklistData) => void;
+    closeModal: () => void;
+}
 
-type CreateTasklistContextType = {
-    state: CreateTasklistState;
-    openCreateTasklist: (options?: { initialTitle?: string }) => void;
-    closeCreateTasklist: () => void;
-};
+const CreateTasklistModalContext =
+    createContext<CreateTasklistModalContextType | null>(null);
 
-const CreateTasklistContext = createContext<CreateTasklistContextType | undefined>(
-    undefined
-);
+export const CreateTasklistModalProvider = ({ children, }: { children: ReactNode; }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [TasklistData, setTasklistData] =
+        useState<TasklistData | null>(null);
 
-type CreateTasklistProviderProps = {
-    children: ReactNode;
-};
+    const openModal = (data: TasklistData = {}) => {
+        setTasklistData(data);
+        setIsOpen(true);
+    };
 
-export function CreateTasklistProvider({ children }: CreateTasklistProviderProps) {
-    const [state, setState] = useState<CreateTasklistState>({ isOpen: false });
-
-    function openCreateTasklist(options?: { initialTitle?: string }) {
-        setState({ isOpen: true, initialTitle: options?.initialTitle });
-    }
-
-    function closeCreateTasklist() {
-        setState({ isOpen: false, initialTitle: undefined });
-    }
+    const closeModal = () => {
+        setTasklistData(null);
+        setIsOpen(false);
+    };
 
     return (
-        <CreateTasklistContext.Provider
-            value={{ state, openCreateTasklist, closeCreateTasklist }}
+        <CreateTasklistModalContext.Provider
+            value={{ isOpen, TasklistData, openModal, closeModal }}
         >
             {children}
-        </CreateTasklistContext.Provider>
+        </CreateTasklistModalContext.Provider>
     );
-}
+};
 
-export function useCreateTasklist() {
-    const ctx = useContext(CreateTasklistContext);
-    if (!ctx) {
-        throw new Error("useCreateTasklist must be used within CreateTasklistProvider");
+export const useCreateTasklistModal = (): CreateTasklistModalContextType => {
+    const context = useContext(CreateTasklistModalContext);
+
+    if (!context) {
+        throw new Error(
+            "useCreateTasklistModal must be used within a CreateTasklistModalProvider"
+        );
     }
-    return ctx;
-}
+
+    return context;
+};

@@ -13,7 +13,7 @@ from .extensions  import (
 from .blueprints  import register_blueprints
 from .middlewares import register_middlewares
 from .errors      import register_error_handlers
-# from .seeds       import seed_commands
+from .seeds       import seed_commands
 from app.models      import User
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -85,7 +85,7 @@ def create_app(config_class=None) -> Flask:
     register_blueprints(app)
     register_middlewares(app)
     register_error_handlers(app)
-    # app.cli.add_command(seed_commands)
+    app.cli.add_command(seed_commands)
 
     # --------------------------------------------------------------------- #
     # Single-Page App fallback

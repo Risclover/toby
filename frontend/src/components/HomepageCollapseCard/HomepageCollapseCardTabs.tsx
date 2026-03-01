@@ -1,8 +1,5 @@
-import { ActionIcon, Tabs, Tooltip } from "@mantine/core"
-import { useState, type JSX, type ReactElement, type ReactNode } from "react";
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import { FeaturedListSettings } from "../FeaturedListSettings/FeaturedListSettings";
-import { useAuthenticateQuery } from "@/store";
+import { type ReactElement, type ReactNode } from "react";
+import { Tabs } from "@mantine/core"
 
 type Props = {
     tabs: string[];
@@ -10,28 +7,34 @@ type Props = {
     defaultTab: string;
     featuredListSettings?: ReactElement;
     children: ReactNode;
+    onTabChange?: (value: string | null) => void;
+    tabIndicator?: (tab: string) => ReactNode;
 }
 
-type TabsObject = {
-    tasks: { value: "tasks"; body: JSX.Element };
-    shopping: { value: "shopping"; body: JSX.Element };
-}
-
-export const HomepageCollapseCardTabs = ({ tabs, tabColor, defaultTab, featuredListSettings, children }: Props) => {
+export const HomepageCollapseCardTabs = ({ tabs, tabColor, defaultTab, featuredListSettings, children, onTabChange, tabIndicator }: Props) => {
     return (
         <div className="homepage-collapse-card-tabs-container">
             <Tabs
                 defaultValue={defaultTab}
+                onChange={(value) => onTabChange?.(value)}
             >
                 <Tabs.List className="homepage-collapse-card-tabs">
                     <div style={{ display: "flex" }}>
-                        {(tabs).map((tab) => <Tabs.Tab color={tabColor} className="homepage-collapse-card-tab" value={tab}>{tab}</Tabs.Tab>)}
+                        {tabs.map((tab) => (
+                            <Tabs.Tab
+                                key={tab}
+                                rightSection={tabIndicator?.(tab)}
+                                color={tabColor}
+                                className="homepage-collapse-card-tab"
+                                value={tab}
+                            >
+                                {tab}
+                            </Tabs.Tab>
+                        ))}
                     </div>
                     {featuredListSettings && featuredListSettings}
                 </Tabs.List>
-
                 {children}
-                {/* {Object.values(tabs).map((tab) => <HomepageCollapseCardTab value={tab.value}>{tab.body}</HomepageCollapseCardTab>)} */}
             </Tabs>
         </div>
     )

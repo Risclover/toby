@@ -14,7 +14,6 @@ export default defineConfig({
 
     },
     define: {
-        // 👇 inject the same value you use in your app
         'import.meta.env.VITE_BACKEND_URL': JSON.stringify('http://localhost:5000/api'),
     },
     resolve: {

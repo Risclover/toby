@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, abort
-from flask_login import current_user
+from flask_login import current_user, login_required
 from sqlalchemy import select, or_, and_, func
 from sqlalchemy.dialects.postgresql import insert
 from app.extensions import db
@@ -12,6 +12,7 @@ from app.utils.timezone import utc_datetime_to_local
 announcement_routes = Blueprint("announcements", __name__)
 
 @announcement_routes.route("", methods=["POST"])
+@login_required
 def create_announcement():
     """
     create an announcement
@@ -54,6 +55,7 @@ def create_announcement():
     return jsonify(announcement_dict), 201
 
 @announcement_routes.route("/<int:announcement_id>", methods=["DELETE"])
+@login_required
 def delete_announcement(announcement_id: int):
     """
     delete announcement by id
@@ -75,6 +77,7 @@ def delete_announcement(announcement_id: int):
     return ("", 204)
 
 @announcement_routes.route("/<int:announcement_id>", methods=["PUT"])
+@login_required
 def update_announcement(announcement_id: int):
     """
     update announcement importance by id
@@ -103,6 +106,7 @@ def update_announcement(announcement_id: int):
     return jsonify(ann_dict)
 
 @announcement_routes.route("/<int:announcement_id>/seen", methods=["GET"])
+@login_required
 def check_announcement_seen(announcement_id: int):
     """
     check if the current user has seen the announcement
@@ -130,6 +134,7 @@ def check_announcement_seen(announcement_id: int):
     })
 
 @announcement_routes.route("/<int:announcement_id>/seen", methods=["POST"])
+@login_required
 def mark_announcement_seen(announcement_id: int):
     """
     mark the announcement as seen by the current user
@@ -164,6 +169,7 @@ def mark_announcement_seen(announcement_id: int):
     })
 
 @announcement_routes.route("/<int:announcement_id>/seen", methods=["DELETE"])
+@login_required
 def mark_announcement_unseen(announcement_id: int):
     """
     mark the announcement as unseen by the current user
@@ -187,6 +193,7 @@ def mark_announcement_unseen(announcement_id: int):
 
 
 @announcement_routes.route("/seen", methods=["POST"])
+@login_required
 def mark_announcements_seen_bulk():
     """
     Expect JSON: { "announcementIds": [1,2,3] }
@@ -212,6 +219,7 @@ def mark_announcements_seen_bulk():
         return jsonify({"error": "failed to mark seen", "details": str(e)}), 500
 
 @announcement_routes.route("/<int:id>/importance", methods=["PUT"])
+@login_required
 def toggle_importance(id):
     """
     Toggle the importance of an announcement
@@ -220,7 +228,7 @@ def toggle_importance(id):
     if not announcement:
         abort(404, description="Announcement not found")
     
-    user_id = int(current_user.get_id())
+    user_id = current_user.id
 
     if announcement.user_id != user_id:
         abort(403, description="Only the creator can toggle importance")

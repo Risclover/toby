@@ -11,6 +11,7 @@ export interface User {
     createdAt: string;
     householdId?: number;
     featuredTasklistId: number;
+    timezone: string;
 }
 
 interface Household {

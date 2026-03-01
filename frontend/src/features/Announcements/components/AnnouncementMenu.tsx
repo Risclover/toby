@@ -13,12 +13,11 @@ type Props = {
         householdId: number;
         isImportant: boolean;
     };
-    onCloseMenu: () => void;
     ref: React.RefObject<HTMLDivElement | null>;
     setOpenDeleteConfirmation: React.Dispatch<SetStateAction<boolean>>;
 }
 
-export const AnnouncementMenu = ({ ref, announcement, onCloseMenu, setOpenDeleteConfirmation }: Props) => {
+export const AnnouncementMenu = ({ ref, announcement, setOpenDeleteConfirmation }: Props) => {
     const [toggleImportance] = useToggleAnnouncementImportanceMutation();
 
     const handleToggleImportance = async () => {
@@ -27,7 +26,6 @@ export const AnnouncementMenu = ({ ref, announcement, onCloseMenu, setOpenDelete
             isImportant: !announcement.isImportant,
             householdId: announcement.householdId,
         });
-        onCloseMenu();
     }
 
     const handleDeleteAnnouncement = () => {

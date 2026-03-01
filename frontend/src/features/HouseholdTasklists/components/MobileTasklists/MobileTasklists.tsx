@@ -17,7 +17,7 @@ import "../../styles/Tasklist.css";
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded';
 import { ArchivedIcon } from "@/assets/icons/ArchivedIcon";
 import { useStablePending } from "@/hooks";
-import { useCreateTasklist } from "@/contexts";
+import { useCreateTasklistModal } from "@/contexts";
 
 const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
@@ -33,7 +33,7 @@ export const MobileTasklists = () => {
     const isSmall = useIsSmallScreen();
     // Gate the lists query until we have an ID
     const householdId = user?.householdId ?? skipToken;
-    const { openCreateTasklist } = useCreateTasklist();
+    const { openModal } = useCreateTasklistModal();
     const {
         data: allLists = [],
         isFetching,
@@ -78,7 +78,7 @@ export const MobileTasklists = () => {
                 </Tooltip>
                 <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="Create list">
                     <ActionIcon size="md" radius="lg" variant="filled" color="white" c="rgb(5, 5, 73)"
-                        onClick={() => openCreateTasklist()}
+                        onClick={() => openModal()}
                     >
                         <PlusIcon style={{ width: '1.25rem', height: '1.25rem' }} />
                     </ActionIcon>

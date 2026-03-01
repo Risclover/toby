@@ -7,10 +7,11 @@ type Props = {
     cardKey: string;
     title: string;
     color: string;
+    badge?: React.ReactNode,
     children: React.ReactNode;
 }
 
-export const HomepageCollapseCard = ({ cardKey, title, color, children }: Props) => {
+export const HomepageCollapseCard = ({ cardKey, title, color, badge, children }: Props) => {
     const CARD_KEY = `homepage-card-${cardKey}`;
     const [showCard, setShowCard] = useState(() => {
         const saved = localStorage.getItem(CARD_KEY);
@@ -22,9 +23,10 @@ export const HomepageCollapseCard = ({ cardKey, title, color, children }: Props)
         localStorage.setItem(CARD_KEY, JSON.stringify(showCard));
     }, [showCard]);
 
+
     return (
         <div className="homepage-collapse-card">
-            <HomepageCollapseCardTitle dotColor={color} title={title} setShowCard={setShowCard} showCard={showCard} />
+            <HomepageCollapseCardTitle dotColor={color} title={title} setShowCard={setShowCard} showCard={showCard} badge={badge} />
             <Collapse
                 in={showCard}
                 transitionDuration={100}

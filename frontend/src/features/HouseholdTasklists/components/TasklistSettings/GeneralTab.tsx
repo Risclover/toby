@@ -3,7 +3,7 @@ import { Button, Checkbox, Flex, Input, MultiSelect, Space, Switch, Tabs } from 
 import type { UseFormReturnType } from "@mantine/form";
 import { SettingsItem } from "./SettingsItem";
 import { type TasklistType } from "@/store/taskSlice";
-import { DeleteConfirmation } from "./DeleteConfirmation";
+import { DeleteConfirmation } from "../../../../components/DeleteConfirmation";
 import { useTasklistSettings } from "../../hooks";
 import { useIsSmallScreen } from "@/hooks";
 
@@ -177,7 +177,7 @@ export const GeneralTab = ({
                 <Space h={12} />
                 <Button color="red.7" onClick={() => setShowDeleteConfirmation(true)}>Delete tasklist</Button>
             </SettingsItem>
-            {showDeleteConfirmation && <DeleteConfirmation title={form.values.title} opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteList={handleDeleteList} />}
+            {showDeleteConfirmation && <DeleteConfirmation itemName={tasklist.title} itemType="tasklist" modalTitle="Confirm delete tasklist" opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteItem={handleDeleteList} />}
         </Tabs.Panel>
     );
 };

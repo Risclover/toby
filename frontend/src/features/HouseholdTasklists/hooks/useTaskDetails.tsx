@@ -3,7 +3,8 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import dayjs from "dayjs";
 
 import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useGetTasklistQuery, useUpdateTaskMutation } from "@/store/taskSlice";
+import { useDeleteTaskMutation, useGetTasklistQuery, useUpdateTaskMutation } from "@/store/taskSlice";
+import { notifications } from "@mantine/notifications";
 
 type Member = {
     id: number;
@@ -42,6 +43,18 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
     const [taskError, setTaskError] = useState<string>("");
     const [showTaskDeletion, setShowTaskDeletion] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [deleteTask] = useDeleteTaskMutation();
+
+    const handleTaskDeletion = async () => {
+        await deleteTask({ listId, taskId });
+        setShowTaskDeletion(false);
+        notifications.show({
+            message: "Task deleted successfully.",
+            color: 'cyan',
+            position: 'bottom-center',
+            autoClose: 5000,
+        });
+    }
 
     const initialValues: TaskDetailsFormValues = {
         title: task?.title.trim(),
@@ -203,6 +216,7 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
         handleConfirmTaskDeletion,
         getFooterText,
         isSubmitting,
+        handleTaskDeletion
     }
 
 }

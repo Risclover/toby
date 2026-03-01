@@ -3,13 +3,12 @@ import { useAuthenticateQuery } from "@/store/authSlice";
 import { Button, Checkbox, Group, Modal, Space, Textarea } from "@mantine/core";
 import { useEffect, useState } from "react";
 import styles from "../styles/CreateAnnouncement.module.css";
+import { useCreateAnnouncementModal } from "@/contexts";
 
-type Props = {
-    opened: boolean;
-    close: () => void;
-}
 
-export const CreateAnnouncement = ({ opened, close }: Props) => {
+export const CreateAnnouncement = () => {
+    const { isOpen, closeModal } = useCreateAnnouncementModal();
+
     const { data: user } = useAuthenticateQuery();
     const [message, setMessage] = useState("");
     const [isImportant, setIsImportant] = useState(false);
@@ -35,15 +34,15 @@ export const CreateAnnouncement = ({ opened, close }: Props) => {
         }
         setMessage("");
         setIsImportant(false);
-        close();
+        closeModal();
     }
 
     const handleCancelAnnouncement = () => {
-        close();
+        closeModal();
     }
 
     return (
-        <Modal radius="md" className="announcement-modal" opened={opened} onClose={close} title="Create announcement" centered>
+        <Modal radius="md" className="announcement-modal" opened={isOpen} onClose={closeModal} title="Create announcement" centered>
             <Textarea
                 classNames={{ input: styles.input }}
                 autosize

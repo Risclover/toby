@@ -14,6 +14,7 @@ import { TrashIcon } from "@/assets/icons/TrashIcon";
 import { useIsSmallScreen } from "@/hooks";
 import { useEffect } from "react";
 import { useGetTaskQuery } from "@/store";
+import { DeleteConfirmation } from "../TasklistSettings";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -41,6 +42,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
         setShowTaskDeletion,
         getFooterText,
         isSubmitting,
+        handleTaskDeletion
     } = useTaskDetails({ taskId, listId, householdId: Number(householdId) });
 
     useEffect(() => {
@@ -181,12 +183,13 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
             </div>
             {
                 showTaskDeletion &&
-                <TaskDeletionConfirmation
-                    title={form.values.title}
+                <DeleteConfirmation
+                    itemName={form.values.title}
+                    itemType="task"
+                    modalTitle="Confirm delete task"
                     opened={showTaskDeletion}
-                    onClose={() => setShowTaskDeletion(false)}
-                    listId={listId}
-                    taskId={taskId}
+                    setShowDeleteConfirmation={setShowTaskDeletion}
+                    handleDeleteItem={handleTaskDeletion}
                 />
             }
         </Drawer >

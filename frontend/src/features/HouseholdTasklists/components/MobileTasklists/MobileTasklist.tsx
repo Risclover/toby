@@ -160,7 +160,7 @@ export const MobileTasklist = () => {
                 />
             )}
 
-            {showDeleteConfirmation && <DeleteConfirmation title={tasklist.title} opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteList={handleDeleteList} />}
+            {showDeleteConfirmation && <DeleteConfirmation itemName={tasklist.title} itemType="tasklist" modalTitle="Confirm delete tasklist" opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteItem={handleDeleteList} />}
         </MobileLayout>
     );
 };

@@ -23,7 +23,7 @@ export const AnnouncementDeleteConfirmation = ({ announcement, openDeleteConfirm
 
     return (
         <Modal centered opened={openDeleteConfirmation} onClose={() => setOpenDeleteConfirmation(false)} title="Delete announcement?">
-            <Text size="sm" c="white">Are you sure you want to delete this announcement? This action cannot be undone.</Text>
+            <Text size="sm">Are you sure you want to delete this announcement? This action cannot be undone.</Text>
             <Space h="md" />
             <Group justify="flex-end">
                 <Button

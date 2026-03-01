@@ -166,10 +166,6 @@ export const announcementApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: { announcementIds },
             }),
-            // CHANGE THIS: Invalidate the household cache so ALL queries for this household refetch
-            invalidatesTags: (_res, _err, { householdId }) => [
-                { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
-            ],
         }),
 
         toggleAnnouncementImportance: builder.mutation<

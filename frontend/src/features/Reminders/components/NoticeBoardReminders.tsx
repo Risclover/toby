@@ -41,10 +41,6 @@ export const NoticeBoardReminders = () => {
     return (
         <div className="notice-board-reminders-container">
             <ul className="notice-board-reminders">{sortedReminders.map(reminder => <NoticeBoardReminder reminderId={reminder.id} reminder={reminder} />)}</ul>
-            <div className="notice-board-reminders-footer">
-                <Button size="compact-sm" color="var(--mantine-color-red-6)" radius="xl">+ New reminder</Button>
-                <Button size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)">View all →</Button>
-            </div>
         </div>
     )
 }

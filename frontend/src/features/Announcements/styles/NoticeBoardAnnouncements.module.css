@@ -1,0 +1,78 @@
+.root {
+    position: relative;
+    background-color: light-dark(#f7f8fc, var(--mantine-color-dark-6));
+    border-radius: 0.25rem;
+    padding: 3px 5px;
+    width: fit-content;
+    display: block;
+    /* box-shadow: var(--mantine-shadow-xs); */
+    align-self: flex-end;
+    /* Or block, depending on layout */
+}
+
+.controlsGroup {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    width: auto;
+    /* 4 equal columns */
+    /* Must be higher than indicator */
+}
+
+.control {
+    padding: .15rem .5rem !important;
+    border-radius: 0.25rem;
+    font-size: var(--text-xs) !important;
+    font-weight: 400;
+    padding: .25rem .75rem !important;
+    transition: color 150ms ease;
+    text-align: center;
+    width: auto;
+    flex-grow: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* flex-grow: 1; */
+    color: light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-2));
+}
+
+.control[data-active] {
+    color: black;
+    /* Text color when active */
+}
+
+/* Light mode override if you want dark text on light active background */
+/* 
+:where([data-mantine-color-scheme='light']) .control[data-active] {
+  color: var(--mantine-color-black); 
+}
+*/
+
+.indicator {
+    position: absolute;
+    z-index: 1;
+    background-color: white;
+    /* Or any theme color like cyan.6 */
+    border-radius: 0.25rem;
+    box-shadow: var(--mantine-shadow-xs);
+}
+
+.urgency-filters-container {
+    transition: display 0.8s ease, opacity 0.8s ease;
+    border-radius: 0.5rem;
+    border: 1px solid var(--mantine-color-gray-4);
+    padding: 0.5rem;
+}
+
+.urgency-filters-title {
+    font-family: var(--font-family-jetbrains);
+}
+
+.important {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    line-height: 1;
+    /* font-size: var(--text-xs) !important; */
+}

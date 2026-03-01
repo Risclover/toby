@@ -137,7 +137,7 @@ export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                     </div>
                 </div>
             </div>
-            {showDeleteConfirmation && <DeleteConfirmation title={list.title} opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteList={handleDeleteList} />}
+            {showDeleteConfirmation && <DeleteConfirmation itemName={list.title} itemType="tasklist" modalTitle="Confirm delete tasklist" opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteItem={handleDeleteList} />}
         </>
     );
 }
