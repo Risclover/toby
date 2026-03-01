@@ -5,8 +5,9 @@ import { formatAnnouncementTimestamp } from "../utils";
 type Props = {
     announcement: Announcement;
     user: User;
+    triggerRef: React.RefObject<HTMLButtonElement | null>;
 }
-export const useAnnouncement = ({ announcement, user }: Props) => {
+export const useAnnouncement = ({ announcement, user, triggerRef }: Props) => {
     const [deleteAnnouncement] = useDeleteAnnouncementMutation();
 
     const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
@@ -17,6 +18,7 @@ export const useAnnouncement = ({ announcement, user }: Props) => {
     const handleDeleteAnnouncement = async () => {
         await deleteAnnouncement({ announcementId: announcement.id, householdId: announcement.householdId });
         setOpenDeleteConfirmation(false);
+        triggerRef?.current?.focus();
     }
 
     return {

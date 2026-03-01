@@ -13,6 +13,7 @@ type Props = {
 
 export const NoticeBoardAnnouncement = ({ announcement }: Props) => {
     const wrapperRef = useRef<HTMLDivElement | null>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
 
     const { data: user } = useAuthenticateQuery();
     const { message, creator, isImportant, seenByCurrent } = announcement;
@@ -22,7 +23,7 @@ export const NoticeBoardAnnouncement = ({ announcement }: Props) => {
         openDeleteConfirmation,
         handleDeleteAnnouncement,
         formattedTimestamp
-    } = useAnnouncement({ announcement, user })
+    } = useAnnouncement({ announcement, user, triggerRef })
 
     return (
         <li className="notice-board-announcement">
@@ -55,7 +56,7 @@ export const NoticeBoardAnnouncement = ({ announcement }: Props) => {
                         )}
                         {user.id === creator.id && (
                             <AnnouncementMenu
-                                ref={wrapperRef}
+                                ref={triggerRef}
                                 announcement={announcement}
                                 setOpenDeleteConfirmation={setOpenDeleteConfirmation}
                             />
@@ -79,6 +80,7 @@ export const NoticeBoardAnnouncement = ({ announcement }: Props) => {
                     opened={openDeleteConfirmation}
                     setShowDeleteConfirmation={setOpenDeleteConfirmation}
                     handleDeleteItem={handleDeleteAnnouncement}
+                    triggerRef={triggerRef}
                 />
             )}
         </li>
