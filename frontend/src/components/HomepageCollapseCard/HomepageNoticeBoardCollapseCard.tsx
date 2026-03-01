@@ -50,14 +50,14 @@ const HomepageNoticeBoardContent = () => {
                         <NoticeBoardReminders />
                         <div className="notice-board-footer">
                             <Button size="compact-sm" color="var(--mantine-color-red-6)" radius="xl">+ New reminder</Button>
-                            <Button size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)">View all →</Button>
+                            <Button p={0} size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)">View all →</Button>
                         </div>
                     </HomepageCollapseCardTab>
                     <HomepageCollapseCardTab value="announcements">
                         <NoticeBoardAnnouncements />
                         <div className="notice-board-footer">
                             <Button size="compact-sm" color="var(--mantine-color-red-6)" radius="xl" onClick={() => openModal()}>+ New announcement</Button>
-                            <Button size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)" onClick={() => navigate("/announcements")}>View all →</Button>
+                            <Button size="xs" p={0} fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)" onClick={() => navigate("/announcements")}>View all →</Button>
                         </div>
                     </HomepageCollapseCardTab>
                 </HomepageCollapseCardTabs>

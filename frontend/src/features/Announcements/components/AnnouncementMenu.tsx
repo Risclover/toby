@@ -35,7 +35,7 @@ export const AnnouncementMenu = ({ ref, announcement, setOpenDeleteConfirmation 
     return (
         <Menu
             loop={false}
-            withinPortal={false}
+            withinPortal={true}
             trapFocus={false}
             menuItemTabIndex={0}
             shadow="xs"

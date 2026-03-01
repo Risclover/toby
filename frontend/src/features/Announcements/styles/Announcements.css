@@ -31,6 +31,7 @@
 
 .single-announcement,
 .single-announcement-skeleton {
+    position: relative;
     display: flex;
     flex-direction: column;
     padding: 1rem;
@@ -62,7 +63,6 @@
     margin-bottom: 0.5rem;
     font-size: 12px;
     width: 100%;
-    position: relative;
 }
 
 .single-announcement-header-info {
@@ -145,8 +145,8 @@
     align-items: center;
     position: absolute;
     gap: 0.25rem;
-    top: -0.25rem;
-    right: -0.5rem;
+    top: 1rem;
+    right: .5rem;
 }
 
 .announcement-menu-btn {
