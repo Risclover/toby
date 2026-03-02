@@ -30,25 +30,23 @@ class Reminder(db.Model):
 
     # Creation and update tracking
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, nullable=False) # When the reminder was created
-    updated_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False) # When the reminder was last updated (e.g. title/message edited, trigger time changed, etc.)
+    updated_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False) # When the reminder was last updated (e.g. title/message edited, trigger date changed, etc.)
 
-    # Automatic reminder lifecycle
-    trigger_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True) # -> when scheduler fires
+    # Reminder lifecycle
+    trigger_date = db.Column(db.Date, nullable=True, index=True) # The date on which this reminder becomes visible to assigned users (pulled on login/page load)
     is_active = db.Column(db.Boolean, nullable=False, default=True, index=True) # Whether or not it's currently active; False means it was "Deactivated" (e.g. task details were edited)
-    delivered_at = db.Column(db.DateTime(timezone=True), nullable=True, index=True) # When the reminder was actually delivered to users (via scheduler)
 
     # Relationships
     created_by = db.relationship("User", foreign_keys=[created_by_id]) # The user who created the reminder (can be null if created by system automation or if user was deleted)
     household = db.relationship("Household", back_populates="reminders") # The household this reminder belongs to
     assignments = db.relationship("ReminderAssignment", cascade="all, delete-orphan", backref="reminder") # The users this reminder is assigned to (via ReminderAssignment association table)
 
-    # Index to optimize queries for active reminders that are due to be triggered (e.g. for scheduler)
     __table_args__ = (
         UniqueConstraint(
             "household_id",
             "source_entity_type",
             "source_entity_id",
-            "trigger_at",
+            "trigger_date",
             "reminder_type",
             name="uq_auto_reminder_instance",
         ),
@@ -60,13 +58,12 @@ class Reminder(db.Model):
             "householdId": self.household_id,
             "createdById": self.created_by_id,
             "message": self.message,
-            "reminderType": self.reminder_type.value,  # ✅ Use .value
+            "reminderType": self.reminder_type.value,
             "isAutomatic": self.is_automatic,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
-            "triggerAt": self.trigger_at.astimezone(timezone.utc).isoformat() if self.trigger_at else None,
+            "triggerDate": self.trigger_date.isoformat() if self.trigger_date else None,
             "isActive": self.is_active,
-            "deliveredAt": self.delivered_at.isoformat() if self.delivered_at else None,
             "createdAt": self.created_at.isoformat() if self.created_at else None,
             "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
             "createdBy": {
@@ -85,8 +82,6 @@ class Reminder(db.Model):
         }
 
     def to_dict_for_user(self, assignment):
-        user = assignment.user
-
         return {
             "id": self.id,
             "householdId": self.household_id,
@@ -96,35 +91,21 @@ class Reminder(db.Model):
             "isAutomatic": self.is_automatic,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
-
-            "triggerAt": (
-                utc_datetime_to_local(user, self.trigger_at).isoformat()
-                if self.trigger_at else None
-            ),
-
-            "deliveredAt": (
-                utc_datetime_to_local(user, self.delivered_at).isoformat()
-                if self.delivered_at else None
-            ),
-
+            "triggerDate": self.trigger_date.isoformat() if self.trigger_date else None,
+            "isActive": self.is_active,
             "createdAt": (
-                utc_datetime_to_local(user, self.created_at).isoformat()
+                utc_datetime_to_local(assignment.user, self.created_at).isoformat()
                 if self.created_at else None
             ),
-
             "updatedAt": (
-                utc_datetime_to_local(user, self.updated_at).isoformat()
+                utc_datetime_to_local(assignment.user, self.updated_at).isoformat()
                 if self.updated_at else None
             ),
-
-            "isActive": self.is_active,
-
             "createdBy": {
                 "id": self.created_by.id,
                 "firstName": self.created_by.first_name,
                 "profileImg": self.created_by.profile_img,
             } if self.created_by else None,
-
             "assignedTo": [
                 {
                     "id": a.user.id,
@@ -133,7 +114,6 @@ class Reminder(db.Model):
                 }
                 for a in self.assignments
             ],
-
             "currentUserAssignment": {
                 "seen": assignment.seen
             }
@@ -145,10 +125,10 @@ class Reminder(db.Model):
 class ReminderAssignment(db.Model):
     __tablename__ = "reminder_assignments"
 
-    reminder_id = db.Column(db.Integer, db.ForeignKey("reminders.id", ondelete="CASCADE"), primary_key=True) # Each reminder can be assigned to multiple users, and each user can have multiple reminders - this association table captures that many-to-many relationship along with assignment-specific details
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True) # Each reminder can be assigned to multiple users, and each user can have multiple reminders - this association table captures that many-to-many relationship along with assignment-specific details
-    assigned_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, nullable=False) # When the reminder was assigned to this user (e.g. when the reminder was created or when a user was added to an existing reminder)
-    seen = db.Column(db.Boolean, nullable=False, default=False) # Whether the assigned user has seen this reminder (e.g. has it shown up in their UI yet)
+    reminder_id = db.Column(db.Integer, db.ForeignKey("reminders.id", ondelete="CASCADE"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    assigned_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    seen = db.Column(db.Boolean, nullable=False, default=False) # Whether the assigned user has seen this reminder
 
     def to_dict(self):
         return {
