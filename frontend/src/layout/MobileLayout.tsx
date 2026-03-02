@@ -1,6 +1,4 @@
 import { MobileHomeHeader } from "@/components/MobileHomeHeader"
-import { MobileHomeNavGrid } from "@/components/MobileHomeNavGrid"
-import { MobileHomeNoticeBoard } from "@/components/MobileHomeNoticeBoard"
 import type React from "react"
 import type { JSX } from "react"
 

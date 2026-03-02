@@ -5,6 +5,7 @@ import { NoticeBoardAnnouncementsFilter } from "./NoticeBoardAnnouncementsFilter
 import { CreateAnnouncement } from "./CreateAnnouncement";
 import { useAnnouncements } from "../hooks/useAnnouncements";
 import { getVisibleAnnouncements } from "../utils/getVisibleAnnouncements";
+import "../styles/Announcements.css";
 
 export const NoticeBoardAnnouncements = () => {
     const [importanceFilter, setImportanceFilter] = useState(false);

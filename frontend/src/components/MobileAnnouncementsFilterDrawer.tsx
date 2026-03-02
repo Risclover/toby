@@ -1,7 +1,12 @@
 // MobileAnnouncementsFilterDrawer.tsx
 import { Avatar, Button, Drawer, Group, Stack, Text, Space, Tooltip } from "@mantine/core";
 import { useState } from "react";
-import { type FiltersType } from "@/features/Announcements/components/Announcements";
+
+type FiltersType = {
+    importance: "all" | "important";
+    creatorId: number | null;
+    time: "today" | "7days" | "30days" | "all";
+}
 
 type Props = {
     opened: boolean;

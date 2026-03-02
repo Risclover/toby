@@ -2,10 +2,7 @@ from flask import Blueprint, request, jsonify, abort, current_app
 from flask_login import current_user, login_required
 from app.extensions import db
 from app.models import Reminder, User, Household, ReminderType, ReminderAssignment
-from datetime import datetime, timezone
-from app.utils.parse_datetime import parse_datetime
-from app.utils.timezone import get_user_timezone
-import pytz
+from datetime import date
 
 reminder_routes = Blueprint("reminders", __name__)
 
@@ -48,18 +45,10 @@ def create_or_update_automatic_reminder():
         if field not in data:
             return jsonify({"error": f"Missing {field}"}), 400
 
-    # ---- TIMEZONE FIX (A) START ----
-    trigger_at = None
-    if data.get("triggerAt"):
-        parsed = parse_datetime(data["triggerAt"])
-
-        if parsed.tzinfo is None:
-            # assume creator's timezone, then convert to UTC
-            user_tz = get_user_timezone(current_user)
-            parsed = user_tz.localize(parsed)
-
-        trigger_at = parsed.astimezone(pytz.UTC)
-    # ---- TIMEZONE FIX (A) END ----
+    # ✅ trigger_date is a plain date — no timezone conversion needed
+    trigger_date = None
+    if data.get("triggerDate"):
+        trigger_date = date.fromisoformat(data["triggerDate"])  # expects "YYYY-MM-DD"
 
     reminder = Reminder.query.filter_by(
         household_id=data["householdId"],
@@ -67,7 +56,7 @@ def create_or_update_automatic_reminder():
         source_entity_id=data["sourceEntityId"],
         reminder_type=ReminderType(data["reminderType"]),
         is_automatic=True,
-        trigger_at=trigger_at,
+        trigger_date=trigger_date,
     ).first()
 
     if reminder:
@@ -81,7 +70,7 @@ def create_or_update_automatic_reminder():
             is_automatic=True,
             source_entity_type=data["sourceEntityType"],
             source_entity_id=data["sourceEntityId"],
-            trigger_at=trigger_at,
+            trigger_date=trigger_date,
         )
         db.session.add(reminder)
 
@@ -125,19 +114,10 @@ def update_manual_reminder(id):
     if "reminderBody" in data:
         reminder.message = data["reminderBody"]
 
-    # ---- TIMEZONE FIX (A) START ----
-    if "triggerAt" in data:
-        parsed = parse_datetime(data["triggerAt"])
-
-        if parsed is None:
-            reminder.trigger_at = None
-        else:
-            if parsed.tzinfo is None:
-                user_tz = get_user_timezone(current_user)
-                parsed = user_tz.localize(parsed)
-
-            reminder.trigger_at = parsed.astimezone(pytz.UTC)
-    # ---- TIMEZONE FIX (A) END ----
+    # ✅ Key is "triggerDate"; parse as plain date, no timezone conversion
+    if "triggerDate" in data:
+        raw = data["triggerDate"]
+        reminder.trigger_date = date.fromisoformat(raw) if raw else None
 
     if "assignedToIds" in data:
         assigned_user_ids = set(data["assignedToIds"])

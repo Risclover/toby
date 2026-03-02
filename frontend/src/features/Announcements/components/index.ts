@@ -1,5 +1,5 @@
-export { Announcement } from "./Announcement";
-export { AnnouncementDeleteConfirmation } from "./AnnouncementDeleteConfirmation";
 export { AnnouncementMenu } from "./AnnouncementMenu";
-export { Announcements } from "./Announcements";
 export { CreateAnnouncement } from "./CreateAnnouncement";
+export { NoticeBoardAnnouncement } from "./NoticeBoardAnnouncement";
+export { NoticeBoardAnnouncements } from "./NoticeBoardAnnouncements";
+export { NoticeBoardAnnouncementsFilter } from "./NoticeBoardAnnouncementsFilter";

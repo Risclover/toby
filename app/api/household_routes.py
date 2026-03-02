@@ -5,7 +5,7 @@ from app.models import Household, Tasklist, TasklistMember, Announcement, Announ
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy import outerjoin, or_, and_
 import base64
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, date, timedelta, timezone
 from app.utils.parse_datetime import parse_datetime
 from app.utils.timezone import utc_datetime_to_local
 import json
@@ -274,33 +274,37 @@ def list_announcements(household_id: int):
 # REMINDERS
 # --------------------
 @household_routes.route("/<int:household_id>/reminders", methods=["GET"])
+@login_required
 def get_household_reminders(household_id):
     household = Household.query.get(household_id)
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    now = datetime.utcnow()
-    reminders = (
-        Reminder.query
+    today = date.today()  # ✅ date, not datetime
+
+    # ✅ Join ReminderAssignment to filter by current user and seen status
+    assignments = (
+        ReminderAssignment.query
+        .join(Reminder)
         .filter(
-            Reminder.hodusehold_id == household_id,
-            (Reminder.trigger_at == None) | (Reminder.trigger_at <= now),
-            Reminder.seen == False
+            ReminderAssignment.user_id == current_user.id,
+            ReminderAssignment.seen.is_(False),
+            Reminder.household_id == household_id,  # ✅ fixed typo
+            Reminder.is_active.is_(True),
+            or_(
+                Reminder.trigger_date.is_(None),
+                Reminder.trigger_date <= today,  # ✅ date vs date
+            ),
         )
-        .order_by(Reminder.trigger_at.asc().nulls_last())
+        .order_by(Reminder.trigger_date.asc().nulls_last())
         .all()
     )
 
-    reminders_list = []
-    for r in reminders:
-        r_dict = r.to_dict()
-        if hasattr(r, "created_at") and r.created_at:
-            r_dict["createdAt"] = utc_datetime_to_local(current_user, r.created_at).isoformat()
-        if hasattr(r, "trigger_at") and r.trigger_at:
-            r_dict["triggerAt"] = utc_datetime_to_local(current_user, r.trigger_at).isoformat()
-        reminders_list.append(r_dict)
+    return jsonify([
+        assignment.reminder.to_dict_for_user(assignment)
+        for assignment in assignments
+    ]), 200
 
-    return jsonify(reminders_list), 200
 
 @household_routes.route("/<int:household_id>/reminders", methods=["POST"])
 @login_required
@@ -315,31 +319,28 @@ def create_manual_reminder(household_id):
     data = request.get_json()
     assigned_user_ids = data.get("assignedToIds", [])
 
+    # ✅ Parse as date, not datetime
+    trigger_date = None
+    raw_date = data.get("triggerDate")
+    if raw_date:
+        trigger_date = date.fromisoformat(raw_date)  # expects "YYYY-MM-DD"
+
     reminder = Reminder(
         household_id=household_id,
         created_by_id=current_user.id,
         message=data.get("reminderBody"),
         reminder_type=ReminderType.CUSTOM,
         is_automatic=False,
-        trigger_at=parse_datetime(data.get("triggerAt")),
+        trigger_date=trigger_date,
     )
 
     db.session.add(reminder)
-    db.session.flush()  # <-- important, gets reminder.id
+    db.session.flush()  # get reminder.id
 
     for user_id in assigned_user_ids:
-        assignment = ReminderAssignment(
-            reminder_id=reminder.id,
-            user_id=user_id,
-        )
-        db.session.add(assignment)
+        db.session.add(ReminderAssignment(reminder_id=reminder.id, user_id=user_id))
 
     db.session.commit()
 
-    r_dict = reminder.to_dict()
-    if hasattr(reminder, "created_at") and reminder.created_at:
-        r_dict["createdAt"] = utc_datetime_to_local(current_user, reminder.created_at).isoformat()
-    if hasattr(reminder, "trigger_at") and reminder.trigger_at:
-        r_dict["triggerAt"] = utc_datetime_to_local(current_user, reminder.trigger_at).isoformat()
-
-    return jsonify(r_dict), 201
+    # ✅ to_dict already handles trigger_date as isoformat; no utc_datetime_to_local needed
+    return jsonify(reminder.to_dict()), 201

@@ -1,22 +1,12 @@
 import { MobileHomeFamilyTitle } from "@/components/MobileHomeFamilyTitle"
-import { MobileHomeHeader } from "@/components/MobileHomeHeader"
 import "@/assets/styles/mobile.css";
-import { MobileHomeCalendar } from "@/components/MobileHomeCalendar";
-import { MobileHomeCheckinReminder } from "@/components/MobileHomeCheckinReminder";
 import { MobileHomeNavGrid } from "@/components/MobileHomeNavGrid";
-import { MobileHomeNoticeBoard } from "@/components/MobileHomeNoticeBoard";
-import { MobileHomeDailyCheckins } from "@/components/MobileHomeDailyCheckins";
-import { MobileHomeRecentActivity } from "@/components/MobileHomeRecentActivity";
 import { MobileLayout } from "@/layout/MobileLayout";
 import { TaskStatusSection } from "@/components/DueTaskStats/TaskStatusSelection";
 import { TimezoneSelect } from "@/components/TimezoneSelect";
-import { useState, type JSX } from "react";
+import { useState } from "react";
 import { useAuthenticateQuery, useUpdateTimezoneMutation } from "@/store";
 import { Button } from "@mantine/core";
-import { HomepageCollapseCard } from "@/components/HomepageCollapseCard/HomepageCollapseCard";
-import { HomepageCollapseCardBody } from "@/components/HomepageCollapseCard/HomepageCollapseCardBody";
-import { HomepageCollapseCardTabs } from "@/components/HomepageCollapseCard/HomepageCollapseCardTabs";
-import { HomepageCollapseCardTab } from "@/components/HomepageCollapseCard/HomepageCollapseCardTab";
 import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/HomepageListsCollapseCard";
 import { HomepageNoticeBoardCollapseCard } from "@/components/HomepageCollapseCard/HomepageNoticeBoardCollapseCard";
 
@@ -38,7 +28,6 @@ export const MobileHome = () => {
             <TimezoneSelect value={timezone} onChange={(tz) => setTimezone(tz)} />
             <Button onClick={handleTimezone}>Submit</Button>
             <TaskStatusSection />
-            <MobileHomeNoticeBoard />
             <HomepageNoticeBoardCollapseCard />
             <HomepageListsCollapseCard />
         </MobileLayout>

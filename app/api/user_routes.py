@@ -208,7 +208,7 @@ def get_user_reminders(user_id):
     if current_user.id != user_id:
         return jsonify({"error": "Forbidden"}), 403
 
-    now = datetime.utcnow()
+    today = date.today()  # ✅ date, not datetime
 
     assignments = (
         ReminderAssignment.query
@@ -218,11 +218,11 @@ def get_user_reminders(user_id):
             ReminderAssignment.seen.is_(False),
             Reminder.is_active.is_(True),
             or_(
-                Reminder.trigger_at.is_(None),
-                Reminder.trigger_at <= now,
+                Reminder.trigger_date.is_(None),
+                Reminder.trigger_date <= today,  # ✅ date vs date
             ),
         )
-        .order_by(Reminder.trigger_at.asc().nulls_last())
+        .order_by(Reminder.trigger_date.asc().nulls_last())
         .all()
     )
 

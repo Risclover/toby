@@ -22,5 +22,4 @@ export { MobileHomeDailyCheckins } from "./MobileHomeDailyCheckins";
 export { MobileHomeFamilyTitle } from "./MobileHomeFamilyTitle";
 export { MobileHomeHeader } from "./MobileHomeHeader";
 export { MobileHomeNavGrid } from "./MobileHomeNavGrid";
-export { MobileHomeNoticeBoard } from "./MobileHomeNoticeBoard";
 export { MobileHomeRecentActivity } from "./MobileHomeRecentActivity";
