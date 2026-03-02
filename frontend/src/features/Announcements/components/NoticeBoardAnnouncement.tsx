@@ -12,7 +12,6 @@ type Props = {
 }
 
 export const NoticeBoardAnnouncement = ({ announcement }: Props) => {
-    const wrapperRef = useRef<HTMLDivElement | null>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
 
     const { data: user } = useAuthenticateQuery();
