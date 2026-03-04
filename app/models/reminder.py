@@ -11,6 +11,11 @@ class ReminderType(Enum):
     EVENT_STARTING = "event_starting"
     DAILY_CHECKIN_MISSING = "daily_checkin_missing"
 
+class RepeatFrequency(Enum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+
 class Reminder(db.Model):
     __tablename__ = "reminders"
 
@@ -19,6 +24,8 @@ class Reminder(db.Model):
     # Foreign keys
     household_id = db.Column(db.Integer, db.ForeignKey("households.id", ondelete="CASCADE"), nullable=False, index=True) # Each reminder belongs to a household
     created_by_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True) # The user who created the reminder (can be null if created by system automation or if user was deleted)
+
+    repeat_frequency = db.Column(db.Enum(RepeatFrequency, name="repeatfrequency"), nullable=True, default=None)
 
     message = db.Column(db.Text, nullable=False) # Main content of the reminder (e.g. "Don't forget to take out the trash tonight!", "You have a dinner event scheduled for 7pm", "It looks like you missed your daily check-in today. Please remember to complete it when you can!", etc.)
     reminder_type = db.Column(db.Enum(ReminderType), nullable=False) # Classifies the type of reminder (e.g. "custom", "task_due", "event_starting", "daily_check_in_missing", etc.) - helps with frontend display logic and potential future analytics
@@ -60,6 +67,7 @@ class Reminder(db.Model):
             "message": self.message,
             "reminderType": self.reminder_type.value,
             "isAutomatic": self.is_automatic,
+            "repeatFrequency": self.repeat_frequency.value if self.repeat_frequency else None,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
             "triggerDate": self.trigger_date.isoformat() if self.trigger_date else None,

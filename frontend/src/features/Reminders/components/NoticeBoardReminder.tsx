@@ -1,9 +1,16 @@
 import { useDeleteManualReminderMutation, type Reminder } from "@/store/reminderSlice";
 import dayjs from "dayjs";
 import { getReminderTime } from "../utils/getReminderTime";
-import { Avatar, Tooltip, UnstyledButton } from "@mantine/core";
+import { Avatar, Badge, Tooltip, UnstyledButton } from "@mantine/core";
 import type { User } from "@/store";
 import { TobyIcon } from "@/assets";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { FaLongArrowAltRight } from "react-icons/fa";
+import { MdOutlineArrowRightAlt } from "react-icons/md";
+import { HiArrowLongRight } from "react-icons/hi2";
+
+dayjs.extend(relativeTime);
+
 type Props = {
     reminderId: number;
     reminder: Reminder;
@@ -13,21 +20,28 @@ export const NoticeBoardReminder = ({ reminder }: Props) => {
     return (
         <li className="notice-board-reminder">
             <div className="notice-board-reminder-main">
-                <div className="notice-board-reminder-body">{reminder.message}</div>
-                <div className="notice-board-reminder-details">
-                    {!reminder.isAutomatic && <div className="notice-board-reminder-details-people">
+                <div className="notice-board-reminder-body">
+                    {reminder.message}
+                    <div className="reminder-badge">
+                        <Badge size="xs" variant="light" color="red">New</Badge>
+                    </div>
+
+                </div>
+                <div className="notice-board-reminder-footer">
+                    <div className="notice-board-reminder-assigned">
                         <Tooltip label={`Created by ${reminder.createdBy?.firstName}`}>
-                            <Avatar size={16} src={reminder.createdBy?.profileImg} radius="xl" />
+                            <Avatar size={18} src={reminder.createdBy?.profileImg} radius="xl" />
                         </Tooltip>
 
-                        <span>→</span>
+                        <span className="reminder-relationship-arrow"><HiArrowLongRight />
+                        </span>
                         {reminder.assignedTo && reminder.assignedTo.length > 0 ? (
-                            <div> {/* Negative gap for overlap effect */}
+                            <div>
                                 <Avatar.Group spacing="0.5rem">
                                     {reminder.assignedTo.map((assignee: User) => (
                                         <Tooltip key={assignee.id} label={assignee.firstName}>
                                             <Avatar
-                                                size={20}
+                                                size={22}
                                                 src={assignee.profileImg}
                                                 radius="xl"
                                             />
@@ -38,15 +52,11 @@ export const NoticeBoardReminder = ({ reminder }: Props) => {
                         ) : (
                             <span style={{ fontSize: '0.85rem', color: '#666' }}>everyone</span>
                         )}
-                    </div>}
-                    <span className="reminder-system">{reminder.isAutomatic && reminder.sourceEntityType === "task" ? (
-                        <Tooltip label="Created by Toby">
-                            <Avatar size={20} variant="transparent"><TobyIcon size="1rem" color="var(--mantine-color-dark-4)" /></Avatar>
-                        </Tooltip>
-                    ) : ""}</span>
-
-
-                    <span className="reminder-ago">Posted: {getReminderTime(reminder.createdAt)}</span>
+                    </div>
+                    <div className="reminder-separator-dot">·</div>
+                    <div className="notice-board-reminder-details">
+                        <div className="notice-board-reminder-timestamp">{dayjs(reminder.createdAt).fromNow()}</div>
+                    </div>
                 </div>
             </div>
         </li>

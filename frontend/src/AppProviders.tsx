@@ -1,8 +1,9 @@
-import { CreateAnnouncementModalProvider, CreateTasklistModalProvider } from "@/contexts";
+import { CreateAnnouncementModalProvider, CreateReminderModalProvider, CreateTasklistModalProvider } from "@/contexts";
 
 const providers = [
     CreateAnnouncementModalProvider,
     CreateTasklistModalProvider,
+    CreateReminderModalProvider
 ];
 
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {

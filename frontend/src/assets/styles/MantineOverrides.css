@@ -22,12 +22,9 @@
     font-family: "Nunito Sans", sans-serif;
 }
 
-.m_396ce5cb:where([data-weekend]) {
-    color: var(--tasklist-color);
-}
 
-.m_396ce5cb:where([data-selected]),
-.m_dc6a3c71:where([data-selected]) {
+.tasklist-date-picker .m_396ce5cb:where([data-selected]),
+.tasklist-date-picker .m_dc6a3c71:where([data-selected]) {
     background: var(--tasklist-color);
     color: white;
 }
@@ -40,8 +37,8 @@
     line-height: 1;
 }
 
-.m_396ce5cb:where([data-selected]):hover,
-.m_dc6a3c71:where([data-selected]):hover {
+.tasklist-date-picker .m_396ce5cb:where([data-selected]):hover,
+.tasklist-date-picker .m_dc6a3c71:where([data-selected]):hover {
     background: var(--tasklist-color);
     color: white;
 }
@@ -60,6 +57,26 @@
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.m_396ce5cb:where([data-selected]):hover:where(:not([data-disabled], [data-static])),
+.m_396ce5cb:where([data-selected]),
+.m_dc6a3c71:where([data-selected]) {
+    background: rgb(5, 5, 73);
+    color: white;
+}
+
+.m_dc6a3c71:where([data-selected]):hover {
+    background: rgba(5, 5, 73, 0.924) !important;
+}
+
+.m_396ce5cb:where([data-weekend]):where(:not([data-selected])) {
+    color: rgb(21, 21, 224);
+}
+
+.m_396ce5cb:hover:where(:not([data-static], [data-disabled], [data-selected], [data-in-range])),
+.m_dc6a3c71:hover:where(:not([data-disabled], [data-selected]), :disabled) {
+    background-color: rgb(245, 245, 255) !important;
 }
 
 /* .mantine-TextInput-input {

@@ -8,6 +8,7 @@ import updateLocale from 'dayjs/plugin/updateLocale';
 import { getReminderTime } from "../utils/getReminderTime";
 import { NoticeBoardReminder } from "./NoticeBoardReminder";
 import { useMemo } from "react";
+import { CreateReminder } from "./CreateReminder";
 
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
@@ -38,9 +39,11 @@ export const NoticeBoardReminders = () => {
             .slice() // Create a shallow copy so we don't mutate the Redux state
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }, [reminders]);
+
     return (
         <div className="notice-board-reminders-container">
             <ul className="notice-board-reminders">{sortedReminders.map(reminder => <NoticeBoardReminder reminderId={reminder.id} reminder={reminder} />)}</ul>
+            <CreateReminder />
         </div>
     )
 }

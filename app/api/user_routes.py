@@ -249,3 +249,39 @@ def update_user_timezone():
     db.session.commit()
 
     return jsonify(user.to_dict()), 200
+
+@user_routes.route("/<int:user_id>/reminders/created", methods=["GET"])
+@login_required
+def get_user_created_reminders(user_id):
+    if current_user.id != user_id:
+        return jsonify({"error": "Forbidden"}), 403
+
+    reminders = (
+        Reminder.query
+        .filter_by(created_by_id=user_id, is_active=True)
+        .order_by(Reminder.created_at.desc())
+        .all()
+    )
+    return jsonify([reminder.to_dict() for reminder in reminders]), 200
+
+@user_routes.route("/<int:user_id>/reminders/all", methods=["GET"])
+@login_required
+def get_all_user_reminders(user_id):
+    if current_user.id != user_id:
+        return jsonify({"error": "Forbidden"}), 403
+
+    assignments = (
+        ReminderAssignment.query
+        .join(Reminder)
+        .filter(
+            ReminderAssignment.user_id == user_id,
+            Reminder.is_active.is_(True),
+        )
+        .order_by(Reminder.trigger_date.desc().nulls_first())
+        .all()
+    )
+
+    return jsonify([
+        assignment.reminder.to_dict_for_user(assignment)
+        for assignment in assignments
+    ]), 200

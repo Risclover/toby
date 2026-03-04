@@ -3,6 +3,7 @@ import { Avatar, Checkbox, Collapse, Fieldset, Stack } from "@mantine/core";
 import type { UserLite } from "@/hooks/useMemberSelection";
 
 type Props = {
+    required?: boolean;
     title: string;
     members?: UserLite[];
     allMembers: boolean;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export function HouseholdMemberSelection({
+    required,
     title,
     members,
     allMembers,
@@ -21,28 +23,36 @@ export function HouseholdMemberSelection({
     onToggleAll,
     onToggleOne,
 }: Props) {
+    const legend = required ? (
+        <div style={{ margin: "0 4px" }}>
+            {title}
+            <span style={{ color: "var(--mantine-color-red-6)", marginLeft: 4 }}>*</span>
+        </div>
+    ) : title;
+
     return (
-        <Fieldset legend={title} className="list-is-for">
+        <Fieldset legend={legend} className="list-is-for">
             <Checkbox
-                color="cyan"
-                size="xs"
+                color="rgb(5, 5, 73)"
+                size="sm"
                 label="All household members"
                 checked={allMembers} // This will now correctly show as checked
                 indeterminate={someSelected}
                 onChange={(e) => onToggleAll(e.currentTarget.checked)}
+
             />
             {/* Remove the !allMembers short-circuit inside here */}
             <Collapse in={!allMembers} transitionDuration={180}>
-                <div className="gap-4 mt-4">
+                <div className="gap-4 mt-2">
                     <Stack gap="xs" ml="lg">
                         {members?.map((m) => (
                             <Checkbox
-                                color="cyan"
+                                color="rgb(5, 5, 73)"
                                 key={m.id}
-                                size="xs"
+                                size="sm"
                                 label={
                                     <div className="list-members">
-                                        <Avatar src={m.profileImg} size="xs" />
+                                        <Avatar src={m.profileImg} size={20} />
                                         <span>{m.displayName}</span>
                                     </div>
                                 }

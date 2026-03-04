@@ -206,7 +206,6 @@
 /* Target the text span inside the option */
 .mantine-Select-option span,
 .mantine-Input-input {
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     /* Allow the text to shrink */

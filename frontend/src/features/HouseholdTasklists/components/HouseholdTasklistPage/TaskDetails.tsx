@@ -87,7 +87,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
 
                     <p className="task-details-label">Due date:</p>
                     <DatePickerInput
-                        dropdownType={isSmallScreen && "modal"}
+                        dropdownType={isSmallScreen ? "modal" : "popover"}
                         placeholder="Add due date"
                         leftSection={<CalendarMonthRoundedIcon />}
                         leftSectionWidth="40px"

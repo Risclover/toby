@@ -21,12 +21,13 @@ export type Reminder = {
 
     reminderType: "custom" | "task_due" | "event_starting" | "daily_check_in_missing";
     isAutomatic: boolean;
+    repeat: "daily" | "weekly" | "monthly" | null;
 
     // Automatic reminder metadata
     sourceEntityId?: number | null;
     sourceEntityType?: string | null;
 
-    triggerAt?: string | null;
+    triggerDate?: string | null;
     deliveredAt?: string | null;
     isActive: boolean;
 
@@ -60,6 +61,28 @@ export const reminderSlice = apiSlice.injectEndpoints({
                     : [{ type: 'Reminders', id: 'LIST' }],
         }),
 
+        getAllUserReminders: builder.query<Reminder[], number>({
+            query: (userId) => `/users/${userId}/reminders/all`,
+            providesTags: (result = []) =>
+                result.length
+                    ? [
+                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
+                        { type: 'Reminders', id: 'LIST' },
+                    ]
+                    : [{ type: 'Reminders', id: 'LIST' }],
+        }),
+
+        getUserCreatedReminders: builder.query<Reminder[], number>({
+            query: (userId) => `/users/${userId}/reminders/created`,
+            providesTags: (result = []) =>
+                result.length
+                    ? [
+                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
+                        { type: 'Reminders', id: 'LIST' },
+                    ]
+                    : [{ type: 'Reminders', id: 'LIST' }],
+        }),
+
         /**
          * Get all reminders for a household
          * (includes automatic + manual)
@@ -80,7 +103,9 @@ export const reminderSlice = apiSlice.injectEndpoints({
          */
         createManualReminder: builder.mutation<
             Reminder,
-            { householdId: number; title?: string; body: string; triggerAt?: string; assignedToIds?: number[] }
+            {
+                householdId: number; message: string; triggerDate?: Date | null; assignedToIds?: number[]; seen: boolean; repeat: "daily" | "weekly" | "monthly" | null; sourceEntityId: number | null; sourceEntityType: string | null;
+            }
         >({
             query: ({ householdId, ...body }) => ({
                 url: `/households/${householdId}/reminders`,
@@ -108,9 +133,8 @@ export const reminderSlice = apiSlice.injectEndpoints({
             Reminder,
             {
                 id: number;
-                title?: string;
                 reminderBody?: string;
-                triggerAt?: string | null;
+                triggerDate?: string | null;
                 assignedToIds?: number[];
             }
         >({
@@ -137,6 +161,8 @@ export const reminderSlice = apiSlice.injectEndpoints({
 
 export const {
     useGetUserRemindersQuery,
+    useGetAllUserRemindersQuery,
+    useGetUserCreatedRemindersQuery,
     useGetHouseholdRemindersQuery,
     useCreateManualReminderMutation,
     useMarkReminderSeenMutation,

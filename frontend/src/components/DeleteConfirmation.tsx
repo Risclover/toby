@@ -7,7 +7,7 @@ type Props = {
     opened: boolean;
     setShowDeleteConfirmation: (val: boolean) => void;
     handleDeleteItem: () => void;
-    triggerRef: React.RefObject<HTMLButtonElement | null>;
+    triggerRef?: React.RefObject<HTMLButtonElement | null>;
 }
 
 export const DeleteConfirmation = ({ modalTitle, itemName, itemType, opened, setShowDeleteConfirmation, handleDeleteItem, triggerRef }: Props) => {

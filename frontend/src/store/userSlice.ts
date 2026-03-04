@@ -2,6 +2,7 @@ import { apiSlice } from "./apiSlice";
 import { authSlice } from "./authSlice";
 import { householdSlice } from "./householdSlice";
 import type { MoodKey } from "./moodSlice";
+import type { Reminder } from "./reminderSlice";
 
 type UploadImgArgs = {
     userId: number | undefined;
@@ -147,7 +148,7 @@ export const userSlice = apiSlice.injectEndpoints({
                     console.error("Failed to update timezone:", err);
                 }
             },
-        })
+        }),
     }),
 });
 
