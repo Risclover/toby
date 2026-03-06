@@ -1,0 +1,27 @@
+.all-reminders-tabs-list {
+    padding: 0 .875rem;
+    margin-top: .25rem;
+    font-weight: 500;
+    color: rgb(5, 5, 73);
+    font-family: "Alan Sans", sans-serif;
+}
+
+.all-reminders-page-main {
+    padding: 0 .875rem;
+    background: #f7f8fc;
+    min-height: calc(100dvh - 145px);
+}
+
+.all-reminders-page-main .notice-board-reminders {
+    max-height: 100%;
+}
+
+.my-reminders-tab {
+    padding: 0.5rem;
+}
+
+@media (max-width: 500px) {
+    .all-reminders-page-main {
+        padding: 0;
+    }
+}

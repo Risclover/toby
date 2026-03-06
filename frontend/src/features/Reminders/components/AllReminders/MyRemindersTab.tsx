@@ -1,14 +1,9 @@
-import { useGetUserRemindersQuery } from "@/store/reminderSlice";
-import "../styles/Reminder.css"
-import { useAuthenticateQuery } from "@/store";
-import { Avatar, Button, Tooltip, UnstyledButton } from "@mantine/core";
-import dayjs from 'dayjs';
+import { useAuthenticateQuery, useGetUserCreatedRemindersQuery } from "@/store"
+import { NoticeBoardReminder } from "../NoticeBoardReminder";
+import { useMemo } from "react";
+import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
-import { getReminderTime } from "../utils/getReminderTime";
-import { NoticeBoardReminder } from "./NoticeBoardReminder";
-import { useMemo } from "react";
-import { CreateReminder } from "./CreateReminder";
 
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
@@ -30,9 +25,10 @@ dayjs.updateLocale('en', {
         yy: "%d years"
     }
 });
-export const NoticeBoardReminders = () => {
+
+export const MyRemindersTab = () => {
     const { data: user } = useAuthenticateQuery();
-    const { data: reminders = [] } = useGetUserRemindersQuery(user?.id);
+    const { data: reminders = [] } = useGetUserCreatedRemindersQuery(user?.id);
 
     const sortedReminders = useMemo(() => {
         return reminders
@@ -40,12 +36,9 @@ export const NoticeBoardReminders = () => {
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }, [reminders]);
 
-    console.log("sortedReminders", sortedReminders);
-
     return (
-        <div className="notice-board-reminders-container">
-            <ul className="notice-board-reminders">{sortedReminders.map(reminder => <NoticeBoardReminder reminder={reminder} />)}</ul>
-            <CreateReminder />
+        <div className="my-reminders-tab">
+            {sortedReminders?.map(reminder => <NoticeBoardReminder reminder={reminder} />)}
         </div>
     )
 }

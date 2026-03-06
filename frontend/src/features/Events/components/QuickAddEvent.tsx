@@ -201,7 +201,7 @@ export function QuickAddEvent({
                     required
                     styles={{
                         wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
-                        input: { fontWeight: "normal", fontFamily: "Nunito Sans, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", color: "white" },
+                        input: { fontWeight: "normal", fontFamily: "Commissioner, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", color: "white" },
                         month: { background: "var(--main-background)", color: "white" },
                         day: { color: "white" },
                         calendarHeader: { background: "var(--main-background)", color: "white" },
@@ -220,7 +220,7 @@ export function QuickAddEvent({
                     onChange={(e) => setTimeStr(e.currentTarget.value)}
                     styles={{
                         wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
-                        input: { fontWeight: "normal", fontFamily: "Nunito Sans, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", color: "white" },
+                        input: { fontWeight: "normal", fontFamily: "Commissioner, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", color: "white" },
                     }}
                 />
             </Group>

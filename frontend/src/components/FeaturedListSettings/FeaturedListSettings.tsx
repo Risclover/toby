@@ -134,7 +134,7 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Pr
             </Tabs>
             <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}>
                 <Group justify="space-between" w="100%">
-                    <Button size="compact-sm" variant="transparent" color="var(--tasklist-color)" onClick={handleResetToDefaults}>Reset to default</Button>
+                    <Button size="compact-sm" variant="transparent" color="var(--tasklist-color)" onClick={handleResetToDefaults} fw={500}>Reset to default</Button>
                     <Group gap="0.5rem">
                         <Button
                             color="var(--tasklist-color)"
@@ -142,6 +142,7 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Pr
                             className="tasklist-settings-footer-btn"
                             onClick={() => form.reset()}
                             disabled={!form.isDirty() || !form.isValid()}
+                            fw={500}
                         >
                             Cancel
                         </Button>
@@ -153,6 +154,7 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Pr
                             onClick={() => handleSubmit()}
                             loading={isSubmitting}
                             loaderProps={{ children: 'Saving...' }}
+                            fw={500}
                         >
                             Update
                         </Button>

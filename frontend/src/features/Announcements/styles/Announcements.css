@@ -68,7 +68,7 @@
 .single-announcement-header-info {
     display: flex;
     /* flex-direction: column; */
-    align-items: center;
+    align-items: baseline;
 }
 
 .single-announcement-header-left {
@@ -84,14 +84,15 @@
     font-weight: 500;
     /* line-height: 1.1; */
     /* color: gray; */
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
 }
 
 .single-announcement-timestamp,
 .single-reminder-timestamp {
     /* color: rgb(195, 193, 219); */
-    font-size: 11px;
+    font-size: 13px;
+    line-height: 1;
     /* font-weight: 500; */
     /* font-style: italic; */
     /* font-family: var(--font-family-jetbrains); */
@@ -164,7 +165,7 @@
 
 .announcement-message {
     line-height: 1.5 !important;
-    font-size: 13px !important;
+    font-size: var(--text-sm) !important;
     font-weight: 400 !important;
     color: var(--mantine-color-dark-7) !important;
 }
@@ -353,7 +354,7 @@
 
 .announcements-count {
     color: var(--mantine-color-gray-6);
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .notice-board-announcements-footer {

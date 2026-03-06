@@ -11,9 +11,7 @@ export function useMemberSelection(members?: UserLite[]) {
     const [isAllMode, setIsAllMode] = useState(true);
 
     useEffect(() => {
-        if (!members) return;
-        setSelected(new Set(members.map((m) => m.id)));
-        setIsAllMode(true);
+        reset();
     }, [members]);
 
     const allCount = members?.length ?? 0;
@@ -50,12 +48,19 @@ export function useMemberSelection(members?: UserLite[]) {
     const someSelected = selected.size > 0 && selected.size < allCount;
     const memberIds = useMemo(() => Array.from(selected), [selected]);
 
+    const reset = () => {
+        if (!members) return;
+        setSelected(new Set(members.map((m) => m.id)));
+        setIsAllMode(true);
+    };
+
     return {
         allMembers: isAllMode, // Use the explicit state for the UI
         someSelected,
         memberIds,
         toggleAll,
         toggleOne,
-        selected
+        selected,
+        reset
     };
 }

@@ -23,7 +23,7 @@
 .control {
     padding: .15rem .5rem !important;
     border-radius: 0.25rem;
-    font-size: var(--text-xs) !important;
+    font-size: 13px !important;
     font-weight: 400;
     padding: .25rem .75rem !important;
     transition: color 150ms ease;

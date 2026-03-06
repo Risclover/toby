@@ -113,7 +113,7 @@ function PreviewWindow({ label, onClick, onKeyDown, activeTaskDisplay, children 
             </Box>
             <Group gap="0.5rem" align="center" ml={5}>
                 <Checkbox onChange={onClick} onKeyDown={onKeyDown} color="var(--tasklist-color)" checked={activeTaskDisplay === label.toLowerCase()} size="xs" radius="xl" />
-                <Text size="xs" fw={500} c="black" mt={1}>{label}</Text>
+                <Text size="13px" fw={400} c="black" mt={1}>{label}</Text>
             </Group>
         </Stack>
     );

@@ -97,7 +97,7 @@ export const ItemExpanded = ({ item }: Props) => {
                                 onChange={handleChangeCategory}   // val is string | null
                                 styles={{
                                     wrapper: { width: '200px', border: '1px solid var(--main-border)', borderRadius: '0.5rem' },
-                                    input: { fontFamily: 'Nunito Sans, sans-serif', borderRadius: '0.5rem', border: 0, paddingTop: '1rem', paddingBottom: '1rem', background: 'var(--main-background)', color: 'white' },
+                                    input: { fontFamily: 'Commissioner, sans-serif', borderRadius: '0.5rem', border: 0, paddingTop: '1rem', paddingBottom: '1rem', background: 'var(--main-background)', color: 'white' },
                                     section: { background: 'transparent' },
                                     dropdown: { background: 'var(--main-background)', border: '1px solid white', borderRadius: '0.5rem' },
                                     options: { background: 'var(--main-background)', color: 'white' },

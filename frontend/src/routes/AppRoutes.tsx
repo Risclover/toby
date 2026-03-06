@@ -12,6 +12,7 @@ import { MobileAnnouncements } from "@/pages/MobileAnnouncements";
 import { MobileTasklist } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklist";
 import { MobileTasklists } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklists";
 import { ArchivedHouseholdTasklistsPage } from "@/pages/ArchivedHouseholdTasklistsPage";
+import { AllRemindersPage } from "@/features/Reminders/components/AllReminders/AllRemindersPage";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
@@ -30,6 +31,7 @@ export const AppRoutes = () => {
             <Route path="/shopping/:listId" element={<ShoppingListPage />} />
             <Route path="/" element={(isMobile || isSmallScreen) ? <MobileHome /> : <Dashboard />} />
             <Route path="/announcements" element={<MobileAnnouncements />} />
+            <Route path="/reminders" element={<AllRemindersPage />} />
         </Routes>
     )
 }

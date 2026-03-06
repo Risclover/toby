@@ -15,8 +15,8 @@ export const DiscardWarning = ({ opened, setShowDiscardWarning, handleClose }: P
             <Text px={15} c="black" size="sm">Your unsaved changes will be discarded.</Text>
             <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0 }}>
                 <Group justify="flex-end" w="100%" gap="0.5rem">
-                    <Button className="tasklist-settings-footer-btn" size="compact-sm" variant="outline" color="var(--tasklist-color)" onClick={() => setShowDiscardWarning(false)}>Cancel</Button>
-                    <Button className="tasklist-settings-footer-btn" size="compact-sm" variant="filled" color="var(--tasklist-color)" onClick={handleClose}>Discard</Button>
+                    <Button className="tasklist-settings-footer-btn" size="compact-sm" variant="outline" color="var(--tasklist-color)" onClick={() => setShowDiscardWarning(false)} fw={500}>Cancel</Button>
+                    <Button className="tasklist-settings-footer-btn" size="compact-sm" variant="filled" color="var(--tasklist-color)" onClick={handleClose} fw={500}>Discard</Button>
                 </Group>
             </Modal.Header>
         </Modal>

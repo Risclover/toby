@@ -73,7 +73,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
         >
             <div className="task-details">
                 <div>
-                    <p className="task-details-label">Task:</p>
+                    <p className="task-details-label">Task</p>
                     <Textarea
                         id="title"
                         minRows={2}
@@ -85,7 +85,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                     />
                     {taskError && <div className="error-message">{taskError}</div>}
 
-                    <p className="task-details-label">Due date:</p>
+                    <p className="task-details-label">Due date</p>
                     <DatePickerInput
                         dropdownType={isSmallScreen ? "modal" : "popover"}
                         placeholder="Add due date"
@@ -109,7 +109,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                         className="tasklist-date-picker"
                         {...form.getInputProps("dueDate")}
                     />
-                    <p className="task-details-label">Assigned To:</p>
+                    <p className="task-details-label">Assigned to</p>
                     <Select
                         data={data}
                         clearable
@@ -135,7 +135,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                             )
                         }
                     />
-                    <p className="task-details-label">Notes:</p>
+                    <p className="task-details-label">Notes</p>
 
                     <Textarea
                         placeholder="Add task notes"
@@ -151,6 +151,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                             color="var(--tasklist-color)"
                             onClick={() => form.reset()}
                             disabled={!form.isDirty() || !form.isValid()}
+                            fw={500}
                         >
                             Cancel
                         </Button>
@@ -162,6 +163,7 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                             loading={isSubmitting}
                             loaderProps={{ children: 'Saving...' }}
                             disabled={!form.isDirty() || !form.isValid()}
+                            fw={500}
                         >
                             Update
                         </Button>

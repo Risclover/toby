@@ -45,8 +45,15 @@ export const CreateReminder = () => {
     const { data: household } = useGetHouseholdQuery(user?.householdId);
     const [createReminder] = useCreateManualReminderMutation();
 
-    const { allMembers, someSelected, memberIds, selected, toggleAll, toggleOne } =
-        useMemberSelection(household?.members);
+    const {
+        allMembers,
+        someSelected,
+        memberIds,
+        selected,
+        toggleAll,
+        toggleOne,
+        reset
+    } = useMemberSelection(household?.members);
 
     const form = useForm<ReminderFormValues>({
         initialValues: {
@@ -66,6 +73,7 @@ export const CreateReminder = () => {
     const handleClose = () => {
         form.reset();
         closeCreateReminderModal();
+        reset();
     };
 
     const handleSubmit = async (values: ReminderFormValues) => {
@@ -106,7 +114,6 @@ export const CreateReminder = () => {
                     /{MAX_CHARS}
                 </div>
 
-                <Space h="md" />
 
                 <div className="two-column-inputs">
                     <div className="two-column-input">
@@ -191,6 +198,7 @@ export const CreateReminder = () => {
                         size="compact-sm"
                         color="var(--mantine-color-dark-6)"
                         variant="outline"
+                        fw={500}
                     >
                         Cancel
                     </Button>
@@ -202,6 +210,7 @@ export const CreateReminder = () => {
                         variant="light"
                         color="rgb(5, 5, 73)"
                         disabled={form.values.message.trim().length === 0 || memberIds.length === 0}
+                        fw={500}
                     >
                         Save
                     </Button>

@@ -64,7 +64,7 @@
 }
 
 .editable-title {
-    font-family: "Nunito Sans", sans-serif;
+    font-family: "Commissioner", sans-serif;
     width: 100%;
     box-sizing: border-box;
     line-height: 1.4;
@@ -180,7 +180,7 @@ textarea.editable-title.is-editing {
 .add-task input {
     width: calc(100% - 50px);
     outline: none;
-    font-family: "Nunito Sans", sans-serif;
+    font-family: "Commissioner", sans-serif;
     padding-right: 10px;
 }
 
@@ -233,7 +233,7 @@ textarea.editable-title.is-editing {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    font-family: "Nunito Sans", sans-serif;
+    font-family: "Commissioner", sans-serif;
 }
 
 .task-section svg {
@@ -394,6 +394,13 @@ textarea.editable-title.is-editing {
 .extra {
     display: flex;
     gap: 3px;
+    margin-top: 5px;
+}
+
+
+.extra-label {
+    line-height: 1.2;
+    font-size: 12px;
 }
 
 .task-details-label {
@@ -465,6 +472,7 @@ textarea.editable-title.is-editing {
 .tasklist-settings-section input {
     max-width: 390px !important;
     width: 100%;
+    font-size: 14px;
 }
 
 .input-label-description {
@@ -523,7 +531,7 @@ textarea.editable-title.is-editing {
 
 .tasklist-settings-save-btn {
     /* font-weight: 500 !important; */
-    font-family: "Nunito Sans", sans-serif;
+    font-family: "Commissioner", sans-serif;
     height: 31px !important;
     padding-left: 1.25rem !important;
     padding-right: 1.25rem !important;
@@ -545,7 +553,7 @@ textarea.editable-title.is-editing {
 .tasklist-settings-footer-btn {
     height: auto !important;
     padding: 0.5rem 1rem !important;
-    font-family: "Nunito Sans", sans-serif;
+    font-family: "Commissioner", sans-serif;
 }
 
 .mantine-Tabs-panel {

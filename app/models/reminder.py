@@ -70,10 +70,10 @@ class Reminder(db.Model):
             "repeatFrequency": self.repeat_frequency.value if self.repeat_frequency else None,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
-            "triggerDate": self.trigger_date.isoformat() if self.trigger_date else None,
+            "triggerDate": self.trigger_date.isoformat() + "Z" if self.trigger_date else None,
             "isActive": self.is_active,
-            "createdAt": self.created_at.isoformat() if self.created_at else None,
-            "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
+            "createdAt": self.created_at.isoformat() + "Z" if self.created_at else None,
+            "updatedAt": self.updated_at.isoformat() + "Z" if self.updated_at else None,
             "createdBy": {
                 "id": self.created_by.id,
                 "firstName": self.created_by.first_name,

@@ -58,9 +58,7 @@ export const NoticeBoardProvider = ({ children }: NoticeBoardProviderProps) => {
     }
 
     const hasUnseen = unseenSnapshot.size > 0;
-    console.log("data", data);
-    console.log("unseenSnapshot", unseenSnapshot);
-    console.log("hasUnseen", hasUnseen);
+
     return (
         <NoticeBoardContext.Provider value={{ hasUnseen, hasOpenedAnnouncements, onAnnouncementsOpened, unseenSnapshot }}>
             {children}

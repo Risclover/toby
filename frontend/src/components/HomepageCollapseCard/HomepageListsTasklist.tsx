@@ -157,7 +157,7 @@ export const HomepageListsTasklist = () => {
                                         maxLength={255}
                                         ref={inputRef}
                                     />
-                                    <Button color="var(--tasklist-color)" fw={400} variant="filled" size="xs" radius="sm" onClick={handleAddTask}>Add</Button>
+                                    <Button color="var(--tasklist-color)" fw={500} variant="filled" size="xs" radius="sm" onClick={handleAddTask}>Add</Button>
                                 </div>
                             </div>
                         }
@@ -168,7 +168,7 @@ export const HomepageListsTasklist = () => {
 }
 
 
-const FeaturedTasklistItem = ({ task, tasklistId, hideCompleted, settings }: TasklistItemProps) => {
+const FeaturedTasklistItem = ({ task, tasklistId, hideCoampleted, settings }: TasklistItemProps) => {
     const { data: user } = useAuthenticateQuery();
     const [completeTask] = useCompleteTaskMutation();
 
@@ -249,7 +249,7 @@ const FeaturedTasklistItem = ({ task, tasklistId, hideCompleted, settings }: Tas
                     style={{ display: "flex", alignItems: "center" }}
                 >
                     <Checkbox
-                        size="xs"
+                        size="14px"
                         radius="xl"
                         color="var(--tasklist-color)"
                         label={task.title}

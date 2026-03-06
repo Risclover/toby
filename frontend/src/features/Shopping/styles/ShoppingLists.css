@@ -78,7 +78,7 @@
 }
 
 .shopping-item-expanded-input-section input {
-    font-family: 'Nunito Sans', sans-serif !important;
+    font-family: 'Commissioner', sans-serif !important;
 }
 
 /* .task-left,
@@ -166,7 +166,7 @@
     width: 80%;
     outline: none;
     font-size: var(--text-sm);
-    font-family: "Nunito Sans", sans-serif;
+    font-family: "Commissioner", sans-serif;
 }
 
 .categories-table {
