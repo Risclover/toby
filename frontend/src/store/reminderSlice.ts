@@ -21,7 +21,7 @@ export type Reminder = {
 
     reminderType: "custom" | "task_due" | "event_starting" | "daily_check_in_missing";
     isAutomatic: boolean;
-    repeat: "daily" | "weekly" | "monthly" | null;
+    repeatFrequency: "daily" | "weekly" | "monthly" | null;
 
     // Automatic reminder metadata
     sourceEntityId?: number | null;

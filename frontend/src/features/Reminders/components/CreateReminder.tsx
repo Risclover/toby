@@ -19,7 +19,11 @@ interface ReminderFormValues {
 }
 
 const MAX_CHARS = 150;
-const REPEAT_OPTIONS = ["Daily", "Weekly", "Monthly"];
+const REPEAT_OPTIONS = [
+    { value: "daily", label: "Daily" },
+    { value: "weekly", label: "Weekly" },
+    { value: "monthly", label: "Monthly" },
+];
 const DATE_PRESETS = [
     { value: dayjs().format("YYYY-MM-DD HH:mm:ss"), label: "Today" },
     { value: dayjs().add(1, "day").format("YYYY-MM-DD HH:mm:ss"), label: "Tomorrow" },
@@ -120,7 +124,7 @@ export const CreateReminder = () => {
                         <DatePickerInput
                             label={
                                 <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                                    Trigger date
+                                    Trigger date (optional)
                                     <Tooltip
                                         events={{ hover: true, focus: true, touch: true }}
                                         multiline
@@ -149,7 +153,6 @@ export const CreateReminder = () => {
                             leftSectionWidth="40px"
                             styles={DATE_PICKER_STYLES}
                             clearable
-                            minDate={dayjs().startOf("day").toDate()}
                             color="rgb(5, 5, 73)"
                             presets={DATE_PRESETS}
                             valueFormatter={({ date, format }: any) =>
@@ -157,14 +160,14 @@ export const CreateReminder = () => {
                             }
                             firstDayOfWeek={0}
                             className="reminder-date-picker"
-                            key={form.key("triggerDate")}
                             {...form.getInputProps("triggerDate")}
+                            key={form.key("triggerDate")}
                         />
                     </div>
 
-                    <div className="two-column-input">
+                    {form.values.triggerDate && <div className="two-column-input">
                         <Select
-                            label="Repeat"
+                            label="Repeat (optional)"
                             placeholder="Choose frequency"
                             data={REPEAT_OPTIONS}
                             clearable
@@ -174,7 +177,7 @@ export const CreateReminder = () => {
                             key={form.key("repeat")}
                             {...form.getInputProps("repeat")}
                         />
-                    </div>
+                    </div>}
                 </div>
 
                 <Space h="md" />

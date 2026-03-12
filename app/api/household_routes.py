@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment
+from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment, RepeatFrequency
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy import outerjoin, or_, and_
 import base64
@@ -319,31 +319,33 @@ def create_manual_reminder(household_id):
     data = request.get_json()
     assigned_user_ids = data.get("assignedToIds", [])
 
-    # ✅ Parse as date, not datetime
     trigger_date = None
     raw_date = data.get("triggerDate")
     if raw_date:
         try:
-            trigger_date = date.fromisoformat(raw_date)  # "YYYY-MM-DD"
+            trigger_date = date.fromisoformat(raw_date)
         except ValueError:
-            trigger_date = datetime.fromisoformat(raw_date).date()  # "YYYY-MM-DD HH:MM:SS"
+            trigger_date = datetime.fromisoformat(raw_date).date()
+
+    raw_repeat = data.get("repeat")
+    repeat_frequency = RepeatFrequency(raw_repeat) if raw_repeat else None
 
     reminder = Reminder(
         household_id=household_id,
         created_by_id=current_user.id,
         message=data.get("message"),
         reminder_type=ReminderType.CUSTOM,
+        repeat_frequency=repeat_frequency,
         is_automatic=False,
         trigger_date=trigger_date,
     )
 
     db.session.add(reminder)
-    db.session.flush()  # get reminder.id
+    db.session.flush()
 
     for user_id in assigned_user_ids:
         db.session.add(ReminderAssignment(reminder_id=reminder.id, user_id=user_id))
 
     db.session.commit()
 
-    # ✅ to_dict already handles trigger_date as isoformat; no utc_datetime_to_local needed
     return jsonify(reminder.to_dict()), 201

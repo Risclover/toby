@@ -102,14 +102,8 @@ class Reminder(db.Model):
             "sourceEntityType": self.source_entity_type,
             "triggerDate": self.trigger_date.isoformat() if self.trigger_date else None,
             "isActive": self.is_active,
-            "createdAt": (
-                utc_datetime_to_local(assignment.user, self.created_at).isoformat()
-                if self.created_at else None
-            ),
-            "updatedAt": (
-                utc_datetime_to_local(assignment.user, self.updated_at).isoformat()
-                if self.updated_at else None
-            ),
+            "createdAt": self.created_at.isoformat() + "Z" if self.created_at else None,
+            "updatedAt": self.updated_at.isoformat() + "Z" if self.updated_at else None,
             "createdBy": {
                 "id": self.created_by.id,
                 "firstName": self.created_by.first_name,

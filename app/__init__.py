@@ -13,6 +13,7 @@ from .extensions  import (
 from .blueprints  import register_blueprints
 from .middlewares import register_middlewares
 from .errors      import register_error_handlers
+from .scheduler import init_scheduler
 from .seeds       import seed_commands
 from app.models      import User
 from sqlalchemy import event
@@ -35,6 +36,7 @@ def create_app(config_class=None) -> Flask:
         __name__,
         static_folder=str(Path(__file__).resolve().parents[1] / "frontend" / "build"),
     )
+    
 
     app.config.update(
         SQLALCHEMY_RECORD_QUERIES=True,   # built-in
@@ -86,6 +88,8 @@ def create_app(config_class=None) -> Flask:
     register_middlewares(app)
     register_error_handlers(app)
     app.cli.add_command(seed_commands)
+    with app.app_context():
+        init_scheduler(app)
 
     # --------------------------------------------------------------------- #
     # Single-Page App fallback
