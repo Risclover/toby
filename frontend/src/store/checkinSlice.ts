@@ -22,12 +22,15 @@ export const checkinApi = apiSlice.injectEndpoints({
             providesTags: (_res, _err, { userId }) => [{ type: "Checkins", id: `USER_${userId}` }],
         }),
 
-        checkInToday: b.mutation<CheckInTodayResponse, { userId: number }>({
+        checkInToday: b.mutation<CheckInTodayResponse, { userId: number; householdId?: number }>({
             query: ({ userId }) => ({
                 url: `/users/${userId}/checkins`,
                 method: "POST",
             }),
-            invalidatesTags: (_res, _err, { userId }) => [{ type: "Checkins", id: `USER_${userId}` }],
+            invalidatesTags: (_res, _err, { userId, householdId }) => [
+                { type: "Checkins", id: `USER_${userId}` },
+                ...(householdId != null ? [{ type: "Activity" as const, id: `HOUSEHOLD_${householdId}` }] : []),
+            ],
         }),
     }),
 });

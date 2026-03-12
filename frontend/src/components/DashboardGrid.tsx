@@ -46,7 +46,7 @@ export function DashboardGrid() {
             label: "Check In",
             icon: <HowToRegRoundedIcon />,
             className: checkedInToday ? "my-action p-disabled" : "",
-            command: () => checkInToday({ userId: user.id }).unwrap(),
+            command: () => checkInToday({ userId: user.id, householdId: household?.id }).unwrap(),
         },
         {
             label: "Invite Member",

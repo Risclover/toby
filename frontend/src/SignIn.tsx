@@ -47,7 +47,7 @@ export const SignIn = () => {
 
     const handleAddTask = async (e: MouseEvent) => {
         e.preventDefault();
-        await addTask({ title: "One", description: "One task", status: "in_progress", isImportant: false, dueDate: undefined, assignedToId: user?.id, listId: tasklistId })
+        await addTask({ title: "One", householdId: user.householdId, description: "One task", status: "in_progress", isImportant: false, dueDate: undefined, assignedToId: user?.id, listId: tasklistId })
     }
 
     return (

@@ -87,6 +87,7 @@ export type CreateTasklistRequest = CreateForUser | CreateForHousehold | CreateF
 
 export interface CreateTaskRequest {
     title: string;
+    householdId?: number;
     description?: string;
     status?: "pending" | "in_progress" | "completed";
     isImportant: boolean;
@@ -105,6 +106,7 @@ export type ReorderPayload = {
 export interface DeleteTaskRequest {
     listId: number;
     taskId: number;
+    householdId?: number;
 }
 
 export interface ClearListRequest {
@@ -200,11 +202,15 @@ export const taskSlice = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: { completed },
             }),
-            invalidatesTags: (_res, _err, { listId, householdId }): TasklistTag[] => {
-                const tags: TasklistTag[] = [{ type: "Tasklist", id: listId }];
-                if (householdId != null) tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
-                // keep the list “bucket” fresh too
-                tags.push({ type: "Tasklist", id: "LIST" });
+            invalidatesTags: (_res, _err, { listId, householdId }): any[] => {
+                const tags: any[] = [
+                    { type: "Tasklist", id: listId },
+                    { type: "Tasklist", id: "LIST" },
+                ];
+                if (householdId != null) {
+                    tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
+                    tags.push({ type: "Activity", id: `HOUSEHOLD_${householdId}` });
+                }
                 return tags;
             },
         }),
@@ -240,6 +246,9 @@ export const taskSlice = apiSlice.injectEndpoints({
                         result.householdId
                             ? { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` }
                             : { type: "Tasklist", id: `USER_${result.creatorId}` },
+                        ...(result.householdId
+                            ? [{ type: "Activity" as const, id: `HOUSEHOLD_${result.householdId}` }]
+                            : []),
                     ]
                     : [],
         }),
@@ -258,12 +267,16 @@ export const taskSlice = apiSlice.injectEndpoints({
                     list_id: listId,
                 },
             }),
-            invalidatesTags: (_res, _err, arg: CreateTaskRequest) => {
-                return [
+            invalidatesTags: (_res, _err, arg) => {
+                const tags: any[] = [
                     { type: "Tasklist", id: arg.listId },
-                    "UserTaskStats"
-                ]
-            }
+                    "UserTaskStats",
+                ];
+                if (arg.householdId != null) {
+                    tags.push({ type: "Activity", id: `HOUSEHOLD_${arg.householdId}` });
+                }
+                return tags;
+            },
         }),
 
         deleteTask: builder.mutation<Task, DeleteTaskRequest>({
@@ -271,9 +284,13 @@ export const taskSlice = apiSlice.injectEndpoints({
                 url: `/tasklists/${listId}/tasks/${taskId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (_res, _err, arg: DeleteTaskRequest) => {
-                return [{ type: "Tasklist", id: arg.listId }]
-            }
+            invalidatesTags: (_res, _err, arg) => {
+                const tags: any[] = [{ type: "Tasklist", id: arg.listId }];
+                if (arg.householdId != null) {
+                    tags.push({ type: "Activity", id: `HOUSEHOLD_${arg.householdId}` });
+                }
+                return tags;
+            },
         }),
 
         clearList: builder.mutation<{ message: string }, ClearListRequest>({

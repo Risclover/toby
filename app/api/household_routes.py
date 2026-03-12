@@ -8,6 +8,8 @@ import base64
 from datetime import datetime, date, timedelta, timezone
 from app.utils.parse_datetime import parse_datetime
 from app.utils.timezone import utc_datetime_to_local
+from app.utils.activity_service import ActivityService
+
 import json
 
 household_routes = Blueprint('households', __name__)
@@ -126,6 +128,15 @@ def create_household_tasklist(household_id):
         links = [TasklistMember(tasklist_id=tasklist.id, user_id=user_id) for user_id in set(member_ids)]
         db.session.add_all(links)
 
+    ActivityService.record(
+        household_id=household_id,
+        actor_id=current_user.id,
+        action="created",
+        entity_type="tasklist",
+        entity_id=tasklist.id,
+        entity_label=tasklist.title,
+        event_metadata={"listId": tasklist.id, "listTitle": tasklist.title},
+    )
     db.session.commit()
     t_dict = tasklist.to_dict()
     if hasattr(tasklist, "created_at") and tasklist.created_at:

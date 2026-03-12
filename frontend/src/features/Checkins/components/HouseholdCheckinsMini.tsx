@@ -12,20 +12,40 @@ function toISO(d: Date) {
     return d.toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
-function makeWindow() {
-    const today = new Date();
-    const start = new Date(today);
-    start.setDate(today.getDate() - 3); // 3 days ago
+function makeWindow(timezone: string) {
+    const now = new Date();
+
+    // Get current date parts in the user's timezone
+    const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: timezone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        weekday: "short",
+    }).formatToParts(now);
+
+    const todayIso = `${parts.find(p => p.type === "year")!.value}-${parts.find(p => p.type === "month")!.value}-${parts.find(p => p.type === "day")!.value}`;
+    const dowMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    const dow = dowMap[parts.find(p => p.type === "weekday")!.value];
+
+    // Build Sunday of this week in user's timezone
     const days = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date(start);
-        d.setDate(start.getDate() + i);
-        const iso = toISO(d);
-        return {
-            iso,
-            label: d.toLocaleDateString(undefined, { weekday: "short" }), // Mon, Tue, ...
-            isToday: iso === toISO(today),
-        };
+        const offset = i - dow;
+        const d = new Date(now);
+        d.setDate(d.getDate() + offset);
+        const iso = new Intl.DateTimeFormat("en-CA", {
+            timeZone: timezone,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        }).format(d);
+        const label = new Intl.DateTimeFormat("en-US", {
+            timeZone: timezone,
+            weekday: "short",
+        }).format(d);
+        return { iso, label, isToday: iso === todayIso };
     });
+
     return { days, from: days[0].iso, to: days[6].iso };
 }
 
@@ -108,17 +128,19 @@ function MemberRow({
 
 export function HouseholdCheckinsMini({
     members,
-    size = 32,               // a little bigger
-    gap = 8,                 // tight spacing
-    nameColWidthClass = "w-20", // keep header + rows aligned
+    timezone = "UTC",   // add this prop
+    size = 32,
+    gap = 8,
+    nameColWidthClass = "w-20",
 }: {
     members: Member[];
+    timezone?: string;  // add this
     size?: number;
     gap?: number;
-    nameColWidthClass?: string; // e.g., "w-48" / "w-56" depending on your layout
+    nameColWidthClass?: string;
 }) {
     const isSmall = useIsSmallScreen(375);
-    const { days, from, to } = useMemo(makeWindow, []);
+    const { days, from, to } = useMemo(() => makeWindow(timezone), [timezone]);
 
     return (
         <div className="household-checkins-mini-container">

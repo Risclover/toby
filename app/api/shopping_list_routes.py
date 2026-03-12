@@ -1,7 +1,9 @@
 # app/routes/shopping_list_routes.py
 from flask import Blueprint, jsonify, request
+from flask_login import current_user
 from app.extensions import db 
 from app.models import ShoppingList, ShoppingItem
+from app.utils.activity_service import ActivityService
 
 shopping_list_routes = Blueprint("shopping-lists", __name__)
 
@@ -28,6 +30,17 @@ def create_shopping_list():
     )
 
     db.session.add(list)
+    db.session.flush()
+
+    ActivityService.record(
+        household_id=list.household_id,
+        actor_id=current_user.id,
+        action="created",
+        entity_type="shopping_list",
+        entity_id=list.id,
+        entity_label=list.title,
+    )
+
     db.session.commit()
 
     return jsonify(list.to_dict()), 201
@@ -46,11 +59,19 @@ def update_shopping_list_info(id):
 
     return jsonify(list.to_dict()), 200
 
-@shopping_list_routes.route("/<int:id>", methods=["DELETE"])
 def delete_shopping_list(id):
     list = ShoppingList.query.get(id)
     if not list:
         return jsonify({"error": "Shopping list not found"}), 404
+
+    ActivityService.record(
+        household_id=list.household_id,
+        actor_id=current_user.id,
+        action="deleted",
+        entity_type="shopping_list",
+        entity_id=list.id,
+        entity_label=list.title,
+    )
 
     db.session.delete(list)
     db.session.commit()
@@ -80,6 +101,18 @@ def add_item_to_shopping_list(id):
     )
 
     db.session.add(item)
+    db.session.flush()
+
+    ActivityService.record(
+        household_id=shopping_list.household_id,
+        actor_id=current_user.id,
+        action="created",
+        entity_type="shopping_item",
+        entity_id=item.id,
+        entity_label=item.name,
+        event_metadata={"listId": id, "listTitle": shopping_list.title},
+    )
+
     db.session.commit()
     return jsonify(item.to_dict()), 201
 

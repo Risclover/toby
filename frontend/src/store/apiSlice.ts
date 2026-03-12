@@ -10,7 +10,7 @@ export const apiSlice = createApi({
     credentials: "include",
   }),
   tagTypes: [
-    "Household", "Tasklist", "Task", "ShoppingList", "ShoppingItem",
+    "Activity", "Household", "Tasklist", "Task", "ShoppingList", "ShoppingItem",
     "Announcement", "ShoppingCategory", "Session", "User", "Mood",
     "Checkins", "Calendar", "UserTaskStats", "Reminders", "UserSettings"
   ],

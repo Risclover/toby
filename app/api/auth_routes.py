@@ -2,6 +2,7 @@ from flask import Blueprint, request, session, redirect, abort, current_app, jso
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
+from app.utils.activity_service import ActivityService
 
 from app.models import User, Household, ShoppingList
 from app.extensions import db

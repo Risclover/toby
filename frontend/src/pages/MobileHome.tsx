@@ -10,6 +10,7 @@ import { Button } from "@mantine/core";
 import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/HomepageListsCollapseCard";
 import { HomepageNoticeBoardCollapseCard } from "@/components/HomepageCollapseCard/HomepageNoticeBoardCollapseCard";
 import { HomepageCheckinsCollapseCard } from "@/components/HomepageCollapseCard/HomepageCheckinsCollapseCard";
+import { HomepageActivityCollapseCard } from "@/components/HomepageCollapseCard/HouseholdActivityCollapseCard";
 
 export const MobileHome = () => {
     const mobileHomeFamilyTitle = <MobileHomeFamilyTitle />
@@ -32,6 +33,7 @@ export const MobileHome = () => {
             <HomepageNoticeBoardCollapseCard />
             <HomepageListsCollapseCard />
             <HomepageCheckinsCollapseCard />
+            <HomepageActivityCollapseCard />
         </MobileLayout>
     )
 }

@@ -71,7 +71,7 @@ export const HomepageListsTasklist = () => {
 
     const handleAddTask = async () => {
         if (taskValue.trim() === "") return;
-        await addTask({ title: taskValue, description: "", status: "in_progress", isImportant: false, dueDate: undefined, listId: tasklist?.id })
+        await addTask({ title: taskValue, householdId: user?.householdId, description: "", status: "in_progress", isImportant: false, dueDate: undefined, listId: tasklist?.id })
         setTaskValue("");
         inputRef?.current?.focus();
     }

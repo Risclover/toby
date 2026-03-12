@@ -39,7 +39,10 @@ export const shoppingSlice = apiSlice
 
             createShoppingList: builder.mutation<any, { title: string; userId?: number; householdId?: number }>({
                 query: (body) => ({ url: `/shopping-lists/`, method: "POST", body }),
-                invalidatesTags: [{ type: "ShoppingList", id: "LIST" }],
+                invalidatesTags: (_r, _e, { householdId }) => [
+                    { type: "ShoppingList", id: "LIST" },
+                    ...(householdId != null ? [{ type: "Activity" as const, id: `HOUSEHOLD_${householdId}` }] : []),
+                ],
             }),
 
             editShoppingList: builder.mutation<any, { listId: number; title: string }>({
@@ -47,11 +50,12 @@ export const shoppingSlice = apiSlice
                 invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingList", id: listId }],
             }),
 
-            deleteShoppingList: builder.mutation<{ message: string }, { listId: number }>({
+            deleteShoppingList: builder.mutation<{ message: string }, { listId: number; householdId?: number }>({
                 query: ({ listId }) => ({ url: `/shopping-lists/${listId}`, method: "DELETE" }),
-                invalidatesTags: (_r, _e, { listId }) => [
+                invalidatesTags: (_r, _e, { listId, householdId }) => [
                     { type: "ShoppingList", id: listId },
                     { type: "ShoppingList", id: "LIST" },
+                    ...(householdId != null ? [{ type: "Activity" as const, id: `HOUSEHOLD_${householdId}` }] : []),
                 ],
             }),
 
@@ -62,10 +66,9 @@ export const shoppingSlice = apiSlice
                 providesTags: (_res, _err, listId) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
             }),
 
-            // Align to backend: POST expects { name, category (string|null), quantity, purchased }
             addShoppingItem: builder.mutation<
                 ShoppingItem,
-                { listId: number; name: string; categoryId: number | null; quantity?: number; purchased?: boolean }
+                { listId: number; name: string; categoryId: number | null; quantity?: number; purchased?: boolean; householdId?: number }
             >({
                 query: ({ listId, name, categoryId, quantity = 1, purchased = false }) => ({
                     url: `/shopping-lists/${listId}/items`,
@@ -78,12 +81,11 @@ export const shoppingSlice = apiSlice
                         shoppingSlice.util.updateQueryData("getShoppingItems", listId, (draft) => {
                             draft.push({
                                 id: tempId,
-                                listId,                 // <-- was shoppingListId
+                                listId,
                                 name,
                                 quantity,
                                 purchased: false,
                                 categoryId,
-                                // optional: make UI snappy/consistent
                                 category: null,
                             });
                         })
@@ -99,7 +101,11 @@ export const shoppingSlice = apiSlice
                     } catch {
                         patch.undo();
                     }
-                }
+                },
+                invalidatesTags: (_r, _e, { listId, householdId }) => [
+                    { type: "ShoppingItem", id: `LIST_${listId}` },
+                    ...(householdId != null ? [{ type: "Activity" as const, id: `HOUSEHOLD_${householdId}` }] : []),
+                ],
             }),
 
             // Fetch a single item (useful after edits if you want to re-sync)
@@ -109,7 +115,7 @@ export const shoppingSlice = apiSlice
             }),
 
             // Toggle purchased — backend flips value itself; send NO body.
-            toggleShoppingItem: builder.mutation<ShoppingItem, { itemId: number; listId: number, purchased: boolean }>({
+            toggleShoppingItem: builder.mutation<ShoppingItem, { itemId: number; householdId?: number; listId: number, purchased: boolean }>({
                 query: ({ itemId }) => ({
                     url: `/shopping-items/${itemId}/toggle`,
                     method: "PUT",
@@ -127,7 +133,10 @@ export const shoppingSlice = apiSlice
                         patch.undo();
                     }
                 },
-                invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
+                invalidatesTags: (_r, _e, { listId, householdId }) => [
+                    { type: "ShoppingItem", id: `LIST_${listId}` },
+                    ...(householdId != null ? [{ type: "Activity" as const, id: `HOUSEHOLD_${householdId}` }] : []),
+                ],
             }),
 
             // Explicit “set purchased” via general PUT (hits /shopping-items/<id> with { purchased })
@@ -156,7 +165,7 @@ export const shoppingSlice = apiSlice
                 invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
             }),
 
-            deleteShoppingItem: builder.mutation<{ message?: string }, { itemId: number; listId: number }>({
+            deleteShoppingItem: builder.mutation<{ message?: string }, { itemId: number; listId: number; householdId?: number }>({
                 query: ({ itemId }) => ({ url: `/shopping-items/${itemId}`, method: "DELETE" }),
                 async onQueryStarted({ itemId, listId }, { dispatch, queryFulfilled }) {
                     const patch = dispatch(
@@ -171,7 +180,10 @@ export const shoppingSlice = apiSlice
                         patch.undo();
                     }
                 },
-                invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingItem", id: `LIST_${listId}` }],
+                invalidatesTags: (_r, _e, { listId, householdId }) => [
+                    { type: "ShoppingItem", id: `LIST_${listId}` },
+                    ...(householdId != null ? [{ type: "Activity" as const, id: `HOUSEHOLD_${householdId}` }] : []),
+                ],
             }),
 
             /* ---------- Field-specific item edits (match your routes) ---------- */

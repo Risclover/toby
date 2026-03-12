@@ -23,7 +23,7 @@ export function CheckInButton() {
             disabled={!userId || checkedInToday || isFetching || checkingIn}
             onClick={async () => {
                 if (!userId) return;
-                await checkInToday({ userId }).unwrap();
+                await checkInToday({ userId, householdId: user?.householdId }).unwrap();
                 // invalidatesTags will refresh today's query automatically
             }}
         >

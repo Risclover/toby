@@ -36,6 +36,7 @@ export type AppStore = ReturnType<typeof setupStore>;
 export type AppDispatch = AppStore['dispatch'];
 
 
+export * from "./activitySlice"
 export * from "./announcementSlice";
 export * from "./apiSlice";
 export * from "./authSlice";

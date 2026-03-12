@@ -46,7 +46,7 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
     const [deleteTask] = useDeleteTaskMutation();
 
     const handleTaskDeletion = async () => {
-        await deleteTask({ listId, taskId });
+        await deleteTask({ listId, taskId, householdId: household.id });
         setShowTaskDeletion(false);
         notifications.show({
             message: "Task deleted successfully.",

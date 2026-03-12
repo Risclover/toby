@@ -5,6 +5,7 @@ from app.extensions import db
 from datetime import datetime, date
 from flask_login import current_user
 from app.utils.reminder_utils import create_task_due_reminders
+from app.utils.activity_service import ActivityService
 import pytz
 
 task_routes = Blueprint("tasks", __name__)
@@ -38,6 +39,16 @@ def update_task_status(id):
             task.completed_at = datetime.utcnow()
     else:
         return jsonify({"error": "Provide boolean 'completed' or valid 'status'"}), 400
+
+    ActivityService.record(
+        household_id=task.tasklist.household_id,
+        actor_id=current_user.id,
+        action="completed" if task.status == "completed" else "updated",
+        entity_type="task",
+        entity_id=task.id,
+        entity_label=task.title,
+        event_metadata={"listId": task.list_id, "listTitle": task.tasklist.title},
+    )
 
     db.session.commit()
     return jsonify(task.to_dict()), 200
@@ -96,6 +107,17 @@ def toggle_importance(id):
 @task_routes.route("/<int:id>", methods=["DELETE"])
 def delete_task(id):
     task = Task.query.get_or_404(id)
+
+    ActivityService.record(
+        household_id=task.tasklist.household_id,
+        actor_id=current_user.id,
+        action="deleted",
+        entity_type="task",
+        entity_id=task.id,
+        entity_label=task.title,
+        event_metadata={"listId": task.list_id, "listTitle": task.tasklist.title},
+    )
+
     task.delete()
     db.session.commit()
     return {"message": f"Task (id: {task.id}) deleted from database"}

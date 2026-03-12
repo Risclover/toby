@@ -13,3 +13,4 @@ from .checkin import Checkin
 from .mood import Mood
 from .reminder import Reminder, ReminderType, ReminderAssignment, RepeatFrequency
 from .user_setting import UserSetting
+from .activity_event import ActivityEvent

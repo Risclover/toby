@@ -89,6 +89,7 @@ export const announcementApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (_res, _err, { householdId }) => [
                 { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
+                { type: "Activity", id: `HOUSEHOLD_${householdId}` },
             ],
         }),
 
@@ -115,6 +116,7 @@ export const announcementApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (_res, _err, { householdId }) => [
                 { type: "Announcement", id: `HOUSEHOLD_${householdId}` },
+                { type: "Activity", id: `HOUSEHOLD_${householdId}` },
             ],
         }),
 

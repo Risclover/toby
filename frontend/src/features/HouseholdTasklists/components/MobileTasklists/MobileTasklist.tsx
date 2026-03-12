@@ -20,9 +20,12 @@ import { useStablePending } from "@/hooks";
 import { useTasklistSettings, useTasklistStats } from "../../hooks";
 import { useState } from "react";
 import { DeleteConfirmation } from "../TasklistSettings";
+import { useAuthenticateQuery, useGetHouseholdQuery } from "@/store";
 
 export const MobileTasklist = () => {
     const { tasklistId } = useParams();
+    const { data: user } = useAuthenticateQuery();
+    const { data: household } = useGetHouseholdQuery(user?.householdId);
     const isSmall = useIsSmallScreen(425);
     const listId = (tasklistId && !isNaN(Number(tasklistId))) ? Number(tasklistId) : undefined;
 
@@ -150,6 +153,7 @@ export const MobileTasklist = () => {
                     inputRef={inputRef}
                     listId={tasklist.id}
                     tasklist={tasklist}
+                    householdId={household?.id}
                 />
             </div>
 

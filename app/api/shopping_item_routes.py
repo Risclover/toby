@@ -2,6 +2,7 @@
 from flask import Blueprint, request, jsonify
 from app.models import ShoppingItem, ShoppingCategory
 from app.extensions import db
+from app.utils.activity_service import ActivityService
 
 shopping_item_routes = Blueprint("shopping-items", __name__)
 
@@ -32,6 +33,16 @@ def delete_shopping_item(id):
     if not item:
         return jsonify({"error": "Shopping item not found"}), 404
 
+    ActivityService.record(
+        household_id=item.shopping_list.household_id,
+        actor_id=current_user.id,
+        action="deleted",
+        entity_type="shopping_item",
+        entity_id=item.id,
+        entity_label=item.name,
+        event_metadata={"listId": item.list_id, "listTitle": item.shopping_list.title},
+    )
+
     db.session.delete(item)
     db.session.commit()
     return jsonify({"message": "Shopping item deleted"}), 200
@@ -43,6 +54,17 @@ def toggle_shopping_item(id):
         return jsonify({"error": "Shopping item not found"}), 404
 
     item.purchased = not item.purchased
+
+    ActivityService.record(
+        household_id=item.shopping_list.household_id,
+        actor_id=current_user.id,
+        action="purchased" if item.purchased else "unpurchased",
+        entity_type="shopping_item",
+        entity_id=item.id,
+        entity_label=item.name,
+        event_metadata={"listId": item.list_id, "listTitle": item.shopping_list.title},
+    )
+
     db.session.commit()
     return jsonify(item.to_dict()), 200
 

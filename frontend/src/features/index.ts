@@ -5,3 +5,4 @@ export * from "./Events";
 export * from "./HouseholdTasklists";
 export * from "./Mood";
 export * from "./Shopping";
+export * from "./ActivityFeed"

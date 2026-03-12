@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 import base64
 import pytz
 from app.utils.timezone import utc_datetime_to_local
+from app.utils.activity_service import ActivityService
 
 announcement_routes = Blueprint("announcements", __name__)
 
@@ -48,6 +49,16 @@ def create_announcement():
         user_id=user_id
     )
     db.session.add(seen_record)
+
+    ActivityService.record(
+        household_id=household_id,
+        actor_id=user_id,
+        action="created",
+        entity_type="announcement",
+        entity_id=announcement.id,
+        entity_label=message[:80] if message else None,  # truncate for feed readability
+    )
+
     db.session.commit()
 
     # Convert createdAt to user's local time here
@@ -57,23 +68,25 @@ def create_announcement():
 @announcement_routes.route("/<int:announcement_id>", methods=["DELETE"])
 @login_required
 def delete_announcement(announcement_id: int):
-    """
-    delete announcement by id
-    """
     announcement = db.session.query(Announcement).get(announcement_id)
-
     if not announcement:
         abort(404, description="Announcement not found")
 
     user_id = int(current_user.get_id())
-    
-    # Only creator can delete
     if announcement.user_id != user_id:
         abort(403, description="Only the creator can delete this announcement")
 
+    ActivityService.record(
+        household_id=announcement.household_id,
+        actor_id=user_id,
+        action="deleted",
+        entity_type="announcement",
+        entity_id=announcement.id,
+        entity_label=announcement.message[:80] if announcement.message else None,
+    )
+
     db.session.delete(announcement)
     db.session.commit()
-
     return ("", 204)
 
 @announcement_routes.route("/<int:announcement_id>", methods=["PUT"])

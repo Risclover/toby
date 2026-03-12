@@ -8,6 +8,7 @@ from app.s3_helpers import (
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo 
 from pytz import all_timezones  # for validating IANA timezones
+from app.utils.activity_service import ActivityService
 
 
 user_routes = Blueprint('users', __name__)
@@ -115,6 +116,13 @@ def check_in_today(user_id):
     exists = Checkin.query.filter_by(user_id=user_id, local_date=tld).first()
     if not exists:
         db.session.add(Checkin(user_id=user_id, local_date=tld))
+        ActivityService.record(
+            household_id=current_user.household_id,
+            actor_id=user_id,
+            action="checked_in",
+            entity_type="checkin",
+            entity_label=tld.isoformat(),
+        )
         db.session.commit()
     return jsonify({"checkedInToday": True, "localDate": tld.isoformat()})
 

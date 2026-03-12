@@ -5,6 +5,7 @@ from app.extensions import db
 from flask_login import current_user, login_required
 from app.models.tasklist import SortOrder
 from app.utils.reminder_utils import create_task_due_reminders
+from app.utils.activity_service import ActivityService
 import pytz
 from datetime import datetime, date
 
@@ -166,6 +167,16 @@ def add_task(id):
 
     # create automatic reminders
     create_task_due_reminders(task)
+
+    ActivityService.record(
+        household_id=tasklist.household_id,
+        actor_id=current_user.id,
+        action="created",
+        entity_type="task",
+        entity_id=task.id,
+        entity_label=task.title,
+        event_metadata={"listId": tasklist.id, "listTitle": tasklist.title},
+    )
 
     db.session.commit()
     return jsonify(task.to_dict()), 201

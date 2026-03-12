@@ -7,9 +7,10 @@ type Props = {
     inputRef?: RefObject<HTMLInputElement | null>;
     listId: number | undefined;
     tasklist: TasklistType | undefined;
+    householdId: number;
 }
 
-export const HouseholdTasklistPageAddTask = ({ inputRef, listId, tasklist }: Props) => {
+export const HouseholdTasklistPageAddTask = ({ inputRef, listId, tasklist, householdId }: Props) => {
     const [title, setTitle] = useState("");
     const [addTask, { isLoading }] = useAddTaskMutation();
     const loading = useStablePending(isLoading, { showAfterMs: 120, minVisibleMs: 300 });
@@ -23,7 +24,7 @@ export const HouseholdTasklistPageAddTask = ({ inputRef, listId, tasklist }: Pro
     const handleAddTask = async () => {
         if (tasklist?.isArchived) return;
         if (title.trim() === "") return;
-        await addTask({ title: title, description: "", status: "in_progress", isImportant: false, dueDate: undefined, listId: listId })
+        await addTask({ title: title, householdId, description: "", status: "in_progress", isImportant: false, dueDate: undefined, listId: listId })
         setTitle("");
         inputRef?.current?.focus();
     }
