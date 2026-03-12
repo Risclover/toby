@@ -9,6 +9,7 @@ import { useAuthenticateQuery, useUpdateTimezoneMutation } from "@/store";
 import { Button } from "@mantine/core";
 import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/HomepageListsCollapseCard";
 import { HomepageNoticeBoardCollapseCard } from "@/components/HomepageCollapseCard/HomepageNoticeBoardCollapseCard";
+import { HomepageCheckinsCollapseCard } from "@/components/HomepageCollapseCard/HomepageCheckinsCollapseCard";
 
 export const MobileHome = () => {
     const mobileHomeFamilyTitle = <MobileHomeFamilyTitle />
@@ -30,6 +31,7 @@ export const MobileHome = () => {
             <TaskStatusSection />
             <HomepageNoticeBoardCollapseCard />
             <HomepageListsCollapseCard />
+            <HomepageCheckinsCollapseCard />
         </MobileLayout>
     )
 }

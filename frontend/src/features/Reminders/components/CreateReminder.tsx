@@ -149,6 +149,7 @@ export const CreateReminder = () => {
                             leftSectionWidth="40px"
                             styles={DATE_PICKER_STYLES}
                             clearable
+                            minDate={dayjs().startOf("day").toDate()}
                             color="rgb(5, 5, 73)"
                             presets={DATE_PRESETS}
                             valueFormatter={({ date, format }: any) =>

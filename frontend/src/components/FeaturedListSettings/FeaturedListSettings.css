@@ -240,7 +240,7 @@
     width: 100%;
     outline: none;
     padding-right: 10px;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .featured-tasklist-input-container {
@@ -254,7 +254,7 @@
 
 .featured-tasklist-input-container button {
     flex-shrink: 0;
-    font-size: 13px;
+    font-size: 14px;
     height: auto;
     padding: 0.5rem 1rem;
     margin: 0.25rem;

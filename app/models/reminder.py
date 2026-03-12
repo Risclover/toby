@@ -96,6 +96,7 @@ class Reminder(db.Model):
             "createdById": self.created_by_id,
             "message": self.message,
             "reminderType": self.reminder_type.value,
+            "repeatFrequency": self.repeat_frequency.value if self.repeat_frequency else None,
             "isAutomatic": self.is_automatic,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,

@@ -5,6 +5,7 @@ from app.extensions import db
 from app.models import Household, Event
 from zoneinfo import ZoneInfo
 from app.utils.timezone import utc_datetime_to_local
+from flask_login import current_user, login_required
 
 event_routes = Blueprint('events', __name__)
 

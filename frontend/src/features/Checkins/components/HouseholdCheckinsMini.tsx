@@ -4,8 +4,9 @@ import { useGetUserCheckinsQuery } from "@/store/checkinSlice";
 import "../styles/HouseholdCheckins.css"
 import { Avatar, Tooltip } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
+import { useIsSmallScreen } from "@/hooks";
 
-type Member = { id: number; name: string; profileImg?: string };
+type Member = { id: number; firstName: string; profileImg?: string };
 
 function toISO(d: Date) {
     return d.toISOString().slice(0, 10); // YYYY-MM-DD
@@ -47,6 +48,7 @@ function MemberRow({
     nameColClass: string;
     className: string;
 }) {
+    const isSmall = useIsSmallScreen(375);
     const navigate = useNavigate();
     const { data, isLoading } = useGetUserCheckinsQuery(
         { userId: member.id, from, to },
@@ -68,9 +70,9 @@ function MemberRow({
                     <Avatar
                         src={member.profileImg || undefined}
                         radius="xl"
-                        size="md"
-                        onClick={() => navigate(`/users/${member.id}`)}
-                        style={{ cursor: "pointer", border: "1px solid var(--input-border)", padding: "5px", marginRight: "10px" }}
+                        size={isSmall ? 28 : 34}
+                        onClick={() => window.open(`/users/${member.id}`, "_blank")}
+                        style={{ cursor: "pointer", border: "1px solid var(--mantine-color-white)", marginRight: "10px" }}
                     >
                         {!member.profileImg}
                     </Avatar>
@@ -84,7 +86,7 @@ function MemberRow({
                         <div
                             key={d.iso}
                             className={[
-                                "rounded-md",
+                                "rounded-sm",
                                 isLoading
                                     ? "animate-pulse bg-gray-200"
                                     : filled
@@ -115,11 +117,11 @@ export function HouseholdCheckinsMini({
     gap?: number;
     nameColWidthClass?: string; // e.g., "w-48" / "w-56" depending on your layout
 }) {
+    const isSmall = useIsSmallScreen(375);
     const { days, from, to } = useMemo(makeWindow, []);
 
     return (
         <div className="household-checkins-mini-container">
-            <h2>Daily Checkins History</h2>
             <div className="household-checkins-mini">
                 <div className="checkins-header-row">
                     <div className="checkins-header-spacer"></div>
@@ -143,22 +145,12 @@ export function HouseholdCheckinsMini({
                             days={days}
                             from={from}
                             to={to}
-                            size={size}
+                            size={isSmall ? 26 : 32}
                             gap={gap}
                             nameColClass={nameColWidthClass}
                             className="checkins-member-row"
                         />
                     ))}
-                </div>
-                <div className="checkins-legend">
-                    <span className="checkins-legend-item">
-                        <i className="checkins-legend-icon icon-checked" />
-                        Checked
-                    </span>
-                    <span className="checkins-legend-item">
-                        <i className="checkins-legend-icon icon-none" />
-                        None
-                    </span>
                 </div>
             </div>
         </div>

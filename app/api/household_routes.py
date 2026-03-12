@@ -323,7 +323,10 @@ def create_manual_reminder(household_id):
     trigger_date = None
     raw_date = data.get("triggerDate")
     if raw_date:
-        trigger_date = date.fromisoformat(raw_date)  # expects "YYYY-MM-DD"
+        try:
+            trigger_date = date.fromisoformat(raw_date)  # "YYYY-MM-DD"
+        except ValueError:
+            trigger_date = datetime.fromisoformat(raw_date).date()  # "YYYY-MM-DD HH:MM:SS"
 
     reminder = Reminder(
         household_id=household_id,

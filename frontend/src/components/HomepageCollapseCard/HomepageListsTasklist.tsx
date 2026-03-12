@@ -168,7 +168,7 @@ export const HomepageListsTasklist = () => {
 }
 
 
-const FeaturedTasklistItem = ({ task, tasklistId, hideCoampleted, settings }: TasklistItemProps) => {
+const FeaturedTasklistItem = ({ task, tasklistId, hideCompleted, settings }: TasklistItemProps) => {
     const { data: user } = useAuthenticateQuery();
     const [completeTask] = useCompleteTaskMutation();
 
@@ -249,13 +249,18 @@ const FeaturedTasklistItem = ({ task, tasklistId, hideCoampleted, settings }: Ta
                     style={{ display: "flex", alignItems: "center" }}
                 >
                     <Checkbox
-                        size="14px"
+                        size="16px"
                         radius="xl"
                         color="var(--tasklist-color)"
                         label={task.title}
                         checked={isChecked}
                         onChange={onCheckboxChange}
                         style={{ textDecoration: isChecked ? "line-through" : "none", color: isChecked ? "gray" : "inherit" }}
+                        styles={{
+                            label: {
+                                fontSize: "14px"
+                            }
+                        }}
                     />
                 </div>
 
