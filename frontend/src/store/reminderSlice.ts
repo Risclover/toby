@@ -156,6 +156,25 @@ export const reminderSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: [{ type: 'Reminders', id: 'LIST' }],
         }),
+        getUserRemindersPreview: builder.query<Reminder[], number>({
+            query: (householdId) => `/households/${householdId}/reminders/preview`,
+            providesTags: (result = []) =>
+                result.length
+                    ? [
+                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
+                        { type: 'Reminders', id: 'LIST' },
+                    ]
+                    : [{ type: 'Reminders', id: 'LIST' }],
+        }),
+
+        markReminderSeenBulk: builder.mutation<{ marked: number }, { reminderIds: number[] }>({
+            query: (body) => ({
+                url: `/reminders/seen/bulk`,
+                method: 'POST',
+                body,
+            }),
+            invalidatesTags: [{ type: 'Reminders', id: 'LIST' }],
+        }),
     }),
 });
 
@@ -168,4 +187,6 @@ export const {
     useMarkReminderSeenMutation,
     useUpdateManualReminderMutation,
     useDeleteManualReminderMutation,
+    useGetUserRemindersPreviewQuery,
+    useMarkReminderSeenBulkMutation,
 } = reminderSlice;

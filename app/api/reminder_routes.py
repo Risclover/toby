@@ -159,3 +159,28 @@ def delete_manual_reminder(id):
     db.session.commit()
 
     return jsonify({"message": "Reminder deleted"}), 200
+
+@reminder_routes.route("/seen/bulk", methods=["POST"])
+@login_required
+def mark_reminders_seen_bulk():
+    data = request.get_json() or {}
+    ids = data.get("reminderIds", [])
+    if not isinstance(ids, list) or not ids:
+        return jsonify({"error": "reminderIds required"}), 400
+
+    user_id = current_user.id
+
+    assignments = (
+        ReminderAssignment.query
+        .filter(
+            ReminderAssignment.reminder_id.in_(ids),
+            ReminderAssignment.user_id == user_id,
+        )
+        .all()
+    )
+
+    for assignment in assignments:
+        assignment.seen = True
+
+    db.session.commit()
+    return jsonify({"marked": len(assignments)}), 200

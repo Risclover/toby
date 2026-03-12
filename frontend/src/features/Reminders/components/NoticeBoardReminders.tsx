@@ -1,14 +1,16 @@
-import { useGetUserRemindersQuery } from "@/store/reminderSlice";
+import { useGetUserRemindersPreviewQuery, useGetUserRemindersQuery } from "@/store/reminderSlice";
 import "../styles/Reminder.css"
-import { useAuthenticateQuery } from "@/store";
+import { useAuthenticateQuery, useGetHouseholdQuery } from "@/store";
 import { Avatar, Button, Tooltip, UnstyledButton } from "@mantine/core";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import { getReminderTime } from "../utils/getReminderTime";
 import { NoticeBoardReminder } from "./NoticeBoardReminder";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { CreateReminder } from "./CreateReminder";
+import { useNoticeBoard } from "@/contexts";
+import { getVisibleReminders } from "../utils/getVisibleReminders";
 
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
@@ -30,22 +32,29 @@ dayjs.updateLocale('en', {
         yy: "%d years"
     }
 });
+
 export const NoticeBoardReminders = () => {
     const { data: user } = useAuthenticateQuery();
-    const { data: reminders = [] } = useGetUserRemindersQuery(user?.id);
+    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: reminders = [] } = useGetUserRemindersPreviewQuery(household?.id, {
+        skip: !household?.id
+    });
+    const { unseenReminderSnapshot, onRemindersOpened } = useNoticeBoard();
 
-    const sortedReminders = useMemo(() => {
-        return reminders
-            .slice() // Create a shallow copy so we don't mutate the Redux state
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }, [reminders]);
+    useEffect(() => {
+        onRemindersOpened();
+    }, []);
 
-    console.log("sortedReminders", sortedReminders);
+    const visible = useMemo(() => {
+        return getVisibleReminders(reminders, unseenReminderSnapshot);
+    }, [reminders, unseenReminderSnapshot]);
 
     return (
         <div className="notice-board-reminders-container">
-            <ul className="notice-board-reminders">{sortedReminders.map(reminder => <NoticeBoardReminder reminder={reminder} />)}</ul>
+            <ul className="notice-board-reminders">
+                {visible.map(reminder => <NoticeBoardReminder key={reminder.id} reminder={reminder} />)}
+            </ul>
             <CreateReminder />
         </div>
-    )
-}
+    );
+};

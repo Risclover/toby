@@ -21,9 +21,11 @@ export const NoticeBoardReminder = ({ reminder }: Props) => {
             <div className="notice-board-reminder-main">
                 <div className="notice-board-reminder-body">
                     {reminder.message}
-                    <div className="reminder-badge">
-                        <Badge size="xs" fw={600} variant="light" color="red">New</Badge>
-                    </div>
+                    {reminder.currentUserAssignment && !reminder.currentUserAssignment.seen && (
+                        <div className="reminder-badge">
+                            <Badge size="xs" fw={600} variant="light" color="red">New</Badge>
+                        </div>
+                    )}
 
                 </div>
                 <div className="notice-board-reminder-footer">

@@ -21,13 +21,20 @@ export const HomepageNoticeBoardCollapseCard = () => {
 }
 
 const HomepageNoticeBoardContent = () => {
-    const { hasUnseen, hasOpenedAnnouncements, onAnnouncementsOpened } = useNoticeBoard();
+    const {
+        hasUnseen,
+        hasOpenedAnnouncements,
+        onAnnouncementsOpened,
+        hasUnseenReminders,
+        hasOpenedReminders,
+        onRemindersOpened,
+    } = useNoticeBoard();
     const { openModal } = useCreateAnnouncementModal();
     const { openCreateReminderModal } = useCreateReminderModal();
     const navigate = useNavigate();
     const tabs = ["reminders", "announcements"];
 
-    const badge = hasUnseen && !hasOpenedAnnouncements
+    const badge = (hasUnseen && !hasOpenedAnnouncements) || (hasUnseenReminders && !hasOpenedReminders)
         ? <Badge variant="light" color="red" size="sm">New</Badge>
         : null;
 
@@ -40,12 +47,15 @@ const HomepageNoticeBoardContent = () => {
                     defaultTab="reminders"
                     onTabChange={(value) => {
                         if (value === "announcements") onAnnouncementsOpened();
+                        if (value === "reminders") onRemindersOpened();
                     }}
-                    tabIndicator={(tab) =>
-                        tab === "announcements" && hasUnseen && !hasOpenedAnnouncements
-                            ? <Indicator color="red" size={6} processing />
-                            : null
-                    }
+                    tabIndicator={(tab) => {
+                        if (tab === "announcements" && hasUnseen && !hasOpenedAnnouncements)
+                            return <Indicator color="red" size={6} processing />;
+                        if (tab === "reminders" && hasUnseenReminders && !hasOpenedReminders)
+                            return <Indicator color="red" size={6} processing />;
+                        return null;
+                    }}
                 >
                     <HomepageCollapseCardTab value="reminders">
                         <NoticeBoardReminders />

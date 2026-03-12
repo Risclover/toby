@@ -349,3 +349,44 @@ def create_manual_reminder(household_id):
     db.session.commit()
 
     return jsonify(reminder.to_dict()), 201
+
+@household_routes.route("/<int:household_id>/reminders/preview", methods=["GET"])
+@login_required
+def get_household_reminders_preview(household_id):
+    household = Household.query.get(household_id)
+    if not household:
+        return jsonify({"error": "Household not found"}), 404
+
+    today = date.today()
+    BACKFILL_LIMIT = 4
+
+    # All active, triggered reminders assigned to current user
+    all_assignments = (
+        ReminderAssignment.query
+        .join(Reminder)
+        .filter(
+            ReminderAssignment.user_id == current_user.id,
+            Reminder.household_id == household_id,
+            Reminder.is_active.is_(True),
+            or_(
+                Reminder.trigger_date.is_(None),
+                Reminder.trigger_date <= today,
+            ),
+        )
+        .order_by(Reminder.created_at.desc())
+        .all()
+    )
+
+    print(f"Preview: user={current_user.id}, household={household_id}, assignments found={len(all_assignments)}")  # ← add this
+
+
+    unseen = [a for a in all_assignments if not a.seen]
+    seen = [a for a in all_assignments if a.seen]
+
+    backfill_count = max(0, BACKFILL_LIMIT - len(unseen))
+    visible = unseen + seen[:backfill_count]
+
+    return jsonify([
+        assignment.reminder.to_dict_for_user(assignment)
+        for assignment in visible
+    ]), 200
