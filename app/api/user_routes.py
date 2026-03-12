@@ -250,25 +250,25 @@ def update_user_timezone():
 
     return jsonify(user.to_dict()), 200
 
-@user_routes.route("/<int:user_id>/reminders/created", methods=["GET"])
-@login_required
-def get_user_created_reminders(user_id):
-    if current_user.id != user_id:
-        return jsonify({"error": "Forbidden"}), 403
-
-    reminders = (
-        Reminder.query
-        .filter_by(created_by_id=user_id, is_active=True)
-        .order_by(Reminder.created_at.desc())
-        .all()
-    )
-    return jsonify([reminder.to_dict() for reminder in reminders]), 200
-
 @user_routes.route("/<int:user_id>/reminders/all", methods=["GET"])
 @login_required
 def get_all_user_reminders(user_id):
     if current_user.id != user_id:
         return jsonify({"error": "Forbidden"}), 403
+
+    page = int(request.args.get("page", 1))
+    limit = int(request.args.get("limit", 20))
+    offset = (page - 1) * limit
+
+    total = (
+        ReminderAssignment.query
+        .join(Reminder)
+        .filter(
+            ReminderAssignment.user_id == user_id,
+            Reminder.is_active.is_(True),
+        )
+        .count()
+    )
 
     assignments = (
         ReminderAssignment.query
@@ -277,11 +277,48 @@ def get_all_user_reminders(user_id):
             ReminderAssignment.user_id == user_id,
             Reminder.is_active.is_(True),
         )
-        .order_by(Reminder.trigger_date.desc().nulls_first())
+        .order_by(Reminder.created_at.desc().nulls_first())
+        .offset(offset)
+        .limit(limit)
         .all()
     )
 
-    return jsonify([
-        assignment.reminder.to_dict_for_user(assignment)
-        for assignment in assignments
-    ]), 200
+    return jsonify({
+        "items": [assignment.reminder.to_dict_for_user(assignment) for assignment in assignments],
+        "page": page,
+        "hasNextPage": (offset + limit) < total,
+        "totalCount": total,
+    }), 200
+
+
+@user_routes.route("/<int:user_id>/reminders/created", methods=["GET"])
+@login_required
+def get_user_created_reminders(user_id):
+    if current_user.id != user_id:
+        return jsonify({"error": "Forbidden"}), 403
+
+    page = int(request.args.get("page", 1))
+    limit = int(request.args.get("limit", 20))
+    offset = (page - 1) * limit
+
+    total = (
+        Reminder.query
+        .filter_by(created_by_id=user_id, is_active=True)
+        .count()
+    )
+
+    reminders = (
+        Reminder.query
+        .filter_by(created_by_id=user_id, is_active=True)
+        .order_by(Reminder.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return jsonify({
+        "items": [reminder.to_dict() for reminder in reminders],
+        "page": page,
+        "hasNextPage": (offset + limit) < total,
+        "totalCount": total,
+    }), 200

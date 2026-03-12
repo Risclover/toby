@@ -1,9 +1,10 @@
-import { useAuthenticateQuery, useGetUserCreatedRemindersQuery } from "@/store"
+import { useAuthenticateQuery, useGetUserCreatedRemindersQuery, type Reminder } from "@/store"
 import { NoticeBoardReminder } from "../NoticeBoardReminder";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
+import { Button } from "@mantine/core";
 
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
@@ -28,17 +29,38 @@ dayjs.updateLocale('en', {
 
 export const MyRemindersTab = () => {
     const { data: user } = useAuthenticateQuery();
-    const { data: reminders = [] } = useGetUserCreatedRemindersQuery(user?.id);
+    const [page, setPage] = useState(1);
 
-    const sortedReminders = useMemo(() => {
-        return reminders
-            .slice() // Create a shallow copy so we don't mutate the Redux state
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }, [reminders]);
+    const { data } = useGetUserCreatedRemindersQuery(
+        { userId: user?.id, page, limit: 5 },
+        { skip: !user?.id }
+    );
+
+    const [allReminders, setAllReminders] = useState<Reminder[]>([]);
+
+    useEffect(() => {
+        if (data?.items) {
+            setAllReminders(prev =>
+                page === 1 ? data.items : [...prev, ...data.items]
+            );
+        }
+    }, [data]);
 
     return (
         <div className="my-reminders-tab">
-            {sortedReminders?.map(reminder => <NoticeBoardReminder reminder={reminder} />)}
+            {allReminders.map(reminder => (
+                <NoticeBoardReminder key={reminder.id} reminder={reminder} />
+            ))}
+            {data?.hasNextPage && (
+                <Button
+                    variant="subtle"
+                    color="var(--mantine-color-red-6)"
+                    size="compact-sm"
+                    onClick={() => setPage(p => p + 1)}
+                >
+                    Load more
+                </Button>
+            )}
         </div>
-    )
-}
+    );
+};

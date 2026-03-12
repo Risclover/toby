@@ -1,11 +1,9 @@
-import { useGetUserRemindersPreviewQuery, useGetUserRemindersQuery } from "@/store/reminderSlice";
+import { useGetUserRemindersPreviewQuery, useGetUserRemindersQuery, type Reminder } from "@/store/reminderSlice";
 import "../styles/Reminder.css"
 import { useAuthenticateQuery, useGetHouseholdQuery } from "@/store";
-import { Avatar, Button, Tooltip, UnstyledButton } from "@mantine/core";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
-import { getReminderTime } from "../utils/getReminderTime";
 import { NoticeBoardReminder } from "./NoticeBoardReminder";
 import { useEffect, useMemo } from "react";
 import { CreateReminder } from "./CreateReminder";
@@ -33,12 +31,12 @@ dayjs.updateLocale('en', {
     }
 });
 
-export const NoticeBoardReminders = () => {
-    const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId);
-    const { data: reminders = [] } = useGetUserRemindersPreviewQuery(household?.id, {
-        skip: !household?.id
-    });
+type Props = {
+    reminders: Reminder[];
+    showAll?: boolean;
+}
+
+export const NoticeBoardReminders = ({ reminders, showAll = false }: Props) => {
     const { unseenReminderSnapshot, onRemindersOpened } = useNoticeBoard();
 
     useEffect(() => {
@@ -46,8 +44,9 @@ export const NoticeBoardReminders = () => {
     }, []);
 
     const visible = useMemo(() => {
+        if (showAll) return reminders;
         return getVisibleReminders(reminders, unseenReminderSnapshot);
-    }, [reminders, unseenReminderSnapshot]);
+    }, [reminders, unseenReminderSnapshot, showAll]);
 
     return (
         <div className="notice-board-reminders-container">

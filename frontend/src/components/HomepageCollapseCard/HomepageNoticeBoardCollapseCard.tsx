@@ -9,7 +9,7 @@ import { Badge, Button, Indicator } from "@mantine/core"
 import { useCreateAnnouncementModal, useCreateReminderModal, useNoticeBoard } from "@/contexts"
 import { useNavigate } from "react-router-dom"
 import { useAnnouncementIndicator } from "@/features/Announcements/hooks/useAnnouncementIndicator"
-import { useAuthenticateQuery } from "@/store"
+import { useAuthenticateQuery, useGetHouseholdQuery, useGetUserRemindersPreviewQuery } from "@/store"
 import { NoticeBoardProvider } from "@/contexts"
 
 export const HomepageNoticeBoardCollapseCard = () => {
@@ -33,6 +33,12 @@ const HomepageNoticeBoardContent = () => {
     const { openCreateReminderModal } = useCreateReminderModal();
     const navigate = useNavigate();
     const tabs = ["reminders", "announcements"];
+
+    const { data: user } = useAuthenticateQuery();
+    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: reminders = [] } = useGetUserRemindersPreviewQuery(household?.id, {
+        skip: !household?.id
+    });
 
     const badge = (hasUnseen && !hasOpenedAnnouncements) || (hasUnseenReminders && !hasOpenedReminders)
         ? <Badge variant="light" color="red" size="sm">New</Badge>
@@ -58,7 +64,7 @@ const HomepageNoticeBoardContent = () => {
                     }}
                 >
                     <HomepageCollapseCardTab value="reminders">
-                        <NoticeBoardReminders />
+                        <NoticeBoardReminders reminders={reminders} />
                         <div className="notice-board-footer">
                             <Button size="compact-sm" color="var(--mantine-color-red-6)" radius="xl" onClick={() => openCreateReminderModal()}>+ New reminder</Button>
                             <Button p={0} size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)" onClick={() => navigate("/reminders")}>View all →</Button>

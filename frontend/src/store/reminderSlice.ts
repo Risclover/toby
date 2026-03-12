@@ -43,6 +43,13 @@ export type Reminder = {
     };
 };
 
+export type PaginatedReminders = {
+    items: Reminder[];
+    page: number;
+    hasNextPage: boolean;
+    totalCount: number;
+};
+
 export const reminderSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
 
@@ -61,23 +68,25 @@ export const reminderSlice = apiSlice.injectEndpoints({
                     : [{ type: 'Reminders', id: 'LIST' }],
         }),
 
-        getAllUserReminders: builder.query<Reminder[], number>({
-            query: (userId) => `/users/${userId}/reminders/all`,
-            providesTags: (result = []) =>
-                result.length
+        getAllUserReminders: builder.query<PaginatedReminders, { userId: number; page?: number; limit?: number }>({
+            query: ({ userId, page = 1, limit = 20 }) =>
+                `/users/${userId}/reminders/all?page=${page}&limit=${limit}`,
+            providesTags: (result) =>
+                result
                     ? [
-                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
+                        ...result.items.map(({ id }) => ({ type: 'Reminders' as const, id })),
                         { type: 'Reminders', id: 'LIST' },
                     ]
                     : [{ type: 'Reminders', id: 'LIST' }],
         }),
 
-        getUserCreatedReminders: builder.query<Reminder[], number>({
-            query: (userId) => `/users/${userId}/reminders/created`,
-            providesTags: (result = []) =>
-                result.length
+        getUserCreatedReminders: builder.query<PaginatedReminders, { userId: number; page?: number; limit?: number }>({
+            query: ({ userId, page = 1, limit = 20 }) =>
+                `/users/${userId}/reminders/created?page=${page}&limit=${limit}`,
+            providesTags: (result) =>
+                result
                     ? [
-                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
+                        ...result.items.map(({ id }) => ({ type: 'Reminders' as const, id })),
                         { type: 'Reminders', id: 'LIST' },
                     ]
                     : [{ type: 'Reminders', id: 'LIST' }],
