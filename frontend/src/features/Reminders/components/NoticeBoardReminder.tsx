@@ -1,13 +1,14 @@
 import { useDeleteManualReminderMutation, type Reminder } from "@/store/reminderSlice";
 import dayjs from "dayjs";
 import { getReminderTime } from "../utils/getReminderTime";
-import { Avatar, Badge, Tooltip, UnstyledButton } from "@mantine/core";
+import { Avatar, Badge, Box, Tooltip, UnstyledButton } from "@mantine/core";
 import type { User } from "@/store";
 import { TobyIcon } from "@/assets";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { MdOutlineArrowRightAlt } from "react-icons/md";
 import { HiArrowLongRight } from "react-icons/hi2";
+import { Link } from "react-router-dom";
 
 dayjs.extend(relativeTime);
 
@@ -33,11 +34,25 @@ export const NoticeBoardReminder = ({ reminder }: Props) => {
         if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
         return new Date(normalized!).toLocaleDateString();
     };
+
+    const listId = reminder.sourceEntityMetadata?.listId;
+
     return (
         <li className="notice-board-reminder">
             <div className="notice-board-reminder-main">
                 <div className="notice-board-reminder-body">
-                    {reminder.message}
+                    {listId ? (
+                        <Link
+                            to={`/tasklists/${listId}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="reminder-task-link"
+                        >
+                            {reminder.message}
+                        </Link>
+                    ) : (
+                        reminder.message
+                    )}
                     {reminder.currentUserAssignment && !reminder.currentUserAssignment.seen && (
                         <div className="reminder-badge">
                             <Badge size="xs" fw={600} variant="light" color="red">New</Badge>
@@ -48,10 +63,12 @@ export const NoticeBoardReminder = ({ reminder }: Props) => {
                 <div className="notice-board-reminder-footer">
                     {reminder.isAutomatic ?
                         <div className="notice-board-reminder-assigned">
-                            <TobyIcon size="18px" color="var(--mantine-color-gray-8)" />
+                            <Tooltip label="Created by Toby" withArrow>
+                                <Box><TobyIcon size="18px" color="var(--mantine-color-gray-8)" /></Box>
+                            </Tooltip>
                         </div>
                         : <div className="notice-board-reminder-assigned">
-                            <Tooltip label={`Created by ${reminder.createdBy?.firstName}`}>
+                            <Tooltip withArrow label={`Created by ${reminder.createdBy?.firstName}`}>
                                 <Avatar size={18} src={reminder.createdBy?.profileImg} radius="xl" />
                             </Tooltip>
 
@@ -61,7 +78,7 @@ export const NoticeBoardReminder = ({ reminder }: Props) => {
                                 <div>
                                     <Avatar.Group spacing="0.5rem">
                                         {reminder.assignedTo.map((assignee: User) => (
-                                            <Tooltip key={assignee.id} label={assignee.firstName}>
+                                            <Tooltip withArrow key={assignee.id} label={assignee.firstName}>
                                                 <Avatar
                                                     size={22}
                                                     src={assignee.profileImg}

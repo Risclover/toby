@@ -34,6 +34,7 @@ class Reminder(db.Model):
     # Source entity (if applicable)
     source_entity_id = db.Column(db.Integer, nullable=True) # e.g. task_id, event_id, etc. - helps link back to the original source that triggered this reminder (if any)
     source_entity_type = db.Column(db.String(50), nullable=True) # e.g. "task", "event", "daily_check_in", etc. - helps clarify the type of source entity for this reminder (if any)
+    source_entity_metadata = db.Column(db.JSON, nullable=True)
 
     # Creation and update tracking
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow, nullable=False) # When the reminder was created
@@ -70,6 +71,7 @@ class Reminder(db.Model):
             "repeatFrequency": self.repeat_frequency.value if self.repeat_frequency else None,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
+            "sourceEntityMetadata": self.source_entity_metadata,
             "triggerDate": self.trigger_date.isoformat() + "Z" if self.trigger_date else None,
             "isActive": self.is_active,
             "createdAt": self.created_at.isoformat() + "Z" if self.created_at else None,
@@ -100,6 +102,7 @@ class Reminder(db.Model):
             "isAutomatic": self.is_automatic,
             "sourceEntityId": self.source_entity_id,
             "sourceEntityType": self.source_entity_type,
+            "sourceEntityMetadata": self.source_entity_metadata,
             "triggerDate": self.trigger_date.isoformat() if self.trigger_date else None,
             "isActive": self.is_active,
             "createdAt": self.created_at.isoformat() + "Z" if self.created_at else None,

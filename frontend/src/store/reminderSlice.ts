@@ -26,6 +26,7 @@ export type Reminder = {
     // Automatic reminder metadata
     sourceEntityId?: number | null;
     sourceEntityType?: string | null;
+    sourceEntityMetadata?: Record<string, any> | null; // <-- new field for flexible metadata from backend
 
     triggerDate?: string | undefined;
     deliveredAt?: string | null;

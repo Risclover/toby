@@ -9,6 +9,7 @@ import { useEffect, useMemo } from "react";
 import { CreateReminder } from "./CreateReminder";
 import { useNoticeBoard } from "@/contexts";
 import { getVisibleReminders } from "../utils/getVisibleReminders";
+import { Skeleton } from "@mantine/core";
 
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
@@ -34,9 +35,10 @@ dayjs.updateLocale('en', {
 type Props = {
     reminders: Reminder[];
     showAll?: boolean;
+    isLoading?: boolean;
 }
 
-export const NoticeBoardReminders = ({ reminders, showAll = false }: Props) => {
+export const NoticeBoardReminders = ({ reminders, showAll = false, isLoading = false }: Props) => {
     const { unseenReminderSnapshot, onRemindersOpened } = useNoticeBoard();
 
     useEffect(() => {
@@ -51,9 +53,29 @@ export const NoticeBoardReminders = ({ reminders, showAll = false }: Props) => {
     return (
         <div className="notice-board-reminders-container">
             <ul className="notice-board-reminders">
-                {visible.map(reminder => <NoticeBoardReminder key={reminder.id} reminder={reminder} />)}
+                {isLoading
+                    ? Array.from({ length: 5 }).map((_, i) => <NoticeBoardReminderSkeleton key={i} />)
+                    : visible.map(reminder => <NoticeBoardReminder key={reminder.id} reminder={reminder} />)
+                }
             </ul>
             <CreateReminder />
         </div>
     );
 };
+
+const NoticeBoardReminderSkeleton = () => {
+    return (
+        <div className="notice-board-reminder">
+            <div className="notice-board-reminder-main">
+                <div className="notice-board-reminder-body">
+                    <Skeleton width="80%" radius="xl" height={10} />
+                </div>
+                <div className="notice-board-reminder-footer">
+                    <Skeleton circle height={18} />
+                    <div className="reminder-separator-dot skeleton-dot">·</div>
+                    <Skeleton width="50px" radius="xl" height={8} />
+                </div>
+            </div>
+        </div>
+    )
+}

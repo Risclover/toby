@@ -107,6 +107,7 @@
     color: var(--mantine-color-gray-7);
     font-size: 13px;
     width: auto;
+    line-height: 1.4;
 }
 
 .notice-board-reminder-details-people {
@@ -231,6 +232,10 @@
     justify-content: center;
     line-height: 1;
     margin: 0 0.25rem;
+}
+
+.reminder-separator-dot.skeleton-dot {
+    color: var(--mantine-color-gray-4);
 }
 
 .reminder-badge {

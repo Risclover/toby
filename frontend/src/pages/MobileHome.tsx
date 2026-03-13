@@ -35,7 +35,8 @@ export const MobileHome = () => {
             <TimezoneSelect value={timezone} onChange={(tz) => setTimezone(tz)} />
             <Button onClick={handleTimezone}>Submit</Button>
             <TaskStatusSection />
-            <HomepageNoticeBoardCollapseCard />
+            <HomepageNoticeBoardCollapseCard householdId={householdId} />
+
             <HomepageListsCollapseCard />
             <HomepageCheckinsCollapseCard />
             <HomepageActivityCollapseCard householdId={householdId} />

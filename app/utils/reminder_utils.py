@@ -54,6 +54,7 @@ def create_task_due_reminders(task):
             source_entity_type="task",
             source_entity_id=task.id,
             trigger_date=trigger_date,
+            source_entity_metadata={"listId": task.list_id},
         )
         db.session.add(reminder)
         db.session.flush()  # get ID for assignments

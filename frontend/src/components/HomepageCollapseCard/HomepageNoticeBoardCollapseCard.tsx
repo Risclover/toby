@@ -12,15 +12,15 @@ import { useAnnouncementIndicator } from "@/features/Announcements/hooks/useAnno
 import { useAuthenticateQuery, useGetHouseholdQuery, useGetUserRemindersPreviewQuery } from "@/store"
 import { NoticeBoardProvider } from "@/contexts"
 
-export const HomepageNoticeBoardCollapseCard = () => {
+export const HomepageNoticeBoardCollapseCard = ({ householdId }: { householdId?: number | undefined }) => {
     return (
         <NoticeBoardProvider>
-            <HomepageNoticeBoardContent />
+            <HomepageNoticeBoardContent householdId={householdId} />
         </NoticeBoardProvider>
     )
 }
 
-const HomepageNoticeBoardContent = () => {
+const HomepageNoticeBoardContent = ({ householdId }: { householdId?: number }) => {
     const {
         hasUnseen,
         hasOpenedAnnouncements,
@@ -36,8 +36,8 @@ const HomepageNoticeBoardContent = () => {
 
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useGetHouseholdQuery(user?.householdId);
-    const { data: reminders = [] } = useGetUserRemindersPreviewQuery(household?.id, {
-        skip: !household?.id
+    const { data: reminders = [], isLoading: remindersLoading } = useGetUserRemindersPreviewQuery(householdId!, {
+        skip: !householdId
     });
 
     const badge = (hasUnseen && !hasOpenedAnnouncements) || (hasUnseenReminders && !hasOpenedReminders)
@@ -64,7 +64,7 @@ const HomepageNoticeBoardContent = () => {
                     }}
                 >
                     <HomepageCollapseCardTab value="reminders">
-                        <NoticeBoardReminders reminders={reminders} />
+                        <NoticeBoardReminders reminders={reminders} isLoading={remindersLoading} />
                         <div className="notice-board-footer">
                             <Button size="compact-sm" color="var(--mantine-color-red-6)" radius="xl" onClick={() => openCreateReminderModal()}>+ New reminder</Button>
                             <Button p={0} size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)" onClick={() => navigate("/reminders")}>View all →</Button>
