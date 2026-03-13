@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { useGetUserCheckinsQuery } from "@/store/checkinSlice";
 import "../styles/HouseholdCheckins.css"
-import { Avatar, Tooltip } from "@mantine/core";
+import { Avatar, Skeleton, Tooltip } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useIsSmallScreen } from "@/hooks";
 
@@ -128,13 +128,13 @@ function MemberRow({
 
 export function HouseholdCheckinsMini({
     members,
-    timezone = "UTC",   // add this prop
+    timezone = "UTC",
     size = 32,
     gap = 8,
     nameColWidthClass = "w-20",
 }: {
-    members: Member[];
-    timezone?: string;  // add this
+    members: Member[] | undefined;
+    timezone?: string;
     size?: number;
     gap?: number;
     nameColWidthClass?: string;
@@ -160,21 +160,41 @@ export function HouseholdCheckinsMini({
                     </div>
                 </div>
                 <div className="checkins-member-rows">
-                    {members?.map((member) => (
-                        <MemberRow
-                            key={member.id}
-                            member={member}
-                            days={days}
-                            from={from}
-                            to={to}
-                            size={isSmall ? 26 : 32}
-                            gap={gap}
-                            nameColClass={nameColWidthClass}
-                            className="checkins-member-row"
-                        />
-                    ))}
+                    {!members
+                        ? Array.from({ length: 3 }).map((_, i) => <MemberRowSkeleton key={i} />)
+                        : members.map((member) => (
+                            <MemberRow
+                                key={member.id}
+                                member={member}
+                                days={days}
+                                from={from}
+                                to={to}
+                                size={isSmall ? 26 : 32}
+                                gap={gap}
+                                nameColClass={nameColWidthClass}
+                                className="checkins-member-row"
+                            />
+                        ))
+                    }
                 </div>
             </div>
         </div>
     );
 }
+
+const MemberRowSkeleton = () => {
+    const isSmall = useIsSmallScreen(375);
+    const avatarSize = isSmall ? 28 : 34;
+    const squareSize = isSmall ? 26 : 32;
+
+    return (
+        <div className="member-row-skeleton">
+            <Skeleton circle width={avatarSize} height={avatarSize} mr={10} />
+            <div className="member-row-skeleton-checkins">
+                {Array.from({ length: 7 }).map((_, i) => (
+                    <Skeleton radius="0.4rem" className="member-row-skeleton-square" key={i} width={squareSize} height={squareSize} />
+                ))}
+            </div>
+        </div>
+    );
+};
