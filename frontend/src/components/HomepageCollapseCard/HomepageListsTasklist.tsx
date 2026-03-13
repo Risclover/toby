@@ -14,6 +14,7 @@ import { TaskExtra } from "@/features/HouseholdTasklists/components/HouseholdTas
 import type { TasklistSettingsForm } from "@/features/HouseholdTasklists/hooks/useTasklistSettingsForm";
 import type { FeaturedTasklistSettingsForm } from "../FeaturedListSettings/FeaturedTasklistTab";
 import { StarIcon, StarIconOutline } from "@/assets";
+import { MobileTasklistSkeleton } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklistSkeleton";
 
 
 type TasklistItemProps = {
@@ -37,7 +38,7 @@ export const HomepageListsTasklist = () => {
     let featuredTasklistId = userSettings?.featuredTasklist.featuredTasklistId;
 
 
-    const { data: tasklist } = useGetTasklistQuery(featuredTasklistId ? featuredTasklistId : undefined);
+    const { data: tasklist, isLoading } = useGetTasklistQuery(featuredTasklistId ? featuredTasklistId : undefined);
 
 
     const displayedTasks = useFeaturedTasks(
@@ -75,6 +76,8 @@ export const HomepageListsTasklist = () => {
         setTaskValue("");
         inputRef?.current?.focus();
     }
+
+    if (isLoading) return <MobileTasklistSkeleton />;
     return (
         <div className="homepage-lists-tasklist-container">
             {!featuredTasklistId ?
