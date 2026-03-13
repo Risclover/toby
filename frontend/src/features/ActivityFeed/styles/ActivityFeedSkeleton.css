@@ -1,0 +1,31 @@
+.activity-feed-skeletons {
+    overflow-y: auto;
+    max-height: 250px;
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #fafafa;
+}
+
+.activity-feed-skeleton {
+    display: flex;
+    width: 100%;
+    padding: 0.5rem;
+    gap: 0.15rem;
+}
+
+.activity-feed-skeleton-content {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.5rem;
+    width: 100%;
+    gap: 0.25rem;
+}
+
+.activity-feed-skeleton-line1 {
+    display: flex;
+    justify-content: space-between;
+}
+
+.activity-feed-skeleton-line2 {
+    background: var(--mantine-color-gray-0);
+    padding: 0.625rem;
+}

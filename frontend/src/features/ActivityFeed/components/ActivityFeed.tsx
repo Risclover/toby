@@ -4,6 +4,7 @@ import "../styles/ActivityFeed.css";
 import { Avatar, Box, Tooltip } from "@mantine/core";
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { ActivityFeedSkeletons } from "./ActivityFeedSkeletons";
 
 type Props = {
     householdId: number;
@@ -17,7 +18,9 @@ type FormattedEvent = {
 export const ActivityFeed = ({ householdId }: Props) => {
     const [expandedId, setExpandedId] = useState<number | null>(null);
 
-    const { data, isLoading, isError } = useGetActivityQuery({ householdId });
+    const { data, isLoading, isSuccess, isError } = useGetActivityQuery({ householdId });
+
+    const showSkeleton = isLoading || (!isSuccess && !data);
 
     const label = (text: string | null) => (
         <Tooltip multiline label={text} openDelay={400} withArrow>
@@ -95,7 +98,7 @@ export const ActivityFeed = ({ householdId }: Props) => {
         }
     };
 
-    if (isLoading) return <p>Loading activity...</p>;
+    if (isLoading || (!isSuccess && !data)) return <ActivityFeedSkeletons />;
     if (isError || !data) return <p>Could not load activity.</p>;
     if (data.items.length === 0) return <p>No recent activity.</p>;
 
