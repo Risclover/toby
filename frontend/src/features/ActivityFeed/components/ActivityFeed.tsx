@@ -98,39 +98,42 @@ export const ActivityFeed = ({ householdId }: Props) => {
         }
     };
 
-    if (isLoading || (!isSuccess && !data)) return <ActivityFeedSkeletons />;
-    if (isError || !data) return <p>Could not load activity.</p>;
-    if (data.items.length === 0) return <p>No recent activity.</p>;
-
     return (
         <div className="events-list">
-            <ul>
-                {data.items.map((event) => {
-                    const { line1, line2 } = formatEvent(event);
-                    return (
-                        <li key={event.id} className="event">
-                            <Avatar size={22} mr="5px" src={event.actor.profileImg} />
-                            <div className="event-text">
-                                <div className="event-line1">
-                                    <span className="event-main">
-                                        <Link className="event-link" to={`/users/${event.actor.id}`}>{event.actor.displayName}</Link>{" "}
-                                        {line1}
-                                    </span>
-                                    <span className="event-time">{formatTime(event.createdAt)}</span>
-                                </div>
-                                {line2 && (
-                                    <div
-                                        className="event-line2"
-                                        onClick={(e) => { e.stopPropagation(); setExpandedId(expandedId === event.id ? null : event.id); }}
-                                    >
-                                        {line2}
+            {isLoading || (!isSuccess && !data) ? (
+                <ActivityFeedSkeletons />
+            ) : isError || !data ? (
+                <p>Could not load activity.</p>
+            ) : data.items.length === 0 ? (
+                <p>No recent activity.</p>
+            ) : (
+                <ul>
+                    {data.items.map((event) => {
+                        const { line1, line2 } = formatEvent(event);
+                        return (
+                            <li key={event.id} className="event">
+                                <Avatar size={22} mr="5px" src={event.actor.profileImg} />
+                                <div className="event-text">
+                                    <div className="event-line1">
+                                        <span className="event-main">
+                                            <Link className="event-link" to={`/users/${event.actor.id}`}>{event.actor.displayName}</Link>{" "}
+                                            {line1}
+                                        </span>
+                                        <span className="event-time">{formatTime(event.createdAt)}</span>
                                     </div>
-                                )}
-                            </div>
-                        </li>
-                    );
-                })}
-            </ul>
+                                    {line2 && (
+                                        <div
+                                            className="event-line2"
+                                            onClick={(e) => { e.stopPropagation(); setExpandedId(expandedId === event.id ? null : event.id); }}
+                                        >
+                                            {line2}
+                                        </div>
+                                    )}
+                                </div>
+                            </li>
+                        );
+                    })}
+                </ul>)}
         </div>
     );
 };

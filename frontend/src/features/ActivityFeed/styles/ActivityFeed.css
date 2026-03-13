@@ -96,6 +96,7 @@ css.event-chevron {
 .events-list {
     overflow-y: auto;
     max-height: 250px;
+    min-height: 250px;
     scrollbar-width: thin;
     scrollbar-color: #c1c1c1 #fafafa;
 }

@@ -15,22 +15,22 @@ export const HomepageCollapseCard = ({ cardKey, title, color, badge, children }:
     const CARD_KEY = `homepage-card-${cardKey}`;
     const [showCard, setShowCard] = useState(() => {
         const saved = localStorage.getItem(CARD_KEY);
-        // Default to TRUE if no value is saved, or parse the saved string
         return saved !== null ? JSON.parse(saved) : true;
     });
+    const [hasAnimated, setHasAnimated] = useState(!showCard); // if starts open, skip first animation
 
     useEffect(() => {
         localStorage.setItem(CARD_KEY, JSON.stringify(showCard));
     }, [showCard]);
 
-
     return (
         <div className="homepage-collapse-card">
-            <HomepageCollapseCardTitle dotColor={color} title={title} setShowCard={setShowCard} showCard={showCard} badge={badge} />
+            <HomepageCollapseCardTitle dotColor={color} title={title} setShowCard={() => { setShowCard((v: boolean) => !v); setHasAnimated(true); }} showCard={showCard} badge={badge} />
             <Collapse
                 in={showCard}
-                transitionDuration={100}
+                transitionDuration={hasAnimated ? 100 : 0}
                 transitionTimingFunction="ease-in-out"
+                keepMounted
             >
                 <HomepageCollapseCardBody>{children}</HomepageCollapseCardBody>
             </Collapse>

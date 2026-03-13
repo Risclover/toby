@@ -1,13 +1,18 @@
 import { HomepageCollapseCard } from "./HomepageCollapseCard";
 import { ActivityFeed } from "@/features";
-import { useAuthenticateQuery } from "@/store";
+import { useGetActivityQuery } from "@/store";
 
-export const HomepageActivityCollapseCard = () => {
-    const { data: user } = useAuthenticateQuery();
+type Props = {
+    householdId?: number;
+};
+
+export const HomepageActivityCollapseCard = ({ householdId }: Props) => {
+    // Prefetch at this level so data is ready when ActivityFeed mounts
+    useGetActivityQuery({ householdId: householdId! }, { skip: !householdId });
 
     return (
         <HomepageCollapseCard cardKey="activity" title="recent activity" color="var(--mantine-color-blue-6)">
-            {user?.householdId && <ActivityFeed householdId={user.householdId} />}
+            {householdId && <ActivityFeed householdId={householdId} />}
         </HomepageCollapseCard>
     );
 };

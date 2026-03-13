@@ -4,7 +4,7 @@ import { MobileHomeNavGrid } from "@/components/MobileHomeNavGrid";
 import { MobileLayout } from "@/layout/MobileLayout";
 import { TaskStatusSection } from "@/components/DueTaskStats/TaskStatusSelection";
 import { TimezoneSelect } from "@/components/TimezoneSelect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthenticateQuery, useUpdateTimezoneMutation } from "@/store";
 import { Button } from "@mantine/core";
 import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/HomepageListsCollapseCard";
@@ -17,12 +17,17 @@ export const MobileHome = () => {
     const { data: user } = useAuthenticateQuery();
     const [updateTimezone] = useUpdateTimezoneMutation();
     const [timezone, setTimezone] = useState(user?.timezone || null);
+    const householdId = user?.householdId ?? (Number(localStorage.getItem("toby_household_id")) || undefined);
 
     const handleTimezone = async () => {
         const data = await updateTimezone(timezone);
         console.log('data:', data);
     }
-
+    useEffect(() => {
+        if (user?.householdId) {
+            localStorage.setItem("toby_household_id", String(user.householdId));
+        }
+    }, [user?.householdId]);
 
     return (
         <MobileLayout titleComponent={mobileHomeFamilyTitle}>
@@ -33,7 +38,9 @@ export const MobileHome = () => {
             <HomepageNoticeBoardCollapseCard />
             <HomepageListsCollapseCard />
             <HomepageCheckinsCollapseCard />
-            <HomepageActivityCollapseCard />
+            <HomepageActivityCollapseCard householdId={householdId} />
+
+
         </MobileLayout>
     )
 }
