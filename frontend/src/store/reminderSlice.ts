@@ -27,7 +27,7 @@ export type Reminder = {
     sourceEntityId?: number | null;
     sourceEntityType?: string | null;
 
-    triggerDate?: string | null;
+    triggerDate?: string | undefined;
     deliveredAt?: string | null;
     isActive: boolean;
 

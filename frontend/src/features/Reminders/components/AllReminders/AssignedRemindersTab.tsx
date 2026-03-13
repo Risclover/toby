@@ -16,8 +16,12 @@ export const AssignedRemindersTab = () => {
 
     useEffect(() => {
         if (data?.items) {
+            const today = new Date().toISOString().slice(0, 10);
+            const triggered = data.items.filter(r =>
+                !r.triggerDate || r.triggerDate <= today
+            );
             setAllReminders(prev =>
-                page === 1 ? data.items : [...prev, ...data.items]
+                page === 1 ? triggered : [...prev, ...triggered]
             );
         }
     }, [data]);

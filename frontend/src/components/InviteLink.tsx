@@ -46,7 +46,6 @@ export const InviteLink = ({ opened, close }: Props) => {
             title="Invite people to your household"
             centered
             className="invite-member-modal"
-            styles={{ root: { color: "white" } }}
         >
             <Text size="sm">Invite someone to your household by sending them an invite link!</Text>
             <Space h="sm" />

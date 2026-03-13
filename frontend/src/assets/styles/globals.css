@@ -294,10 +294,6 @@ form {
     pointer-events: none;
 }
 
-.invite-member-modal p {
-    color: white !important;
-}
-
 .mobile-home-container {
     display: flex;
     /* ✨ Enable Flexbox */
