@@ -184,15 +184,22 @@ def add_task(id):
 
 @tasklist_routes.route("/<int:list_id>/tasks/<int:id>", methods=["DELETE"])
 def delete_task(list_id, id):
-    """
-    Remove a task from a task list
-    """
     task = Task.query.filter_by(id=id, list_id=list_id).first_or_404()
+    tasklist = Tasklist.query.get(list_id)
     deleted_task = task.to_dict()
+
+    ActivityService.record(
+        household_id=tasklist.household_id,
+        actor_id=current_user.id,
+        action="deleted",
+        entity_type="task",
+        entity_id=task.id,
+        entity_label=task.title,
+        event_metadata={"listId": list_id, "listTitle": tasklist.title},
+    )
 
     db.session.delete(task)
     db.session.commit()
-
     return jsonify(deleted_task), 200
 
 
@@ -208,14 +215,21 @@ def clear_list(list_id):
 
 @tasklist_routes.route("/<int:id>", methods=["DELETE"])
 def delete_list(id):
-    """
-    Delete a task list
-    """
     tasklist = Tasklist.query.get_or_404(id)
-    UserSetting.query.filter(UserSetting.featured_tasklist_id==id).update(
+    UserSetting.query.filter(UserSetting.featured_tasklist_id == id).update(
         {UserSetting.featured_tasklist_id: None},
         synchronize_session=False
     )
+
+    ActivityService.record(
+        household_id=tasklist.household_id,
+        actor_id=current_user.id,
+        action="deleted",
+        entity_type="tasklist",
+        entity_id=tasklist.id,
+        entity_label=tasklist.title,
+    )
+
     db.session.delete(tasklist)
     db.session.commit()
     return jsonify({"message": f"List {id} deleted"}), 200
@@ -223,14 +237,22 @@ def delete_list(id):
 
 @tasklist_routes.route("/<int:id>", methods=["PUT"])
 def edit_tasklist(id):
-    """
-    Edit task list's title
-    """
     tasklist = Tasklist.query.get(id)
 
     data = request.get_json()
+    old_title = tasklist.title
     title = data["title"]
     tasklist.title = title
+
+    ActivityService.record(
+        household_id=tasklist.household_id,
+        actor_id=current_user.id,
+        action="renamed",
+        entity_type="tasklist",
+        entity_id=tasklist.id,
+        entity_label=title,
+        event_metadata={"oldTitle": old_title},
+    )
 
     db.session.commit()
     return jsonify(tasklist.to_dict()), 200
@@ -271,35 +293,48 @@ def reorder_tasks(list_id):
 @tasklist_routes.route("/<int:id>/duplicate", methods=["POST"])
 @login_required
 def duplicate_list(id):
-    """
-    Create an exact copy of an existing tasklist.
-    """
     try:
         original_list = Tasklist.query.get_or_404(id)
-        
-        # Permission check
+
         if current_user.id not in original_list.audience_user_ids():
             return jsonify({"error": "Access denied"}), 403
-        
+
         new_list = original_list.duplicate()
+        db.session.flush()
+
+        ActivityService.record(
+            household_id=new_list.household_id,
+            actor_id=current_user.id,
+            action="created",
+            entity_type="tasklist",
+            entity_id=new_list.id,
+            entity_label=new_list.title,
+            event_metadata={"duplicatedFrom": original_list.title},
+        )
+
         db.session.commit()
-        
         return jsonify(new_list.to_dict()), 201
-        
+
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Failed to duplicate list"}), 500
 
 @tasklist_routes.route("/<int:id>/archive", methods=["PUT"])
 def archive_list(id):
-    """
-    Archive the tasklist.
-    """
     tasklist = Tasklist.query.get(id)
     tasklist.is_archived = True
     tasklist.archived_by = current_user.id
-    db.session.commit()
 
+    ActivityService.record(
+        household_id=tasklist.household_id,
+        actor_id=current_user.id,
+        action="archived",
+        entity_type="tasklist",
+        entity_id=tasklist.id,
+        entity_label=tasklist.title,
+    )
+
+    db.session.commit()
     return jsonify(tasklist.to_dict())
 
 @tasklist_routes.route("/<int:id>/unarchive", methods=["PUT"])
@@ -307,19 +342,29 @@ def unarchive_list(id):
     tasklist = Tasklist.query.get(id)
     if not tasklist:
         return jsonify({"error": "Tasklist not found"}), 404
-        
-    tasklist.is_archived = False 
-    
+
+    tasklist.is_archived = False
+
+    ActivityService.record(
+        household_id=tasklist.household_id,
+        actor_id=current_user.id,
+        action="unarchived",
+        entity_type="tasklist",
+        entity_id=tasklist.id,
+        entity_label=tasklist.title,
+    )
+
     db.session.add(tasklist)
     db.session.commit()
-    db.session.refresh(tasklist) 
-
+    db.session.refresh(tasklist)
     return jsonify(tasklist.to_dict())
 
 @tasklist_routes.route("/<int:id>/settings", methods=["PUT"])
 def update_list_settings(id):
     tasklist = Tasklist.query.get_or_404(id)
     data = request.get_json() or {}
+
+    old_title = tasklist.title
 
     # 1. Update Standard Settings
     field_mapping = {
@@ -336,51 +381,53 @@ def update_list_settings(id):
         if json_key in data:
             setattr(tasklist, model_attr, data[json_key])
 
-    # 2. Update Assigned Members (Diff Logic)
+    # 2. Record rename if title changed
+    if "title" in data and data["title"] != old_title:
+        ActivityService.record(
+            household_id=tasklist.household_id,
+            actor_id=current_user.id,
+            action="renamed",
+            entity_type="tasklist",
+            entity_id=tasklist.id,
+            entity_label=tasklist.title,
+            event_metadata={"oldTitle": old_title},
+        )
+
+    # 3. Update Assigned Members (Diff Logic)
     if "memberIds" in data:
         new_member_ids = set(data["memberIds"])
 
         if tasklist.household:
             household_member_ids = {u.id for u in tasklist.household.members}
-            
+
             # Validation
             invalid_ids = new_member_ids - household_member_ids
             if invalid_ids:
-                 return jsonify({
-                     "error": "Members must belong to the household", 
-                     "invalid": list(invalid_ids)
-                 }), 400
+                return jsonify({
+                    "error": "Members must belong to the household",
+                    "invalid": list(invalid_ids)
+                }), 400
 
-            # Logic: Check if "All Members" are selected
             if new_member_ids == household_member_ids:
                 tasklist.all_members = True
-                # Optimization: If everyone is included, we don't need specific links
-                # (Assuming your app logic relies on tasklist.all_members=True to imply everyone)
                 for link in tasklist.member_links[:]:
                     db.session.delete(link)
             else:
                 tasklist.all_members = False
-                
-                # --- START DIFF LOGIC ---
-                # 1. Get current links
+
                 current_links = {link.user_id: link for link in tasklist.member_links}
                 current_ids = set(current_links.keys())
-                
-                # 2. Calculate what changed
+
                 ids_to_add = new_member_ids - current_ids
                 ids_to_remove = current_ids - new_member_ids
-                
-                # 3. Apply changes (Efficiently)
-                # Only delete the members who were actually removed
+
                 for uid in ids_to_remove:
                     db.session.delete(current_links[uid])
-                
-                # Only add the new members who weren't there before
+
                 for uid in ids_to_add:
                     db.session.add(
                         TasklistMember(tasklist_id=tasklist.id, user_id=uid)
                     )
-                # --- END DIFF LOGIC ---
 
     db.session.commit()
     return jsonify(tasklist.to_dict()), 200

@@ -115,6 +115,7 @@ export interface ClearListRequest {
 
 export interface DeleteListRequest {
     listId: number | undefined;
+    householdId?: number;
 }
 
 export interface CompleteTaskRequest {
@@ -333,15 +334,15 @@ export const taskSlice = apiSlice.injectEndpoints({
                 }
             },
 
-            invalidatesTags: (_res, _err, { listId }) => [
+            invalidatesTags: (_res, _err, { listId, householdId }) => [
                 { type: "Tasklist", id: listId },
                 { type: "Tasklist", id: "LIST" },
-                "UserSettings", // <- also invalidate to force a server refresh
+                "UserSettings",
+                ...(householdId != null ? [{ type: "Activity" as const, id: `HOUSEHOLD_${householdId}` }] : []),
             ],
         }),
 
         updateTasklist: builder.mutation({
-            // Add householdId to the argument destructuring, but ignore it for the query
             query: ({ listId, data, householdId }) => ({
                 url: `/tasklists/${listId}/settings`,
                 method: "PUT",
@@ -349,17 +350,15 @@ export const taskSlice = apiSlice.injectEndpoints({
             }),
 
             // Now householdId will be available here!
-            invalidatesTags: (_res, _err, { listId, householdId }): TasklistTag[] => {
-                const tags: TasklistTag[] = [{ type: "Tasklist", id: listId }];
-                tags.push('User' as any);
+            invalidatesTags: (_res, _err, { listId, householdId }): any[] => {
+                const tags: any[] = [{ type: "Tasklist", id: listId }];
+                tags.push("User" as any);
                 if (householdId != null) {
                     tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
+                    tags.push({ type: "Activity", id: `HOUSEHOLD_${householdId}` });
                 } else {
-                    // Fallback: Invalidate *all* lists if we don't know the household
-                    // This ensures the list reappears even if we forgot the ID
                     tags.push({ type: "Tasklist", id: "LIST" });
                 }
-
                 return tags;
             },
         }),
@@ -573,6 +572,7 @@ export const taskSlice = apiSlice.injectEndpoints({
                 ...(result?.householdId ? [
                     { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ACTIVE` } as const,
                     { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ARCHIVED` } as const,
+                    { type: "Activity" as const, id: `HOUSEHOLD_${result.householdId}` },
                 ] : []),
             ],
         }),
@@ -587,21 +587,19 @@ export const taskSlice = apiSlice.injectEndpoints({
             }),
             // ... onQueryStarted ...
             invalidatesTags: (result, _error, arg) => {
-                // Change the type here to any[] or a broader Tag type
                 const tags: any[] = [
                     { type: "Tasklist", id: arg.listId },
                     { type: "Tasklist", id: "LIST" },
-                    "UserTaskStats" // Now TS won't complain
+                    "UserTaskStats",
                 ];
-
                 if (result?.householdId) {
                     tags.push(
                         { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` },
                         { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ACTIVE` },
-                        { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ARCHIVED` }
+                        { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}_ARCHIVED` },
+                        { type: "Activity", id: `HOUSEHOLD_${result.householdId}` },
                     );
                 }
-
                 return tags;
             },
         }),
@@ -613,13 +611,13 @@ export const taskSlice = apiSlice.injectEndpoints({
             }),
             // 3. Invalidate tags so the new list appears in the sidebar/dashboard
             invalidatesTags: (result) => {
-                const tags: TasklistTag[] = [{ type: "Tasklist", id: "LIST" }];
-
-                // If the new list belongs to a household, refresh that household's list view
+                const tags: any[] = [{ type: "Tasklist", id: "LIST" }];
                 if (result?.householdId) {
-                    tags.push({ type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` });
+                    tags.push(
+                        { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` },
+                        { type: "Activity", id: `HOUSEHOLD_${result.householdId}` },
+                    );
                 }
-
                 return tags;
             },
         }),

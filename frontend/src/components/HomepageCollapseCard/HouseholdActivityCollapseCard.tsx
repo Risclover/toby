@@ -1,5 +1,5 @@
 import { HomepageCollapseCard } from "./HomepageCollapseCard";
-import { ActivityFeed } from "@/features/ActivityFeed";
+import { ActivityFeed } from "@/features";
 import { useAuthenticateQuery } from "@/store";
 
 export const HomepageActivityCollapseCard = () => {

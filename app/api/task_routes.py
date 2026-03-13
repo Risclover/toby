@@ -43,7 +43,7 @@ def update_task_status(id):
     ActivityService.record(
         household_id=task.tasklist.household_id,
         actor_id=current_user.id,
-        action="completed" if task.status == "completed" else "updated",
+        action="completed" if task.status == "completed" else "uncompleted",
         entity_type="task",
         entity_id=task.id,
         entity_label=task.title,

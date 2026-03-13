@@ -43,6 +43,8 @@
 .homepage-lists-tasklist .mantine-Checkbox-label {
     width: 100%;
     cursor: pointer !important;
+    line-height: 1.3;
+    margin-top: -.5px;
 }
 
 .urgency-active {

@@ -306,7 +306,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, taskl
 
     // ── Delete ───────────────────────────────────────────────────────────────
     const handleDeleteList = async () => {
-        await deleteList({ listId: tasklistId });
+        await deleteList({ listId: tasklistId, householdId: household.id });
         setShowDeleteConfirmation(false);
         setShowTasklistSettings(false);
         navigate("/tasklists");
