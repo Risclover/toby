@@ -56,8 +56,8 @@ export function DashboardMiniCalendar({
     setShowAddEvent,
 }: {
     householdId: number;
-    showAddEvent: boolean;
-    setShowAddEvent: React.Dispatch<SetStateAction<boolean>>;
+    showAddEvent?: boolean;
+    setShowAddEvent?: React.Dispatch<SetStateAction<boolean>>;
 }) {
     const numberOfDays = 7;
 
@@ -109,10 +109,20 @@ export function DashboardMiniCalendar({
         <div className="events-calendar">
             {/* Centered dominant-month title; MiniCalendar keeps its own arrows */}
             <Group justify="center" className="events-calendar-header">
-                <Text fw={500} fz="lg" c="white">{headerTitle}</Text>
+                <Text fw={500} fz="lg" className="events-header-title">{headerTitle}</Text>
             </Group>
 
             <MiniCalendar
+                styles={{
+                    root: {
+                        color: "black",
+                        fontSize: "var(--text-base)"
+                    },
+                    days: {
+                        gap: "0.25rem"
+                    }
+
+                }}
                 date={startDate}
                 numberOfDays={numberOfDays}
                 monthLabelFormat="ddd" // Sun, Mon, Tue, ...
@@ -125,17 +135,14 @@ export function DashboardMiniCalendar({
                     return {
                         "data-testid": `cal-day-${ymd}`,
                         "data-has-events": has ? true : false,
-                        className: has ? "mc-has-events" : undefined,
-                        style: { color: isToday ? "var(--mantine-color-cyan-3)" : undefined },
+                        className: has ? "mc-has-events" : "mc-no-events",
+                        style: { background: isToday ? "#f1f1ff" : undefined },
                         title: has ? "Has events" : undefined,
                         onClick: () => {
                             setSelectedDate(dateFromYmd(ymd));
                             setShowAddEvent(true);
                         },
                     };
-                }}
-                styles={{
-                    control: { color: "white" },
                 }}
             />
             <QuickAddEvent

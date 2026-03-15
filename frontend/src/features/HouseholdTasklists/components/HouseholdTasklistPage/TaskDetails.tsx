@@ -28,7 +28,7 @@ type Props = {
 };
 
 export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Props) => {
-    const isSmallScreen = useIsSmallScreen();
+    const isSmallScreen = useIsSmallScreen(450);
     const { data: task } = useGetTaskQuery(taskId);
 
     const {
@@ -51,14 +51,16 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
     }, [form])
     return (
         <Drawer
+            w="200px"
             title="Task Details"
-            transitionProps={{ duration: 200, transition: 'fade-down' }}
+            transitionProps={{ duration: 200, transition: isSmallScreen ? 'pop' : 'slide-left' }}
             opened={opened}
             position="right"
             onClose={close}
             styles={{
                 root: {
                     height: "100%",
+                    width: "200px"
                 },
                 body: {
                     height: "calc(100% - 60px)",

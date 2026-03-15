@@ -2,6 +2,7 @@ import { Avatar, Button, Drawer, Group, Stack, Text, Space, Tooltip } from "@man
 import { useEffect, useMemo, useState } from "react";
 import { type TaskFilters, type TimeFilter } from "../../hooks/useTaskFiltering";
 import { useGetTasklistQuery, type TasklistType } from "@/store/taskSlice";
+import { useIsSmallScreen } from "@/hooks";
 
 type Props = {
     opened: boolean;
@@ -23,6 +24,7 @@ const TIME_OPTIONS: { label: string; value: TimeFilter }[] = [
 ];
 
 export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, filters, setFilters, listId }: Props) => {
+    const isSmall = useIsSmallScreen(375);
     const { data: tasklist } = useGetTasklistQuery(listId);
 
     const [localFilters, setLocalFilters] = useState(filters);
@@ -71,7 +73,9 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
             size="auto"
             styles={{
                 content: { height: "min-content", borderTopLeftRadius: "1rem", borderTopRightRadius: "1rem", },
-                body: { paddingBottom: "20px" }
+                body: {
+                    padding: isSmall ? ".5rem" : ".75rem"
+                }
             }}
             opened={opened}
             onClose={close}
@@ -181,7 +185,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                 </Stack>
 
                 {/* Actions */}
-                <Group grow className="filter-drawer-submit-btns">
+                <Group gap={isSmall ? "0.5rem" : "1rem"} grow className="filter-drawer-submit-btns">
                     <Button color="rgb(5, 5, 73)" variant="light" onClick={handleReset}>
                         Reset
                     </Button>

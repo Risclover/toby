@@ -173,6 +173,9 @@
     padding-bottom: 0;
     flex-wrap: wrap;
     box-shadow: var(--mantine-shadow-xs);
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    background: white;
 }
 
 .mobile-announcements-header,
@@ -355,7 +358,7 @@
     /* This makes it fill all remaining space in .mobile-home-container */
     flex: 1;
     margin-top: -1rem;
-    background: white;
+    background: #eaebef;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
     position: relative;
@@ -483,8 +486,8 @@
 }
 
 .due-task-stat-main {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 3rem;
+    height: 3rem;
     border: 1px solid orange;
     display: flex;
     align-items: center;
@@ -529,15 +532,37 @@
 
 
 .mobile-home-section-content {
-    padding-top: 0.5rem;
+    border-radius: .875rem;
+    margin: 0.75rem;
+    margin-bottom: 0;
+    background: white;
+    box-shadow: var(--mantine-shadow-xs);
 }
 
 .mobile-home-notice-board-section {
     padding-top: 0.5rem;
 }
 
+@media (max-width: 425px) {
+    .mobile-home-section-content {
+        border-radius: 0;
+        margin: 0;
+    }
+}
+
 @media (max-width: 575px) {
     .tasklist-announcements {
         font-size: var(--text-base);
+    }
+}
+
+@media(max-width: 375px) {
+    .due-task-stat-container .mantine-Indicator-indicator {
+        font-size: 10px !important;
+    }
+
+    .indicator-skeleton {
+        top: -6px;
+        right: -6px;
     }
 }

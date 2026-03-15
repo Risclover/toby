@@ -11,20 +11,29 @@
     position: relative;
 }
 
+.mc-no-events {
+    position: relative;
+}
+
 /* The dot itself */
 .mc-has-events::after {
     content: "";
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 3px;
+    bottom: 4px;
     /* adjust for your theme */
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: var(--mantine-color-cyan-5);
+    background: rgb(5, 5, 73);
     pointer-events: none;
 }
+
+.mantine-MiniCalendar-day:hover {
+    background: #f1f1ff !important;
+}
+
 
 .quick-add-event-events {
     color: white;
@@ -41,4 +50,46 @@
 
 .delete-event-btn:hover {
     color: var(--accent-color);
+}
+
+.m_99d16a4 {
+    padding-top: .5rem !important;
+    gap: .25rem !important;
+}
+
+@media (max-width: 425px) {
+    .m_99d16a4 {
+        min-width: 2.5rem !important;
+        padding: .75rem 0 !important;
+        padding-top: .25rem !important;
+        gap: .25rem !important;
+    }
+
+    .mantine-MiniCalendar-dayMonth {
+        font-size: 11px !important;
+    }
+
+    .mantine-MiniCalendar-dayNumber {
+        font-size: 12px !important;
+    }
+
+    .mc-has-events::after {
+        bottom: 3px;
+    }
+
+    .events-header-title {
+        font-size: var(--text-sm) !important;
+    }
+
+    .mantine-MiniCalendar-control {
+        width: 1.5rem !important;
+    }
+}
+
+@media (max-width: 375px) {
+    .m_99d16a4 {
+        min-width: 2em !important;
+        padding: .75rem 0 !important;
+        padding-top: .25rem !important;
+    }
 }

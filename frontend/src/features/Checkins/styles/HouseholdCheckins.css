@@ -134,3 +134,14 @@
         border-radius: 0.5rem;
     }
 }
+
+@media (min-width: 426px) {
+    .checkins-header-day {
+        width: 38px;
+        font-size: var(--text-lg);
+    }
+
+    .checkins-header-spacer {
+        width: 3.3rem;
+    }
+}

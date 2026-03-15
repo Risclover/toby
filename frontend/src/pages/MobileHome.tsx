@@ -11,6 +11,7 @@ import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/Hom
 import { HomepageNoticeBoardCollapseCard } from "@/components/HomepageCollapseCard/HomepageNoticeBoardCollapseCard";
 import { HomepageCheckinsCollapseCard } from "@/components/HomepageCollapseCard/HomepageCheckinsCollapseCard";
 import { HomepageActivityCollapseCard } from "@/components/HomepageCollapseCard/HouseholdActivityCollapseCard";
+import { HomepageEventsCollapseCard } from "@/components/HomepageCollapseCard/HomepageEventsCollapseCard";
 
 export const MobileHome = () => {
     const mobileHomeFamilyTitle = <MobileHomeFamilyTitle />
@@ -32,8 +33,7 @@ export const MobileHome = () => {
     return (
         <MobileLayout titleComponent={mobileHomeFamilyTitle}>
             <MobileHomeNavGrid />
-            <TimezoneSelect value={timezone} onChange={(tz) => setTimezone(tz)} />
-            <Button onClick={handleTimezone}>Submit</Button>
+            <HomepageEventsCollapseCard />
             <TaskStatusSection />
             <HomepageNoticeBoardCollapseCard householdId={householdId} />
 

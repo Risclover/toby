@@ -69,7 +69,7 @@ export const NoticeBoardReminder = ({ reminder }: Props) => {
                         </div>
                         : <div className="notice-board-reminder-assigned">
                             <Tooltip withArrow label={`Created by ${reminder.createdBy?.firstName}`}>
-                                <Avatar size={18} src={reminder.createdBy?.profileImg} radius="xl" />
+                                <Avatar size={20} src={reminder.createdBy?.profileImg} radius="xl" />
                             </Tooltip>
 
                             <span className="reminder-relationship-arrow"><HiArrowLongRight />
@@ -80,7 +80,7 @@ export const NoticeBoardReminder = ({ reminder }: Props) => {
                                         {reminder.assignedTo.map((assignee: User) => (
                                             <Tooltip withArrow key={assignee.id} label={assignee.firstName}>
                                                 <Avatar
-                                                    size={22}
+                                                    size={24}
                                                     src={assignee.profileImg}
                                                     radius="xl"
                                                 />

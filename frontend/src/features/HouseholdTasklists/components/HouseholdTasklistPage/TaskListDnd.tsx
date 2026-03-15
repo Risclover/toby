@@ -183,7 +183,7 @@ function SortableTaskItem({ task: initialTask, tasks, isFirst, isLast, onMove, l
                 </div>
 
             </div>
-            {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={user?.householdId} />}
+            <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={user?.householdId} />
         </li >
     );
 }

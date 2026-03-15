@@ -8,7 +8,8 @@ import { useIsSmallScreen } from '@/hooks';
 import { useAuthenticateQuery, useGetUserTaskStatsQuery } from '@/store';
 
 export function TaskStatusSection() {
-    const isSmall = useIsSmallScreen();
+    const isSmall = useIsSmallScreen(375);
+    const isMedium = useIsSmallScreen(425);
     const { data: user } = useAuthenticateQuery();
     const userId = user?.id;
 
@@ -40,7 +41,7 @@ export function TaskStatusSection() {
             // Rename to 'icon' since it is already a rendered element
             icon: (
                 <OverdueStatIcon
-                    size="28px"
+                    size={isSmall ? "20px" : isMedium ? "28px" : "32px"}
                     color={getIconColor(statsData.overdue, "var(--mantine-color-red-7)")}
                 />
             )
@@ -51,7 +52,7 @@ export function TaskStatusSection() {
             color: "var(--mantine-color-orange-5)",
             icon: (
                 <DueTodayStatIcon
-                    size="28px"
+                    size={isSmall ? "20px" : isMedium ? "28px" : "32px"}
                     color={getIconColor(statsData.due_today, "var(--mantine-color-orange-5)")}
                 />
             )
@@ -62,7 +63,7 @@ export function TaskStatusSection() {
             color: "var(--mantine-color-blue-4)",
             icon: (
                 <DueSoonStatIcon
-                    size="28px"
+                    size={isSmall ? "20px" : isMedium ? "28px" : "32px"}
                     color={getIconColor(statsData.due_soon, "var(--mantine-color-blue-4)")}
                 />
             )
@@ -84,7 +85,7 @@ export function TaskStatusSection() {
                                     // Fade effect to solve the "Stale Data" problem
                                 }}
                             >
-                                <Box pt="1rem" pb="0.75rem" style={{ flex: 1 }}>
+                                <Box pt={isSmall ? ".75rem" : "1rem"} pb={isSmall ? ".5rem" : "0.75rem"} style={{ flex: 1 }}>
                                     <DueTaskStat
                                         // We use the color defined in the object, 
                                         // or gray if the count is 0

@@ -176,7 +176,11 @@ def get_task_stats(id):
         # 2. Query Tasks joined with Tasklist
         # Filter: (Assigned to User OR Unassigned) AND (Not Completed) AND (List is Active)
         pending_tasks = Task.query.join(Tasklist).filter(
-            or_(Task.assigned_to_id == id, Task.assigned_to_id == None),
+            or_(
+                Task.assigned_to_id == id,
+                Task.assigned_to_id == None,
+                Task.assigned_to_id == 0,
+            ),
             Task.completed_at == None,
             Tasklist.is_archived == False
         ).all()

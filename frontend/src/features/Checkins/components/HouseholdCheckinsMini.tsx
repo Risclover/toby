@@ -69,6 +69,7 @@ function MemberRow({
     className: string;
 }) {
     const isSmall = useIsSmallScreen(375);
+    const isMedium = useIsSmallScreen(425);
     const navigate = useNavigate();
     const { data, isLoading } = useGetUserCheckinsQuery(
         { userId: member.id, from, to },
@@ -90,7 +91,7 @@ function MemberRow({
                     <Avatar
                         src={member.profileImg || undefined}
                         radius="xl"
-                        size={isSmall ? 28 : 34}
+                        size={isSmall ? 28 : isMedium ? 36 : 42}
                         onClick={() => window.open(`/users/${member.id}`, "_blank")}
                         style={{ cursor: "pointer", border: "1px solid var(--mantine-color-white)", marginRight: "10px" }}
                     >
@@ -140,6 +141,7 @@ export function HouseholdCheckinsMini({
     nameColWidthClass?: string;
 }) {
     const isSmall = useIsSmallScreen(375);
+    const isMedium = useIsSmallScreen(425);
     const { days, from, to } = useMemo(() => makeWindow(timezone), [timezone]);
 
     return (
@@ -169,7 +171,7 @@ export function HouseholdCheckinsMini({
                                 days={days}
                                 from={from}
                                 to={to}
-                                size={isSmall ? 26 : 32}
+                                size={isSmall ? 26 : isMedium ? 32 : 38}
                                 gap={gap}
                                 nameColClass={nameColWidthClass}
                                 className="checkins-member-row"
@@ -184,8 +186,9 @@ export function HouseholdCheckinsMini({
 
 const MemberRowSkeleton = () => {
     const isSmall = useIsSmallScreen(375);
-    const avatarSize = isSmall ? 28 : 34;
-    const squareSize = isSmall ? 26 : 32;
+    const isMedium = useIsSmallScreen(425);
+    const avatarSize = isSmall ? 28 : isMedium ? 36 : 42;
+    const squareSize = isSmall ? 26 : isMedium ? 32 : 38;
 
     return (
         <div className="member-row-skeleton">

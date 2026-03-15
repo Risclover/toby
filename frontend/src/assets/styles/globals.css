@@ -585,3 +585,40 @@ form {
 .featured-task-details .task-extra svg {
     font-size: .9rem;
 }
+
+.homepage-mini-calendar-container {
+    background: white;
+    padding: .5rem 0.25rem;
+    padding-top: .75rem;
+    /* border-radius: .875rem; */
+    margin-bottom: 0.75rem;
+
+    /* box-shadow: var(--mantine-shadow-xs); */
+}
+
+.homepage-mini-calendar-container {
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+}
+
+.homepage-events .homepage-collapse-card {
+    border-radius: 0;
+    margin: 0;
+    margin-bottom: 0rem;
+}
+
+@media (max-width: 425px) {
+    .homepage-mini-calendar-container {
+        padding: .25rem;
+        padding-top: .5rem;
+    }
+
+    .homepage-collapse-card {
+        margin: .5rem;
+        margin-bottom: 0rem;
+    }
+
+    .homepage-events .homepage-collapse-card {
+        margin-bottom: .5rem;
+    }
+}

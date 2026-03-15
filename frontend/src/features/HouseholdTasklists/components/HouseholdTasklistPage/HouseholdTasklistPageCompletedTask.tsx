@@ -23,7 +23,7 @@ export const HouseholdTasklistPageCompletedTask = ({ task, tasklist, householdId
                     taskId={task.id}
                 />
             </div>
-            {showTaskDetails && <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={householdId} />}
+            <TaskDetails opened={showTaskDetails} close={() => setShowTaskDetails(false)} taskId={task.id} listId={listId} householdId={householdId} />
         </div>
     )
 }
