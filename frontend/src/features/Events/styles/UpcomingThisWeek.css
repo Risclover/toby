@@ -1,11 +1,5 @@
-.upcoming-events div {
-    background: none;
-}
-
 .upcoming-event {
     display: flex;
-    padding: 1rem;
-    background: var(--main-background) !important;
 }
 
 .upcoming-event-date {
@@ -19,7 +13,16 @@
 
 .upcoming-event-date p {
     line-height: 1.2;
-    color: white;
+    color: black;
+}
+
+.upcoming-events {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #fafafa;
+    max-height: 250px;
+    padding: 0.5rem;
+    padding-top: .25rem;
 }
 
 .upcoming-events p:first-of-type {
@@ -47,20 +50,12 @@
 
 .upcoming-event-btns {
     display: none;
+    align-items: center;
+    gap: 4px;
 }
 
 .upcoming-event:hover .upcoming-event-btns {
-    display: block;
-}
-
-.upcoming-event-btn {
-    cursor: pointer;
-    color: white;
-    margin-right: 0.5rem;
-}
-
-.upcoming-event-btn svg {
-    font-size: 1.25rem;
+    display: flex;
 }
 
 .upcoming-event-btn:hover {

@@ -56,8 +56,8 @@ export function DashboardMiniCalendar({
     setShowAddEvent,
 }: {
     householdId: number;
-    showAddEvent?: boolean;
-    setShowAddEvent?: React.Dispatch<SetStateAction<boolean>>;
+    showAddEvent: boolean;
+    setShowAddEvent: React.Dispatch<SetStateAction<boolean>>;
 }) {
     const numberOfDays = 7;
 

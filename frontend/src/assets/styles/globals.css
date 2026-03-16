@@ -605,6 +605,7 @@ form {
     border-radius: 0;
     margin: 0;
     margin-bottom: 0rem;
+    background: #f7f8fc;
 }
 
 @media (max-width: 425px) {

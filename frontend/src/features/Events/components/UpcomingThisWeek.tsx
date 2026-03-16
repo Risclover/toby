@@ -1,5 +1,5 @@
 // src/features/calendar/UpcomingNext7Days.tsx
-import { Anchor, Button, Card, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { ActionIcon, ActionIconGroup, Anchor, Button, Card, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
 import { useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery, type CalendarEvent } from "@/store/eventSlice";
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
@@ -7,6 +7,7 @@ import DeleteRounded from '@mui/icons-material/Delete';
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import "../styles/UpcomingThisWeek.css"
 import { QuickAddEvent } from "./QuickAddEvent";
+import { Box } from "lucide-react";
 
 function startOfToday(d = new Date()) {
     const t = new Date(d);
@@ -29,7 +30,7 @@ function formatDate(isoUtc: string) {
     const d = new Date(isoUtc);
     return (
         <div className="upcoming-event-date">
-            <Text fz="xs" c="var(--sub-text)">{d.toLocaleDateString([], { month: "short" })}</Text>
+            <Text fz="xs" c="var(--mantine-color-gray-7)">{d.toLocaleDateString([], { month: "short" })}</Text>
             <Text>{d.toLocaleDateString([], { day: "numeric" })}</Text>
         </div>)
 }
@@ -79,50 +80,48 @@ export function UpcomingThisWeek({ householdId }: { householdId: number }) {
     if (!upcoming.length) return <Text c="dimmed">Nothing in the next 7 days — add one.</Text>;
 
     return (
-        <div>
-            <Group justify="space-between" className="upcoming-events-header">
-                <Text fz="xl" c="white" fw={500}>Upcoming</Text>
-                <Anchor c="cyan.4">View all<ChevronRightRoundedIcon /></Anchor>
-            </Group>
-            <ScrollArea.Autosize mah={229}>
-                <Stack className="upcoming-events" gap="xs">
-                    {upcoming.map((e) => {
-                        // Defensive: e.startUtc is defined due to the filter; cast for TS
-                        const startIso = e.startUtc as string;
+        <div className="upcoming-events-container">
+            <Stack className="upcoming-events" gap="xs">
+                {upcoming.map((e) => {
+                    // Defensive: e.startUtc is defined due to the filter; cast for TS
+                    const startIso = e.startUtc as string;
 
-                        const left = e.hasTime ? formatDate(startIso)
-                            : formatDate(startIso);
+                    const left = e.hasTime ? formatDate(startIso)
+                        : formatDate(startIso);
 
-                        const right = e.hasTime ? formatTime(startIso) : "All Day"
+                    const right = e.hasTime ? formatTime(startIso) : "All Day"
 
-                        return (
-                            <Card key={e.id} padding="xs" radius="md" className="upcoming-event">
-                                <Group justify="space-between">
-                                    <Group>
-                                        {left}
-                                        <Stack gap={0}>
-                                            <Text fw={600} c="white" fz="sm">
-                                                {e.title}
-                                            </Text>
-                                            <Text fz="xs" c="var(--sub-text)">{right}</Text>
-                                        </Stack>
-                                    </Group>
-                                    <div className="upcoming-event-btns">
-                                        <button
-                                            className="upcoming-event-btn"
-                                            onClick={() => openEdit(e)}
-                                            aria-label={`Edit ${e.title}`}
-                                        >
-                                            <BorderColorRoundedIcon />
-                                        </button>
-                                        <button className="upcoming-event-btn"><DeleteRounded /></button>
-                                    </div>
+                    return (
+                        <Paper color="white" key={e.id} radius="md" p=".5rem" shadow="xs" className="upcoming-event">
+                            <Group justify="space-between">
+                                <Group>
+                                    {left}
+                                    <Stack gap={0}>
+                                        <Text fw={600} c="black" fz="sm">
+                                            {e.title}
+                                        </Text>
+                                        <Text fz="xs" c="var(--mantine-color-gray-7)">{right}</Text>
+                                    </Stack>
                                 </Group>
-                            </Card>
-                        );
-                    })}
-                </Stack>
-            </ScrollArea.Autosize>
+                                <div className="upcoming-event-btns">
+                                    <ActionIcon
+                                        variant="subtle"
+                                        color="rgb(5, 5, 73)"
+                                        className="upcoming-event-btn"
+                                        onClick={() => openEdit(e)}
+                                        aria-label={`Edit ${e.title}`}
+                                    >
+                                        <BorderColorRoundedIcon fontSize="small" />
+                                    </ActionIcon>
+                                    <ActionIcon variant="subtle" color='rgb(5, 5, 73)' className="upcoming-event-btn">
+                                        <DeleteRounded fontSize="small" />
+                                    </ActionIcon>
+                                </div>
+                            </Group>
+                        </Paper>
+                    );
+                })}
+            </Stack>
 
             <QuickAddEvent
                 householdId={householdId}

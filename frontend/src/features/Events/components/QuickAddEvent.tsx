@@ -6,6 +6,8 @@ import dayjs from "dayjs";
 import { useCreateEventMutation, useDeleteEventMutation, useGetHouseholdEventsQuery, useUpdateEventMutation, type CalendarEvent } from "@/store/eventSlice";
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import "../styles/QuickAddEvent.css"
+import { useIsSmallScreen } from "@/hooks";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 
 function startEndIsoForLocalDay(ymd: string) {
     const [y, m, d] = ymd.split("-").map(Number);
@@ -31,6 +33,24 @@ const ymdFromIso = (iso?: string | null, fallback = new Date()) =>
 const hmFromIso = (iso?: string | null) =>
     iso ? dayjs(iso).format("HH:mm") : "";
 
+const DATE_PICKER_STYLES = {
+    section: { color: "rgb(5, 5, 73)" },
+    day: {
+        "&[data-weekend]": { color: "#4e0202" },
+        "&[data-selected], &[data-selected]:hover": {
+            backgroundColor: "#2563eb",
+            color: "white",
+        },
+    },
+};
+
+const DATE_PRESETS = [
+    { value: dayjs().format("YYYY-MM-DD HH:mm:ss"), label: "Today" },
+    { value: dayjs().add(1, "day").format("YYYY-MM-DD HH:mm:ss"), label: "Tomorrow" },
+    { value: dayjs().add(1, "week").format("YYYY-MM-DD HH:mm:ss"), label: "Next week" },
+    { value: dayjs().add(1, "month").format("YYYY-MM-DD HH:mm:ss"), label: "Next month" },
+];
+
 export function QuickAddEvent({
     householdId,
     opened,
@@ -46,6 +66,7 @@ export function QuickAddEvent({
     edit: boolean;
     event?: CalendarEvent;
 }) {
+    const isSmallScreen = useIsSmallScreen(425);
     const [createEvent, { isLoading: creating }] = useCreateEventMutation();
     const [updateEvent, { isLoading: updating }] = useUpdateEventMutation();
     const [deleteEvent] = useDeleteEventMutation();
@@ -183,7 +204,7 @@ export function QuickAddEvent({
     };
 
     return (
-        <Modal opened={opened} onClose={handleClose} title={edit ? "Edit event" : "Add event"} centered keepMounted={false}>
+        <Modal opened={opened} onClose={handleClose} radius="md" title={edit ? "Edit event" : "Add event"} centered keepMounted={false}>
             <TextInput
                 label="Title"
                 placeholder="Dentist"
@@ -195,24 +216,22 @@ export function QuickAddEvent({
             />
             <Group grow mt="md">
                 <DatePickerInput
+                    dropdownType={isSmallScreen ? "modal" : "popover"}
                     label="Date"
                     value={dateStr}                         // <-- string
-                    onChange={(v) => setDateStr(v ?? "")}  // <-- expects string | null
+                    onChange={(v) => setDateStr(v ? dayjs(v).format("YYYY-MM-DD") : "")}
                     required
-                    styles={{
-                        wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
-                        input: { fontWeight: "normal", fontFamily: "Commissioner, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", color: "white" },
-                        month: { background: "var(--main-background)", color: "white" },
-                        day: { color: "white" },
-                        calendarHeader: { background: "var(--main-background)", color: "white" },
-                        presetsList: { background: "var(--main-background)", color: "white", borderColor: "var(--main-border)" },
-                        datePickerRoot: { background: "var(--main-background)", borderRadius: "0.5rem" },
-                        monthsListControl: { background: "var(--main-background)", color: "white" },
-                        yearsListControl: { background: "var(--main-background)", color: "white" },
-                        weekday: { color: "var(--sub-text)" },
-                        placeholder: { color: "var(--sub-text)" }
-                    }}
                     error={dateError}
+                    leftSection={<CalendarMonthRoundedIcon />}
+                    leftSectionWidth="40px"
+                    clearable
+                    color="rgb(5, 5, 73)"
+                    styles={DATE_PICKER_STYLES}
+                    presets={DATE_PRESETS}
+                    valueFormatter={({ date, format }: any) =>
+                        date ? dayjs(date).format(format) : ""
+                    }
+                    firstDayOfWeek={0}
                 />
                 <TimeInput
                     label="Time"
@@ -220,24 +239,24 @@ export function QuickAddEvent({
                     onChange={(e) => setTimeStr(e.currentTarget.value)}
                     styles={{
                         wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
-                        input: { fontWeight: "normal", fontFamily: "Commissioner, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", color: "white" },
+                        input: { fontWeight: "normal", fontFamily: "Commissioner, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", },
                     }}
                 />
             </Group>
             <Stack mt="lg" gap="xs">
-                <Text fw={400} c="white" styles={{ root: { fontFamily: "Alan Sans, sans-serif" } }}>Events</Text>
-                {sorted.length > 0 && <Text c="white" inline size="xs">To edit an event, go to the <Anchor underline="always" href="" target="_blank" c="cyan.3">Events</Anchor> page.</Text>}
+                <Text fw={400} c="black" styles={{ root: { fontFamily: "Alan Sans, sans-serif" } }}>Events</Text>
+                {sorted.length > 0 && <Text inline size="xs">To edit an event, go to the <Anchor underline="always" href="" target="_blank" c="rgb(5, 5, 73)">Events</Anchor> page.</Text>}
                 <ScrollArea scrollbars="y" viewportProps={{ style: { maxHeight: 185 } }}>
                     {sorted.length === 0 ? (
                         <Text c="dimmed" size="sm">No events for this date.</Text>
-                    ) : loading ? <Text size="sm" c="white">Loading...</Text> : (
+                    ) : loading ? <Text size="sm">Loading...</Text> : (
                         sorted.map((e) => (
                             <Group key={e.id} gap="sm" wrap="nowrap">
-                                <Text size="sm" inline w={80} fw={700} c="cyan.3">
+                                <Text size="sm" inline w={80} fw={700} c="rgb(5, 5, 73)">
                                     {e.hasTime === false ? "All day" : (e.startUtc && fmtTime(e.startUtc)) || ""}
                                 </Text>
                                 <Group justify="space-between" w="100%">
-                                    <Text size="sm" inline c="white">{e.title}</Text>
+                                    <Text size="sm" inline >{e.title}</Text>
                                     <div onClick={() => handleDeleteEvent(e.id)} className="delete-event-btn"><DeleteRoundedIcon /></div>
                                 </Group>
                             </Group>
@@ -246,8 +265,8 @@ export function QuickAddEvent({
                 </ScrollArea>
             </Stack>
             <Group justify="flex-end" mt="lg">
-                <Button color="cyan" variant="outline" onClick={onClose}>Cancel</Button>
-                <Button color="cyan" loading={isSaving} onClick={handleSave} data-test="quickadd-submit">
+                <Button color="rgb(5, 5, 73)" variant="outline" onClick={onClose}>Cancel</Button>
+                <Button color="rgb(5, 5, 73)" loading={isSaving} onClick={handleSave} data-test="quickadd-submit">
                     Save
                 </Button>
             </Group>
