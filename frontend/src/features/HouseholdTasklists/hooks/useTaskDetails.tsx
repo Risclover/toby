@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useDeleteTaskMutation, useGetTasklistQuery, useUpdateTaskMutation } from "@/store/taskSlice";
 import { notifications } from "@mantine/notifications";
+import { useHousehold } from "@/hooks/useHousehold";
 
 type Member = {
     id: number;
@@ -31,7 +32,7 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
     const [updateTask] = useUpdateTaskMutation();
 
     // Queries 
-    const { data: household } = useGetHouseholdQuery(householdId);
+    const { data: household } = useHousehold();
     const { data: tasklist } = useGetTasklistQuery(listId);
     const { task } = useGetTasklistQuery(listId, {
         selectFromResult: ({ data }) => ({

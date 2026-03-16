@@ -5,19 +5,37 @@ import { MobileLayout } from "@/layout/MobileLayout";
 import { TaskStatusSection } from "@/components/DueTaskStats/TaskStatusSelection";
 import { TimezoneSelect } from "@/components/TimezoneSelect";
 import { useEffect, useState } from "react";
-import { useAuthenticateQuery, useUpdateTimezoneMutation } from "@/store";
+import { useAuthenticateQuery, useGetTasklistQuery, useGetUserSettingsQuery, useGetUserTaskStatsQuery, useUpdateTimezoneMutation } from "@/store";
 import { Button } from "@mantine/core";
 import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/HomepageListsCollapseCard";
 import { HomepageNoticeBoardCollapseCard } from "@/components/HomepageCollapseCard/HomepageNoticeBoardCollapseCard";
 import { HomepageCheckinsCollapseCard } from "@/components/HomepageCollapseCard/HomepageCheckinsCollapseCard";
 import { HomepageActivityCollapseCard } from "@/components/HomepageCollapseCard/HouseholdActivityCollapseCard";
 import { HomepageEventsCollapseCard } from "@/components/HomepageCollapseCard/HomepageEventsCollapseCard";
+import { useHousehold } from "@/hooks/useHousehold";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 export const MobileHome = () => {
     const mobileHomeFamilyTitle = <MobileHomeFamilyTitle />
-    const { data: user } = useAuthenticateQuery();
+    const { data: user, isLoading: isAuthLoading } = useAuthenticateQuery();
+    const { data: userSettings, isLoading: isSettingsLoading } = useGetUserSettingsQuery();
+    const { isLoading: isHouseholdLoading } = useHousehold();
+    const { isLoading: isTasklistLoading } = useGetTasklistQuery(
+        userSettings?.featuredTasklist.featuredTasklistId ?? skipToken
+    );
+    const { isLoading: isTaskStatsLoading } = useGetUserTaskStatsQuery(
+        user?.id ?? skipToken
+    );
+
     const [updateTimezone] = useUpdateTimezoneMutation();
     const [timezone, setTimezone] = useState(user?.timezone || null);
+
+    const isReady = !isAuthLoading
+        && !isSettingsLoading
+        && !isHouseholdLoading
+        && !isTasklistLoading
+        && !isTaskStatsLoading;
+
     const householdId = user?.householdId ?? (Number(localStorage.getItem("toby_household_id")) || undefined);
 
     const handleTimezone = async () => {
@@ -33,13 +51,13 @@ export const MobileHome = () => {
     return (
         <MobileLayout titleComponent={mobileHomeFamilyTitle}>
             <MobileHomeNavGrid />
-            <HomepageEventsCollapseCard />
-            <TaskStatusSection />
-            <HomepageNoticeBoardCollapseCard householdId={householdId} />
+            <HomepageEventsCollapseCard isReady={isReady} />
+            <TaskStatusSection isReady={isReady} />
+            <HomepageNoticeBoardCollapseCard householdId={householdId} isReady={isReady} />
 
-            <HomepageListsCollapseCard />
-            <HomepageCheckinsCollapseCard />
-            <HomepageActivityCollapseCard householdId={householdId} />
+            <HomepageListsCollapseCard isReady={isReady} />
+            <HomepageCheckinsCollapseCard isReady={isReady} />
+            <HomepageActivityCollapseCard householdId={householdId} isReady={isReady} />
 
 
         </MobileLayout>

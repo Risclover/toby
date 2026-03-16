@@ -33,12 +33,13 @@ dayjs.updateLocale('en', {
 });
 
 type Props = {
+    isReady: boolean;
     reminders: Reminder[];
     showAll?: boolean;
     isLoading?: boolean;
 }
 
-export const NoticeBoardReminders = ({ reminders, showAll = false, isLoading = false }: Props) => {
+export const NoticeBoardReminders = ({ isReady, reminders, showAll = false, isLoading = false }: Props) => {
     const { unseenReminderSnapshot, onRemindersOpened } = useNoticeBoard();
 
     useEffect(() => {
@@ -53,7 +54,7 @@ export const NoticeBoardReminders = ({ reminders, showAll = false, isLoading = f
     return (
         <div className="notice-board-reminders-container">
             <ul className="notice-board-reminders">
-                {isLoading
+                {!isReady || isLoading
                     ? Array.from({ length: 5 }).map((_, i) => <NoticeBoardReminderSkeleton key={i} />)
                     : visible.map(reminder => <NoticeBoardReminder key={reminder.id} reminder={reminder} />)
                 }

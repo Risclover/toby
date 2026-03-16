@@ -5,6 +5,7 @@ import { useAuthenticateQuery, useGenerateInviteMutation } from "@/store/authSli
 import { IoCopyOutline } from "react-icons/io5";
 import { HiCheck } from "react-icons/hi";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
+import { useHousehold } from "@/hooks/useHousehold";
 
 type Props = {
     opened: boolean;
@@ -15,7 +16,7 @@ export const InviteLink = ({ opened, close }: Props) => {
     const { data: user } = useAuthenticateQuery();
     // If householdId is unknown, skip the query for now
     const householdId = user?.householdId;
-    const { data: household } = useGetHouseholdQuery(householdId ?? skipToken);
+    const { data: household } = useHousehold();
 
     const [inviteCode, setInviteCode] = useState<string>(""); // always a string
 

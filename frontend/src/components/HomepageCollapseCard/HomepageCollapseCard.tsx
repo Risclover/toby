@@ -24,7 +24,7 @@ export const HomepageCollapseCard = ({ cardKey, title, color, badge, children }:
     }, [showCard]);
 
     return (
-        <div className="homepage-collapse-card">
+        <div className="homepage-collapse-card fade-in">
             <HomepageCollapseCardTitle dotColor={color} title={title} setShowCard={() => { setShowCard((v: boolean) => !v); setHasAnimated(true); }} showCard={showCard} badge={badge} />
             <Collapse
                 in={showCard}

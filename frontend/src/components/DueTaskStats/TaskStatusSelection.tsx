@@ -7,7 +7,7 @@ import { DueSoonStatIcon } from "@/assets/icons/DueSoonStatIcon"
 import { useIsSmallScreen } from '@/hooks';
 import { useAuthenticateQuery, useGetUserTaskStatsQuery } from '@/store';
 
-export function TaskStatusSection() {
+export function TaskStatusSection({ isReady }: { isReady: boolean }) {
     const isSmall = useIsSmallScreen(375);
     const isMedium = useIsSmallScreen(425);
     const { data: user } = useAuthenticateQuery();
@@ -17,10 +17,10 @@ export function TaskStatusSection() {
         skip: !userId,
         pollingInterval: 60000,
         refetchOnFocus: true,
-        refetchOnMountOrArgChange: true
     });
 
-    const showSkeleton = isLoading || (!isSuccess && !data);
+    const showSkeleton = !isReady || isLoading || (!isSuccess && !data);
+
 
     // FIX: Use 'data' if it exists, even if it's currently refetching.
     // This prevents the count from dropping to 0 (and turning gray) during the reload.
@@ -89,7 +89,7 @@ export function TaskStatusSection() {
                                     <DueTaskStat
                                         // We use the color defined in the object, 
                                         // or gray if the count is 0
-                                        isLoading={showSkeleton}
+                                        isLoading={!isReady}
                                         color={getIconColor(item.count, item.color)}
                                         title={item.label}
                                         count={item.count}

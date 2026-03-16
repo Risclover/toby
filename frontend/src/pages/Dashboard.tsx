@@ -15,6 +15,7 @@ import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { DashboardGrid } from "@/components/DashboardGrid";
 import { InviteLink } from "@/components/InviteLink";
+import { useHousehold } from "@/hooks/useHousehold";
 
 
 const toISO = (d: Date) => d.toISOString().slice(0, 10); // "YYYY-MM-DD"
@@ -30,7 +31,7 @@ export const Dashboard = () => {
         data: household,
         isFetching: householdFetching,
         error,
-    } = useGetHouseholdQuery(user?.householdId ?? skipToken);
+    } = useHousehold();
     const [checkInToday, { isLoading: checkingIn }] = useCheckInTodayMutation();
 
     const [showAddEvent, setShowAddEvent] = useState(false);

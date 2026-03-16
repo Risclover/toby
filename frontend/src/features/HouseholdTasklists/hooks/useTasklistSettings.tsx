@@ -7,6 +7,7 @@ import { isNotEmpty } from "@mantine/form";
 import { Avatar, Button, Group, Space, Stack, Text, type MultiSelectProps } from "@mantine/core";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import { notifications } from "@mantine/notifications";
+import { useHousehold } from "@/hooks/useHousehold";
 
 export type TasklistFormValues = {
     title: string;
@@ -57,7 +58,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, taskl
     const [deleteList] = useDeleteListMutation();
 
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: household } = useHousehold();
     const { data: tasklist } = useGetTasklistQuery(Number(tasklistId));
 
     const initialValues: TasklistFormValues = {

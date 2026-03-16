@@ -11,6 +11,7 @@ import { useGetHouseholdQuery } from "@/store/householdSlice";
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import { TobyIcon } from "@/assets/icons/TobyIcon";
 import "./Sidebar.css";
+import { useHousehold } from "@/hooks/useHousehold";
 
 type Item = {
     href: string;
@@ -78,7 +79,7 @@ type Props = {
 export function Sidebar({ sidebarExpanded, setSidebarExpanded }: Props) {
     const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId)
+    const { data: household } = useHousehold();
 
 
     // Keep <html> class in sync with state (so reloads are right even if JS loads late)

@@ -3,10 +3,11 @@ import { ActivityFeed } from "@/features";
 import { useGetActivityQuery } from "@/store";
 
 type Props = {
+    isReady: boolean;
     householdId?: number;
 };
 
-export const HomepageActivityCollapseCard = ({ householdId }: Props) => {
+export const HomepageActivityCollapseCard = ({ isReady, householdId }: Props) => {
     // Prefetch at this level so data is ready when ActivityFeed mounts
     useGetActivityQuery({ householdId: householdId! }, { skip: !householdId });
 

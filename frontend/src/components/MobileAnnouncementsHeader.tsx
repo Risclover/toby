@@ -6,6 +6,7 @@ import { MobileAnnouncementsFilterDrawer } from './MobileAnnouncementsFilterDraw
 import { useDisclosure } from '@mantine/hooks';
 import { useGetHouseholdQuery } from '@/store/householdSlice';
 import { useAuthenticateQuery } from '@/store/authSlice';
+import { useHousehold } from '@/hooks/useHousehold';
 
 type Props = {
     searchValue: string;
@@ -27,7 +28,7 @@ export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue, sortOpt
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId)
+    const { data: household } = useHousehold();
 
     const optionsList = ["Newest", "Oldest", "Important first"];
     const options = optionsList.map(item => <Combobox.Option value={item} key={item}>{item}</Combobox.Option>)

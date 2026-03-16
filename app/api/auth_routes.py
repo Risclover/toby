@@ -13,7 +13,7 @@ from uuid import uuid4
 
 auth_routes = Blueprint('auth', __name__)
 
-@auth_routes.route('/')
+@auth_routes.route('')
 def authenticate():
     """
     Authenticates a user.

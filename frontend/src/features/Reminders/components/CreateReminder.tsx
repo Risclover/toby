@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import EventRepeatRoundedIcon from "@mui/icons-material/EventRepeatRounded";
 import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
+import { useHousehold } from "@/hooks/useHousehold";
 
 interface ReminderFormValues {
     message: string;
@@ -46,7 +47,7 @@ export const CreateReminder = () => {
     const isSmallScreen = useIsSmallScreen();
 
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: household } = useHousehold();
     const [createReminder] = useCreateManualReminderMutation();
 
     const {

@@ -15,6 +15,7 @@ import type { TasklistSettingsForm } from "@/features/HouseholdTasklists/hooks/u
 import type { FeaturedTasklistSettingsForm } from "../FeaturedListSettings/FeaturedTasklistTab";
 import { StarIcon, StarIconOutline } from "@/assets";
 import { MobileTasklistSkeleton } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklistSkeleton";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 
 type TasklistItemProps = {
@@ -26,20 +27,22 @@ type TasklistItemProps = {
 }
 
 
-export const HomepageListsTasklist = () => {
+export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
     const inputRef = useRef(null);
     const [taskValue, setTaskValue] = useState("");
     const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
-    const { data: userSettings } = useGetUserSettingsQuery();
+    const { data: userSettings, isLoading: isSettingsLoading } = useGetUserSettingsQuery();
+
     const [addTask] = useAddTaskMutation();
 
 
     let featuredTasklistId = userSettings?.featuredTasklist.featuredTasklistId;
 
 
-    const { data: tasklist, isLoading } = useGetTasklistQuery(featuredTasklistId ? featuredTasklistId : undefined);
-
+    const { data: tasklist, isLoading: isTasklistLoading } = useGetTasklistQuery(
+        featuredTasklistId ?? skipToken  // cleaner than the ternary — explicitly skips
+    );
 
     const displayedTasks = useFeaturedTasks(
         tasklist?.tasks,
@@ -77,7 +80,8 @@ export const HomepageListsTasklist = () => {
         inputRef?.current?.focus();
     }
 
-    if (isLoading) return <MobileTasklistSkeleton />;
+    if (!isReady) return <MobileTasklistSkeleton />;
+
     return (
         <div className="homepage-lists-tasklist-container">
             {!featuredTasklistId ?

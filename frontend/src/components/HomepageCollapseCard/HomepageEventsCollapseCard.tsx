@@ -3,7 +3,7 @@ import { HomepageCollapseCard } from "./HomepageCollapseCard"
 import { useAuthenticateQuery } from "@/store"
 import { useState } from "react";
 
-export const HomepageEventsCollapseCard = () => {
+export const HomepageEventsCollapseCard = ({ isReady }: { isReady: boolean }) => {
     const { data: user } = useAuthenticateQuery();
 
     const [showAddEvent, setShowAddEvent] = useState(false);

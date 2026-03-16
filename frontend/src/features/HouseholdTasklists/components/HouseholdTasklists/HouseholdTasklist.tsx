@@ -27,6 +27,7 @@ import { useTasklistSettings } from "../../hooks";
 import { DeleteConfirmation } from "../TasklistSettings";
 import { Tasklist } from "./Tasklist";
 import { useGetUserSettingsQuery } from "@/store/userSettingSlice";
+import { useHousehold } from "@/hooks/useHousehold";
 
 type HouseholdTasklistProps = {
     list: TasklistType;
@@ -46,7 +47,7 @@ export function HouseholdTasklist(props: HouseholdTasklistProps) {
 
 export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId ?? skipToken);
+    const { data: household } = useHousehold();
     const { data: userSettings } = useGetUserSettingsQuery();
 
     const { showDeleteConfirmation, setShowDeleteConfirmation, handleDeleteList } = useTasklistSettings({ tasklistId: list.id });

@@ -8,7 +8,7 @@ import { useAuthenticateQuery } from "@/store";
 import { ActionIcon, Tooltip } from "@mantine/core";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 
-export const HomepageListsCollapseCard = () => {
+export const HomepageListsCollapseCard = ({ isReady }: { isReady: boolean }) => {
     const { data: user } = useAuthenticateQuery();
     const tabs = ["tasks", "shopping"]
     const [showFeaturedListSettings, setShowFeaturedListSettings] = useState(false);
@@ -34,7 +34,7 @@ export const HomepageListsCollapseCard = () => {
                 featuredListSettings={featuredListSettings}
             >
                 <HomepageCollapseCardTab value="tasks">
-                    <HomepageListsTasklist />
+                    <HomepageListsTasklist isReady={isReady} />
                 </HomepageCollapseCardTab>
                 <HomepageCollapseCardTab value="shopping">
                     Shopping

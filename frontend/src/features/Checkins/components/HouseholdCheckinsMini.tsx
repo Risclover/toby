@@ -133,12 +133,14 @@ export function HouseholdCheckinsMini({
     size = 32,
     gap = 8,
     nameColWidthClass = "w-20",
+    isReady
 }: {
     members: Member[] | undefined;
     timezone?: string;
     size?: number;
     gap?: number;
     nameColWidthClass?: string;
+    isReady: boolean;
 }) {
     const isSmall = useIsSmallScreen(375);
     const isMedium = useIsSmallScreen(425);
@@ -162,9 +164,9 @@ export function HouseholdCheckinsMini({
                     </div>
                 </div>
                 <div className="checkins-member-rows">
-                    {!members
+                    {!isReady
                         ? Array.from({ length: 3 }).map((_, i) => <MemberRowSkeleton key={i} />)
-                        : members.map((member) => (
+                        : members?.map((member) => (
                             <MemberRow
                                 key={member.id}
                                 member={member}

@@ -26,7 +26,10 @@ export const NoticeBoardProvider = ({ children }: { children: ReactNode }) => {
     const { data: user } = useAuthenticateQuery();
 
     // --- Announcements (unchanged) ---
-    const { data: announcementData } = useGetAnnouncementsQuery({ householdId: user?.householdId, limit: 50 });
+    const { data: announcementData } = useGetAnnouncementsQuery(
+        { householdId: user?.householdId!, limit: 50 },
+        { skip: !user?.householdId }
+    );
     const [markAnnouncementsSeenBulk] = useMarkAnnouncementsSeenBulkMutation();
 
     const unseenSnapshotRef = useRef<Set<number> | null>(null);

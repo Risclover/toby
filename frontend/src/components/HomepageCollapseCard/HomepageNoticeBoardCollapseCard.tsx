@@ -11,16 +11,17 @@ import { useNavigate } from "react-router-dom"
 import { useAnnouncementIndicator } from "@/features/Announcements/hooks/useAnnouncementIndicator"
 import { useAuthenticateQuery, useGetHouseholdQuery, useGetUserRemindersPreviewQuery } from "@/store"
 import { NoticeBoardProvider } from "@/contexts"
+import { useHousehold } from "@/hooks/useHousehold"
 
-export const HomepageNoticeBoardCollapseCard = ({ householdId }: { householdId?: number | undefined }) => {
+export const HomepageNoticeBoardCollapseCard = ({ householdId, isReady }: { isReady: boolean; householdId?: number | undefined }) => {
     return (
         <NoticeBoardProvider>
-            <HomepageNoticeBoardContent householdId={householdId} />
+            <HomepageNoticeBoardContent isReady={isReady} householdId={householdId} />
         </NoticeBoardProvider>
     )
 }
 
-const HomepageNoticeBoardContent = ({ householdId }: { householdId?: number }) => {
+const HomepageNoticeBoardContent = ({ isReady, householdId }: { isReady: boolean; householdId?: number }) => {
     const {
         hasUnseen,
         hasOpenedAnnouncements,
@@ -35,7 +36,7 @@ const HomepageNoticeBoardContent = ({ householdId }: { householdId?: number }) =
     const tabs = ["reminders", "announcements"];
 
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: household } = useHousehold();
     const { data: reminders = [], isLoading: remindersLoading } = useGetUserRemindersPreviewQuery(householdId!, {
         skip: !householdId
     });
@@ -64,7 +65,7 @@ const HomepageNoticeBoardContent = ({ householdId }: { householdId?: number }) =
                     }}
                 >
                     <HomepageCollapseCardTab value="reminders">
-                        <NoticeBoardReminders reminders={reminders} isLoading={remindersLoading} />
+                        <NoticeBoardReminders isReady={isReady} reminders={reminders} isLoading={remindersLoading} />
                         <div className="notice-board-footer">
                             <Button size="compact-sm" color="var(--mantine-color-red-6)" radius="xl" onClick={() => openCreateReminderModal()}>+ New reminder</Button>
                             <Button p={0} size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)" onClick={() => navigate("/reminders")}>View all →</Button>

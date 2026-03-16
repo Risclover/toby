@@ -15,6 +15,7 @@ import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
 import { useCheckInTodayMutation, useGetUserCheckinsQuery } from "@/store/checkinSlice";
 import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { Tooltip } from "primereact/tooltip";
+import { useHousehold } from "@/hooks/useHousehold";
 
 const toISO = (d: Date) => d.toISOString().slice(0, 10); // "YYYY-MM-DD"
 
@@ -39,7 +40,7 @@ export function DashboardGrid() {
         data: household,
         isFetching: householdFetching,
         error,
-    } = useGetHouseholdQuery(user?.householdId ?? skipToken);
+    } = useHousehold();
     const checkedInToday = !!data?.dates?.length;
     let items = [
         {

@@ -1,4 +1,5 @@
 import { StarIcon } from "@/assets/icons/StarIcon"
+import { useHousehold } from "@/hooks/useHousehold";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice";
 import { useGetTasklistQuery, type TasklistType } from "@/store/taskSlice";
@@ -7,7 +8,7 @@ import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 
 export const Tasklist = ({ list }: { list: TasklistType }) => {
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: household } = useHousehold();
     const { data: tasklist } = useGetTasklistQuery(list.id)
 
     const nameOf = (p: any) => p?.displayName || p?.name || "Member";

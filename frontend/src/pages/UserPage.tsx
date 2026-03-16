@@ -7,6 +7,7 @@ import { useGetHouseholdQuery } from "../store/householdSlice";
 import { useAuthenticateQuery } from "../store/authSlice";
 import { useCheckInTodayMutation, useGetUserCheckinsQuery } from "@/store/checkinSlice";
 import { SetMood } from "@/features/Mood/components/SetMood";
+import { useHousehold } from "@/hooks/useHousehold";
 
 const toISO = (d: Date) => d.toISOString().slice(0, 10); // "YYYY-MM-DD"
 
@@ -15,9 +16,7 @@ export const UserPage = () => {
 
     const { data: currentUser } = useAuthenticateQuery();
     const { data: user } = useGetUserQuery(userId)
-    const { data: household } = useGetHouseholdQuery(
-        user?.householdId
-    );
+    const { data: household } = useHousehold();
     const [checkin] = useCheckinMutation();
 
     useEffect(() => {

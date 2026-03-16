@@ -4,10 +4,11 @@ import { Avatar, Tooltip } from "@mantine/core"
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MembersModal } from "./MembersModal";
+import { useHousehold } from "@/hooks/useHousehold";
 
 export const MobileHomeFamilyTitle = () => {
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: household } = useHousehold();
 
     const [showMembersModal, setShowMembersModal] = useState(false);
 

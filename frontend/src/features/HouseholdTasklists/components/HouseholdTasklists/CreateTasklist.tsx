@@ -8,6 +8,7 @@ import { useMemberSelection } from "@/hooks/useMemberSelection";
 import { HouseholdMemberSelection } from "@/components/HouseholdMemberSelection";
 import { useNavigate } from "react-router-dom";
 import { useCreateTasklistModal } from "@/contexts";
+import { useHousehold } from "@/hooks/useHousehold";
 
 type Props = { householdId: number };
 
@@ -16,7 +17,7 @@ export const CreateTasklist = ({ householdId }: Props) => {
     const { isOpen, closeModal } = useCreateTasklistModal();
 
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: household } = useHousehold();
     const [title, setTitle] = useState("");
 
     const {

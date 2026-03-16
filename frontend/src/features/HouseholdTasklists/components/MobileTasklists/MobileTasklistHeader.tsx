@@ -11,6 +11,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useReorderTasksMutation, useUpdateTasklistMutation, type Task, type TasklistType } from "@/store/taskSlice";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useHousehold } from "@/hooks/useHousehold";
 
 interface Props {
     // Lift state up! Pass these down from the Page component
@@ -33,7 +34,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: household } = useHousehold();
     const isSmall = useIsSmallScreen();
     const isMobile = useIsMobile();
     const [reorderTasks] = useReorderTasksMutation(); // Assuming you have this in your Redux slice

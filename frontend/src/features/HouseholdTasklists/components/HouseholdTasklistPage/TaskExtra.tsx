@@ -1,3 +1,4 @@
+import { useHousehold } from "@/hooks/useHousehold";
 import type { User } from "@/store/authSlice";
 import { useGetHouseholdQuery } from "@/store/householdSlice"
 import { useGetTasklistQuery, type Task } from "@/store/taskSlice"
@@ -35,7 +36,7 @@ export function relativeDayLabel(
 
 export const TaskExtra = ({ task, householdId, listId }: Props) => {
     const navigate = useNavigate();
-    const { data: household } = useGetHouseholdQuery(householdId)
+    const { data: household } = useHousehold()
     const { data: tasklist } = useGetTasklistQuery(listId)
 
     const membersList =

@@ -608,6 +608,10 @@ form {
     background: #f7f8fc;
 }
 
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
 @media (max-width: 425px) {
     .homepage-mini-calendar-container {
         padding: .25rem;

@@ -7,6 +7,7 @@ import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
 import { type SortOption, type TaskFilters } from "../../hooks/useTaskFiltering";
 import { MobileTasklistFilterDrawer } from "./MobileTasklistFilterDrawer";
 import { ReorderListIcon } from "@/assets/icons/ReorderListIcon";
+import { useHousehold } from "@/hooks/useHousehold";
 
 interface Props {
     // Lift state up! Pass these down from the Page component
@@ -22,7 +23,7 @@ export const MobileTasklistHeaderCompact = ({ searchValue, setSearchValue, sortO
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
-    const { data: household } = useGetHouseholdQuery(user?.householdId);
+    const { data: household } = useHousehold();
 
     return (
         <div className="mobile-announcements-header">
