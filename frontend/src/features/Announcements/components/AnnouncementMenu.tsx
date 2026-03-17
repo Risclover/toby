@@ -4,6 +4,7 @@ import { IoEllipsisVerticalSharp } from "react-icons/io5";
 import { useAnnouncementMenu } from "../hooks/useAnnouncementMenu";
 import { type Announcement } from "@/store"
 import { StarIcon, StarIconOutline, MenuTrashIcon } from "@/assets";
+import DeleteRounded from '@mui/icons-material/Delete';
 
 type Props = {
     announcement: Announcement;
@@ -41,8 +42,8 @@ export const AnnouncementMenu = ({ ref, announcement, setOpenDeleteConfirmation 
                     leftSection={
                         <div className="archived-menu-icon">
                             {!announcement.isImportant ?
-                                <StarIconOutline color="rgb(55, 55, 72)" size="16px" /> :
-                                <StarIcon size="16px" color="rgb(55, 55, 72)" />
+                                <StarIconOutline color="rgb(55, 55, 72)" size="20px" /> :
+                                <StarIcon size="20px" color="rgb(55, 55, 72)" />
                             }
                         </div>
                     }
@@ -51,11 +52,9 @@ export const AnnouncementMenu = ({ ref, announcement, setOpenDeleteConfirmation 
                     {announcement.isImportant ? "Remove importance" : "Mark important"}
                 </Menu.Item>
                 <Menu.Item
-                    color="red.7"
+                    color="red.9"
                     leftSection={
-                        <MenuTrashIcon
-                            size="16px"
-                            color="var(--mantine-color-red-7)" />
+                        <DeleteRounded fontSize="small" />
                     }
                     onClick={handleDeleteAnnouncement}
                 >

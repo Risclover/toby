@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ActionIcon, Menu } from "@mantine/core"
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import DeleteRounded from '@mui/icons-material/Delete';
 
 import { ViewIcon, UnarchivedIcon, MenuTrashIcon } from "@/assets";
 import { useTasklistSettings, useUndoArchive } from "../../hooks";
@@ -52,7 +53,7 @@ export const ArchivedHouseholdTasklistsMenu = ({ tasklistId }: Props) => {
                 >
                     Restore
                 </Menu.Item>
-                <Menu.Item color="red.9" leftSection={<MenuTrashIcon />}>Delete</Menu.Item>
+                <Menu.Item color="red.9" leftSection={<DeleteRounded />}>Delete</Menu.Item>
             </Menu.Dropdown>
         </Menu>
     )

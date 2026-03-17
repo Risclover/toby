@@ -7,6 +7,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { ActivityFeedSkeletons } from "./ActivityFeedSkeletons";
 
 type Props = {
+    isReady: boolean;
     householdId: number;
 };
 
@@ -15,7 +16,7 @@ type FormattedEvent = {
     line2?: React.ReactNode;
 };
 
-export const ActivityFeed = ({ householdId }: Props) => {
+export const ActivityFeed = ({ isReady, householdId }: Props) => {
     const [expandedId, setExpandedId] = useState<number | null>(null);
 
     const { data, isLoading, isSuccess, isError } = useGetActivityQuery({ householdId });
@@ -100,7 +101,7 @@ export const ActivityFeed = ({ householdId }: Props) => {
 
     return (
         <div className="events-list">
-            {isLoading || (!isSuccess && !data) ? (
+            {!isReady || showSkeleton ? (
                 <ActivityFeedSkeletons />
             ) : isError || !data ? (
                 <p>Could not load activity.</p>

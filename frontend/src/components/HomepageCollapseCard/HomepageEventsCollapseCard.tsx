@@ -14,7 +14,7 @@ export const HomepageEventsCollapseCard = ({ isReady }: { isReady: boolean }) =>
                 <DashboardMiniCalendar householdId={user?.householdId!} showAddEvent={showAddEvent} setShowAddEvent={setShowAddEvent} />
             </div>
             <HomepageCollapseCard title="Upcoming Events" color="rgb(5, 5, 73)" cardKey="events">
-                <UpcomingThisWeek householdId={user?.householdId!} />
+                <UpcomingThisWeek isReady={isReady} householdId={user?.householdId!} />
             </HomepageCollapseCard>
         </div>
     )

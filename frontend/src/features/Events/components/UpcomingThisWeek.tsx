@@ -1,5 +1,5 @@
 // src/features/calendar/UpcomingNext7Days.tsx
-import { ActionIcon, ActionIconGroup, Anchor, Button, Card, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { ActionIcon, ActionIconGroup, Anchor, Button, Card, Group, Paper, ScrollArea, Skeleton, Stack, Text } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
 import { useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery, type CalendarEvent } from "@/store/eventSlice";
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
@@ -8,6 +8,7 @@ import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import "../styles/UpcomingThisWeek.css"
 import { QuickAddEvent } from "./QuickAddEvent";
 import { Box } from "lucide-react";
+import { EventMenu } from "./EventMenu";
 
 function startOfToday(d = new Date()) {
     const t = new Date(d);
@@ -39,7 +40,7 @@ function formatTime(isoUtc: string) {
     return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
 }
 
-export function UpcomingThisWeek({ householdId }: { householdId: number }) {
+export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; householdId: number }) {
     const [editOpen, setEditOpen] = useState(false);
     const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
@@ -77,50 +78,46 @@ export function UpcomingThisWeek({ householdId }: { householdId: number }) {
             });
     }, [weekEvents, start, end]);
 
-    if (!upcoming.length) return <Text c="dimmed">Nothing in the next 7 days — add one.</Text>;
+    if (!isReady) return (
+        <div className="upcoming-events-container">
+            <Stack className="upcoming-events" gap="xs">
+                {Array.from({ length: 5 }).map((_, i) => <UpcomingEventSkeleton key={i} />)}
+            </Stack>
+        </div>
+    )
 
     return (
         <div className="upcoming-events-container">
             <Stack className="upcoming-events" gap="xs">
-                {upcoming.map((e) => {
-                    // Defensive: e.startUtc is defined due to the filter; cast for TS
-                    const startIso = e.startUtc as string;
+                {!upcoming.length
+                    ? <Text c="dimmed">Nothing in the next 7 days — add one.</Text>
+                    : upcoming.map((e) => {
+                        // Defensive: e.startUtc is defined due to the filter; cast for TS
+                        const startIso = e.startUtc as string;
 
-                    const left = e.hasTime ? formatDate(startIso)
-                        : formatDate(startIso);
+                        const left = e.hasTime ? formatDate(startIso)
+                            : formatDate(startIso);
 
-                    const right = e.hasTime ? formatTime(startIso) : "All Day"
+                        const right = e.hasTime ? formatTime(startIso) : "All Day"
 
-                    return (
-                        <Paper color="white" key={e.id} radius="md" p=".5rem" shadow="xs" className="upcoming-event">
-                            <Group justify="space-between">
-                                <Group>
-                                    {left}
-                                    <Stack gap={0}>
-                                        <Text fw={600} c="black" fz="sm">
-                                            {e.title}
-                                        </Text>
-                                        <Text fz="xs" c="var(--mantine-color-gray-7)">{right}</Text>
-                                    </Stack>
+                        return (
+                            <Paper color="white" key={e.id} radius="md" p=".5rem" shadow="xs" className="upcoming-event">
+                                <Group justify="space-between">
+                                    <Group>
+                                        {left}
+                                        <Stack gap={0}>
+                                            <Text fw={500} fz="sm">
+                                                {e.title}
+                                            </Text>
+                                            <Text fz="xs" c="var(--mantine-color-gray-7)">{right}</Text>
+                                        </Stack>
+                                    </Group>
+                                    <EventMenu />
                                 </Group>
-                                <div className="upcoming-event-btns">
-                                    <ActionIcon
-                                        variant="subtle"
-                                        color="rgb(5, 5, 73)"
-                                        className="upcoming-event-btn"
-                                        onClick={() => openEdit(e)}
-                                        aria-label={`Edit ${e.title}`}
-                                    >
-                                        <BorderColorRoundedIcon fontSize="small" />
-                                    </ActionIcon>
-                                    <ActionIcon variant="subtle" color='rgb(5, 5, 73)' className="upcoming-event-btn">
-                                        <DeleteRounded fontSize="small" />
-                                    </ActionIcon>
-                                </div>
-                            </Group>
-                        </Paper>
-                    );
-                })}
+                            </Paper>
+                        );
+                    })
+                }
             </Stack>
 
             <QuickAddEvent
@@ -134,4 +131,20 @@ export function UpcomingThisWeek({ householdId }: { householdId: number }) {
 
         </div>
     );
-} 
+}
+
+const UpcomingEventSkeleton = () => {
+    return (
+        <Paper color="white" radius="md" p=".5rem" shadow="xs" className="upcoming-event">
+            <Group justify="space-between">
+                <Group>
+                    <div className="event-skeleton-date"><Skeleton h={35} w={30} /></div>
+                    <Stack gap='.25rem'>
+                        <Skeleton w="300px" h={8} />
+                        <Skeleton w="50px" h={6} />
+                    </Stack>
+                </Group>
+            </Group>
+        </Paper>
+    )
+}

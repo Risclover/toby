@@ -4,11 +4,7 @@ import "../styles/ActivityFeedSkeleton.css";
 export const ActivityFeedSkeletons = () => {
     return (
         <ul className="activity-feed-skeletons">
-            <ActivityFeedSkeleton />
-            <ActivityFeedSkeleton />
-            <ActivityFeedSkeleton />
-            <ActivityFeedSkeleton />
-            <ActivityFeedSkeleton />
+            {Array.from({ length: 5 }).map((_, i) => <ActivityFeedSkeleton key={i} />)}
         </ul>
     )
 }

@@ -1,5 +1,6 @@
 import { ActionIcon, Menu, Tooltip } from "@mantine/core"
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import DeleteRounded from '@mui/icons-material/Delete';
 
 import { MenuTrashIcon, ArchivedIcon } from "@/assets";
 import { useTasklistSettings } from "../../hooks";
@@ -50,7 +51,7 @@ export const TasklistActionsMenu = ({ tasklistId, setShowDeleteConfirmation }: P
                         tabIndex={0}
                         leftSection={
                             <div className="archived-menu-icon">
-                                <ArchivedIcon size="1.05rem" color="rgb(55, 55, 72)" />
+                                <ArchivedIcon size="20px" color="rgb(55, 55, 72)" />
                             </div>
                         }
                         onClick={(e) => { e.stopPropagation(); handleArchiveList() }}
@@ -60,14 +61,14 @@ export const TasklistActionsMenu = ({ tasklistId, setShowDeleteConfirmation }: P
                     <Menu.Item
                         leftSection={
                             <div className="archived-menu-icon">
-                                <CopyIcon size="1.05rem" color="rgb(55, 55, 72)" />
+                                <CopyIcon size="20px" color="rgb(55, 55, 72)" />
                             </div>
                         }
                         onClick={(e) => { e.stopPropagation(); handleDuplicateList() }}
                     >
                         Duplicate
                     </Menu.Item>
-                    <Menu.Item color="red.9" leftSection={<MenuTrashIcon size="1.05rem" color="currentColor" />} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirmation(true) }}>Delete</Menu.Item>
+                    <Menu.Item color="red.9" leftSection={<DeleteRounded fontSize="small" />} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirmation(true) }}>Delete</Menu.Item>
                 </Menu.Dropdown>
             </Menu>
         </div>

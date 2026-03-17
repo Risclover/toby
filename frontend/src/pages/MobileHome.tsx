@@ -30,11 +30,12 @@ export const MobileHome = () => {
     const [updateTimezone] = useUpdateTimezoneMutation();
     const [timezone, setTimezone] = useState(user?.timezone || null);
 
-    const isReady = !isAuthLoading
+    const isStatsReady = !isAuthLoading && !isTaskStatsLoading;
+
+    const isCardsReady = !isAuthLoading
         && !isSettingsLoading
         && !isHouseholdLoading
-        && !isTasklistLoading
-        && !isTaskStatsLoading;
+        && !isTasklistLoading;
 
     const householdId = user?.householdId ?? (Number(localStorage.getItem("toby_household_id")) || undefined);
 
@@ -51,13 +52,13 @@ export const MobileHome = () => {
     return (
         <MobileLayout titleComponent={mobileHomeFamilyTitle}>
             <MobileHomeNavGrid />
-            <HomepageEventsCollapseCard isReady={isReady} />
-            <TaskStatusSection isReady={isReady} />
-            <HomepageNoticeBoardCollapseCard householdId={householdId} isReady={isReady} />
+            <HomepageEventsCollapseCard isReady={isCardsReady} />
+            <TaskStatusSection isReady={isStatsReady} />
+            <HomepageNoticeBoardCollapseCard householdId={householdId} isReady={isCardsReady} />
 
-            <HomepageListsCollapseCard isReady={isReady} />
-            <HomepageCheckinsCollapseCard isReady={isReady} />
-            <HomepageActivityCollapseCard householdId={householdId} isReady={isReady} />
+            <HomepageListsCollapseCard isReady={isCardsReady} />
+            <HomepageCheckinsCollapseCard isReady={isCardsReady} />
+            <HomepageActivityCollapseCard householdId={householdId} isReady={isCardsReady} />
 
 
         </MobileLayout>

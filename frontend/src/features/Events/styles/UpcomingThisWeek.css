@@ -13,7 +13,7 @@
 
 .upcoming-event-date p {
     line-height: 1.2;
-    color: black;
+    color: var(--mantine-color-dark-7);
 }
 
 .upcoming-events {
@@ -26,7 +26,7 @@
 }
 
 .upcoming-events p:first-of-type {
-    font-family: "Alan Sans", sans-serif;
+    color: var(--mantine-color-dark-7);
 }
 
 .upcoming-events-header {
@@ -60,4 +60,10 @@
 
 .upcoming-event-btn:hover {
     color: var(--accent-color-light);
+}
+
+.event-skeleton-date {
+    border-right: 1px solid var(--mantine-color-gray-4);
+    padding: 0.5rem;
+    padding-right: 1rem;
 }

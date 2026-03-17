@@ -13,7 +13,7 @@ export const HomepageActivityCollapseCard = ({ isReady, householdId }: Props) =>
 
     return (
         <HomepageCollapseCard cardKey="activity" title="recent activity" color="var(--mantine-color-blue-6)">
-            {householdId && <ActivityFeed householdId={householdId} />}
+            {householdId && <ActivityFeed isReady={isReady} householdId={householdId} />}
         </HomepageCollapseCard>
     );
 };
