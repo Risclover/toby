@@ -4,6 +4,7 @@ import { Button, Checkbox, Group, Modal, Space, Textarea } from "@mantine/core";
 import { useEffect, useState } from "react";
 import styles from "../styles/CreateAnnouncement.module.css";
 import { useCreateAnnouncementModal } from "@/contexts";
+import { RemainingChars } from "@/components/RemainingChars";
 
 
 export const CreateAnnouncement = () => {
@@ -55,10 +56,7 @@ export const CreateAnnouncement = () => {
             />
             <div className="create-announcement-subtext">
                 <span className="create-announcement-error">{error}</span>
-                <div className="create-announcement-chars">
-                    <span className={`create-announcement-remaining${remainingChars === 0 ? " remaining-none" : ""}`}>{remainingChars}</span>
-                    /255
-                </div>
+                <RemainingChars count={remainingChars} max={255} />
             </div>
             {error.length > 0 && <Space h="md" />}
             <Checkbox

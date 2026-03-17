@@ -564,6 +564,7 @@ form {
     align-items: center;
     justify-content: center;
     font-size: var(--text-sm);
+    line-height: 1.3;
 }
 
 .featured-info-icon svg {
@@ -610,6 +611,18 @@ form {
 
 .fade-in {
     animation: fadeIn 0.3s ease-in;
+}
+
+.remaining-chars-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    font-size: var(--text-xs);
+    color: var(--mantine-color-gray-7);
+}
+
+.remaining-chars.remaining-none {
+    color: var(--mantine-color-red-5);
 }
 
 @media (max-width: 425px) {

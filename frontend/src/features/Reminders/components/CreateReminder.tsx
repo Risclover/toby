@@ -11,6 +11,7 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import EventRepeatRoundedIcon from "@mui/icons-material/EventRepeatRounded";
 import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 import { useHousehold } from "@/hooks/useHousehold";
+import { RemainingChars } from "@/components/RemainingChars";
 
 interface ReminderFormValues {
     message: string;
@@ -112,13 +113,7 @@ export const CreateReminder = () => {
                     key={form.key("message")}
                     {...form.getInputProps("message")}
                 />
-                <div className="create-reminder-chars">
-                    <span className={`create-announcement-remaining${atLimit ? " remaining-none" : ""}`}>
-                        {remainingChars}
-                    </span>
-                    /{MAX_CHARS}
-                </div>
-
+                <RemainingChars count={remainingChars} max={MAX_CHARS} />
 
                 <div className="two-column-inputs">
                     <div className="two-column-input">

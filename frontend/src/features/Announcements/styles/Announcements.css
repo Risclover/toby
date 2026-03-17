@@ -229,12 +229,7 @@
     justify-content: space-between;
     width: 100%;
     font-size: 0.7rem;
-    padding-top: 5px;
     color: var(--mantine-color-dark-6);
-}
-
-.create-announcement-remaining.remaining-none {
-    color: var(--mantine-color-red-5);
 }
 
 .pagination-buttons {

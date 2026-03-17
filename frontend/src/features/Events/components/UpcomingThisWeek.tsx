@@ -1,7 +1,7 @@
 // src/features/calendar/UpcomingNext7Days.tsx
 import { ActionIcon, ActionIconGroup, Anchor, Button, Card, Group, Paper, ScrollArea, Skeleton, Stack, Text } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
-import { useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery, type CalendarEvent } from "@/store/eventSlice";
+import { useDeleteEventMutation, useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery, type CalendarEvent } from "@/store/eventSlice";
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import DeleteRounded from '@mui/icons-material/Delete';
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
@@ -43,6 +43,12 @@ function formatTime(isoUtc: string) {
 export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; householdId: number }) {
     const [editOpen, setEditOpen] = useState(false);
     const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+
+    const [deleteEvent] = useDeleteEventMutation();
+
+    const handleDeleteEvent = async (eventId: number) => {
+        await deleteEvent({ id: eventId, householdId }).unwrap();
+    };
 
     const openEdit = (evt: CalendarEvent) => {
         setSelectedEventId(evt.id);
@@ -90,7 +96,7 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
         <div className="upcoming-events-container">
             <Stack className="upcoming-events" gap="xs">
                 {!upcoming.length
-                    ? <Text c="dimmed">Nothing in the next 7 days — add one.</Text>
+                    ? <div className="featured-empty-state">No events this week!</div>
                     : upcoming.map((e) => {
                         // Defensive: e.startUtc is defined due to the filter; cast for TS
                         const startIso = e.startUtc as string;
@@ -102,17 +108,24 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
 
                         return (
                             <Paper color="white" key={e.id} radius="md" p=".5rem" shadow="xs" className="upcoming-event">
-                                <Group justify="space-between">
-                                    <Group>
+                                <Group gap=".25rem" justify="space-between">
+                                    <Group wrap="nowrap" miw={0} flex={1}>
                                         {left}
-                                        <Stack gap={0}>
-                                            <Text fw={500} fz="sm">
+                                        <Stack gap={0} maw="100%" miw={0}>
+                                            <Text fw={500} fz="sm" truncate miw={0}>
                                                 {e.title}
                                             </Text>
                                             <Text fz="xs" c="var(--mantine-color-gray-7)">{right}</Text>
                                         </Stack>
                                     </Group>
-                                    <EventMenu />
+                                    <div className="event-menu-container">
+                                        <EventMenu
+                                            isEditing={false}
+                                            setIsEditing={(val) => val && openEdit(e)}
+                                            onDelete={handleDeleteEvent}
+
+                                        />
+                                    </div>
                                 </Group>
                             </Paper>
                         );

@@ -1,27 +1,28 @@
-// QuickAddEvent.tsx (string-based DateInput + TimeInput)
+// QuickAddEvent.tsx
 import { useEffect, useMemo, useState } from "react";
-import { Modal, Button, TextInput, Group, Stack, Text, Anchor, ScrollArea } from "@mantine/core";
+import { Modal, Button, TextInput, Group, Stack, Text } from "@mantine/core";
 import { DatePickerInput, TimeInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useCreateEventMutation, useDeleteEventMutation, useGetHouseholdEventsQuery, useUpdateEventMutation, type CalendarEvent } from "@/store/eventSlice";
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import "../styles/QuickAddEvent.css"
 import { useIsSmallScreen } from "@/hooks";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import { EventMenu } from "./EventMenu";
+import { RemainingChars } from "@/components/RemainingChars";
+import { ClockIcon } from "@/assets/icons/ClockIcon";
 
 function startEndIsoForLocalDay(ymd: string) {
     const [y, m, d] = ymd.split("-").map(Number);
     const start = new Date(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0);
     const end = new Date(start);
-    end.setDate(end.getDate() + 1); // next day's midnight (local)
+    end.setDate(end.getDate() + 1);
     return { startIso: start.toISOString(), endIso: end.toISOString() };
 }
 
 function combineLocalFromStrings(dateStr: string, timeStr: string) {
-    // dateStr: "YYYY-MM-DD", timeStr: "HH:mm"
-    const [y, m, d] = dateStr.split("-").map(Number);        // m is 1-based
+    const [y, m, d] = dateStr.split("-").map(Number);
     const [hh = "0", mm = "0"] = timeStr.split(":");
-    return new Date(y, (m ?? 1) - 1, d ?? 1, Number(hh), Number(mm), 0, 0); // local time
+    return new Date(y, (m ?? 1) - 1, d ?? 1, Number(hh), Number(mm), 0, 0);
 }
 
 const fmtTime = (iso: string) =>
@@ -73,6 +74,10 @@ export function QuickAddEvent({
 
     const isSaving = creating || updating;
 
+    // Store the full editing event in state so it stays stable even if the date changes
+    const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+    const isEditingRow = editingEvent !== null;
+
     const [title, setTitle] = useState(event?.title ?? "");
     const [dateStr, setDateStr] = useState(() =>
         event ? ymdFromIso(event.startUtc ?? undefined) : dayjs(initialDate).format("YYYY-MM-DD")
@@ -83,33 +88,11 @@ export function QuickAddEvent({
     const [titleError, setTitleError] = useState("");
     const [dateError, setDateError] = useState("");
 
+    const [remainingChars, setRemainingChars] = useState(100);
+
     useEffect(() => {
-        if (!opened) return;
-
-        if (event?.id) {
-            // editing a specific event
-            setTitle(event.title);
-            setDateStr(ymdFromIso(event.startUtc ?? undefined));
-            setTimeStr(event.hasTime === false ? "" : hmFromIso(event.startUtc));
-        } else {
-            // add flow
-            setTitle("");
-            setDateStr(dayjs(initialDate).format("YYYY-MM-DD"));
-            setTimeStr("");
-        }
-        setTitleError("");
-        setDateError("");
-        // only open/close & event id should trigger reseed
-    }, [opened, event?.id]);
-
-    const handleDeleteEvent = async (eventId: number) => {
-        await deleteEvent({ id: eventId, householdId }).unwrap()
-    }
-
-    const handleClose = () => {
-        onClose();
-        setTitleError("");
-    }
+        setRemainingChars(100 - title.trim().length);
+    }, [title])
 
     const { startIso, endIso } = useMemo(
         () => (dateStr ? startEndIsoForLocalDay(dateStr) : { startIso: "", endIso: "" }),
@@ -123,7 +106,6 @@ export function QuickAddEvent({
 
     const sorted = useMemo(() => {
         return [...dayEvents].sort((a, b) => {
-            // all-day (hasTime === false) first
             const aAll = a.hasTime === false;
             const bAll = b.hasTime === false;
             if (aAll !== bAll) return aAll ? -1 : 1;
@@ -132,6 +114,52 @@ export function QuickAddEvent({
             return ta - tb;
         });
     }, [dayEvents]);
+
+    // Seed form when modal opens or external event changes
+    useEffect(() => {
+        if (!opened) return;
+        if (event?.id) {
+            setTitle(event.title);
+            setDateStr(ymdFromIso(event.startUtc ?? undefined));
+            setTimeStr(event.hasTime === false ? "" : hmFromIso(event.startUtc));
+        } else {
+            setTitle("");
+            setDateStr(dayjs(initialDate).format("YYYY-MM-DD"));
+            setTimeStr("");
+        }
+        setTitleError("");
+        setDateError("");
+        setEditingEvent(null);
+    }, [opened, event?.id]);
+
+    // Populate form when a row edit is triggered
+    useEffect(() => {
+        if (editingEvent) {
+            setTitle(editingEvent.title);
+            setDateStr(ymdFromIso(editingEvent.startUtc ?? undefined));
+            setTimeStr(editingEvent.hasTime === false ? "" : hmFromIso(editingEvent.startUtc));
+            setTitleError("");
+            setDateError("");
+        }
+    }, [editingEvent?.id]);
+
+    const resetToAddState = () => {
+        setEditingEvent(null);
+        setTitle("");
+        setTimeStr("");
+        setTitleError("");
+        setDateError("");
+    };
+
+    const handleDeleteEvent = async (eventId: number) => {
+        await deleteEvent({ id: eventId, householdId }).unwrap();
+        if (editingEvent?.id === eventId) resetToAddState();
+    };
+
+    const handleClose = () => {
+        onClose();
+        setTitleError("");
+    };
 
     const handleSave = async () => {
         setTitleError("");
@@ -145,41 +173,57 @@ export function QuickAddEvent({
         const hasTime = Boolean(timeStr && timeStr.trim());
 
         try {
-            if (edit && event) {
-                // ----- EDIT (PATCH) -----
+            if (isEditingRow && editingEvent) {
+                // Inline row edit — editingEvent is stable even if date changed
                 if (hasTime) {
-                    // Timed: send BOTH startUtc and endUtc, and DO NOT send `date`
                     const startLocal = combineLocalFromStrings(dateStr, timeStr);
                     const endLocal = dayjs(startLocal).add(1, "hour").toDate();
-
-                    const res = await updateEvent({
-                        id: event.id,
+                    await updateEvent({
+                        id: editingEvent.id,
                         householdId,
                         title: title.trim(),
-                        tzid, // optional, but fine to include
+                        tzid,
                         startUtc: startLocal.toISOString(),
                         endUtc: endLocal.toISOString(),
-                        // ❌ no `date` key here
                     }).unwrap();
-                    setTitle(res.title);
                 } else {
-                    // All-day: send ONLY `date` (no startUtc/endUtc at all)
-                    const res = await updateEvent({
-                        id: event.id,
+                    await updateEvent({
+                        id: editingEvent.id,
                         householdId,
                         title: title.trim(),
-                        tzid,    // optional
-                        date: dateStr, // "YYYY-MM-DD"
-                        // ❌ do NOT include startUtc/endUtc (not even null/undefined)
+                        tzid,
+                        date: dateStr,
                     }).unwrap();
-                    setTitle(res.title);
                 }
-            } else {
-                // ----- CREATE (your existing logic is fine) -----
+                resetToAddState();
+            } else if (edit && event) {
+                // External edit (opened with a pre-selected event)
                 if (hasTime) {
                     const startLocal = combineLocalFromStrings(dateStr, timeStr);
                     const endLocal = dayjs(startLocal).add(1, "hour").toDate();
-
+                    await updateEvent({
+                        id: event.id,
+                        householdId,
+                        title: title.trim(),
+                        tzid,
+                        startUtc: startLocal.toISOString(),
+                        endUtc: endLocal.toISOString(),
+                    }).unwrap();
+                } else {
+                    await updateEvent({
+                        id: event.id,
+                        householdId,
+                        title: title.trim(),
+                        tzid,
+                        date: dateStr,
+                    }).unwrap();
+                }
+                onClose();
+            } else {
+                // Create
+                if (hasTime) {
+                    const startLocal = combineLocalFromStrings(dateStr, timeStr);
+                    const endLocal = dayjs(startLocal).add(1, "hour").toDate();
                     await createEvent({
                         householdId,
                         title: title.trim(),
@@ -195,33 +239,58 @@ export function QuickAddEvent({
                         tzid,
                     } as any).unwrap();
                 }
+                onClose();
             }
-            onClose();
-            return;
         } catch (e) {
             console.error(e);
         }
     };
 
+    const modalTitle = isEditingRow || (edit && event) ? "Edit event" : "Add event";
+
     return (
-        <Modal opened={opened} onClose={handleClose} radius="md" title={edit ? "Edit event" : "Add event"} centered keepMounted={false}>
+        <Modal opened={opened} onClose={handleClose} radius="md" title={modalTitle} centered keepMounted={false}>
             <TextInput
                 label="Title"
-                placeholder="Dentist"
+                placeholder="ex: Dentist"
                 value={title}
                 onChange={(e) => setTitle(e.currentTarget.value)}
                 required
-                error={titleError}
                 withErrorStyles
+                maxLength={100}
             />
-            <Group grow mt="md">
+            <RemainingChars count={remainingChars} max={100} />
+            {isSmallScreen ? <Stack gap="0.5rem"><DatePickerInput
+                dropdownType={isSmallScreen ? "modal" : "popover"}
+                placeholder="Select date"
+                label="Date"
+                value={dateStr}
+                onChange={(v) => setDateStr(v ? dayjs(v).format("YYYY-MM-DD") : "")}
+                required
+                leftSection={<CalendarMonthRoundedIcon />}
+                leftSectionWidth="40px"
+                clearable
+                color="rgb(5, 5, 73)"
+                styles={DATE_PICKER_STYLES}
+                presets={DATE_PRESETS}
+                valueFormatter={({ date, format }: any) =>
+                    date ? dayjs(date).format(format) : ""
+                }
+                firstDayOfWeek={0}
+            />
+                <TimeInput
+                    leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
+                    label="Time"
+                    value={timeStr}
+                    onChange={(e) => setTimeStr(e.currentTarget.value)}
+                /></Stack> : <Group grow>
                 <DatePickerInput
                     dropdownType={isSmallScreen ? "modal" : "popover"}
+                    placeholder="Select date"
                     label="Date"
-                    value={dateStr}                         // <-- string
+                    value={dateStr}
                     onChange={(v) => setDateStr(v ? dayjs(v).format("YYYY-MM-DD") : "")}
                     required
-                    error={dateError}
                     leftSection={<CalendarMonthRoundedIcon />}
                     leftSectionWidth="40px"
                     clearable
@@ -234,42 +303,78 @@ export function QuickAddEvent({
                     firstDayOfWeek={0}
                 />
                 <TimeInput
+                    leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
                     label="Time"
                     value={timeStr}
                     onChange={(e) => setTimeStr(e.currentTarget.value)}
-                    styles={{
-                        wrapper: { width: "100%", border: "1px solid var(--main-border)", borderRadius: "0.5rem" },
-                        input: { fontWeight: "normal", fontFamily: "Commissioner, sans-serif", border: 0, width: "100%", borderRadius: "0.5rem", background: "var(--input-background)", },
-                    }}
                 />
-            </Group>
+            </Group>}
             <Stack mt="lg" gap="xs">
-                <Text fw={400} c="black" styles={{ root: { fontFamily: "Alan Sans, sans-serif" } }}>Events</Text>
-                {sorted.length > 0 && <Text inline size="xs">To edit an event, go to the <Anchor underline="always" href="" target="_blank" c="rgb(5, 5, 73)">Events</Anchor> page.</Text>}
-                <ScrollArea scrollbars="y" viewportProps={{ style: { maxHeight: 185 } }}>
-                    {sorted.length === 0 ? (
-                        <Text c="dimmed" size="sm">No events for this date.</Text>
-                    ) : loading ? <Text size="sm">Loading...</Text> : (
-                        sorted.map((e) => (
-                            <Group key={e.id} gap="sm" wrap="nowrap">
-                                <Text size="sm" inline w={80} fw={700} c="rgb(5, 5, 73)">
-                                    {e.hasTime === false ? "All day" : (e.startUtc && fmtTime(e.startUtc)) || ""}
-                                </Text>
-                                <Group justify="space-between" w="100%">
-                                    <Text size="sm" inline >{e.title}</Text>
-                                    <div onClick={() => handleDeleteEvent(e.id)} className="delete-event-btn"><DeleteRoundedIcon /></div>
-                                </Group>
-                            </Group>
-                        ))
-                    )}
-                </ScrollArea>
+                <div className="todays-events-container">
+                    <div className="todays-events">
+                        {sorted.length === 0 ? (
+                            <div className="no-events">
+                                <Text c="dimmed" size="sm">No events for this date.</Text>
+                            </div>
+                        ) : loading ? (
+                            <Text size="sm">Loading...</Text>
+                        ) : (
+                            sorted.map((e) => (
+                                <EventRow
+                                    key={e.id}
+                                    e={e}
+                                    isEditing={editingEvent?.id === e.id}
+                                    onEdit={setEditingEvent}
+                                    onCancelEdit={resetToAddState}
+                                    onDelete={handleDeleteEvent}
+                                />
+                            ))
+                        )}
+                    </div>
+                </div>
             </Stack>
             <Group justify="flex-end" mt="lg">
-                <Button color="rgb(5, 5, 73)" variant="outline" onClick={onClose}>Cancel</Button>
-                <Button color="rgb(5, 5, 73)" loading={isSaving} onClick={handleSave} data-test="quickadd-submit">
-                    Save
+                {isEditingRow ? (
+                    <Button color="rgb(5, 5, 73)" variant="outline" onClick={resetToAddState}>Cancel</Button>
+                ) : (
+                    <Button color="rgb(5, 5, 73)" variant="outline" onClick={handleClose}>Cancel</Button>
+                )}
+                <Button color="rgb(5, 5, 73)" loading={isSaving} onClick={handleSave} data-test="quickadd-submit" disabled={title.trim().length === 0 || dateStr.trim().length === 0}>
+                    {isEditingRow ? "Update" : "Save"}
                 </Button>
             </Group>
         </Modal>
     );
 }
+
+const EventRow = ({
+    e,
+    isEditing,
+    onEdit,
+    onCancelEdit,
+    onDelete,
+}: {
+    e: CalendarEvent;
+    isEditing: boolean;
+    onEdit: (event: CalendarEvent) => void;
+    onCancelEdit: () => void;
+    onDelete: (id: number) => void;
+}) => {
+    return (
+        <div className={`event-row${isEditing ? " editing" : ""}`}>
+            <Group gap="xs" wrap="nowrap" align="center">
+                <Text size="12px" inline w={80} fw={400}>
+                    {e.hasTime === false ? "All day" : (e.startUtc && fmtTime(e.startUtc)) || ""}
+                </Text>
+                <Group gap=".25rem" miw={0} wrap="nowrap" justify="space-between" w="100%">
+                    <Text size="sm" inline c="var(--mantine-color-dark-7)" fw={500} truncate miw={0}>{e.title}</Text>
+                    <EventMenu
+                        isEditing={isEditing}
+                        setIsEditing={(val) => val ? onEdit(e) : onCancelEdit()}
+                        onDelete={() => onDelete(e.id)}
+                    />
+                </Group>
+            </Group>
+        </div>
+    );
+};
