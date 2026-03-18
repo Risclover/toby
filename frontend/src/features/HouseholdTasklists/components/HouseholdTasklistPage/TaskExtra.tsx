@@ -13,7 +13,6 @@ dayjs.extend(customParseFormat);
 
 type Props = {
     task: Task
-    householdId: number;
     listId: number;
 }
 
@@ -34,7 +33,7 @@ export function relativeDayLabel(
     return d.format(fmt);               // fallback formatting
 }
 
-export const TaskExtra = ({ task, householdId, listId }: Props) => {
+export const TaskExtra = ({ task, listId }: Props) => {
     const navigate = useNavigate();
     const { data: household } = useHousehold()
     const { data: tasklist } = useGetTasklistQuery(listId)

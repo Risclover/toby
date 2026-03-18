@@ -6,6 +6,8 @@ import { DueTodayStatIcon } from "@/assets/icons/DueTodayStatIcon"
 import { DueSoonStatIcon } from "@/assets/icons/DueSoonStatIcon"
 import { useIsSmallScreen } from '@/hooks';
 import { useAuthenticateQuery, useGetUserTaskStatsQuery } from '@/store';
+import { TimeSensitiveModal } from './TimeSensitiveModal';
+import { useState } from 'react';
 
 export function TaskStatusSection({ isReady }: { isReady: boolean }) {
     const isSmall = useIsSmallScreen(375);
@@ -19,12 +21,15 @@ export function TaskStatusSection({ isReady }: { isReady: boolean }) {
         refetchOnFocus: true,
     });
 
+    const [openTimeSensitiveModal, setOpenTimeSensitiveModal] = useState(false);
+    const [activeTab, setActiveTab] = useState("overdue");
+
     const showSkeleton = !isReady || isLoading || (!isSuccess && !data);
 
 
     // FIX: Use 'data' if it exists, even if it's currently refetching.
     // This prevents the count from dropping to 0 (and turning gray) during the reload.
-    const statsData = data || { overdue: 0, due_today: 0, due_soon: 0 };
+    const statsData = data || { overdue: [], due_today: [], due_soon: [] };
 
     // ONLY show gray if we have NO data at all (first load) 
     // OR if the count is actually 0.
@@ -36,35 +41,35 @@ export function TaskStatusSection({ isReady }: { isReady: boolean }) {
     const stats = [
         {
             label: 'Overdue',
-            count: statsData.overdue,
+            count: statsData.overdue.length,
             color: "var(--mantine-color-red-7)", // Keep this for the text color
             // Rename to 'icon' since it is already a rendered element
             icon: (
                 <OverdueStatIcon
                     size={isSmall ? "20px" : isMedium ? "28px" : "32px"}
-                    color={getIconColor(statsData.overdue, "var(--mantine-color-red-7)")}
+                    color={getIconColor(statsData.overdue.length, "var(--mantine-color-red-7)")}
                 />
             )
         },
         {
             label: 'Due Today',
-            count: statsData.due_today,
+            count: statsData.due_today.length,
             color: "var(--mantine-color-orange-5)",
             icon: (
                 <DueTodayStatIcon
                     size={isSmall ? "20px" : isMedium ? "28px" : "32px"}
-                    color={getIconColor(statsData.due_today, "var(--mantine-color-orange-5)")}
+                    color={getIconColor(statsData.due_today.length, "var(--mantine-color-orange-5)")}
                 />
             )
         },
         {
             label: 'Due Soon',
-            count: statsData.due_soon,
+            count: statsData.due_soon.length,
             color: "var(--mantine-color-blue-4)",
             icon: (
                 <DueSoonStatIcon
                     size={isSmall ? "20px" : isMedium ? "28px" : "32px"}
-                    color={getIconColor(statsData.due_soon, "var(--mantine-color-blue-4)")}
+                    color={getIconColor(statsData.due_soon.length, "var(--mantine-color-blue-4)")}
                 />
             )
         },
@@ -94,6 +99,8 @@ export function TaskStatusSection({ isReady }: { isReady: boolean }) {
                                         title={item.label}
                                         count={item.count}
                                         icon={item.icon} // 👈 Render the pre-defined icon element here
+                                        setOpenTimeSensitiveModal={setOpenTimeSensitiveModal}
+                                        setActiveTab={setActiveTab}
                                     />
                                 </Box>
 
@@ -105,6 +112,7 @@ export function TaskStatusSection({ isReady }: { isReady: boolean }) {
                     })}
                 </Group>
             </div>
+            <TimeSensitiveModal activeTab={activeTab} opened={openTimeSensitiveModal} close={() => setOpenTimeSensitiveModal(false)} />
         </div>
     );
 }

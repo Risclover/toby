@@ -556,7 +556,6 @@ form {
 
 .featured-empty-state {
     padding: 1rem;
-    padding-top: 0.75rem;
     gap: 0.15rem;
     color: var(--mantine-color-gray-7);
     text-align: center;
@@ -565,6 +564,9 @@ form {
     justify-content: center;
     font-size: var(--text-sm);
     line-height: 1.3;
+    background: white;
+    border-radius: .5rem;
+
 }
 
 .featured-info-icon svg {
@@ -625,7 +627,145 @@ form {
     color: var(--mantine-color-red-5);
 }
 
+.mantine-Modal-body:has(.time-sensitive-tasks, .sensitive-tasks-empty) {
+    padding: 0 !important;
+}
+
+.list-head {
+    padding: 1rem 1rem;
+    padding-right: 1rem;
+    background: var(--mantine-color-gray-0);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    overflow: hidden;
+    box-shadow: var(--mantine-shadow-xs);
+}
+
+.list-head-left {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.list-head-left span {
+    font-size: var(--text-xs);
+    color: var(--mantine-color-gray-7);
+}
+
+.time-sensitive-task {
+    display: flex;
+    flex-direction: column;
+    font-size: var(--text-sm);
+    border-top: 1px solid var(--mantine-color-gray-2);
+    min-width: 0;
+}
+
+.time-sensitive-task:last-of-type {
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+}
+
+.time-sensitive-task .empty-space {
+    width: 40px;
+    flex-shrink: 0;
+}
+
+.time-sensitive-task label {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    line-height: 1.2;
+    flex-shrink: 1;
+}
+
+.sensitive-task-details {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    overflow: hidden;
+    min-width: 0;
+    margin-top: 2px;
+    margin-bottom: 3px;
+}
+
+.sensitive-task-details .extra {
+    line-height: 1;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.sensitive-task-details .extra--tasklist {
+    min-width: 0;
+    flex-shrink: 1;
+    margin-right: 1rem;
+    color: #041070;
+    cursor: pointer;
+}
+
+.sensitive-task-details .extra--tasklist .extra-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.time-sensitive-task-info-right {
+    flex-shrink: 1;
+}
+
+.sensitive-task-details .extra svg {
+    color: rgb(5, 5, 73);
+    font-size: 16px;
+}
+
+.time-sensitive-task-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: .625rem 1rem;
+    padding-bottom: 0;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.sensitive-task-details .extra:not(.extra--tasklist) .extra-label {
+    color: var(--mantine-color-gray-7);
+}
+
+.sensitive-tasks-empty {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-sm);
+    padding: 1rem;
+    color: var(--mantine-color-gray-7);
+}
+
+.time-sensitive-tasks-container {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #fafafa;
+    max-height: 80vhpx;
+}
+
 @media (max-width: 425px) {
+    .time-sensitive-task .empty-space {
+        width: 30px;
+    }
+
+    .list-head {
+        padding: .25rem .5rem;
+    }
+
+    .time-sensitive-task-info {
+        padding: .5rem;
+        padding-bottom: 0;
+    }
+
+
     .homepage-mini-calendar-container {
         padding: .25rem;
         padding-top: .5rem;

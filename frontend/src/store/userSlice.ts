@@ -1,3 +1,4 @@
+import type { Task } from ".";
 import { apiSlice } from "./apiSlice";
 import { authSlice } from "./authSlice";
 import { householdSlice } from "./householdSlice";
@@ -18,6 +19,15 @@ type UserMoodResponse = {
     name?: string;
     profileImg?: string | null;
 };
+
+export type OverdueTask = {
+    id: number;
+    task: Task;
+    title: string;
+    due_date: string;
+    tasklist_id: number;
+    tasklist_title: string;
+}
 
 export const userSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -114,7 +124,13 @@ export const userSlice = apiSlice.injectEndpoints({
             providesTags: (_result, _error, userId) => [{ type: "User", id: userId }],
         }),
 
-        getUserTaskStats: builder.query<{ overdue: number; due_today: number; due_soon: number }, number>({
+        getUserTaskStats: builder.query<{
+            overdue: { id: number; title: string; due_date: string; tasklist_id: number; tasklist_name: string }[];
+            due_today: { id: number; title: string; due_date: string; tasklist_id: number; tasklist_name: string }[];
+            due_soon: { id: number; title: string; due_date: string; tasklist_id: number; tasklist_name: string }[];
+        },
+            number
+        >({
             query: (userId) => `/users/${userId}/task_stats`,
             providesTags: (result, error, userId) => [{ type: "UserTaskStats", id: userId }],
         }),

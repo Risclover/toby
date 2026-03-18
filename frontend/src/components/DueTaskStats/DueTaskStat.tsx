@@ -1,6 +1,6 @@
 import { useIsSmallScreen } from "@/hooks";
 import { Badge, Indicator, Skeleton, Space, ThemeIcon } from "@mantine/core";
-import type { JSX } from "react";
+import type { Dispatch, JSX, SetStateAction } from "react";
 
 type Props = {
     title: string;
@@ -8,13 +8,24 @@ type Props = {
     count: number;
     icon: JSX.Element;
     isLoading: boolean;
+    setOpenTimeSensitiveModal: (val: boolean) => void;
+    setActiveTab: (val: string) => void;
 }
 
-export const DueTaskStat = ({ title, color, count, icon, isLoading }: Props) => {
+export const DueTaskStat = ({ title, color, count, icon, isLoading, setOpenTimeSensitiveModal, setActiveTab }: Props) => {
     const isSmall = useIsSmallScreen(375);
     const isMedium = useIsSmallScreen(425);
+
+    const handleTaskClick = () => {
+        if (count > 0) {
+            setOpenTimeSensitiveModal(true);
+            setActiveTab(title.split(" ").join("_").toLowerCase());
+            console.log('activeTab:', title.split(" ").join("_").toLowerCase())
+        }
+    }
+
     return (
-        <div className="due-task-stat-container">
+        <div className="due-task-stat-container" onClick={handleTaskClick}>
             {isLoading ? <DueTaskStatSkeleton /> :
                 <>
                     <Indicator fw={600} label={count} size={isSmall ? 20 : isMedium ? 24 : 24} offset={3} position="top-end" color={color} withBorder>

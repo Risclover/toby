@@ -556,11 +556,6 @@ textarea.editable-title.is-editing {
     font-family: "Commissioner", sans-serif;
 }
 
-.mantine-Tabs-panel {
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #fafafa;
-}
-
 .tasklist-settings-right {
     max-width: 50%;
     width: 100%;

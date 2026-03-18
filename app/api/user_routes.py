@@ -169,12 +169,11 @@ def get_user_mood(id):
 @user_routes.route("/<int:id>/task_stats")
 def get_task_stats(id):
     try:
-        # 1. Establish the timeframe based on 'right now'
         today = date.today()
         soon_date = today + timedelta(days=7)
+        today_str = str(today)
+        soon_str = str(soon_date)
 
-        # 2. Query Tasks joined with Tasklist
-        # Filter: (Assigned to User OR Unassigned) AND (Not Completed) AND (List is Active)
         pending_tasks = Task.query.join(Tasklist).filter(
             or_(
                 Task.assigned_to_id == id,
@@ -186,27 +185,34 @@ def get_task_stats(id):
         ).all()
 
         stats = {
-            "overdue": 0,
-            "due_today": 0,
-            "due_soon": 0
+            "overdue": [],
+            "due_today": [],
+            "due_soon": []
         }
-
-        # 3. Categorize tasks
-        # Using string comparisons for SQLite stability
-        today_str = str(today)
-        soon_str = str(soon_date)
 
         for t in pending_tasks:
             if t.due_date:
                 t_due = str(t.due_date)
-                
+                task_data = {
+                    "id": t.id,
+                    "task": t.to_dict(),
+                    "title": t.title,
+                    "due_date": t_due,
+                    "tasklist_id": t.list_id,
+                    "tasklist_title": t.tasklist.title
+                }
+
                 if t_due < today_str:
-                    stats["overdue"] += 1
+                    stats["overdue"].append(task_data)
                 elif t_due == today_str:
-                    stats["due_today"] += 1
+                    stats["due_today"].append(task_data)
                 elif today_str < t_due <= soon_str:
-                    stats["due_soon"] += 1
-        
+                    stats["due_soon"].append(task_data)
+
+        stats["overdue"].sort(key=lambda t: t["due_date"])
+        stats["due_today"].sort(key=lambda t: t["due_date"])
+        stats["due_soon"].sort(key=lambda t: t["due_date"])
+
         return jsonify(stats), 200
 
     except Exception as e:

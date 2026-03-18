@@ -207,6 +207,7 @@ export const taskSlice = apiSlice.injectEndpoints({
                 const tags: any[] = [
                     { type: "Tasklist", id: listId },
                     { type: "Tasklist", id: "LIST" },
+                    "UserTaskStats",
                 ];
                 if (householdId != null) {
                     tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
@@ -286,7 +287,10 @@ export const taskSlice = apiSlice.injectEndpoints({
                 method: "DELETE",
             }),
             invalidatesTags: (_res, _err, arg) => {
-                const tags: any[] = [{ type: "Tasklist", id: arg.listId }];
+                const tags: any[] = [
+                    { type: "Tasklist", id: arg.listId },
+                    "UserTaskStats",
+                ];
                 if (arg.householdId != null) {
                     tags.push({ type: "Activity", id: `HOUSEHOLD_${arg.householdId}` });
                 }
