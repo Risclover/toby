@@ -160,10 +160,9 @@
     font-family: var(--font-family-sora);
     /* text-transform: uppercase; */
     font-size: var(--text-sm);
-    font-weight: 400;
-    letter-spacing: 0.05em;
+    font-weight: 500;
     /* font-weight: 500; */
-    /* color: var(--mantine-color-dark-9); */
+    color: var(--mantine-color-dark-7);
     max-width: 100%;
     /* border-bottom: 1px solid var(--mantine-color-gray-3); */
     box-shadow: var(--mantine-shadow-xs);

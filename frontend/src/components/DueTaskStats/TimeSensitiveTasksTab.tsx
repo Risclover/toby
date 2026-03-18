@@ -133,8 +133,8 @@ export const TimeSensitiveTasksTab = ({ tabValue, tasks, emptyMsg }: Props) => {
                 <Transition mounted={checkedIds.size > 0} transition="fade-left" duration={250} timingFunction="ease">
                     {(styles) => (
                         <Group gap={0} style={styles}>
-                            <Button radius="sm" size="13px" p=".325rem .5rem" h="auto" variant="light" fw={500} color="red" onClick={handleMassDelete}>Delete</Button>
-                            <Button ml=".5rem" radius="sm" size="13px" p=".325rem .5rem" h="auto" variant="filled" fw={500} color="rgb(5, 5, 73)" onClick={handleMassComplete}>Complete</Button>
+                            <Button radius="sm" size="13px" p=".325rem .5rem" h="auto" variant="filled" fw={500} color="rgb(5, 5, 73)" onClick={handleMassComplete}>Complete</Button>
+                            <Button ml=".5rem" radius="sm" size="13px" p=".325rem .5rem" h="auto" variant="light" fw={500} color="red" onClick={handleMassDelete}>Delete</Button>
                         </Group>
                     )}
                 </Transition>

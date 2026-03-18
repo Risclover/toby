@@ -43,6 +43,8 @@ function formatTime(isoUtc: string) {
 export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; householdId: number }) {
     const [editOpen, setEditOpen] = useState(false);
     const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+    const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+    const isEditingRow = editingEvent !== null;
 
     const [deleteEvent] = useDeleteEventMutation();
 
@@ -120,8 +122,9 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                                     </Group>
                                     <div className="event-menu-container">
                                         <EventMenu
-                                            isEditing={false}
-                                            setIsEditing={(val) => val && openEdit(e)}
+                                            isEditing={editingEvent?.id === e.id}
+                                            setIsEditing={(val) => val ? openEdit(e) : null}
+
                                             onDelete={handleDeleteEvent}
 
                                         />

@@ -7,7 +7,7 @@ export const AssignedRemindersTab = () => {
     const { data: user } = useAuthenticateQuery();
     const [page, setPage] = useState(1);
 
-    const { data } = useGetAllUserRemindersQuery(
+    const { data, isSuccess } = useGetAllUserRemindersQuery(
         { userId: user?.id, page, limit: 5 },
         { skip: !user?.id }
     );
@@ -28,7 +28,7 @@ export const AssignedRemindersTab = () => {
 
     return (
         <div className="assigned-reminders-tab">
-            <NoticeBoardReminders reminders={allReminders} showAll />
+            <NoticeBoardReminders isReady={isSuccess} reminders={allReminders} showAll />
             {data?.hasNextPage && (
                 <Button
                     variant="subtle"

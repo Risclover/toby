@@ -99,7 +99,7 @@ export function QuickAddEvent({
         [dateStr]
     );
 
-    const { data: dayEvents = [], isFetching: loading } = useGetHouseholdEventsQuery(
+    const { data: dayEvents = [], isLoading: loading } = useGetHouseholdEventsQuery(
         { householdId, startIso, endIso },
         { skip: !householdId || !dateStr }
     );
@@ -122,14 +122,15 @@ export function QuickAddEvent({
             setTitle(event.title);
             setDateStr(ymdFromIso(event.startUtc ?? undefined));
             setTimeStr(event.hasTime === false ? "" : hmFromIso(event.startUtc));
+            setEditingEvent(event); // <- was null, now seeds the event so the row highlights
         } else {
             setTitle("");
             setDateStr(dayjs(initialDate).format("YYYY-MM-DD"));
             setTimeStr("");
+            setEditingEvent(null);
         }
         setTitleError("");
         setDateError("");
-        setEditingEvent(null);
     }, [opened, event?.id]);
 
     // Populate form when a row edit is triggered
@@ -334,12 +335,8 @@ export function QuickAddEvent({
                 </div>
             </Stack>
             <Group justify="flex-end" mt="lg">
-                {isEditingRow ? (
-                    <Button color="rgb(5, 5, 73)" variant="outline" onClick={resetToAddState}>Cancel</Button>
-                ) : (
-                    <Button color="rgb(5, 5, 73)" variant="outline" onClick={handleClose}>Cancel</Button>
-                )}
-                <Button color="rgb(5, 5, 73)" loading={isSaving} onClick={handleSave} data-test="quickadd-submit" disabled={title.trim().length === 0 || dateStr.trim().length === 0}>
+                <Button h="auto" p=".5rem 1rem" size="sm" fw={500} color="rgb(5, 5, 73)" variant="outline" onClick={isEditingRow ? resetToAddState : handleClose}>Cancel</Button>
+                <Button h="auto" p=".5rem 1rem" size="sm" fw={500} color="rgb(5, 5, 73)" loading={isSaving} onClick={handleSave} data-test="quickadd-submit" disabled={title.trim().length === 0 || dateStr.trim().length === 0}>
                     {isEditingRow ? "Update" : "Save"}
                 </Button>
             </Group>
