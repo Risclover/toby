@@ -6,7 +6,13 @@ import type { OverdueTask } from "@/store"
 import { useIsSmallScreen } from "@/hooks"
 import { useCompleteTaskMutation, useDeleteTaskMutation } from "@/store"
 
-export const DueTodayTab = ({ tasks }: { tasks: OverdueTask[] }) => {
+type Props = {
+    tabValue: string;
+    tasks: OverdueTask[];
+    emptyMsg: string;
+}
+
+export const TimeSensitiveTasksTab = ({ tabValue, tasks, emptyMsg }: Props) => {
     const isSmall = useIsSmallScreen(425);
     const [completeTask] = useCompleteTaskMutation();
     const [deleteTask] = useDeleteTaskMutation();
@@ -45,7 +51,7 @@ export const DueTodayTab = ({ tasks }: { tasks: OverdueTask[] }) => {
             await Promise.all(
                 selected.map(t => deleteTask({ taskId: t.id, listId: t.tasklist_id }))
             );
-            setPendingDeleteIds(new Set());
+            // remove the setPendingDeleteIds(new Set()) call
         }, 5000);
 
         const notifId = notifications.show({
@@ -82,7 +88,7 @@ export const DueTodayTab = ({ tasks }: { tasks: OverdueTask[] }) => {
             await Promise.all(
                 selected.map(t => completeTask({ taskId: t.id, listId: t.tasklist_id, completed: true }))
             );
-            setPendingCompleteIds(new Set());
+            // remove the setPendingCompleteIds(new Set()) call
         }, 5000);
 
         const notifId = notifications.show({
@@ -110,7 +116,7 @@ export const DueTodayTab = ({ tasks }: { tasks: OverdueTask[] }) => {
     };
 
     return (
-        <Tabs.Panel value="due_today">
+        <Tabs.Panel value={tabValue}>
             {visibleTasks.length > 0 && <div className="list-head">
                 <div className="list-head-left">
                     <Checkbox
@@ -134,7 +140,7 @@ export const DueTodayTab = ({ tasks }: { tasks: OverdueTask[] }) => {
                 </Transition>
             </div>}
             <ul className="time-sensitive-tasks">
-                {visibleTasks.length === 0 ? <div className="sensitive-tasks-empty">None of your tasks are due today.</div> : visibleTasks.map(task => (
+                {visibleTasks.length === 0 ? <div className="sensitive-tasks-empty">{emptyMsg}</div> : visibleTasks.map(task => (
                     <TimeSensitiveTask
                         key={task.id}
                         task={task}

@@ -1,5 +1,5 @@
 import { Box, Button, Checkbox, Group, Modal, Tabs } from "@mantine/core"
-import { OverdueTab } from "./OverdueTab";
+import { TimeSensitiveTasksTab } from "./TimeSensitiveTasksTab";
 import { useAuthenticateQuery, useGetUserTaskStatsQuery } from "@/store";
 import { useIsSmallScreen } from "@/hooks";
 import { DueTodayTab } from "./DueTodayTab";
@@ -19,9 +19,9 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: { opened: boole
                     <Tabs.Tab value="due_today" color="orange.7">Due Today</Tabs.Tab>
                     <Tabs.Tab value="due_soon" color="blue.7">Due Soon</Tabs.Tab>
                 </Tabs.List>
-                <OverdueTab tasks={tasks.overdue} />
-                <DueTodayTab tasks={tasks.due_today} />
-                <DueSoonTab tasks={tasks.due_soon} />
+                <TimeSensitiveTasksTab tabValue="overdue" emptyMsg="You have no overdue tasks - good job!" tasks={tasks.overdue} />
+                <TimeSensitiveTasksTab tabValue="due_today" emptyMsg="No tasks due today." tasks={tasks.due_today} />
+                <TimeSensitiveTasksTab tabValue="due_soon" emptyMsg="No tasks due this week." tasks={tasks.due_soon} />
             </Tabs>
         </Modal>
     )
