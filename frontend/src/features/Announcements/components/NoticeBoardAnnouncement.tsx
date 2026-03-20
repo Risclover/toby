@@ -53,7 +53,7 @@ export const NoticeBoardAnnouncement = ({ announcement }: Props) => {
                                 <StarIcon color="rgb(230, 176, 2)" size="18px" />
                             </div>
                         )}
-                        {user.id === creator.id && (
+                        {user.id === creator?.id && (
                             <AnnouncementMenu
                                 ref={triggerRef}
                                 announcement={announcement}

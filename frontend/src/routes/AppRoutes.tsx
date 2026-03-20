@@ -13,6 +13,10 @@ import { MobileTasklist } from "@/features/HouseholdTasklists/components/MobileT
 import { MobileTasklists } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklists";
 import { ArchivedHouseholdTasklistsPage } from "@/pages/ArchivedHouseholdTasklistsPage";
 import { AllRemindersPage } from "@/features/Reminders/components/AllReminders/AllRemindersPage";
+import { OnboardingPage } from "@/features/Auth/components/OnboardingPage";
+import { OnboardingRoute } from "./OnboardingRoute";
+import { ProtectedRoute } from "./ProtectedRoute";
+import { GuestRoute } from "./GuestRoute";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
@@ -20,18 +24,20 @@ export const AppRoutes = () => {
 
     return (
         <Routes>
-            <Route path="/join/:inviteCode" element={<Registration createHousehold={false} />} />
-            <Route path="/signup" element={<Registration createHousehold={true} />} />
+            <Route path="/join/:inviteCode" element={<GuestRoute><Registration createHousehold={false} /></GuestRoute>} />
+            <Route path="/signup" element={<GuestRoute><Registration createHousehold={true} /></GuestRoute>} />
             <Route path="/users/:userId" element={<UserPage />} />
-            <Route path="/tasklists/archived" element={<ArchivedHouseholdTasklistsPage />} />
-            <Route path="/tasklists" element={<MobileTasklists />} />
-            <Route path="/tasklists/:tasklistId" element={<MobileTasklist />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/shopping" element={<ShoppingListsPage />} />
-            <Route path="/shopping/:listId" element={<ShoppingListPage />} />
+            <Route path="/tasklists/archived" element={<ProtectedRoute><ArchivedHouseholdTasklistsPage /></ProtectedRoute>} />
+            <Route path="/tasklists" element={<ProtectedRoute><MobileTasklists /></ProtectedRoute>} />
+            <Route path="/tasklists/:tasklistId" element={<ProtectedRoute><MobileTasklist /></ProtectedRoute>} />
+            <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+            <Route path="/shopping" element={<ProtectedRoute><ShoppingListsPage /></ProtectedRoute>} />
+            <Route path="/shopping/:listId" element={<ProtectedRoute><ShoppingListPage /></ProtectedRoute>} />
             <Route path="/" element={(isMobile || isSmallScreen) ? <MobileHome /> : <Dashboard />} />
-            <Route path="/announcements" element={<MobileAnnouncements />} />
-            <Route path="/reminders" element={<AllRemindersPage />} />
+            <Route path="/announcements" element={<ProtectedRoute><MobileAnnouncements /></ProtectedRoute>} />
+            <Route path="/reminders" element={<ProtectedRoute><AllRemindersPage /></ProtectedRoute>} />
+            <Route path="/onboarding" element={<OnboardingRoute />} />
+
         </Routes>
     )
 }

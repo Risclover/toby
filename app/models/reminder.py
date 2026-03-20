@@ -88,6 +88,7 @@ class Reminder(db.Model):
                     "profileImg": a.user.profile_img,
                 }
                 for a in self.assignments
+                if a.user is not None
             ],
         }
 
@@ -119,6 +120,7 @@ class Reminder(db.Model):
                     "profileImg": a.user.profile_img,
                 }
                 for a in self.assignments
+                if a.user is not None
             ],
             "currentUserAssignment": {
                 "seen": assignment.seen

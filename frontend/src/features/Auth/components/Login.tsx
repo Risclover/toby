@@ -1,8 +1,11 @@
 import { FormInput } from "@/components/FormInput"
-import { useLoginMutation } from "@/store/authSlice";
-import { Button, ScrollArea, Stack } from "@mantine/core"
-import { useState } from "react"
+import { useGoogleLoginMutation, useLoginMutation } from "@/store/authSlice";
+import { Button, Divider, ScrollArea, Stack } from "@mantine/core"
+import { useGoogleLogin, type TokenResponse } from "@react-oauth/google";
+import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom";
+import { useGoogleAuth } from "../hooks/useGoogleAuth";
+import { GoogleSignInButton } from "./GoogleSignInButton";
 
 export const Login = () => {
     const navigate = useNavigate();
@@ -10,6 +13,7 @@ export const Login = () => {
     const [password, setPassword] = useState("");
     const [formError, setFormError] = useState("");
 
+    const { signin } = useGoogleAuth();
     const [login] = useLoginMutation();
 
     const inputProps = [{
@@ -43,11 +47,14 @@ export const Login = () => {
         }
     }
 
+
     return (
         <div className="registration">
             <div className="registration-form">
                 <h2>Log In</h2>
-                <ScrollArea h={160} offsetScrollbars overscrollBehavior="contain" style={{ paddingLeft: "1rem" }}>
+                <div className="registration-form-content">
+                    <GoogleSignInButton onClick={() => signin()} />
+                    <Divider label="or" labelPosition="center" my="xs" />
                     <Stack gap="xs">
                         {inputProps.map((props) =>
                             <FormInput
@@ -60,7 +67,7 @@ export const Login = () => {
                                 error={props.error}
                             />)}
                     </Stack>
-                </ScrollArea>
+                </div>
                 <Button style={{ flexShrink: 0 }} size="md" radius="md" color="cyan" onClick={handleLogin}>Log In</Button>
                 <div className="login-switch">Need an account? Switch to <Link className="login-link" to="/signup">Sign Up</Link>.</div>
             </div>

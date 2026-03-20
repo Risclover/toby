@@ -113,7 +113,36 @@ export const authSlice = apiSlice.injectEndpoints({
                 credentials: "include",
                 body: { email }
             })
-        })
+        }),
+
+        googleLogin: builder.mutation<User, { access_token: string }>({
+            query: (body) => ({
+                url: '/auth/google',
+                method: 'POST',
+                credentials: "include",
+                body,
+            }),
+            invalidatesTags: ["Session"]
+        }),
+
+        createHousehold: builder.mutation<{ user: User; household: Household }, { household_name: string }>({
+            query: (body) => ({
+                url: '/auth/household/create',
+                method: 'POST',
+                credentials: 'include',
+                body,
+            }),
+            invalidatesTags: ['Session'],
+        }),
+
+        joinExistingHousehold: builder.mutation<{ user: User; household: Household }, { inviteCode: string }>({
+            query: ({ inviteCode }) => ({
+                url: `/auth/household/join/${inviteCode}`,
+                method: 'POST',
+                credentials: 'include',
+            }),
+            invalidatesTags: ['Session'],
+        }),
 
     })
 })
@@ -126,5 +155,8 @@ export const {
     useJoinHouseholdMutation,
     useGenerateInviteMutation,
     useCheckEmailMutation,
-    useValidateInviteQuery
+    useValidateInviteQuery,
+    useGoogleLoginMutation,
+    useCreateHouseholdMutation,
+    useJoinExistingHouseholdMutation
 } = authSlice;

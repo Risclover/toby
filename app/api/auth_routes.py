@@ -9,7 +9,7 @@ from app.extensions import db
 from app.forms import LoginForm
 from app.helpers import validation_errors_to_error_messages
 from uuid import uuid4
-
+import requests
 
 auth_routes = Blueprint('auth', __name__)
 
@@ -22,6 +22,42 @@ def authenticate():
         return current_user.to_dict()
     return {'errors': ['Unauthorized']}
 
+@auth_routes.route('/google', methods=['POST'])
+def google_login():
+    access_token = request.json.get('access_token')
+    if not access_token:
+        return jsonify({'error': 'Access token required'}), 400
+
+    response = requests.get(
+        'https://www.googleapis.com/oauth2/v1/userinfo',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    if not response.ok:
+        return jsonify({'error': 'Invalid token'}), 401
+
+    google_user = response.json()
+    sub = google_user['id']
+    email = google_user['email'].strip().lower()
+
+    user = User.query.filter_by(google_id=sub).first()
+
+    if not user:
+        user = User.query.filter(func.lower(User.email) == email).first()
+        if user:
+            user.google_id = sub
+        else:
+            # New user — no household yet, onboarding will handle that
+            user = User(
+                first_name=google_user.get('given_name', ''),
+                last_name=google_user.get('family_name', ''),
+                email=email,
+                google_id=sub,
+            )
+            db.session.add(user)
+
+    db.session.commit()
+    login_user(user)
+    return jsonify(user.to_dict()), 200
 
 @auth_routes.route('/login', methods=['POST'])
 def login():
@@ -180,3 +216,34 @@ def unauthorized():
     Returns unauthorized JSON when flask-login authentication fails
     """
     return {'errors': ['Unauthorized']}, 401
+
+@auth_routes.route("/household/create", methods=["POST"])
+@login_required
+def create_household():
+    data = request.get_json()
+    household_name = data.get("household_name")
+    if not household_name:
+        return jsonify({"error": "Household name required"}), 400
+
+    household = Household(name=household_name, creator_id=current_user.id)
+    db.session.add(household)
+    db.session.flush()
+    current_user.household_id = household.id
+    defaults = ["Groceries", "Necessities", "Wishlist"]
+    db.session.add_all([
+        ShoppingList(title=title, household_id=household.id) for title in defaults
+    ])
+    db.session.commit()
+    return jsonify({"user": current_user.to_dict(), "household": household.to_dict()}), 201
+
+
+@auth_routes.route("/household/join/<string:invite_code>", methods=["POST"])
+@login_required
+def join_existing_household(invite_code):
+    household = Household.query.filter_by(invite_code=invite_code).first()
+    if not household:
+        return jsonify({"error": "Invalid invite code"}), 400
+
+    current_user.household_id = household.id
+    db.session.commit()
+    return jsonify({"user": current_user.to_dict(), "household": household.to_dict()}), 200

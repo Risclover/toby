@@ -1,7 +1,7 @@
-import { Button, Space } from "@mantine/core"
+import { Button, Divider, Space } from "@mantine/core"
 import "../styles/InvalidInviteCode.css"
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function InvalidInviteCode() {
     const navigate = useNavigate();

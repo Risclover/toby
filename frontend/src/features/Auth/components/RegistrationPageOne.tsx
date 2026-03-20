@@ -1,7 +1,13 @@
 import { FormInput } from "@/components/FormInput"
-import { Button, ScrollArea, Stack } from "@mantine/core";
-import { type SetStateAction } from "react"
-import { Link } from "react-router-dom";
+import { useGoogleLoginMutation } from "@/store";
+import { Button, Divider, PasswordInput, ScrollArea, Stack } from "@mantine/core";
+import { useGoogleLogin, type TokenResponse } from "@react-oauth/google";
+import { useEffect, useState, type SetStateAction } from "react"
+import { Link, useNavigate } from "react-router-dom";
+import { GoogleSignInButton } from "./GoogleSignInButton";
+import { useGoogleAuth } from "../hooks/useGoogleAuth";
+import { ViewPasswordIcon } from "@/assets/icons/ViewPasswordIcon";
+import { HidePasswordIcon } from "@/assets/icons/HidePasswordIcon";
 
 type InputProps = {
     inputType: string;
@@ -21,15 +27,27 @@ type Props = {
     createHousehold: boolean;
 }
 
+const VisibilityToggleIcon = ({ reveal }: { reveal: boolean }) =>
+    reveal ? (
+        <ViewPasswordIcon size="1rem" color="rgb(5, 5, 73)" />
+    ) : (
+        <HidePasswordIcon size="1rem" color="rgb(5, 5, 73)" />
+    );
+
 export const RegistrationPageOne = ({ onClick, inputProps, createHousehold }: Props) => {
+    const { signin } = useGoogleAuth();
+
     return (
         <div className="registration-form">
             <h2>Sign Up</h2>
-            <ScrollArea h={345} offsetScrollbars overscrollBehavior="contain" style={{ paddingLeft: "1rem" }}>
+            <div className="registration-form-content">
+                <GoogleSignInButton label="Sign up with Google" onClick={() => signin()} />
+                <Divider label="or" labelPosition="center" my="xs" />
                 <Stack gap="xs">
                     <span className="fake-input-label">What should we call you?</span>
                     {inputProps.map((props) =>
                         <FormInput
+                            key={props.inputName}
                             inputType={props.inputType}
                             inputName={props.inputName}
                             label={props?.label}
@@ -42,8 +60,10 @@ export const RegistrationPageOne = ({ onClick, inputProps, createHousehold }: Pr
                         />
                     )}
                 </Stack>
-            </ScrollArea>
-            <Button size="md" radius="xl" onClick={onClick} color="cyan">{createHousehold ? "Continue" : "Sign Up"}</Button>
+            </div>
+            <Button size="md" radius="xl" onClick={onClick} color="cyan">
+                {createHousehold ? "Continue" : "Sign Up"}
+            </Button>
             <div className="login-switch">Already have an account? Switch to <Link to="/login" className="login-link">Login</Link>.</div>
         </div>
     )

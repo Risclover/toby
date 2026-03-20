@@ -104,7 +104,7 @@ export const Registration = ({ createHousehold }: Props) => {
         {
             inputType: "email",
             inputName: "email",
-            label: "Your email",
+            label: "Email",
             subLabel: "",
             placeholder: "bob@mail.com",
             inputValue: email,
@@ -122,17 +122,6 @@ export const Registration = ({ createHousehold }: Props) => {
             setInputValue: setPassword,
             error: passwordError,
             onBlur: validatePassword,
-        },
-        {
-            inputType: "password",
-            inputName: "repeat-password",
-            label: "Confirm Password",
-            subLabel: "",
-            placeholder: "••••••••",
-            inputValue: repeatPassword,
-            setInputValue: setRepeatPassword,
-            error: repeatPasswordError,
-            onBlur: validateRepeatPassword,
         },
     ];
 

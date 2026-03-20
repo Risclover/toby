@@ -1,4 +1,5 @@
 import type { SetStateAction } from "react";
+import { RemainingChars } from "./RemainingChars";
 
 type Props = {
     inputName: string;
@@ -10,9 +11,11 @@ type Props = {
     setInputValue: React.Dispatch<SetStateAction<string>>;
     error?: string | null;
     onBlur?: () => void;
+    maxLength?: number;
+    remainingCharsLight?: boolean;
 }
 
-export const FormInput = ({ inputName, label = "", subLabel = "", inputType, placeholder, inputValue, setInputValue, error = null, onBlur }: Props) => {
+export const FormInput = ({ inputName, label = "", subLabel = "", inputType, placeholder, inputValue, setInputValue, error = null, onBlur, maxLength, remainingCharsLight = false }: Props) => {
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value);
@@ -32,8 +35,12 @@ export const FormInput = ({ inputName, label = "", subLabel = "", inputType, pla
                 value={inputValue}
                 onChange={onInputChange}
                 onBlur={onBlur}
+                maxLength={maxLength}
             />
-            {error && error.length > 0 && <span className="form-input-error">{error}</span>}
+            <div className="form-input-foot">
+                {error && error.length > 0 ? <span className="form-input-error">{error}</span> : <span></span>}
+                {maxLength && <RemainingChars count={inputValue.length} max={maxLength} light={remainingCharsLight} />}
+            </div>
         </div>
     )
 }

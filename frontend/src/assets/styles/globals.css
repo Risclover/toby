@@ -227,7 +227,6 @@ h6,
     flex-direction: column;
     font-family: "Commissioner", sans-serif;
     font-size: var(--text-sm);
-    padding-right: 0.5rem;
 }
 
 .form-input-container input {
@@ -249,7 +248,7 @@ h6,
 .form-input-error {
     color: rgb(214, 85, 85);
     font-size: 0.8rem;
-    padding: 4px 8px;
+    line-height: 1.3;
 }
 
 form {
@@ -617,7 +616,6 @@ form {
 }
 
 .remaining-chars-container {
-    width: 100%;
     display: flex;
     justify-content: flex-end;
     font-size: var(--text-xs);
@@ -626,6 +624,10 @@ form {
 
 .remaining-chars.remaining-none {
     color: var(--mantine-color-red-5);
+}
+
+.remaining-chars-container.light-variant {
+    color: white;
 }
 
 .mantine-Modal-body:has(.time-sensitive-tasks, .sensitive-tasks-empty) {
@@ -771,6 +773,13 @@ form {
 
 .tab-soon[data-active] {
     color: var(--mantine-color-blue-7);
+}
+
+.form-input-foot {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-top: 0.25rem;
 }
 
 @media (max-width: 425px) {

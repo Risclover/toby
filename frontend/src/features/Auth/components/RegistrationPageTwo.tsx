@@ -23,10 +23,10 @@ type Props = {
 
 export const RegistrationPageTwo = ({ handleBack, inputProps, onClick }: Props) => {
     return (
-        <div className="registration-form reg-page-two">
+        <div className="registration-form">
             <span className="form-back-btn" onClick={handleBack}><IoArrowBackOutline />Back</span>
-            <h2>Give your household a name</h2>
-            <div className="registration-form-body">
+            <h2>Household Creation</h2>
+            <div className="registration-form-content">
                 {inputProps.map((props) =>
                     <FormInput
                         inputType={props.inputType}
