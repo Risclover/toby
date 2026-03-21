@@ -17,6 +17,8 @@ import { OnboardingPage } from "@/features/Auth/components/OnboardingPage";
 import { OnboardingRoute } from "./OnboardingRoute";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { GuestRoute } from "./GuestRoute";
+import UserProfilePageDemo from "@/pages/UserProfileDemo";
+import { UserProfilePage } from "@/pages/UserProfilePage";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
@@ -37,7 +39,8 @@ export const AppRoutes = () => {
             <Route path="/announcements" element={<ProtectedRoute><MobileAnnouncements /></ProtectedRoute>} />
             <Route path="/reminders" element={<ProtectedRoute><AllRemindersPage /></ProtectedRoute>} />
             <Route path="/onboarding" element={<OnboardingRoute />} />
-
+            <Route path="/demo" element={<UserProfilePageDemo />} />
+            <Route path="/profile/:userId" element={<UserProfilePage />} />
         </Routes>
     )
 }

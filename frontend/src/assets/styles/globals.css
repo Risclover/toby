@@ -449,6 +449,7 @@ form {
     letter-spacing: 0.08em;
     user-select: none;
     transition: background 0.25s;
+    background: white;
     color: var(--mantine-color-dark-3);
 }
 

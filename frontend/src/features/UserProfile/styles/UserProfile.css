@@ -1,0 +1,112 @@
+.user-profile-header {
+    display: flex;
+    /* flex-direction: column; */
+    align-items: center;
+    font-family: "Alan Sans", sans-serif;
+    font-size: var(--text-2xl);
+    font-weight: 500;
+    margin: 0 1rem;
+    line-height: 1;
+    gap: .75rem;
+    padding: .75rem .25rem;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: .125rem;
+}
+
+.all-reminders-tabs-list {
+    padding: 0;
+    font-weight: 500;
+    color: rgb(5, 5, 73);
+    background: white;
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    display: flex;
+    overflow: hidden;
+    /* font-family: "Alan Sans", sans-serif; */
+}
+
+.user-profile-main-container {
+    padding: 1rem;
+}
+
+.user-profile-stats {
+    border-radius: .5rem;
+    font-size: var(--text-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.user-profile-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem .5rem;
+    border-radius: .5rem;
+    box-shadow: var(--mantine-shadow-xs);
+    background: white;
+    min-width: 140px;
+    width: 47%;
+}
+
+.user-profile-stat-num {
+    font-weight: 500;
+    line-height: 1.3;
+    font-size: var(--text-xl);
+    color: rgb(5, 5, 73);
+    margin-top: .25rem;
+}
+
+.user-profile-stat-title {
+    line-height: 1.2;
+    font-size: 13px;
+    color: var(--mantine-color-dark-7);
+}
+
+.user-profile-stat-icon {
+    border-radius: 999px;
+    background: rgb(241, 241, 243);
+    padding: .5rem;
+    height: 40px;
+    width: 40px;
+}
+
+.user-profile-stat-icon svg {
+    color: rgb(5, 5, 73);
+    height: 24px;
+    width: 24px;
+}
+
+@media (max-width: 425px) {
+    .user-profile-stats {
+        gap: .5rem;
+    }
+
+    .user-profile-stat-title {
+        font-size: 11.5px;
+    }
+
+    .user-profile-stat-num {
+        font-size: var(--text-lg);
+    }
+
+    .all-reminders-tabs-list {
+        padding: 0;
+        margin: 0 auto;
+    }
+
+    .user-profile-header {
+        font-size: var(--text-xl)
+    }
+
+    .user-profile-main-container {
+        padding: .75rem;
+    }
+}

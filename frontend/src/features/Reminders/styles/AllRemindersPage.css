@@ -5,6 +5,7 @@
     background: white;
     border-top-left-radius: 1.5rem;
     border-top-right-radius: 1.5rem;
+    display: flex;
     /* font-family: "Alan Sans", sans-serif; */
 }
 
