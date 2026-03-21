@@ -260,7 +260,7 @@ export function QuickAddEvent({
                 withErrorStyles
                 maxLength={100}
             />
-            <RemainingChars count={remainingChars} max={100} />
+            <RemainingChars count={title.length} max={100} />
             {isSmallScreen ? <Stack gap="0.5rem"><DatePickerInput
                 dropdownType={isSmallScreen ? "modal" : "popover"}
                 placeholder="Select date"
