@@ -169,12 +169,17 @@ def get_user_mood(id):
 @user_routes.route("/<int:id>/task_stats")
 def get_task_stats(id):
     try:
+        user = User.query.get(id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
         today = date.today()
         soon_date = today + timedelta(days=7)
         today_str = str(today)
         soon_str = str(soon_date)
 
         pending_tasks = Task.query.join(Tasklist).filter(
+            Tasklist.household_id == user.household_id,  # ← scope to household
             or_(
                 Task.assigned_to_id == id,
                 Task.assigned_to_id == None,
