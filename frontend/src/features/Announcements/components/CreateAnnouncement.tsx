@@ -56,7 +56,7 @@ export const CreateAnnouncement = () => {
             />
             <div className="create-announcement-subtext">
                 <span className="create-announcement-error">{error}</span>
-                <RemainingChars count={remainingChars} max={255} />
+                <RemainingChars count={message.length} max={255} />
             </div>
             {error.length > 0 && <Space h="md" />}
             <Checkbox

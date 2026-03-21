@@ -168,6 +168,7 @@
     font-size: var(--text-sm) !important;
     font-weight: 400 !important;
     color: var(--mantine-color-dark-7) !important;
+    word-break: break-all !important;
 }
 
 .announcement-menu button {
