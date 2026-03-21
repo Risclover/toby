@@ -199,6 +199,12 @@
     background: #374151 !important;
 }
 
+.registration-form-content .mantine-Divider-label {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
 @media (max-width: 375px) {
     .registration-form {
         max-height: 100%;

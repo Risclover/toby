@@ -36,12 +36,13 @@ export const Login = () => {
     }]
 
     const handleLogin = async () => {
-        const data = await login({ email: email, password: password });
-        console.log('data:', data);
-        const errors = data?.error?.data?.errors;
-
-        if (errors && errors.length > 0) {
-            setFormError(errors[0]);
+        const result = await login({ email, password });
+        if ('error' in result) {
+            const error = result.error as { data?: { errors?: string[] } };
+            const errors = error?.data?.errors;
+            if (errors && errors.length > 0) {
+                setFormError(errors[0]);
+            }
         } else {
             navigate("/");
         }
