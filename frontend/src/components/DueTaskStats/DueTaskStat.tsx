@@ -29,12 +29,12 @@ export const DueTaskStat = ({ title, color, count, icon, isLoading, setOpenTimeS
             {isLoading ? <DueTaskStatSkeleton /> :
                 <>
                     <Indicator fw={600} label={count} size={isSmall ? 20 : isMedium ? 24 : 24} offset={3} position="top-end" color={color} withBorder>
-                        <ThemeIcon onClick={handleTaskClick} size={isSmall ? "md" : isMedium ? "lg" : "xl"} color={color} variant="light" p={isSmall ? "1rem" : isMedium ? "1.5rem" : "1.5rem"} radius="sm" className="due-task-stat-main">
+                        <ThemeIcon onClick={handleTaskClick} size={isSmall ? "md" : isMedium ? "lg" : "xl"} color={color} variant="light" p={isSmall ? "1rem" : isMedium ? "1.5rem" : "1.5rem"} radius="sm" className={`due-task-stat-main${count > 0 ? " stat-pointer" : ""}`}>
                             <div className="due-task-stat-icon">{icon}</div>
                         </ThemeIcon>
                     </Indicator>
                     <Space h={isSmall ? ".25rem" : isMedium ? "0.5rem" : "0.75rem"} />
-                    <div className={`due-task-stat-title${isSmall ? " title-sm" : ""}`} onClick={handleTaskClick}>
+                    <div className={`due-task-stat-title${isSmall ? " title-sm" : ""}${count > 0 ? " stat-pointer" : ""}`} onClick={handleTaskClick}>
                         {title}
                     </div>
                 </>

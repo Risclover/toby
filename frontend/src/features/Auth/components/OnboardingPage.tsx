@@ -20,7 +20,7 @@ export const OnboardingPage = () => {
         try {
             setHouseholdError("");
             await createHousehold({ household_name: householdName }).unwrap();
-            navigate('/dashboard');
+            navigate('/');
         } catch {
             setError('Failed to create household. Please try again.');
         }
@@ -36,6 +36,7 @@ export const OnboardingPage = () => {
             <div className="registration-form">
                 <h2>Household Creation</h2>
                 <div className="registration-form-content">
+                    <div className="registration-form-instruction">You must belong to a household to use Toby. If you're trying to join someone else's household, click here.</div>
                     <FormInput
                         inputType="text"
                         inputName="household"
@@ -50,7 +51,7 @@ export const OnboardingPage = () => {
                         remainingCharsLight={true}
                     />
                 </div>
-                <Button role="submit" size="md" radius="xl" style={{ margin: "0 auto", marginTop: "1rem" }} color="cyan">Sign Up</Button>
+                <Button role="submit" size="md" radius="xl" style={{ margin: "0 auto", marginTop: "1rem" }} color="cyan" onClick={handleCreate}>Submit</Button>
             </div>
         </div>
     );

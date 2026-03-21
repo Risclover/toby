@@ -33,7 +33,7 @@ export const AppRoutes = () => {
             <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
             <Route path="/shopping" element={<ProtectedRoute><ShoppingListsPage /></ProtectedRoute>} />
             <Route path="/shopping/:listId" element={<ProtectedRoute><ShoppingListPage /></ProtectedRoute>} />
-            <Route path="/" element={(isMobile || isSmallScreen) ? <MobileHome /> : <Dashboard />} />
+            <Route path="/" element={(isMobile || isSmallScreen) ? <ProtectedRoute><MobileHome /></ProtectedRoute> : <ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/announcements" element={<ProtectedRoute><MobileAnnouncements /></ProtectedRoute>} />
             <Route path="/reminders" element={<ProtectedRoute><AllRemindersPage /></ProtectedRoute>} />
             <Route path="/onboarding" element={<OnboardingRoute />} />

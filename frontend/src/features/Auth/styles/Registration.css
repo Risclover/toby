@@ -53,16 +53,22 @@
     margin-bottom: .5rem;
 }
 
-.registration-form input {
+.form-input {
     font-family: "Commissioner", sans-serif;
-    padding: 0.625rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
     border: 1px solid lightgray;
     outline: none;
     border-radius: 0.5rem;
     background: transparent;
     margin-top: 0.25rem;
+    position: relative;
+    padding-right: 40px;
+}
+
+.form-input input {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    border-radius: .5rem;
 }
 
 .registration-form label {
@@ -160,6 +166,37 @@
     padding: .25rem 1rem;
     overflow-y: auto;
 
+}
+
+.form-input-foot {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-top: 0.25rem;
+}
+
+.registration-form-instruction {
+    font-size: 13px;
+    color: var(--sub-text);
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+
+.password-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.google-signin-btn {
+    box-shadow: var(--mantine-shadow-xs);
+}
+
+.google-signin-btn:hover {
+    color: inherit !important;
+    background: #374151 !important;
 }
 
 @media (max-width: 375px) {

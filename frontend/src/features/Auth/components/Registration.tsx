@@ -55,11 +55,22 @@ export const Registration = ({ createHousehold }: Props) => {
     }
 
     const validateEmail = async () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email.trim().length === 0) {
+            setEmailError("Please enter your email address.");
+            return true;
+        }
+        if (!emailRegex.test(email)) {
+            setEmailError("Please enter a valid email address.");
+            return true;
+        }
         const res: any = await checkEmail({ email });
-        if (res?.data?.Message) setEmailError("Email already in use.");
-        else if (email.trim().length === 0) setEmailError("Please enter your email address.");
-        else setEmailError("");
-        return res?.data?.Message;
+        if (res?.data?.Message) {
+            setEmailError("Email already in use.");
+            return true;
+        }
+        setEmailError("");
+        return false;
     };
 
     const validatePassword = () => {
@@ -146,7 +157,7 @@ export const Registration = ({ createHousehold }: Props) => {
 
         if (firstNameError || lastNameError || emailError || passwordError || repeatPasswordError) return;
 
-        if (createHousehold) setPage(2);
+        if (createHousehold) handleSignup(e);
         else handleJoin(e);
     };
 
@@ -154,14 +165,17 @@ export const Registration = ({ createHousehold }: Props) => {
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
-        await signup({ email, password, firstName, lastName, household_name: householdName });
-        navigate("/");
-        setEmail("");
-        setFirstName("");
-        setLastName("");
-        setPassword("");
-        setRepeatPassword("");
-        setHouseholdName("");
+
+        await validateEmail();
+        validatePassword();
+        validateRepeatPassword();
+        validateFirstName();
+        validateLastName();
+
+        if (firstNameError || lastNameError || emailError || passwordError || repeatPasswordError) return;
+
+        await signup({ email, password, firstName, lastName });
+        navigate("/onboarding");
     };
 
     const handleJoin = async (e: React.FormEvent) => {
@@ -195,7 +209,7 @@ export const Registration = ({ createHousehold }: Props) => {
         <div className="registration">
             {page === 1 && (
                 <RegistrationPageOne
-                    onClick={handleContinue}
+                    onClick={handleSignup}
                     inputProps={inputProps}
                     createHousehold={createHousehold}
                 />

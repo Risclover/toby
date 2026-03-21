@@ -88,7 +88,7 @@ export const DueTodayTab = ({ tasks }: { tasks: OverdueTask[] }) => {
         const notifId = notifications.show({
             message: (
                 <Group justify="space-between" align="center">
-                    <span>{`Marked ${ids.size} ${ids.size === 1 ? 'task' : 'tasks'} as complete`}</span>
+                    <span>{`Completed ${ids.size} ${ids.size === 1 ? 'task' : 'tasks'}`}</span>
                     <Button
                         size="xs"
                         color="rgb(5,5,73)"

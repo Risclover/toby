@@ -4,6 +4,7 @@ type Props = { onClick: () => void; label?: string }
 
 export const GoogleSignInButton = ({ onClick, label = "Sign in with Google" }: Props) => (
     <Button
+        className="google-signin-btn"
         size="md"
         radius="xl"
         variant="outline"
