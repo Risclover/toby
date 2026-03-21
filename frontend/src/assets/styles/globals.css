@@ -570,7 +570,6 @@ form {
 
 .featured-empty-state {
     padding: 1rem;
-    padding-top: .5rem;
     gap: 0.15rem;
     color: var(--mantine-color-gray-7);
     text-align: center;

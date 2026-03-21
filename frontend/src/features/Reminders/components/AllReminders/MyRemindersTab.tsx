@@ -51,6 +51,7 @@ export const MyRemindersTab = () => {
             {allReminders.map(reminder => (
                 <NoticeBoardReminder key={reminder.id} reminder={reminder} />
             ))}
+            {allReminders.length === 0 && <div className="empty-announcements">No reminders yet.</div>}
             {data?.hasNextPage && (
                 <Button
                     variant="subtle"

@@ -106,7 +106,7 @@ export const ActivityFeed = ({ isReady, householdId }: Props) => {
             ) : isError || !data ? (
                 <p>Could not load activity.</p>
             ) : data.items.length === 0 ? (
-                <p>No recent activity.</p>
+                <div className="empty-announcements">No recent activity.</div>
             ) : (
                 <ul>
                     {data.items.map((event) => {

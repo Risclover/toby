@@ -45,7 +45,7 @@ const DATE_PICKER_STYLES = {
 
 export const CreateReminder = () => {
     const { closeCreateReminderModal, isOpen } = useCreateReminderModal();
-    const isSmallScreen = useIsSmallScreen();
+    const isSmallScreen = useIsSmallScreen(425);
 
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
@@ -113,7 +113,7 @@ export const CreateReminder = () => {
                     key={form.key("message")}
                     {...form.getInputProps("message")}
                 />
-                <RemainingChars count={remainingChars} max={MAX_CHARS} />
+                <RemainingChars count={form.values.message.length} max={MAX_CHARS} />
 
                 <div className="two-column-inputs">
                     <div className="two-column-input">

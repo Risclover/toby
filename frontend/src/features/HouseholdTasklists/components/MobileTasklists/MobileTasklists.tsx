@@ -30,7 +30,7 @@ export const MobileTasklists = () => {
     const { data: user, isLoading: authLoading } = useAuthenticateQuery();
 
     const [opened, { open, close }] = useDisclosure(false);
-    const isSmall = useIsSmallScreen();
+    const isSmall = useIsSmallScreen(768);
     // Gate the lists query until we have an ID
     const householdId = user?.householdId ?? skipToken;
     const { openModal } = useCreateTasklistModal();

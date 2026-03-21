@@ -58,6 +58,7 @@ export const NoticeBoardReminders = ({ isReady, reminders, showAll = false, isLo
                     ? Array.from({ length: 5 }).map((_, i) => <NoticeBoardReminderSkeleton key={i} />)
                     : visible.map(reminder => <NoticeBoardReminder key={reminder.id} reminder={reminder} />)
                 }
+                {visible.length === 0 && <div className="empty-announcements">No reminders yet.</div>}
             </ul>
             <CreateReminder />
         </div>

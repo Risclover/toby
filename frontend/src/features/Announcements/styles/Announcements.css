@@ -365,4 +365,5 @@
     padding: 0.5rem 1rem;
     text-align: center;
     color: var(--mantine-color-gray-7);
+    font-size: var(--text-sm);
 }
