@@ -345,3 +345,51 @@ def get_user_created_reminders(user_id):
         "hasNextPage": (offset + limit) < total,
         "totalCount": total,
     }), 200
+
+def longest_streak(dates: list[date]) -> int:
+    if not dates:
+        return 0
+    dates = sorted(set(dates))  # dedupe and sort
+    best = current = 1
+    for i in range(1, len(dates)):
+        if dates[i] == dates[i - 1] + timedelta(days=1):
+            current += 1
+            best = max(best, current)
+        else:
+            current = 1
+    return best
+
+
+@user_routes.route("/profile/<int:id>")
+def get_user_profile_stats(id: int):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Total tasks completed
+    total_tasks = db.session.query(func.count(Task.id)).filter(
+        Task.assigned_to_id == id,
+        Task.completed_at != None
+    ).scalar()
+
+    # All-time check-in %
+    days_existed = (date.today() - user.created_at.date()).days + 1
+    total_checkins = db.session.query(func.count(Checkin.id)).filter(
+        Checkin.user_id == id
+    ).scalar()
+    checkin_pct = round((total_checkins / days_existed) * 100)
+
+    # Longest check-in streak
+    checkin_dates = [
+        row.local_date for row in
+        db.session.query(Checkin.local_date)
+        .filter(Checkin.user_id == id)
+        .all()
+    ]
+    checkin_streak = longest_streak(checkin_dates)
+
+    return jsonify({
+        "tasksCompleted": total_tasks,
+        "checkinPct": checkin_pct,
+        "checkinStreak": checkin_streak,
+    }), 200

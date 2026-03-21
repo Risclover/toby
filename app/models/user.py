@@ -80,6 +80,12 @@ class User(db.Model, UserMixin):
 
     settings = db.relationship('UserSetting', back_populates='user', uselist=False)
 
+    habits = db.relationship(
+        "Habit",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
     # Password management
     @property
     def password(self):
