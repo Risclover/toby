@@ -60,12 +60,12 @@ export const Tasklist = ({ list }: { list: TasklistType }) => {
                         onKeyDown={(e) => {
                             e.stopPropagation();
                             if (e.key === "Enter" || e.key === " ") {
-                                window.open(`/users/${user.id}`, "_blank")
+                                window.open(`/profile/${user.id}`, "_blank")
                             }
                         }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            window.open(`/users/${user.id}`, "_blank")
+                            window.open(`/profile/${user.id}`, "_blank")
                         }}
                     >
                         {!user.profileImg && avatarInitial(user)}
@@ -78,12 +78,12 @@ export const Tasklist = ({ list }: { list: TasklistType }) => {
                         onKeyDown={(e) => {
                             e.stopPropagation();
                             if (e.key === "Enter" || e.key === " ") {
-                                window.open(`/users/${user.id}`, "_blank")
+                                window.open(`/profile/${user.id}`, "_blank")
                             }
                         }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            window.open(`/users/${user.id}`, "_blank")
+                            window.open(`/profile/${user.id}`, "_blank")
                         }}
                     >
                         {!user.profileImg && avatarInitial(user)}

@@ -22,7 +22,7 @@ export const MemberAvatarGroup = ({ members, limit = 2 }: MemberAvatarGroupProps
 
     const handleAvatarClick = (e: React.MouseEvent | React.KeyboardEvent, id: string | number) => {
         e.stopPropagation();
-        window.open(`/users/${id}`, "_blank");
+        window.open(`/profile/${id}`, "_blank");
     };
 
     return (

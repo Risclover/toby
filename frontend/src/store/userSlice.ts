@@ -165,6 +165,11 @@ export const userSlice = apiSlice.injectEndpoints({
                 }
             },
         }),
+
+        getUserProfileStats: builder.query<{ tasksCompleted: number; checkinPct: number; checkinStreak: number; }, number>({
+            query: (userId) => `/users/profile/${userId}`,
+            providesTags: (_result, _error, userId) => [{ type: "User", id: userId }],
+        }),
     }),
 });
 
@@ -179,5 +184,6 @@ export const {
     useUploadImgMutation,
     useGetUserMoodQuery,
     useGetUserTaskStatsQuery,
-    useUpdateTimezoneMutation
+    useUpdateTimezoneMutation,
+    useGetUserProfileStatsQuery,
 } = userSlice;

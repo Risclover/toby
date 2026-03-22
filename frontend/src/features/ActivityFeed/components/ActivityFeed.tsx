@@ -117,7 +117,7 @@ export const ActivityFeed = ({ isReady, householdId }: Props) => {
                                 <div className="event-text">
                                     <div className="event-line1">
                                         <span className="event-main">
-                                            <Link className="event-link" to={`/users/${event.actor.id}`}>{event.actor.displayName}</Link>{" "}
+                                            <Link className="event-link" to={`/profile/${event.actor.id}`}>{event.actor.displayName}</Link>{" "}
                                             {line1}
                                         </span>
                                         <span className="event-time">{formatTime(event.createdAt)}</span>

@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, jsonify, request
 from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment
 from flask_login import current_user, login_required
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from app.extensions import db
 from app.s3_helpers import (
     upload_file_to_s3, allowed_file, get_unique_filename)
@@ -366,26 +366,28 @@ def get_user_profile_stats(id: int):
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # Total tasks completed
+    # Total tasks completed by this user
     total_tasks = db.session.query(func.count(Task.id)).filter(
-        Task.assigned_to_id == id,
+        Task.completed_by_id == id,
         Task.completed_at != None
     ).scalar()
 
-    # All-time check-in %
-    days_existed = (date.today() - user.created_at.date()).days + 1
-    total_checkins = db.session.query(func.count(Checkin.id)).filter(
-        Checkin.user_id == id
-    ).scalar()
-    checkin_pct = round((total_checkins / days_existed) * 100)
-
-    # Longest check-in streak
+    # Fetch once, reuse for both % and streak
     checkin_dates = [
         row.local_date for row in
         db.session.query(Checkin.local_date)
         .filter(Checkin.user_id == id)
         .all()
     ]
+    unique_dates = set(checkin_dates)
+
+    if unique_dates:
+        earliest = min(unique_dates)
+        days_existed = (date.today() - earliest).days + 1
+    else:
+        days_existed = 1
+
+    checkin_pct = round((len(unique_dates) / days_existed) * 100)
     checkin_streak = longest_streak(checkin_dates)
 
     return jsonify({

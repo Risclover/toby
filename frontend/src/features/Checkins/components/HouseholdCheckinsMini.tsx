@@ -92,7 +92,7 @@ function MemberRow({
                         src={member.profileImg || undefined}
                         radius="xl"
                         size={isSmall ? 28 : isMedium ? 36 : 42}
-                        onClick={() => window.open(`/users/${member.id}`, "_blank")}
+                        onClick={() => window.open(`/profile/${member.id}`, "_blank")}
                         style={{ cursor: "pointer", border: "1px solid var(--mantine-color-white)", marginRight: "10px" }}
                     >
                         {!member.profileImg}

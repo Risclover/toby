@@ -30,13 +30,16 @@ def update_task_status(id):
     if completed is True:
         task.status = "completed"
         task.completed_at = datetime.utcnow()
+        task.completed_by_id = current_user.id
     elif completed is False:
         task.status = "in_progress"
         task.completed_at = None
+        task.completed_by_id = None
     elif data.get("status") in {"completed", "in_progress", "pending"}:
         task.status = data["status"]
         if task.status == "completed":
             task.completed_at = datetime.utcnow()
+            task.completed_by_id = current_user.id
     else:
         return jsonify({"error": "Provide boolean 'completed' or valid 'status'"}), 400
 

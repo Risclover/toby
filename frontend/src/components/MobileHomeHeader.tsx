@@ -32,7 +32,7 @@ export const MobileHomeHeader = () => {
                 <div className="mobile-header-separator" />
 
                 {/* User avatar */}
-                <Avatar variant="outline" color="white" size={32} onClick={() => navigate(`/users/${user.id}`)} src={user?.profileImg} />
+                <Avatar variant="outline" color="white" size={32} onClick={() => navigate(`/profile/${user.id}`)} src={user?.profileImg} />
                 {user?.errors && user?.errors[0] === "Unauthorized" && <Link to="/login">Login</Link>}
             </div>
         </div>

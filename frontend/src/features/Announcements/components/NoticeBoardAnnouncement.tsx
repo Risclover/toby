@@ -30,9 +30,9 @@ export const NoticeBoardAnnouncement = ({ announcement }: Props) => {
                 <div className="single-announcement-header">
                     {/* Creator avatar and name, creation timestamp */}
                     <div className="single-announcement-header-left">
-                        <Avatar component={Link} to={`/users/${creator?.id}`} target="_blank" src={creator?.profileImg} radius="xl" size={20} />
+                        <Avatar component={Link} to={`/profile/${creator?.id}`} target="_blank" src={creator?.profileImg} radius="xl" size={20} />
                         <div className="single-announcement-header-info">
-                            <Link target="_blank" to={`/users/${creator?.id}`} className="single-announcement-creator">{creator?.firstName}</Link>
+                            <Link target="_blank" to={`/profile/${creator?.id}`} className="single-announcement-creator">{creator?.firstName}</Link>
                             <span className="single-announcement-timestamp">
                                 {formattedTimestamp
                                     ? `${formattedTimestamp.day} · ${formattedTimestamp.time}`

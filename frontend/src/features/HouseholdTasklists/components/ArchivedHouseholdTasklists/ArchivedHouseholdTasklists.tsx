@@ -32,7 +32,7 @@ export const ArchivedHouseholdTasklists = () => {
     }
 
     const goToUserProfile = (userId: number | undefined) => {
-        window.open(`/users/${userId}`, "_blank")
+        window.open(`/profile/${userId}`, "_blank")
     }
 
     const archivedItems = archivedLists?.map(list => <div className="archived-household-tasklists-item">

@@ -68,6 +68,8 @@ def create_app(config_class=None) -> Flask:
     app.config.from_object(config_class or Config)
     SECRET_KEY = os.urandom(32)
     app.config['SECRET_KEY'] = SECRET_KEY
+    app.config["DEBUG"] = True
+
     # --------------------------------------------------------------------- #
     # Initialise extensions
     # --------------------------------------------------------------------- #

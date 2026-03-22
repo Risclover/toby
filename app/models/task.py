@@ -16,6 +16,7 @@ class Task(db.Model):
     is_important=db.Column(db.Boolean, default=False)
     due_date=db.Column(db.Date, nullable=True)
     assigned_to_id=db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    completed_by_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     sort_index = db.Column(db.Integer, nullable=False, default=0)
     notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
