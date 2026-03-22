@@ -9,6 +9,7 @@ class Habit(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(255), nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_private = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     user = db.relationship("User", back_populates="habits")
@@ -25,6 +26,7 @@ class Habit(db.Model):
             "name": self.name,
             "description": self.description,
             "isActive": self.is_active,
+            "isPrivate": self.is_private,
             "createdAt": self.created_at,
         }
 
