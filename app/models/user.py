@@ -81,7 +81,7 @@ class User(db.Model, UserMixin):
     featured_list_settings = db.relationship('FeaturedListSetting', back_populates='user', uselist=False)
 
     habits = db.relationship(
-        "Habit",                                                                                                                                                                                                  
+        "Habit",                                           
         back_populates="user",
         cascade="all, delete-orphan"
     )
@@ -120,6 +120,9 @@ class User(db.Model, UserMixin):
             "reminders": [
                 assignment.reminder.to_dict_for_user(assignment)
                 for assignment in self.reminder_assignments
+            ],
+            "habits": [
+                habit.to_dict() for habit in self.habits
             ]
         }
 

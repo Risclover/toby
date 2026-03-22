@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, jsonify, request
-from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment
+from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment, Habit
 from flask_login import current_user, login_required
 from sqlalchemy import or_, func
 from app.extensions import db
@@ -346,12 +346,6 @@ def get_user_created_reminders(user_id):
         "totalCount": total,
     }), 200
 
-@user_routes.route("/<int:user_id>/habits", methods=["GET"])
-@login_required
-def get_user_habits(user_id):
-    if current_user.id != user_id:
-        return jsonify({ "error": "Forbidden" }), 403
-
 def longest_streak(dates: list[date]) -> int:
     if not dates:
         return 0
@@ -401,3 +395,25 @@ def get_user_profile_stats(id: int):
         "checkinPct": checkin_pct,
         "checkinStreak": checkin_streak,
     }), 200
+
+@user_routes.route("/<int:user_id>/habits", methods=["GET"])
+@login_required
+def get_user_habits(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Visitors must be in the same household
+    if user.household_id != current_user.household_id:
+        return jsonify({"error": "Forbidden"}), 403
+
+    query = Habit.query.filter_by(user_id=user_id, is_active=True)
+
+    # Visitors can't see private habits
+    if current_user.id != user_id:
+        query = query.filter_by(is_private=False)
+
+    habits = query.order_by(Habit.created_at.asc()).all()
+
+    return jsonify([h.to_dict() for h in habits]), 200
+    
