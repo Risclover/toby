@@ -1,5 +1,5 @@
 import { useAddTaskMutation, useAuthenticateQuery, useCompleteTaskMutation, useGetTasklistQuery, type Task } from "@/store"
-import { useGetUserSettingsQuery, type FeaturedTasklistSettings } from "@/store/userSettingSlice";
+import { useGetFeaturedListSettingsQuery, type FeaturedTasklistSettings } from "@/store/featuredListSettingSlice";
 import { ActionIcon, Button, Checkbox, Popover, Progress, ScrollArea, TextInput, Tooltip } from "@mantine/core";
 import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent } from "react";
 import InfoOutlineRoundedIcon from '@mui/icons-material/InfoOutlineRounded';
@@ -32,12 +32,12 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
     const [taskValue, setTaskValue] = useState("");
     const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
-    const { data: userSettings, isLoading: isSettingsLoading } = useGetUserSettingsQuery();
+    const { data: userSettings, isLoading: isSettingsLoading } = useGetFeaturedListSettingsQuery();
 
     const [addTask] = useAddTaskMutation();
 
 
-    let featuredTasklistId = userSettings?.featuredTasklist.featuredTasklistId;
+    let featuredTasklistId = userSettings?.featuredTasklist.tasklistId;
 
 
     const { data: tasklist, isLoading: isTasklistLoading } = useGetTasklistQuery(

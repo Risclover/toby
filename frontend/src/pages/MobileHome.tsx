@@ -5,7 +5,7 @@ import { MobileLayout } from "@/layout/MobileLayout";
 import { TaskStatusSection } from "@/components/DueTaskStats/TaskStatusSelection";
 import { TimezoneSelect } from "@/components/TimezoneSelect";
 import { useEffect, useState } from "react";
-import { useAuthenticateQuery, useGetTasklistQuery, useGetUserSettingsQuery, useGetUserTaskStatsQuery, useUpdateTimezoneMutation } from "@/store";
+import { useAuthenticateQuery, useGetFeaturedListSettingsQuery, useGetTasklistQuery, useGetUserTaskStatsQuery, useUpdateTimezoneMutation } from "@/store";
 import { Button } from "@mantine/core";
 import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/HomepageListsCollapseCard";
 import { HomepageNoticeBoardCollapseCard } from "@/components/HomepageCollapseCard/HomepageNoticeBoardCollapseCard";
@@ -18,10 +18,10 @@ import { skipToken } from "@reduxjs/toolkit/query";
 export const MobileHome = () => {
     const mobileHomeFamilyTitle = <MobileHomeFamilyTitle />
     const { data: user, isLoading: isAuthLoading } = useAuthenticateQuery();
-    const { data: userSettings, isLoading: isSettingsLoading } = useGetUserSettingsQuery();
+    const { data: userSettings, isLoading: isSettingsLoading } = useGetFeaturedListSettingsQuery();
     const { isLoading: isHouseholdLoading } = useHousehold();
     const { isLoading: isTasklistLoading } = useGetTasklistQuery(
-        userSettings?.featuredTasklist.featuredTasklistId ?? skipToken
+        userSettings?.featuredTasklist.tasklistId ?? skipToken
     );
     const { isLoading: isTaskStatsLoading } = useGetUserTaskStatsQuery(
         user?.id ?? skipToken

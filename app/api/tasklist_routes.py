@@ -1,6 +1,6 @@
 # routes/tasklists.py
 from flask import Blueprint, jsonify, request
-from app.models import Tasklist, Task, User, Household, TasklistMember, UserSetting
+from app.models import Tasklist, Task, User, Household, TasklistMember, FeaturedListSetting
 from app.extensions import db
 from flask_login import current_user, login_required
 from app.models.tasklist import SortOrder
@@ -216,8 +216,8 @@ def clear_list(list_id):
 @tasklist_routes.route("/<int:id>", methods=["DELETE"])
 def delete_list(id):
     tasklist = Tasklist.query.get_or_404(id)
-    UserSetting.query.filter(UserSetting.featured_tasklist_id == id).update(
-        {UserSetting.featured_tasklist_id: None},
+    FeaturedListSetting.query.filter(FeaturedListSetting.tasklist_id == id).update(
+        {FeaturedListSetting.tasklist_id: None},
         synchronize_session=False
     )
 

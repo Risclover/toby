@@ -1,4 +1,4 @@
-import { useFeatureTasklistMutation } from "@/store/userSettingSlice";
+import { useFeatureTasklistMutation } from "@/store/featuredListSettingSlice";
 import { useNavigate } from "react-router-dom";
 
 export const useTasklistActions = (tasklistId: number, userId?: number, householdId?: number) => {

@@ -1,7 +1,6 @@
 import { useIsSmallScreen } from "@/hooks";
 import { useSettingsModal } from "@/hooks/useSettingsModal";
-import { useAuthenticateQuery } from "@/store";
-import { useGetUserSettingsQuery, useUpdateUserSettingsMutation, type FeaturedTasklistSettings } from "@/store/userSettingSlice";
+import { useAuthenticateQuery, useGetFeaturedListSettingsQuery, useUpdateFeaturedListSettingsMutation, type FeaturedTasklistSettings } from "@/store";
 import { Button, Group, Modal, Tabs } from "@mantine/core"
 import { FeaturedTasklistTab } from "./FeaturedTasklistTab";
 import { DiscardWarning } from "@/features";
@@ -14,14 +13,14 @@ type Props = {
 export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Props) => {
     const isSmallScreen = useIsSmallScreen();
     const { data: user } = useAuthenticateQuery();
-    const [updateUserSettings] = useUpdateUserSettingsMutation();
-    const { data: userSettings } = useGetUserSettingsQuery();
+    const [updateUserSettings] = useUpdateFeaturedListSettingsMutation();
+    const { data: userSettings } = useGetFeaturedListSettingsQuery();
 
     const [activeTab, setActiveTab] = useState<string | null>("tasks");
     const [pendingTab, setPendingTab] = useState<string | null>(null);
 
     const initialValues = useMemo<FeaturedTasklistSettings>(() => ({
-        featuredTasklistId: userSettings?.featuredTasklist.featuredTasklistId ?? null,
+        tasklistId: userSettings?.featuredTasklist.tasklistId ?? null,
         justMeFilter: userSettings?.featuredTasklist.justMeFilter ?? false,
         urgencyFilter: {
             overdue: userSettings?.featuredTasklist.urgencyFilter.overdue ?? false,
@@ -38,7 +37,7 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Pr
     }), [userSettings]);
 
     const defaultValues: FeaturedTasklistSettings = {
-        featuredTasklistId: userSettings?.featuredTasklist.featuredTasklistId,
+        tasklistId: userSettings?.featuredTasklist.tasklistId,
         justMeFilter: false,
         urgencyFilter: {
             overdue: false,
@@ -110,7 +109,7 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings }: Pr
 
     return (
         <Modal
-            key={`${user?.id}-${user?.featuredTasklistId}`}
+            key={`${user?.id}-${user?.tasklistId}`}
             opened={opened}
             onClose={handleClose}
             title="Featured List Settings"

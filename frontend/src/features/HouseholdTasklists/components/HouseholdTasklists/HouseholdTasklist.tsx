@@ -26,8 +26,8 @@ import { TasklistActionsMenu } from "./TasklistActionsMenu";
 import { useTasklistSettings } from "../../hooks";
 import { DeleteConfirmation } from "../TasklistSettings";
 import { Tasklist } from "./Tasklist";
-import { useGetUserSettingsQuery } from "@/store/userSettingSlice";
 import { useHousehold } from "@/hooks/useHousehold";
+import { useGetFeaturedListSettingsQuery } from "@/store";
 
 type HouseholdTasklistProps = {
     list: TasklistType;
@@ -48,7 +48,7 @@ export function HouseholdTasklist(props: HouseholdTasklistProps) {
 export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
-    const { data: userSettings } = useGetUserSettingsQuery();
+    const { data: userSettings } = useGetFeaturedListSettingsQuery();
 
     const { showDeleteConfirmation, setShowDeleteConfirmation, handleDeleteList } = useTasklistSettings({ tasklistId: list.id });
 
@@ -83,15 +83,15 @@ export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                     <div className="mobile-tasklist-card-header-top">
                         <span className="tasklist-head-title">{list.title}</span>
                         <div className="mobile-tasklist-card-header-top header-right">
-                            <Tooltip label={list.id === userSettings?.featuredTasklist.featuredTasklistId ? "Remove as featured" : "Set as featured"}>
+                            <Tooltip label={list.id === userSettings?.featuredTasklist.tasklistId ? "Remove as featured" : "Set as featured"}>
                                 <ActionIcon
                                     size="compact-xs"
                                     onClick={toggleFeatured}
                                     onKeyDown={handleStarKeyDown}
-                                    color={list.id === userSettings?.featuredTasklist.featuredTasklistId ? "rgb(230, 176, 2)" : "cyan"}
+                                    color={list.id === userSettings?.featuredTasklist.tasklistId ? "rgb(230, 176, 2)" : "cyan"}
                                     variant="transparent"
                                 >
-                                    {list.id === userSettings?.featuredTasklist.featuredTasklistId ? <StarIcon color="rgb(230, 176, 2)" size="20px" /> : <StarIconOutline color="var(--mantine-color-gray-6)" size="20px" />}
+                                    {list.id === userSettings?.featuredTasklist.tasklistId ? <StarIcon color="rgb(230, 176, 2)" size="20px" /> : <StarIconOutline color="var(--mantine-color-gray-6)" size="20px" />}
                                 </ActionIcon>
                             </Tooltip>
                             <TasklistActionsMenu tasklistId={list.id} setShowDeleteConfirmation={setShowDeleteConfirmation} />

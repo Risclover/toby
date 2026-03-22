@@ -1,7 +1,7 @@
 import { Box, Checkbox, Flex, Group, rem, Stack, Text } from "@mantine/core";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { StarIcon } from "@/assets/icons/StarIcon";
-import type { FeaturedListView } from "@/store/userSettingSlice";
+import type { FeaturedListView } from "@/store/featuredListSettingSlice";
 
 function MiniLine({ width, height, opacity = 1, marginTop, color = 'currentColor' }: { width: string | number; height: string | number; opacity?: number; marginTop?: string | number; color?: string; }) {
     return (

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { type Task, type TasklistType } from "@/store"; // Adjust import to match your project
-import { type FeaturedTasklistSettings } from "@/store/userSettingSlice";
+import { type FeaturedTasklistSettings } from "@/store/featuredListSettingSlice";
 
 // Helper to get formatted date strings (YYYY-MM-DD)
 const getTodayString = () => new Date().toISOString().split('T')[0];

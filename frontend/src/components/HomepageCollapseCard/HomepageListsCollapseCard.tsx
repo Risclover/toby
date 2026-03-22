@@ -40,7 +40,7 @@ export const HomepageListsCollapseCard = ({ isReady }: { isReady: boolean }) => 
                     Shopping
                 </HomepageCollapseCardTab>
             </HomepageCollapseCardTabs>
-            {showFeaturedListSettings && <FeaturedListSettings key={`${user?.featuredTasklistId}`} opened={showFeaturedListSettings} setShowFeaturedListSettings={setShowFeaturedListSettings} />}
+            {showFeaturedListSettings && <FeaturedListSettings key={`${user?.tasklistId}`} opened={showFeaturedListSettings} setShowFeaturedListSettings={setShowFeaturedListSettings} />}
         </HomepageCollapseCard>
     )
 }

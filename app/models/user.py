@@ -78,10 +78,10 @@ class User(db.Model, UserMixin):
     # projects = db.relationship("ProjectMember", back_populates="user")
     # moods = db.relationship("MoodCheckin", back_populates="user")
 
-    settings = db.relationship('UserSetting', back_populates='user', uselist=False)
+    featured_list_settings = db.relationship('FeaturedListSetting', back_populates='user', uselist=False)
 
     habits = db.relationship(
-        "Habit",
+        "Habit",                                                                                                                                                                                                  
         back_populates="user",
         cascade="all, delete-orphan"
     )

@@ -1,7 +1,7 @@
 import { authSlice, type RootState } from ".";
 import { apiSlice } from "./apiSlice";
 import { householdSlice } from "./householdSlice"; // 👈 add this import
-import { userSettingsSlice } from "./userSettingSlice";
+import { featuredListSettingsSlice } from "./featuredListSettingSlice";
 
 export interface Task {
     id: number;
@@ -320,12 +320,12 @@ export const taskSlice = apiSlice.injectEndpoints({
 
                 // Clear featuredTasklistId if it points at this list
                 const patchSettings = dispatch(
-                    userSettingsSlice.util.updateQueryData(
-                        "getUserSettings",
+                    featuredListSettingsSlice.util.updateQueryData(
+                        "getFeaturedListSettings",
                         undefined,
                         (draft) => {
-                            if (draft.featuredTasklist.featuredTasklistId === listId) {
-                                draft.featuredTasklist.featuredTasklistId = null;
+                            if (draft.featuredTasklist.tasklistId === listId) {
+                                draft.featuredTasklist.tasklistId = null;
                             }
                         }
                     )
@@ -341,7 +341,7 @@ export const taskSlice = apiSlice.injectEndpoints({
             invalidatesTags: (_res, _err, { listId, householdId }) => [
                 { type: "Tasklist", id: listId },
                 { type: "Tasklist", id: "LIST" },
-                "UserSettings",
+                "FeaturedListSettings",
                 ...(householdId != null ? [{ type: "Activity" as const, id: `HOUSEHOLD_${householdId}` }] : []),
             ],
         }),

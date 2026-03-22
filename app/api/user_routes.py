@@ -346,6 +346,12 @@ def get_user_created_reminders(user_id):
         "totalCount": total,
     }), 200
 
+@user_routes.route("/<int:user_id>/habits", methods=["GET"])
+@login_required
+def get_user_habits(user_id):
+    if current_user.id != user_id:
+        return jsonify({ "error": "Forbidden" }), 403
+
 def longest_streak(dates: list[date]) -> int:
     if not dates:
         return 0

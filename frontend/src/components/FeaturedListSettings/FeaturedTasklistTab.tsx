@@ -1,7 +1,6 @@
 import { SettingsItem, TaskViewSelector } from "@/features"
 import { useIsSmallScreen } from "@/hooks"
-import { useAuthenticateQuery, useGetHouseholdTasklistsQuery, useGetTasklistsQuery } from "@/store";
-import { useGetUserSettingsQuery, type FeaturedListView, type FeaturedTasklistSettings } from "@/store/userSettingSlice";
+import { useAuthenticateQuery, useGetHouseholdTasklistsQuery, useGetTasklistsQuery, type FeaturedListView, type FeaturedTasklistSettings } from "@/store";
 import { Button, Checkbox, Collapse, Divider, FloatingIndicator, Group, Input, Loader, Select, Space, Switch, Tabs, Text, UnstyledButton } from "@mantine/core"
 import type { UseFormReturnType } from "@mantine/form";
 import React, { useState } from "react";
@@ -33,6 +32,7 @@ export const FeaturedTasklistTab = ({ form, handleClose }: Props) => {
     const userTasklists = tasklists?.filter(tasklist => tasklist.memberIds?.includes(user.id) || tasklist.allMembers);
     const { overdue, dueToday, dueSoon } = form.values.urgencyFilter;
     const [showUrgencyFilters, setShowUrgencyFilters] = useState(overdue || dueToday || dueSoon);
+
     const handleUrgencySwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = e.currentTarget.checked;
         setShowUrgencyFilters(isChecked);
@@ -81,13 +81,9 @@ export const FeaturedTasklistTab = ({ form, handleClose }: Props) => {
                                 clearable
                                 placeholder="Pick a tasklist"
                                 data={userTasklists.map(t => ({ value: t.id.toString(), label: t.title }))}
-                                {...form.getInputProps("featuredTasklistId")}
-                                // Ensure we handle null/empty values correctly
-                                value={form.values.featuredTasklistId ? form.values.featuredTasklistId.toString() : null}
+                                value={form.values.tasklistId ? form.values.tasklistId.toString() : null}
                                 onChange={(val) => {
-                                    // Handle conversion back to number or null
-                                    const numericVal = val ? Number(val) : null;
-                                    form.setFieldValue("featuredTasklistId", numericVal);
+                                    form.setFieldValue("tasklistId", val ? Number(val) : null);
                                 }}
                             />
                         ) : (

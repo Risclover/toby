@@ -12,7 +12,7 @@ from .event import Event
 from .checkin import Checkin
 from .mood import Mood
 from .reminder import Reminder, ReminderType, ReminderAssignment, RepeatFrequency
-from .user_setting import UserSetting
+from .featured_list_setting import FeaturedListSetting
 from .activity_event import ActivityEvent
 from .habit import Habit
 from .habit_completion import HabitCompletion

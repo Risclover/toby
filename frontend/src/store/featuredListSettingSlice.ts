@@ -12,7 +12,7 @@ interface FeaturedTasklistUrgencyFilter {
 }
 
 export interface FeaturedTasklistSettings {
-    featuredTasklistId: number | null | undefined;
+    tasklistId: number | null | undefined;
     justMeFilter: boolean;
     urgencyFilter: FeaturedTasklistUrgencyFilter;
     importantOnly: boolean;
@@ -24,43 +24,43 @@ export interface FeaturedTasklistSettings {
     showQuickAdd: boolean;
 }
 
-export interface UserSettings {
+export interface FeaturedListSettings {
     id: number;
     userId: number;
     featuredTasklist: FeaturedTasklistSettings;
 }
 
-export const userSettingsSlice = apiSlice.injectEndpoints({
+export const featuredListSettingsSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getUserSettings: builder.query<UserSettings, void>({
-            query: () => "/user-settings",
-            providesTags: ["UserSettings"]
+        getFeaturedListSettings: builder.query<FeaturedListSettings, void>({
+            query: () => "/featured-list-settings",
+            providesTags: ["FeaturedListSettings"]
         }),
 
-        updateUserSettings: builder.mutation<FeaturedTasklistSettings, Partial<FeaturedTasklistSettings>>({
+        updateFeaturedListSettings: builder.mutation<FeaturedTasklistSettings, Partial<FeaturedTasklistSettings>>({
             query: (data) => ({
-                url: "/user-settings",
+                url: "/featured-list-settings",
                 method: "PUT",
                 body: { featuredTasklist: data }
             }),
-            invalidatesTags: ["UserSettings"]
+            invalidatesTags: ["FeaturedListSettings"]
         }),
 
-        resetUserSettings: builder.mutation<UserSettings, void>({
+        resetFeaturedListSettings: builder.mutation<FeaturedListSettings, void>({
             query: () => ({
-                url: "/user-settings/reset",
+                url: "/featured-list-settings/reset",
                 method: "POST"
             }),
-            invalidatesTags: ["UserSettings"]
+            invalidatesTags: ["FeaturedListSettings"]
         }),
 
         featureTasklist: builder.mutation<void, { tasklistId: number; householdId: number }>({
             query: ({ tasklistId }) => ({
-                url: `/user-settings/featured-tasklist`,
+                url: `/featured-list-settings/featured-tasklist`,
                 method: 'PATCH',
                 body: { tasklistId },
             }),
-            invalidatesTags: ['UserSettings', 'Household'], // Invalidate Household to ensure lists sync up eventually
+            invalidatesTags: ['FeaturedListSettings', 'Household'], // Invalidate Household to ensure lists sync up eventually
             async onQueryStarted({ householdId, tasklistId }, { dispatch, queryFulfilled }) {
                 // 1. Update the Lists (Visual "Star" icon on the dashboard cards)
                 const listPatch = dispatch(
@@ -90,16 +90,16 @@ export const userSettingsSlice = apiSlice.injectEndpoints({
 
                 // 2. Update User Settings (The new home for the ID)
                 const settingsPatch = dispatch(
-                    userSettingsSlice.util.updateQueryData('getUserSettings', undefined, (draft) => {
-                        const currentId = draft.featuredTasklist.featuredTasklistId;
+                    featuredListSettingsSlice.util.updateQueryData('getFeaturedListSettings', undefined, (draft) => {
+                        const currentId = draft.featuredTasklist.tasklistId;
 
                         // Backend Toggle Logic: 
                         // If the ID matches what's saved, set to null (toggle off).
                         // Otherwise, set to the new ID.
                         if (currentId === tasklistId) {
-                            draft.featuredTasklist.featuredTasklistId = null;
+                            draft.featuredTasklist.tasklistId = null;
                         } else {
-                            draft.featuredTasklist.featuredTasklistId = tasklistId;
+                            draft.featuredTasklist.tasklistId = tasklistId;
                         }
                     })
                 );
@@ -116,8 +116,8 @@ export const userSettingsSlice = apiSlice.injectEndpoints({
 })
 
 export const {
-    useGetUserSettingsQuery,
-    useUpdateUserSettingsMutation,
-    useResetUserSettingsMutation,
+    useGetFeaturedListSettingsQuery,
+    useUpdateFeaturedListSettingsMutation,
+    useResetFeaturedListSettingsMutation,
     useFeatureTasklistMutation
-} = userSettingsSlice;
+} = featuredListSettingsSlice;

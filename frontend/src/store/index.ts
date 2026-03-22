@@ -49,5 +49,5 @@ export * from "./moodSlice";
 export * from "./reminderSlice";
 export * from "./shoppingSlice";
 export * from "./taskSlice";
-export * from "./userSettingSlice";
+export * from "./featuredListSettingSlice";
 export * from "./userSlice";
