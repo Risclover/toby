@@ -86,6 +86,8 @@ class User(db.Model, UserMixin):
         cascade="all, delete-orphan"
     )
 
+    user_settings = db.relationship("UserSettings", back_populates="user", uselist=False, cascade="all, delete-orphan")
+
     # Password management
     @property
     def password(self):

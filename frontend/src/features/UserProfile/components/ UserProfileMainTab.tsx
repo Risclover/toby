@@ -1,10 +1,12 @@
-import { Tabs } from "@mantine/core"
+import { Button, Tabs } from "@mantine/core"
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
 import { TbFlameFilled } from "react-icons/tb";
 import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
 import { useGetUserProfileStatsQuery } from "@/store";
 import { useParams } from "react-router-dom";
+import { UserSettings } from "@/features/UserSettings/components/UserSettings";
+import { useState } from "react";
 
 export const UserProfileMainTab = () => {
     const { userId } = useParams();
@@ -12,9 +14,13 @@ export const UserProfileMainTab = () => {
         skip: !userId,
     });
 
+    const [showUserSettings, setShowUserSettings] = useState(false);
+
     console.log('stats:', stats)
     return (
         <Tabs.Panel value="profile" className="user-profile-main-container">
+            <Button onClick={() => setShowUserSettings(true)}>Settings</Button>
+            <UserSettings opened={showUserSettings} close={() => setShowUserSettings(false)} />
             <div className="user-profile-stats">
                 <div className="user-profile-stat">
                     <span className="user-profile-stat-icon"><CalendarMonthRoundedIcon /></span>

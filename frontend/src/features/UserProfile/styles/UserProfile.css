@@ -30,7 +30,7 @@
 }
 
 .user-profile-main-container {
-    padding: 1rem;
+    padding: .75rem 1rem;
 }
 
 .user-profile-stats {
@@ -107,6 +107,6 @@
     }
 
     .user-profile-main-container {
-        padding: .75rem;
+        padding: .5rem;
     }
 }
