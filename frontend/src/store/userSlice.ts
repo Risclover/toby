@@ -70,26 +70,6 @@ export const userSlice = apiSlice.injectEndpoints({
             invalidatesTags: ["User"],
         }),
 
-        // 3. Track habit (example mutation, you may adapt)
-        trackHabit: builder.mutation({
-            query: ({ habitId, userId, completed }) => ({
-                url: `/habits/${habitId}/track`,
-                method: "POST",
-                body: { userId, completed },
-            }),
-            invalidatesTags: ["User"],
-        }),
-
-        // 4. Create habit
-        createHabit: builder.mutation({
-            query: ({ userId, habitName, frequency }) => ({
-                url: `/habits`,
-                method: "POST",
-                body: { userId, habitName, frequency },
-            }),
-            invalidatesTags: ["User"],
-        }),
-
         // 5. Update points
         updatePoints: builder.mutation({
             query: ({ userId, points }) => ({
@@ -178,8 +158,6 @@ export const {
     useGetAllUsersQuery,
     useCheckinMutation,
     useUpdateUserDetailsMutation,
-    useTrackHabitMutation,
-    useCreateHabitMutation,
     useUpdatePointsMutation,
     useUploadImgMutation,
     useGetUserMoodQuery,

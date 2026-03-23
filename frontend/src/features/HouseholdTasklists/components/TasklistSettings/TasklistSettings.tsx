@@ -4,7 +4,7 @@ import { GeneralTab } from "./GeneralTab";
 import { BehaviorTab } from "./BehaviorTab";
 import { AppearanceTab } from "./AppearanceTab";
 import { DiscardWarning } from "./DiscardWarning";
-import { isTooLight } from "../../utils/isTooLight";
+import { isTooLight } from "@/utils";
 import { useParams } from "react-router-dom";
 import { useIsSmallScreen } from "@/hooks";
 

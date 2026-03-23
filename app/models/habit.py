@@ -8,6 +8,7 @@ class Habit(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(255), nullable=True)
+    color = db.Column(db.String(50), default="rgb(5, 5, 73)", nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     is_private = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -25,6 +26,7 @@ class Habit(db.Model):
             "userId": self.user_id,
             "name": self.name,
             "description": self.description,
+            "color": self.color,
             "isActive": self.is_active,
             "isPrivate": self.is_private,
             "createdAt": self.created_at,

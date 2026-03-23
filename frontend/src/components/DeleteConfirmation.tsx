@@ -21,7 +21,7 @@ export const DeleteConfirmation = ({ modalTitle, itemName, itemType, opened, set
                     size="compact-sm"
                     onClick={() => {
                         setShowDeleteConfirmation(false);
-                        triggerRef.current?.focus();
+                        triggerRef?.current?.focus();
                     }}
                     color="var(--mantine-color-dark-6)"
                     variant="outline"

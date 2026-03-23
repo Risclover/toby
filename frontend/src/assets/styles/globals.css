@@ -747,6 +747,10 @@ form {
     flex-shrink: 0;
 }
 
+.time-sensitive-task-info label {
+    word-break: break-word;
+}
+
 .sensitive-task-details .extra:not(.extra--tasklist) .extra-label {
     color: var(--mantine-color-gray-7);
 }

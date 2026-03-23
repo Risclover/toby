@@ -1,0 +1,92 @@
+/* .habits-control-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+} */
+
+
+.single-habit {
+    display: flex;
+    align-items: stretch;
+    margin: .5rem 0;
+    background: white;
+    border-radius: .5rem;
+    min-height: 55px;
+    box-shadow: var(--mantine-shadow-xs);
+}
+
+.single-habit-checkbox {
+    align-self: stretch;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* your habit color */
+    border-radius: 8px 0 0 8px;
+    flex-shrink: 0;
+    /* NO height: fixed value here */
+}
+
+.single-habit-details {
+    flex: 1;
+    padding: 12px 14px;
+}
+
+.single-habit-name {
+    font-size: var(--text-sm);
+    line-height: 1.2;
+}
+
+.single-habit-description {
+    font-size: var(--text-xs);
+    line-height: 1.2;
+}
+
+.single-habit {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: .5rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s, opacity 0.15s;
+}
+
+.single-habit:hover {
+    border-color: var(--mantine-color-gray-5);
+}
+
+.single-habit-accent {
+    width: 4px;
+    flex-shrink: 0;
+}
+
+.single-habit-details {
+    flex: 1;
+    padding: 12px 14px;
+    min-width: 0;
+}
+
+.single-habit-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.single-habit-description {
+    font-size: 12px;
+    color: var(--mantine-color-dimmed);
+}
+
+.single-habit-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 0 0 14px;
+    flex-shrink: 0;
+}
+
+.single-habit-streak {
+    font-size: 11px;
+    color: var(--mantine-color-dimmed);
+}

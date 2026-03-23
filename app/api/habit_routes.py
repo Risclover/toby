@@ -19,6 +19,7 @@ def create_habit():
         user_id=current_user.id,
         name=name,
         description=data.get("description"),
+        color=data.get("color"),
         is_private=data.get("isPrivate", False),
     )
 
@@ -39,10 +40,13 @@ def update_habit(habit_id):
         name = (data["name"] or "").strip()
         if not name:
             return jsonify({ "error": "Name cannot be empty" }), 400
-        habit.name = name;
+        habit.name = name
     
     if "description" in data:
         habit.description = data["description"]
+    
+    if "color" in data:
+        habit.color = data["color"]
 
     if "isPrivate" in data:
         habit.is_private = bool(data["isPrivate"])
