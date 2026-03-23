@@ -19,6 +19,7 @@ export interface UserSettingsResponse {
         lastName: string;
         email: string;
         timezone: string;
+        profileImg: string;
         // Add other User fields you need here
     };
     settings: UserSettings;
