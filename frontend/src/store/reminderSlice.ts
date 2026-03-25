@@ -63,10 +63,10 @@ export const reminderSlice = apiSlice.injectEndpoints({
             providesTags: (result = []) =>
                 result.length
                     ? [
-                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
-                        { type: 'Reminders', id: 'LIST' },
+                        ...result.map(({ id }) => ({ type: 'Reminder' as const, id })),
+                        { type: 'Reminder', id: 'LIST' },
                     ]
-                    : [{ type: 'Reminders', id: 'LIST' }],
+                    : [{ type: 'Reminder', id: 'LIST' }],
         }),
 
         getAllUserReminders: builder.query<PaginatedReminders, { userId: number; page?: number; limit?: number }>({
@@ -75,10 +75,10 @@ export const reminderSlice = apiSlice.injectEndpoints({
             providesTags: (result) =>
                 result
                     ? [
-                        ...result.items.map(({ id }) => ({ type: 'Reminders' as const, id })),
-                        { type: 'Reminders', id: 'LIST' },
+                        ...result.items.map(({ id }) => ({ type: 'Reminder' as const, id })),
+                        { type: 'Reminder', id: 'LIST' },
                     ]
-                    : [{ type: 'Reminders', id: 'LIST' }],
+                    : [{ type: 'Reminder', id: 'LIST' }],
         }),
 
         getUserCreatedReminders: builder.query<PaginatedReminders, { userId: number; page?: number; limit?: number }>({
@@ -87,10 +87,10 @@ export const reminderSlice = apiSlice.injectEndpoints({
             providesTags: (result) =>
                 result
                     ? [
-                        ...result.items.map(({ id }) => ({ type: 'Reminders' as const, id })),
-                        { type: 'Reminders', id: 'LIST' },
+                        ...result.items.map(({ id }) => ({ type: 'Reminder' as const, id })),
+                        { type: 'Reminder', id: 'LIST' },
                     ]
-                    : [{ type: 'Reminders', id: 'LIST' }],
+                    : [{ type: 'Reminder', id: 'LIST' }],
         }),
 
         /**
@@ -102,10 +102,10 @@ export const reminderSlice = apiSlice.injectEndpoints({
             providesTags: (result = []) =>
                 result.length
                     ? [
-                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
-                        { type: 'Reminders', id: 'LIST' },
+                        ...result.map(({ id }) => ({ type: 'Reminder' as const, id })),
+                        { type: 'Reminder', id: 'LIST' },
                     ]
-                    : [{ type: 'Reminders', id: 'LIST' }],
+                    : [{ type: 'Reminder', id: 'LIST' }],
         }),
 
         /**
@@ -122,7 +122,7 @@ export const reminderSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: [{ type: 'Reminders', id: 'LIST' }],
+            invalidatesTags: [{ type: 'Reminder', id: 'LIST' }],
         }),
 
         /**
@@ -133,7 +133,7 @@ export const reminderSlice = apiSlice.injectEndpoints({
                 url: `/reminders/${id}/seen`,
                 method: 'PATCH',
             }),
-            invalidatesTags: (result, error, id) => [{ type: 'Reminders', id }],
+            invalidatesTags: (result, error, id) => [{ type: 'Reminder', id }],
         }),
 
         /**
@@ -153,7 +153,7 @@ export const reminderSlice = apiSlice.injectEndpoints({
                 method: 'PATCH',
                 body,
             }),
-            invalidatesTags: (result, error, { id }) => [{ type: 'Reminders', id }],
+            invalidatesTags: (result, error, { id }) => [{ type: 'Reminder', id }],
         }),
 
         /**
@@ -164,17 +164,17 @@ export const reminderSlice = apiSlice.injectEndpoints({
                 url: `/reminders/${id}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: [{ type: 'Reminders', id: 'LIST' }],
+            invalidatesTags: [{ type: 'Reminder', id: 'LIST' }],
         }),
         getUserRemindersPreview: builder.query<Reminder[], number>({
             query: (householdId) => `/households/${householdId}/reminders/preview`,
             providesTags: (result = []) =>
                 result.length
                     ? [
-                        ...result.map(({ id }) => ({ type: 'Reminders' as const, id })),
-                        { type: 'Reminders', id: 'LIST' },
+                        ...result.map(({ id }) => ({ type: 'Reminder' as const, id })),
+                        { type: 'Reminder', id: 'LIST' },
                     ]
-                    : [{ type: 'Reminders', id: 'LIST' }],
+                    : [{ type: 'Reminder', id: 'LIST' }],
         }),
 
         markReminderSeenBulk: builder.mutation<{ marked: number }, { reminderIds: number[] }>({
@@ -183,7 +183,7 @@ export const reminderSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: [{ type: 'Reminders', id: 'LIST' }],
+            invalidatesTags: [{ type: 'Reminder', id: 'LIST' }],
         }),
     }),
 });

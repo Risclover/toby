@@ -6,10 +6,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthenticateQuery } from '@/store/authSlice';
 import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { Avatar } from '@mantine/core';
+import { useGetUserQuery } from '@/store';
 
 export const MobileHomeHeader = () => {
     const navigate = useNavigate();
-    const { data: user } = useAuthenticateQuery();
+    const { data: currentUser } = useAuthenticateQuery()
+    const { data: user } = useGetUserQuery(currentUser?.id);
 
     console.log('user:', user)
     return (

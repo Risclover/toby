@@ -1,0 +1,11 @@
+.user-settings-body {
+    padding: .5rem 1.25rem;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+@media (max-width: 500px) {
+    .user-settings-body {
+        padding: .5rem .75rem;
+    }
+}

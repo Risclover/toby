@@ -37,7 +37,7 @@ export const authSlice = apiSlice.injectEndpoints({
                 method: "GET",
                 credentials: "include"
             }),
-            providesTags: ["Session"]
+            providesTags: ["Session", "Auth"]
         }),
         login: builder.mutation<any, { email: string; password: string }>({
             query: ({ email, password }) => ({

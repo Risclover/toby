@@ -1,20 +1,23 @@
 // UserSettingsModal.tsx
 import {
     Modal, Stack, TextInput, Select, Switch,
-    SegmentedControl, Button, Avatar, Text
+    SegmentedControl, Button, Avatar, Text,
+    Group
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
     useGetUserSettingsQuery,
     useUpdateUserSettingsMutation,
     type Theme,
     type PrivacyMode,
 } from "@/store/userSettingsSlice";
-import { useUploadImgMutation } from "@/store/userSlice"; // adjust import to your slice
+import { useGetUserQuery, useUploadImgMutation } from "@/store/userSlice"; // adjust import to your slice
 import { SettingsItem } from "@/features/HouseholdTasklists";
 import { SettingsSection } from "@/components/FeaturedListSettings/SettingsSection";
-
+import { useIsSmallScreen } from "@/hooks";
+import { useAuthenticateQuery } from "@/store";
+import "../styles/UserSettings.css"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -55,15 +58,30 @@ const PRIVACY_OPTIONS: { value: PrivacyMode; label: string }[] = [
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const UserSettings = ({ opened, onClose }: Props) => {
+    const isSmallScreen = useIsSmallScreen();
     const { data } = useGetUserSettingsQuery();
+    const { data: currentUser } = useAuthenticateQuery();
+    const { data: user } = useGetUserQuery(currentUser?.id);
     const [updateSettings] = useUpdateUserSettingsMutation();
     const [uploadImg] = useUploadImgMutation();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Pending image is intentionally outside useForm — File objects aren't
     // form values, and the upload is a separate mutation.
     const [pendingImage, setPendingImage] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const defaultValues = ({
+        firstName: "",
+        lastName: "",
+        timezone: "America/Los Angeles",
+        siteTheme: "system",
+        habitsOnHomepage: false,
+        habitsPrivacyMode: "normal",
+        notesPrivacyMode: "normal"
+
+    })
 
     const form = useForm<UpdateUserSettingsPayload>({
         initialValues: {
@@ -110,32 +128,49 @@ export const UserSettings = ({ opened, onClose }: Props) => {
         setPreviewUrl(URL.createObjectURL(file));
     };
 
-    const handleSubmit = async (values: UpdateUserSettingsPayload) => {
-        if (pendingImage && data) {
-            await uploadImg({
-                userId: data.user.id,
-                imgType: "profile",
-                file: pendingImage,
-            }).unwrap();
+    const handleSubmit = async () => {
+        if (!hasChanges) return;
+        setIsSubmitting(true);
+        try {
+            await Promise.all([
+                (async () => {
+                    if (pendingImage && data) {
+                        await uploadImg({
+                            userId: data.user.id,
+                            imgType: "profile",
+                            file: pendingImage,
+                        }).unwrap();
+                    }
+                    if (form.isDirty()) {
+                        await updateSettings(form.values as never).unwrap();
+                    }
+                })(),
+                new Promise((resolve) => setTimeout(resolve, 400)),
+            ]);
+            form.resetDirty();
+            setPendingImage(null);
+        } finally {
+            setIsSubmitting(false);
         }
-
-        if (form.isDirty()) {
-            await updateSettings(values as never).unwrap();
-        }
-
-        onClose();
     };
 
-    const avatarSrc = previewUrl ?? data?.user.profileImg ?? undefined;
+    const handleResetToDefaults = () => {
+        if (!defaultValues) return;
+        form.setValues(defaultValues);
+    }
+
+    const avatarSrc = previewUrl ?? user?.profileImg ?? undefined;
     const hasChanges = form.isDirty() || pendingImage !== null;
 
     return (
-        <Modal opened={opened} onClose={onClose} title="Settings" radius="md" centered>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-                <Stack>
-
+        <Modal fullScreen={isSmallScreen} opened={opened} onClose={onClose} title="User Settings" radius="md" size="lg" centered styles={{
+            body: { display: "flex", flexDirection: "column", height: "100%", padding: 0, overflow: 'hidden' },
+            content: { overflow: 'hidden', maxHeight: isSmallScreen ? "100%" : "700px", height: "100%", display: "flex", flexDirection: "column" }
+        }} >
+            <div className="user-settings-body">
+                <Stack mih={0}>
                     <SettingsSection title="Account">
-                        <SettingsItem layout="row" label="Profile image" divider={false}>
+                        <SettingsItem layout="column" label="Profile image" divider={false} description="Represents you across the app">
                             {/* Hidden file input — triggered by clicking the avatar */}
                             <input
                                 ref={fileInputRef}
@@ -144,24 +179,23 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                                 style={{ display: "none" }}
                                 onChange={handleFileChange}
                             />
-                            <Avatar
-                                src={avatarSrc}
-                                size="lg"
-                                radius="xl"
-                                onClick={() => fileInputRef.current?.click()}
-                                style={{ cursor: "pointer" }}
-                            />
-                            {pendingImage && (
-                                <Text size="xs" c="dimmed">{pendingImage.name}</Text>
-                            )}
+                            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                                <Avatar
+                                    src={avatarSrc}
+                                    size="lg"
+                                    radius="xl"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    style={{ cursor: "pointer" }}
+                                />
+                            </div>
                         </SettingsItem>
-                        <SettingsItem layout="row" label="First name" divider={false}>
+                        <SettingsItem description="Your name or nickname" layout="column" label="First name" divider={false}>
                             <TextInput {...form.getInputProps("firstName")} />
                         </SettingsItem>
-                        <SettingsItem layout="row" label="Last name" divider={false}>
+                        <SettingsItem description="Your full name helps members identify you" layout="column" label="Last name" divider={false}>
                             <TextInput {...form.getInputProps("lastName")} />
                         </SettingsItem>
-                        <SettingsItem layout="row" label="Timezone" divider={true}>
+                        <SettingsItem description="Used to display dates and times in your local time" layout="column" label="Timezone" divider={true}>
                             <Select
                                 searchable
                                 data={TIMEZONE_OPTIONS}
@@ -171,7 +205,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                     </SettingsSection>
 
                     <SettingsSection title="Appearance">
-                        <SettingsItem layout="row" label="Theme" divider={true}>
+                        <SettingsItem description="Controls the app's color scheme" layout="column" label="Theme" divider={true}>
                             <SegmentedControl
                                 data={THEME_OPTIONS}
                                 {...form.getInputProps("siteTheme")}
@@ -187,6 +221,9 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                             divider={true}
                         >
                             <Switch
+                                withThumbIndicator={false}
+                                size="md"
+                                color="rgb(5, 5, 73)"
                                 checked={form.values.habitsOnHomepage}
                                 onChange={(e) =>
                                     form.setFieldValue("habitsOnHomepage", e.currentTarget.checked)
@@ -203,6 +240,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                             divider={false}
                         >
                             <Select
+                                allowDeselect={false}
                                 data={PRIVACY_OPTIONS}
                                 {...form.getInputProps("habitsPrivacyMode")}
                             />
@@ -214,22 +252,44 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                             divider={false}
                         >
                             <Select
+                                allowDeselect={false}
                                 data={PRIVACY_OPTIONS}
                                 {...form.getInputProps("notesPrivacyMode")}
                             />
                         </SettingsItem>
                     </SettingsSection>
-
-                    <Button
-                        type="submit"
-                        variant="filled"
-                        color="cyan"
-                        disabled={!hasChanges}
-                    >
-                        Save changes
-                    </Button>
                 </Stack>
-            </form>
-        </Modal>
+            </div>
+            <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ flexShrink: 0, borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}>
+                <Group justify="space-between" w="100%">
+                    <Button size="compact-sm" variant="transparent" color="rgb(5, 5, 73)" onClick={handleResetToDefaults} fw={500}>Reset to default</Button>
+                    <Group gap="0.5rem">
+                        <Button
+                            variant="outline"
+                            className="tasklist-settings-footer-btn"
+                            onClick={() => form.reset()}
+                            disabled={!form.isDirty() || !form.isValid()}
+                            fw={500}
+                            color="rgb(5, 5, 73)"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="filled"
+                            color="rgb(5, 5, 73)"
+                            disabled={!hasChanges || !form.isValid()}
+                            loading={isSubmitting}
+                            loaderProps={{ children: "Saving..." }}
+                            className="tasklist-settings-footer-btn"
+                            fw={500}
+                            onClick={handleSubmit}
+                        >
+                            Update
+                        </Button>
+                    </Group>
+                </Group>
+            </Modal.Header>
+        </Modal >
     );
 };

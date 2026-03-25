@@ -1,5 +1,5 @@
 import type { User } from "@/store/authSlice";
-import { Button, Checkbox, Flex, Input, MultiSelect, Space, Switch, Tabs } from "@mantine/core";
+import { Button, Checkbox, Flex, Input, MultiSelect, Space, Switch, Tabs, TextInput } from "@mantine/core";
 import type { UseFormReturnType } from "@mantine/form";
 import { SettingsItem } from "./SettingsItem";
 import { type TasklistType } from "@/store/taskSlice";
@@ -78,7 +78,7 @@ export const GeneralTab = ({
                 divider={true}
             >
                 <div className={!isSmallScreen ? "tasklist-settings-right" : ""}>
-                    <Input
+                    <TextInput
                         id="title"
                         ref={tasklistTitleRef}
                         maxLength={64}

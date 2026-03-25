@@ -83,19 +83,38 @@ export const userSlice = apiSlice.injectEndpoints({
         uploadImg: builder.mutation<UploadImgResponse, UploadImgArgs>({
             query: ({ userId, imgType, file }) => {
                 const form = new FormData();
-                form.append("image", file);        // <-- key must be "image" for your route
-
+                form.append("image", file);
                 return {
                     url: `/users/${userId}/img/${imgType}`,
                     method: "POST",
-                    body: form,                      // <-- let the browser set Content-Type
-                    // do NOT set headers: { "Content-Type": "multipart/form-data" }
+                    body: form,
                 };
             },
             invalidatesTags: (_result, _error, { userId }) => [
-                { type: "User", id: userId },      // if you tag users by id
-                "User",                            // fallback if you only have a generic tag
+                { type: "User", id: userId },
+                "User",
+                "Household",
+                "Tasklist",
+                "Reminder",
+                "Announcement",
+                "Activity",
+                "Auth", // <-- causes authenticate to refetch
             ],
+            async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+                const { data } = await queryFulfilled;
+
+                // Cast needed because `authenticate` is injected in authSlice —
+                // the base apiSlice doesn't carry its type information here.
+                dispatch(
+                    (apiSlice.util.updateQueryData as any)(
+                        "authenticate",
+                        undefined,
+                        (draft: { profileImg: string }) => {
+                            draft.profileImg = data.url;
+                        }
+                    )
+                );
+            },
         }),
 
         getUserMood: builder.query<UserMoodResponse, number>({
@@ -112,7 +131,7 @@ export const userSlice = apiSlice.injectEndpoints({
             number
         >({
             query: (userId) => `/users/${userId}/task_stats`,
-            providesTags: (result, error, userId) => [{ type: "UserTaskStats", id: userId }],
+            providesTags: (result, error, userId) => [{ type: "UserTaskStat", id: userId }],
         }),
 
         updateTimezone: builder.mutation<{ id: number; timezone: string }, string>({

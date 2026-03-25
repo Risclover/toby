@@ -20,7 +20,7 @@ export const UserProfileMainTab = () => {
     return (
         <Tabs.Panel value="profile" className="user-profile-main-container">
             <Button onClick={() => setShowUserSettings(true)}>Settings</Button>
-            <UserSettings opened={showUserSettings} close={() => setShowUserSettings(false)} />
+            <UserSettings opened={showUserSettings} onClose={() => setShowUserSettings(false)} />
             <div className="user-profile-stats">
                 <div className="user-profile-stat">
                     <span className="user-profile-stat-icon"><CalendarMonthRoundedIcon /></span>

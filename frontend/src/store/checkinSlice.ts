@@ -19,7 +19,7 @@ export const checkinApi = apiSlice.injectEndpoints({
                 if (to) p.set("to", to);
                 return `/users/${userId}/checkins${p.toString() ? `?${p.toString()}` : ""}`;
             },
-            providesTags: (_res, _err, { userId }) => [{ type: "Checkins", id: `USER_${userId}` }],
+            providesTags: (_res, _err, { userId }) => [{ type: "Checkin", id: `USER_${userId}` }],
         }),
 
         checkInToday: b.mutation<CheckInTodayResponse, { userId: number; householdId?: number }>({
@@ -28,7 +28,7 @@ export const checkinApi = apiSlice.injectEndpoints({
                 method: "POST",
             }),
             invalidatesTags: (_res, _err, { userId, householdId }) => [
-                { type: "Checkins", id: `USER_${userId}` },
+                { type: "Checkin", id: `USER_${userId}` },
                 ...(householdId != null ? [{ type: "Activity" as const, id: `HOUSEHOLD_${householdId}` }] : []),
             ],
         }),
