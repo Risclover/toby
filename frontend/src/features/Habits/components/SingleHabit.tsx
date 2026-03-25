@@ -1,3 +1,4 @@
+import { PadlockIcon } from "@/assets/icons/PadlockIcon";
 import { Checkbox } from "@mantine/core"
 import { useState } from "react"
 
@@ -65,7 +66,7 @@ export const SingleHabit = ({ name, description, color, isPrivate }: Props) => {
                     </div>
                 )}
             </div>
-
+            <PadlockIcon size="1rem" color="var(--mantine-color-gray-4)" />
         </div>
     )
 }

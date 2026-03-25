@@ -3,6 +3,7 @@ import { useForm } from "@mantine/form";
 import { FormColorInput } from "@/components/FormColorInput";
 import { useCreateHabitMutation } from "@/store";
 import { SettingsItem } from "@/features/HouseholdTasklists";
+import { isTooLight } from "@/utils";
 
 interface HabitFormValues {
     name: string;
@@ -18,11 +19,12 @@ export const CreateHabit = ({ opened, close }: { opened: boolean; close: () => v
         initialValues: {
             name: "",
             description: "",
-            color: "rgb(5, 5, 73)",
+            color: "#050549",
             isPrivate: false
         },
         validate: {
-            name: (value) => value.trim().length === 0 ? "Please give your habit a name." : null
+            name: (value) => value.trim().length === 0 ? "Please give your habit a name." : null,
+            color: (value) => (value.trim().length === 0 ? "Please choose a color to represent your habit." : null) || (isTooLight(value) ? "This color is too light. Please choose a darker color." : null)
         }
     })
 
