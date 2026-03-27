@@ -1,12 +1,14 @@
-import { CreateHabit } from "@/features/Habits/components/CreateHabit";
+import { HabitModal } from "@/features/Habits/components/HabitModal";
 import { TodaysHabits } from "@/features/Habits/components/TodaysHabits";
 import { useAuthenticateQuery, useGetUserHabitsQuery } from "@/store";
 import { Button, SegmentedControl, Tabs } from "@mantine/core"
 import type React from "react"
 import { useState } from "react";
 import "../../Habits/styles/Habits.css";
+import { useHabitModal } from "@/contexts";
 
 export const UserProfileHabitsTab = () => {
+    const { openModal } = useHabitModal();
     const [showCreateHabitModal, setShowCreateHabitModal] = useState(false);
     const { data: user } = useAuthenticateQuery();
     const { data: habits } = useGetUserHabitsQuery(user?.id)
@@ -16,9 +18,9 @@ export const UserProfileHabitsTab = () => {
             <div className="habits-control-container">
                 <SegmentedControl fullWidth styles={{ root: { borderRadius: ".5rem", boxShadow: "var(--mantine-shadow-xs)", backgroundColor: "white", margin: "0 auto" }, label: { paddingLeft: "1rem", paddingRight: "1rem", padding: ".325rem 1rem", fontWeight: "500", fontSize: "13px" } }} color="rgb(46, 46, 106)" data={["Today", "This Week", "This Month"]} />
             </div>
-            <CreateHabit opened={showCreateHabitModal} close={() => setShowCreateHabitModal(false)} />
+            <HabitModal />
             <TodaysHabits />
-            <Button onClick={() => setShowCreateHabitModal(true)}>Create a habit</Button>
+            <Button onClick={() => openModal()}>Create a habit</Button>
         </Tabs.Panel>
     )
 }

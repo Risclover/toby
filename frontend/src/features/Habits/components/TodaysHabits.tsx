@@ -7,9 +7,12 @@ export const TodaysHabits = () => {
 
     return (
         <div className="todays-habits">
-            {habits && habits.map(habit => (
-                <SingleHabit name={habit.name} description={habit.description} color={habit.color} isPrivate={habit.isPrivate} />
-            ))}
+            {habits && [...habits]
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .map(habit => (
+                    <SingleHabit habit={habit} id={habit.id} name={habit.name} description={habit.description} color={habit.color} isPrivate={habit.isPrivate} />
+                ))
+            }
         </div>
     )
 }

@@ -4,7 +4,7 @@ export interface Habit {
     id: number;
     userId: number;
     name: string;
-    description: string | null;
+    description?: string | null | undefined;
     color: string;
     isPrivate: boolean;
     isActive: boolean;

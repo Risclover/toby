@@ -14,6 +14,7 @@
     border-radius: .5rem;
     min-height: 55px;
     box-shadow: var(--mantine-shadow-xs);
+    padding: 0 .875rem;
 }
 
 .single-habit-checkbox {
@@ -82,11 +83,16 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 0 0 0 14px;
     flex-shrink: 0;
 }
 
 .single-habit-streak {
     font-size: 11px;
     color: var(--mantine-color-dimmed);
+}
+
+.single-habit-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }

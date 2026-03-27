@@ -36,6 +36,8 @@ def update_habit(habit_id):
     if habit.user_id != current_user.id:
         return jsonify({ "error": "Forbidden" }), 403
 
+    data = request.get_json() or {}
+
     if "name" in data:
         name = (data["name"] or "").strip()
         if not name:

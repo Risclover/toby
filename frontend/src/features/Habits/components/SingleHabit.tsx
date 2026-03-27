@@ -1,10 +1,14 @@
 import { PadlockIcon } from "@/assets/icons/PadlockIcon";
 import { Checkbox } from "@mantine/core"
 import { useState } from "react"
+import { HabitMenu } from "./HabitMenu";
+import type { Habit } from "@/store";
 
 type Props = {
+    habit: Habit;
+    id: number;
     name: string;
-    description: string | null;
+    description?: string | null | undefined;
     color: string;
     isPrivate: boolean;
 }
@@ -17,8 +21,9 @@ function hexToRgba(hex: string, alpha: number): string {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-export const SingleHabit = ({ name, description, color, isPrivate }: Props) => {
+export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: Props) => {
     const [checked, setChecked] = useState(false);
+    console.log('id:', habit.id)
     return (
         <div
             className="single-habit"
@@ -66,7 +71,10 @@ export const SingleHabit = ({ name, description, color, isPrivate }: Props) => {
                     </div>
                 )}
             </div>
-            <PadlockIcon size="1rem" color="var(--mantine-color-gray-4)" />
+            <div className="single-habit-right">
+                {isPrivate && <PadlockIcon size="1.15rem" color="var(--mantine-color-red-5)" />}
+                <HabitMenu habit={habit} isPrivate={isPrivate} />
+            </div>
         </div>
     )
 }
