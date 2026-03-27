@@ -9,6 +9,7 @@ export interface Habit {
     isPrivate: boolean;
     isActive: boolean;
     createdAt: string;
+    isCompletedToday: boolean;
 }
 
 export interface HabitCompletion {

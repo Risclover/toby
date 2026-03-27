@@ -1,4 +1,5 @@
 from app.extensions import db
+from datetime import date
 
 
 class Habit(db.Model):
@@ -21,6 +22,10 @@ class Habit(db.Model):
     )
 
     def to_dict(self):
+        today = date.today()
+        is_completed_today = any(
+            c.local_date == today for c in self.completions
+        )
         return {
             "id": self.id,
             "userId": self.user_id,
@@ -30,6 +35,7 @@ class Habit(db.Model):
             "isActive": self.is_active,
             "isPrivate": self.is_private,
             "createdAt": self.created_at,
+            "isCompletedToday": is_completed_today,  # <-- add this
         }
 
     def __repr__(self):
