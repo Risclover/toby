@@ -1,4 +1,4 @@
-import { Button, Group, Modal, Stack, Switch, Textarea, TextInput } from "@mantine/core"
+import { Button, Group, Input, Modal, Stack, Switch, Textarea, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import { FormColorInput } from "@/components/FormColorInput";
 import { useCreateHabitMutation, useUpdateHabitMutation } from "@/store";
@@ -7,6 +7,7 @@ import { isTooLight } from "@/utils";
 import { useIsSmallScreen } from "@/hooks";
 import { useHabitModal } from "@/contexts";
 import { useEffect } from "react";
+import { RemainingChars } from "@/components/RemainingChars";
 
 interface HabitFormValues {
     name: string;
@@ -21,7 +22,7 @@ export const HabitModal = () => {
     const [createHabit] = useCreateHabitMutation();
     const [updateHabit] = useUpdateHabitMutation();
 
-    const isEditing = habitData?.id !== null;
+    const isEditing = habitData?.id !== undefined;
 
     const form = useForm<HabitFormValues>({
         initialValues: {
@@ -65,6 +66,8 @@ export const HabitModal = () => {
 
         try {
             if (isEditing) {
+                console.log('EDITED')
+                console.log('EDITED ID:', habitData?.id)
                 closeModal();  // <-- close first
                 await updateHabit({
                     habitId: habitData?.id!,
@@ -94,39 +97,52 @@ export const HabitModal = () => {
             title={isEditing ? "Edit Habit" : "Create Habit"}  // <-- title switches here
         >
             <div className="user-settings-body">
-                <Stack component="form" onSubmit={handleSubmit}>
-                    <TextInput
-                        radius="sm"
-                        required
-                        label="Name"
-                        placeholder="30-minute walk"
-                        {...form.getInputProps("name")}
-                    />
-                    <Textarea
-                        radius="sm"
-                        label="Description"
-                        placeholder="Morning or evening, walk at least once a day"
-                        maxRows={4}
-                        minRows={1}
-                        autosize
-                        maxLength={200}
-                        key={form.key("description")}
-                        {...form.getInputProps("description")}
-                    />
-                    <FormColorInput form={form} label="Color" required />
-                    <SettingsItem divider={false} layout="row" label="Make private" description="Hide from other household members.">
+                <Stack component="form" onSubmit={handleSubmit} gap={0}>
+                    <div className="habit-form-item">
+                        <TextInput
+                            radius="sm"
+                            label="Name"
+                            required
+                            placeholder="30-minute walk"
+                            maxLength={50}
+                            {...form.getInputProps("name")}
+                        />
+                        <RemainingChars count={form.values.name.length} max={50} />
+                    </div>
+                    <div className="habit-form-item">
+                        <Textarea
+                            label="Description"
+                            radius="sm"
+                            placeholder="Morning or evening, walk at least once a day"
+                            maxRows={4}
+                            minRows={1}
+                            autosize
+                            maxLength={200}
+                            key={form.key("description")}
+                            {...form.getInputProps("description")}
+                        />
+                        <RemainingChars count={form.values.description ? form.values.description.length : 0} max={200} />
+                    </div>
+                    <div className="habit-form-item">
+                        <FormColorInput form={form} label="Color" required />
+                    </div>
+                    <div className="habit-form-item row-item">
+                        <div className="input-label-description">
+                            <Input.Label>Make private</Input.Label>
+                            <Input.Description>Hide from other household members.</Input.Description>
+                        </div>
                         <Switch
                             color="rgb(5, 5, 73)"
                             size="md"
                             withThumbIndicator={false}
                             {...form.getInputProps('isPrivate', { type: 'checkbox' })}
                         />
-                    </SettingsItem>
+                    </div>
                 </Stack>
             </div>
             <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}>
                 <Group justify="flex-end" w="100%">
-                    <Button type="button" onClick={handleSubmit} color="rgb(5, 5, 73)" radius="xl">
+                    <Button type="button" onClick={handleSubmit} disabled={form.values.color.trim().length === 0 || form.values.name.trim().length === 0} color="rgb(5, 5, 73)" radius="xl">
                         Submit
                     </Button>
                 </Group>

@@ -72,11 +72,14 @@
 .single-habit-name {
     font-size: 14px;
     font-weight: 500;
+    word-break: break-word;
 }
 
 .single-habit-description {
     font-size: 12px;
     color: var(--mantine-color-dimmed);
+    margin-top: .125rem;
+    word-break: break-word;
 }
 
 .single-habit-left {
@@ -95,4 +98,26 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.habit-form-item {
+    padding: 0 .5rem;
+}
+
+.habit-form-item.row-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    gap: 1rem;
+}
+
+.habit-form-item .input-label-description {
+    gap: .25rem;
+    /* line-height: 1.2; */
+}
+
+.habit-form-item .input-label-description .mantine-InputWrapper-description {
+    line-height: 1.1 !important;
+    width: 100% !important;
 }
