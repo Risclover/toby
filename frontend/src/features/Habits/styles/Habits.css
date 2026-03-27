@@ -11,7 +11,7 @@
     align-items: stretch;
     margin: .5rem 0;
     background: white;
-    border-radius: .5rem;
+    border-radius: .875rem;
     min-height: 55px;
     box-shadow: var(--mantine-shadow-xs);
     padding: 0 .875rem;
@@ -119,4 +119,44 @@
 .habit-form-item .input-label-description .mantine-InputWrapper-description {
     line-height: 1.1 !important;
     width: 100% !important;
+}
+
+.completed-habits-toggler {
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0.875rem;
+    font-family: var(--font-family-sora);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    user-select: none;
+    transition: background 0.25s;
+    color: var(--mantine-color-dark-3);
+    box-shadow: var(--mantine-shadow-xs);
+    z-index: 10;
+}
+
+.completed-habits-container {
+    border-radius: .875rem;
+    background: white;
+    box-shadow: var(--mantine-shadow-xs);
+    overflow: hidden;
+    margin-top: 1.5rem;
+}
+
+.completed-habits {
+    padding-top: 0;
+    margin-top: 1px;
+}
+
+.completed-habits .single-habit {
+    box-shadow: none;
+    margin: 0;
+    border-radius: 0;
+    border-bottom: 1px solid var(--mantine-color-gray-3);
+    min-height: auto;
 }
