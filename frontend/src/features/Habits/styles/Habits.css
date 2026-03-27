@@ -50,7 +50,6 @@
     background: white;
     border-radius: .5rem;
     overflow: hidden;
-    cursor: pointer;
     transition: border-color 0.15s, opacity 0.15s;
 }
 

@@ -4,15 +4,18 @@ import DeleteRounded from '@mui/icons-material/Delete';
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import { PadlockIcon } from "@/assets/icons/PadlockIcon";
 import { PadlockOpenIcon } from "@/assets/icons/PadlockOpenIcon";
-import { useUpdateHabitMutation, type Habit } from "@/store";
+import { useDeleteHabitMutation, useUpdateHabitMutation, type Habit } from "@/store";
 import { useHabitModal } from "@/contexts";
 
-export const HabitMenu = ({ habit, isPrivate }: { habit: Habit, isPrivate: boolean }) => {
+export const HabitMenu = ({ habit, setShowDeleteConfirmation }: { habit: Habit, setShowDeleteConfirmation: (val: boolean) => void }) => {
     const [updateHabit] = useUpdateHabitMutation();
+    const [deleteHabit] = useDeleteHabitMutation();
     const { openModal } = useHabitModal();
-    const togglePrivacy = async () => {
-        await updateHabit({ habitId: habit.id, isPrivate: !isPrivate })
+
+    const handleDelete = async () => {
+        await deleteHabit(habit.id);
     }
+
     return (
         <Menu>
             <Menu.Target>
@@ -51,6 +54,7 @@ export const HabitMenu = ({ habit, isPrivate }: { habit: Habit, isPrivate: boole
                     leftSection={<DeleteRounded fontSize="small" />}
                     onClick={(e) => {
                         e.stopPropagation();
+                        setShowDeleteConfirmation(true);
                     }}
                 >
                     Delete

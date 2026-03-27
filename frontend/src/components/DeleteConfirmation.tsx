@@ -31,7 +31,10 @@ export const DeleteConfirmation = ({ modalTitle, itemName, itemType, opened, set
                 <Button
                     className="tasklist-settings-footer-btn"
                     size="compact-sm"
-                    onClick={handleDeleteItem}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem();
+                    }}
                     color="red.7"
                 >
                     Confirm

@@ -1,8 +1,9 @@
 import { PadlockIcon } from "@/assets/icons/PadlockIcon";
 import { Checkbox } from "@mantine/core"
-import { useState } from "react"
+import { useState, type MouseEvent } from "react"
 import { HabitMenu } from "./HabitMenu";
-import { useCompleteHabitMutation, useUncompleteHabitMutation, type Habit } from "@/store";
+import { useCompleteHabitMutation, useDeleteHabitMutation, useUncompleteHabitMutation, type Habit } from "@/store";
+import { DeleteConfirmation } from "@/features/HouseholdTasklists";
 
 type Props = {
     habit: Habit;
@@ -23,6 +24,8 @@ function hexToRgba(hex: string, alpha: number): string {
 
 export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: Props) => {
     const [checked, setChecked] = useState(habit.isCompletedToday);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [deleteHabit] = useDeleteHabitMutation();
     const [completeHabit] = useCompleteHabitMutation();
     const [uncompleteHabit] = useUncompleteHabitMutation();
 
@@ -34,13 +37,16 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
         }
     };
 
+    const handleDelete = async () => {
+        await deleteHabit(habit.id);
+    }
+
     return (
         <div
             className="single-habit"
-            onClick={handleToggle}
             style={{ borderLeft: `4px solid ${color}`, opacity: habit.isCompletedToday ? 0.7 : 1, transition: "opacity 0.15s" }}
         >
-            <div className="single-habit-left">
+            <div className="single-habit-left" onClick={handleToggle} style={{ cursor: "pointer" }}>
                 <div
                     style={{
                         width: 20,
@@ -83,8 +89,20 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
             </div>
             <div className="single-habit-right">
                 {isPrivate && <PadlockIcon size="1.15rem" color="var(--mantine-color-red-5)" />}
-                <HabitMenu habit={habit} isPrivate={isPrivate} />
+                <HabitMenu setShowDeleteConfirmation={setShowDeleteConfirmation} habit={habit} />
             </div>
+            {showDeleteConfirmation &&
+                <div onClick={(e) => e.stopPropagation()}>
+                    <DeleteConfirmation
+                        modalTitle="Delete habit"
+                        itemName={habit.name}
+                        itemType="habit"
+                        opened={showDeleteConfirmation}
+                        setShowDeleteConfirmation={setShowDeleteConfirmation}
+                        handleDeleteItem={handleDelete}
+                    />
+                </div>
+            }
         </div>
     )
 }

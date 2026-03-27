@@ -1,7 +1,7 @@
 import { Button, Group, Input, Modal, Stack, Switch, Textarea, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import { FormColorInput } from "@/components/FormColorInput";
-import { useCreateHabitMutation, useUpdateHabitMutation } from "@/store";
+import { useCreateHabitMutation, useDeleteHabitMutation, useUpdateHabitMutation } from "@/store";
 import { SettingsItem } from "@/features/HouseholdTasklists";
 import { isTooLight } from "@/utils";
 import { useIsSmallScreen } from "@/hooks";
@@ -21,6 +21,7 @@ export const HabitModal = () => {
     const { isOpen, habitData, closeModal } = useHabitModal();
     const [createHabit] = useCreateHabitMutation();
     const [updateHabit] = useUpdateHabitMutation();
+    const [deleteHabit] = useDeleteHabitMutation();
 
     const isEditing = habitData?.id !== undefined;
 
@@ -82,7 +83,6 @@ export const HabitModal = () => {
             console.error("Failed to save habit:", err);
         }
     };
-
     return (
         <Modal
             centered
