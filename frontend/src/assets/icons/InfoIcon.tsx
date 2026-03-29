@@ -1,5 +1,4 @@
 type Props = {
-    id: string;
     size: string;
     color: string;
 }

@@ -2,7 +2,10 @@
 import {
     Modal, Stack, TextInput, Select, Switch,
     SegmentedControl, Button, Avatar, Text,
-    Group
+    Group,
+    Tooltip,
+    ActionIcon,
+    Input
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -18,6 +21,7 @@ import { SettingsSection } from "@/components/FeaturedListSettings/SettingsSecti
 import { useIsSmallScreen } from "@/hooks";
 import { useAuthenticateQuery } from "@/store";
 import "../styles/UserSettings.css"
+import { InfoIcon } from "@/assets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -50,7 +54,7 @@ const THEME_OPTIONS: { value: Theme; label: string }[] = [
 ];
 
 const PRIVACY_OPTIONS: { value: PrivacyMode; label: string }[] = [
-    { value: "normal", label: "Normal" },
+    { value: "normal", label: "Public" },
     { value: "private_by_default", label: "Private by default" },
     { value: "all_private", label: "All private" },
 ];
@@ -65,6 +69,9 @@ export const UserSettings = ({ opened, onClose }: Props) => {
     const [updateSettings] = useUpdateUserSettingsMutation();
     const [uploadImg] = useUploadImgMutation();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const firstNameRef = useRef<HTMLInputElement>(null);
+    const lastNameRef = useRef<HTMLInputElement>(null);
+    const timezoneRef = useRef<HTMLInputElement>(null);
 
     // Pending image is intentionally outside useForm — File objects aren't
     // form values, and the upload is a separate mutation.
@@ -83,11 +90,21 @@ export const UserSettings = ({ opened, onClose }: Props) => {
 
     })
 
+    const initialValues = ({
+        firstName: data?.user.firstName,
+        lastName: data?.user.lastName,
+        timezone: data?.user.timezone,
+        siteTheme: data?.settings.siteTheme,
+        habitsOnHomepage: data?.settings.habitsOnHomepage,
+        habitsPrivacyMode: data?.settings.habitsPrivacyMode,
+        notesPrivacyMode: data?.settings.notesPrivacyMode,
+    })
+
     const form = useForm<UpdateUserSettingsPayload>({
         initialValues: {
             firstName: "",
             lastName: "",
-            timezone: "",
+            timezone: "America/Los Angeles",
             siteTheme: "system",
             habitsOnHomepage: false,
             habitsPrivacyMode: "normal",
@@ -98,15 +115,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
     // Re-seed from server every time the modal opens, discarding unsaved changes.
     useEffect(() => {
         if (!opened || !data) return;
-        form.setValues({
-            firstName: data.user.firstName,
-            lastName: data.user.lastName,
-            timezone: data.user.timezone,
-            siteTheme: data.settings.siteTheme,
-            habitsOnHomepage: data.settings.habitsOnHomepage,
-            habitsPrivacyMode: data.settings.habitsPrivacyMode,
-            notesPrivacyMode: data.settings.notesPrivacyMode,
-        });
+        form.setValues(initialValues);
         form.resetDirty();
         setPendingImage(null);
         setPreviewUrl(null);
@@ -159,6 +168,26 @@ export const UserSettings = ({ opened, onClose }: Props) => {
         form.setValues(defaultValues);
     }
 
+    const handleFirstNameBlur = () => {
+        const trimmed = form.values.firstName.trim();
+        if (!trimmed) {
+            form.setFieldValue("firstName", data?.user.firstName ?? "");
+        } else {
+            form.setFieldValue("firstName", trimmed.charAt(0).toUpperCase() + trimmed.slice(1));
+        }
+    };
+    const handleLastNameBlur = () => {
+        if (!form.values.lastName.trim()) {
+            form.setFieldValue("lastName", data?.user.lastName ?? "");
+        }
+    };
+
+    const handleTimezoneBlur = () => {
+        if (!form.values.timezone) {
+            form.setFieldValue("timezone", data?.user.timezone ?? defaultValues.timezone);
+        }
+    };
+
     const avatarSrc = previewUrl ?? user?.profileImg ?? undefined;
     const hasChanges = form.isDirty() || pendingImage !== null;
 
@@ -189,17 +218,65 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                                 />
                             </div>
                         </SettingsItem>
-                        <SettingsItem description="Your name or nickname" layout="column" label="First name" divider={false}>
-                            <TextInput {...form.getInputProps("firstName")} />
+                        <SettingsItem
+                            description="Your name or nickname"
+                            labelRequired
+                            layout="column"
+                            label="First name"
+                            divider={false}
+                        >
+                            <TextInput
+                                ref={firstNameRef}
+                                {...form.getInputProps("firstName")}
+                                onBlur={handleFirstNameBlur}
+                                rightSection={
+                                    form.values.firstName !== '' ? (
+                                        <Input.ClearButton onClick={() => {
+                                            form.setFieldValue('firstName', '');
+                                            firstNameRef.current?.focus();
+                                        }}
+                                        />
+                                    ) : undefined
+                                }
+                                rightSectionPointerEvents="auto"
+                            />
                         </SettingsItem>
-                        <SettingsItem description="Your full name helps members identify you" layout="column" label="Last name" divider={false}>
-                            <TextInput {...form.getInputProps("lastName")} />
+                        <SettingsItem
+                            description="Your full name helps members identify you"
+                            labelRequired
+                            layout="column"
+                            label="Last name"
+                            divider={false}
+                        >
+                            <TextInput
+                                ref={lastNameRef}
+                                {...form.getInputProps("lastName")}
+                                onBlur={handleLastNameBlur}
+                                rightSection={
+                                    form.values.lastName !== '' ? (
+                                        <Input.ClearButton onClick={() => {
+                                            form.setFieldValue('lastName', '');
+                                            lastNameRef.current?.focus();
+                                        }}
+                                        />
+                                    ) : undefined
+                                }
+                                rightSectionPointerEvents="auto"
+                            />
                         </SettingsItem>
-                        <SettingsItem description="Used to display dates and times in your local time" layout="column" label="Timezone" divider={true}>
+                        <SettingsItem description="Used to display dates and times in your local time" labelRequired layout="column" label="Timezone" divider={true}>
                             <Select
+                                ref={timezoneRef}
+                                required
+                                clearable
                                 searchable
                                 data={TIMEZONE_OPTIONS}
                                 {...form.getInputProps("timezone")}
+                                onBlur={handleTimezoneBlur}
+                                onClear={() => {
+                                    form.setFieldValue("timezone", "");
+                                    timezoneRef.current?.focus();
+                                }}
                             />
                         </SettingsItem>
                     </SettingsSection>
@@ -235,7 +312,20 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                     <SettingsSection title="Privacy">
                         <SettingsItem
                             layout="column"
-                            label="Habits privacy"
+                            label={
+                                <Group justify="start" gap={0}>
+                                    Habits privacy
+                                    <Tooltip multiline events={{ hover: true, focus: true, touch: true }} label={
+                                        <div>
+                                            <div><span style={{ fontWeight: 600 }}>Public</span>: Habits are public by default.</div>
+                                            <div><span style={{ fontWeight: 600 }}>Private by default</span>: New habits are automatically marked as private in the creation form.</div>
+                                            <div><span style={{ fontWeight: 600 }}>All private</span>: All habits are always hidden from other members.</div>
+                                        </div>
+                                    } withArrow>
+                                        <ActionIcon w={0} m={0} variant="transparent" color="transparent" p={0}><InfoIcon size="1rem" color="var(--mantine-color-gray-7)" /></ActionIcon>
+                                    </Tooltip>
+                                </Group>
+                            }
                             description="Controls who can see your habit entries"
                             divider={false}
                         >
@@ -247,7 +337,20 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                         </SettingsItem>
                         <SettingsItem
                             layout="column"
-                            label="Notes privacy"
+                            label={
+                                <Group justify="start" gap={0}>
+                                    Notes privacy
+                                    <Tooltip multiline events={{ hover: true, focus: true, touch: true }} label={
+                                        <div>
+                                            <div><span style={{ fontWeight: 600 }}>Public</span>: Notes are public by default.</div>
+                                            <div><span style={{ fontWeight: 600 }}>Private by default</span>: New notes are automatically marked as private in the creation form.</div>
+                                            <div><span style={{ fontWeight: 600 }}>All private</span>: All notes are always hidden from other members.</div>
+                                        </div>
+                                    } withArrow>
+                                        <ActionIcon w={0} m={0} variant="transparent" color="transparent" p={0}><InfoIcon size="1rem" color="var(--mantine-color-gray-7)" /></ActionIcon>
+                                    </Tooltip>
+                                </Group>
+                            }
                             description="Controls who can see your personal notes"
                             divider={false}
                         >

@@ -5,7 +5,7 @@ import type React from "react";
 
 type Props = {
     layout: string;
-    label: string;
+    label: React.ReactNode;
     labelRequired?: boolean;
     error?: string;
     errorBool?: boolean;

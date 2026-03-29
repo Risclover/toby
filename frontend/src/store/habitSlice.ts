@@ -80,6 +80,7 @@ export const habitSlice = apiSlice.injectEndpoints({
             query: (habitId) => ({
                 url: `/habits/${habitId}/complete`,
                 method: "POST",
+                body: {},
             }),
             invalidatesTags: (_result, _error, habitId) => [
                 { type: "Habit", id: habitId },
@@ -90,6 +91,7 @@ export const habitSlice = apiSlice.injectEndpoints({
             query: (habitId) => ({
                 url: `/habits/${habitId}/complete`,
                 method: "DELETE",
+                body: {},
             }),
             invalidatesTags: (_result, _error, habitId) => [
                 { type: "Habit", id: habitId },

@@ -8,6 +8,7 @@ import { useIsSmallScreen } from "@/hooks";
 import { useHabitModal } from "@/contexts";
 import { useEffect } from "react";
 import { RemainingChars } from "@/components/RemainingChars";
+import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
 
 interface HabitFormValues {
     name: string;
@@ -22,6 +23,9 @@ export const HabitModal = () => {
     const [createHabit] = useCreateHabitMutation();
     const [updateHabit] = useUpdateHabitMutation();
     const [deleteHabit] = useDeleteHabitMutation();
+    const { data: userSettings } = useGetUserSettingsQuery();
+
+    console.log('userSettings:', userSettings?.settings.habitsPrivacyMode);
 
     const isEditing = habitData?.id !== undefined;
 
@@ -30,7 +34,7 @@ export const HabitModal = () => {
             name: "",
             description: "",
             color: "#050549",
-            isPrivate: false,
+            isPrivate: userSettings?.settings?.habitsPrivacyMode === "private_by_default"
         },
         validate: {
             name: (value) => value.trim().length === 0 ? "Please give your habit a name." : null,
@@ -51,7 +55,12 @@ export const HabitModal = () => {
                 isPrivate: habitData.isPrivate ?? false,
             });
         } else {
-            form.reset();
+            form.setValues({
+                name: "",
+                description: "",
+                color: "#050549",
+                isPrivate: userSettings?.settings?.habitsPrivacyMode === "private_by_default",
+            });
         }
         form.resetDirty();
     }, [isOpen]);
@@ -94,7 +103,7 @@ export const HabitModal = () => {
             radius="md"
             opened={isOpen}
             onClose={closeHabitModal}
-            title={isEditing ? "Edit Habit" : "Create Habit"}  // <-- title switches here
+            title={isEditing ? "Edit habit" : "Create habit"}  // <-- title switches here
         >
             <div className="user-settings-body">
                 <Stack component="form" onSubmit={handleSubmit} gap={0}>

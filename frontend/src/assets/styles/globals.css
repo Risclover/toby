@@ -794,6 +794,11 @@ form {
     color: var(--mantine-color-blue-7);
 }
 
+.delete-item-name {
+    font-weight: 700;
+    word-break: break-word;
+}
+
 
 @media (max-width: 425px) {
     .time-sensitive-task .empty-space {

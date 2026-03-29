@@ -2,9 +2,30 @@ from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 from app.extensions import db
 from app.models import Habit, HabitCompletion
-from datetime import date
+from datetime import date, timedelta
 
 habit_routes = Blueprint("habits", __name__)
+
+def get_target_date(data: dict) -> tuple[date | None, str | None]:
+    """Returns (date, error_message). Error is None if valid."""
+    raw = data.get("localDate")
+    if not raw:
+        return date.today(), None
+    
+    try:
+        target = date.fromisoformat(raw)
+    except ValueError:
+        return None, "Invalid date format"
+
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+
+    if target > today:
+        return None, "Cannot complete a future habit"
+    if target < yesterday:
+        return None, "This day can no longer be edited"
+
+    return target, None
 
 @habit_routes.route("", methods=["POST"])
 @login_required
@@ -74,38 +95,43 @@ def delete_habit(habit_id):
 @login_required
 def complete_habit(habit_id):
     habit = Habit.query.get_or_404(habit_id)
-
     if habit.user_id != current_user.id:
         return jsonify({"error": "Forbidden"}), 403
 
-    today = date.today()
+    data = request.get_json() or {}
+    local_date, error = get_target_date(data)
+    if error:
+        return jsonify({"error": error}), 400
+
     exists = HabitCompletion.query.filter_by(
-        habit_id=habit_id,
-        local_date=today
+        habit_id=habit_id, local_date=local_date
     ).first()
 
     if not exists:
-        db.session.add(HabitCompletion(habit_id=habit_id, local_date=today))
+        db.session.add(HabitCompletion(habit_id=habit_id, local_date=local_date))
         db.session.commit()
 
-    return jsonify({"habitId": habit_id, "localDate": today.isoformat(), "completed": True}), 200
+    return jsonify({"habitId": habit_id, "localDate": local_date.isoformat(), "completed": True}), 200
+
 
 @habit_routes.route("/<int:habit_id>/complete", methods=["DELETE"])
 @login_required
 def uncomplete_habit(habit_id):
     habit = Habit.query.get_or_404(habit_id)
-
     if habit.user_id != current_user.id:
         return jsonify({"error": "Forbidden"}), 403
 
-    today = date.today()
+    data = request.get_json() or {}
+    local_date, error = get_target_date(data)
+    if error:
+        return jsonify({"error": error}), 400
+
     completion = HabitCompletion.query.filter_by(
-        habit_id=habit_id,
-        local_date=today
+        habit_id=habit_id, local_date=local_date
     ).first()
 
     if completion:
         db.session.delete(completion)
         db.session.commit()
 
-    return jsonify({"habitId": habit_id, "localDate": today.isoformat(), "completed": False}), 200
+    return jsonify({"habitId": habit_id, "localDate": local_date.isoformat(), "completed": False}), 200
