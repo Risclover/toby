@@ -55,7 +55,7 @@ export const SingleWeeklyHabit = ({ habit }: Props) => {
                 <div className="single-weekly-habit-day-checks">
                     {weekDays.map(day => {
                         const isCompleted = completedSet.has(day.format("YYYY-MM-DD"));
-                        return <Checkbox styles={{ input: { borderColor: getLightColor(habit.color, .5) }, icon: { width: "1rem" } }} size={isSmall ? "lg" : "xl"} radius="xl" color={habit.color} checked={isCompleted} />
+                        return <Checkbox styles={{ input: { borderColor: getLightColor(habit.color, .5) }, icon: { width: isSmall ? ".75rem" : "1rem" } }} size={isSmall ? "lg" : "xl"} radius="xl" color={habit.color} checked={isCompleted} />
                     })}
                 </div>
             </div>

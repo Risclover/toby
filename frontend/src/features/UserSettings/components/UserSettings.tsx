@@ -10,7 +10,7 @@ import {
 import { useForm } from "@mantine/form";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-    useGetUserSettingsQuery,
+    useGetCurrentUserSettingsQuery,
     useUpdateUserSettingsMutation,
     type Theme,
     type PrivacyMode,
@@ -63,7 +63,7 @@ const PRIVACY_OPTIONS: { value: PrivacyMode; label: string }[] = [
 
 export const UserSettings = ({ opened, onClose }: Props) => {
     const isSmallScreen = useIsSmallScreen();
-    const { data } = useGetUserSettingsQuery();
+    const { data } = useGetCurrentUserSettingsQuery();
     const { data: currentUser } = useAuthenticateQuery();
     const { data: user } = useGetUserQuery(currentUser?.id);
     const [updateSettings] = useUpdateUserSettingsMutation();

@@ -50,6 +50,8 @@ def google_login():
                 first_name=google_user.get('given_name', ''),
                 last_name=google_user.get('family_name', ''),
                 email=email,
+                profile_img=google_user.get("picture", ""),
+                timezone="America/Los_Angeles",
                 google_id=sub,
             )
             db.session.add(user)
@@ -121,10 +123,11 @@ def sign_up():
     last_name = data.get("lastName")
     email = data.get("email")
     password = data.get("password")
+    timezone = "America/Los_Angeles"
     household_name = data.get("household_name")  # optional
 
     # Create user first
-    user = User(first_name=first_name, last_name=last_name, email=email, password=password)
+    user = User(first_name=first_name, last_name=last_name, email=email, password=password, timezone=timezone)
     db.session.add(user)
     db.session.flush()  # flush to get user.id
 
