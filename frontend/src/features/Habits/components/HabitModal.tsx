@@ -8,7 +8,7 @@ import { useIsSmallScreen } from "@/hooks";
 import { useHabitModal } from "@/contexts";
 import { useEffect } from "react";
 import { RemainingChars } from "@/components/RemainingChars";
-import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
+import { useGetCurrentUserSettingsQuery } from "@/store/userSettingsSlice";
 
 interface HabitFormValues {
     name: string;
@@ -23,7 +23,7 @@ export const HabitModal = () => {
     const [createHabit] = useCreateHabitMutation();
     const [updateHabit] = useUpdateHabitMutation();
     const [deleteHabit] = useDeleteHabitMutation();
-    const { data: userSettings } = useGetUserSettingsQuery();
+    const { data: userSettings } = useGetCurrentUserSettingsQuery();
 
     console.log('userSettings:', userSettings?.settings.habitsPrivacyMode);
 

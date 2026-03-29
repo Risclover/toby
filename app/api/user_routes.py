@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, jsonify, request
-from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment, Habit
+from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment, Habit, UserSettings
 from flask_login import current_user, login_required
 from sqlalchemy import or_, func
 from app.extensions import db

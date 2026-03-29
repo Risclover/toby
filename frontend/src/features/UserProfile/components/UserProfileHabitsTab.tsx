@@ -7,17 +7,23 @@ import { useState } from "react";
 import "../../Habits/styles/Habits.css";
 import { useHabitModal } from "@/contexts";
 import { ThisWeeksHabits } from "@/features/Habits/components/ThisWeeksHabits";
+import { useParams } from "react-router-dom";
+import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
+import { HabitsPrivate } from "@/features/Habits/components/HabitsPrivate";
 
 export const UserProfileHabitsTab = () => {
     const { openModal } = useHabitModal();
-    const [showCreateHabitModal, setShowCreateHabitModal] = useState(false);
-    const { data: user } = useAuthenticateQuery();
-    const { data: habits } = useGetUserHabitsQuery(user?.id);
-
+    const { userId } = useParams();
+    const { data: habits } = useGetUserHabitsQuery(Number(userId));
+    const { data: userSettings } = useGetUserSettingsQuery(Number(userId))
     const [view, setView] = useState<"today" | "week" | "month">("today");
+    console.log('USER SETTINGS:', userSettings)
+    if (userSettings?.settings.habitsPrivacyMode === "all_private") return <HabitsPrivate />;
 
+    if (!habits) return null;
     return (
         <Tabs.Panel value="habits" className="user-profile-main-container">
+
             <div className="habits-control-container">
                 <SegmentedControl
                     value={view}
@@ -47,8 +53,8 @@ export const UserProfileHabitsTab = () => {
                 />
             </div>
             <HabitModal />
-            {view === "today" && <TodaysHabits />}
-            {view === "week" && <ThisWeeksHabits />}
+            {view === "today" && <TodaysHabits habits={habits} />}
+            {view === "week" && <ThisWeeksHabits habits={habits} />}
             <Button onClick={() => openModal()}>Create a habit</Button>
         </Tabs.Panel>
     )

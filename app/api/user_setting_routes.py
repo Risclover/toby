@@ -16,10 +16,23 @@ def _ensure_user_settings(user_id: int) -> UserSettings:
         db.session.commit()
     return user_settings
 
+@user_setting_routes.route("/<int:id>", methods=["GET"])
+@login_required
+def get_user_settings(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({ "error": "User not found" }), 404
+
+    user_settings = _ensure_user_settings(id)
+
+    return jsonify({
+        "user": user.to_dict(),
+        "settings": user_settings.to_dict()
+    }), 200
 
 @user_setting_routes.route("", methods=["GET"])
 @login_required
-def get_user_settings():
+def get_current_user_settings():
     user = User.query.get(current_user.id)
     if not user:
         return jsonify({"error": "User not found"}), 404

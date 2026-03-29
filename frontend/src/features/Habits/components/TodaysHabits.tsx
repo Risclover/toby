@@ -1,11 +1,13 @@
-import { useAuthenticateQuery, useGetUserHabitsQuery } from "@/store"
+import { useAuthenticateQuery, useGetUserHabitsQuery, useGetUserQuery, type Habit } from "@/store"
 import { SingleHabit } from "./SingleHabit"
 import { TodaysCompletedHabits } from "./TodaysCompletedHabits";
+import { useParams } from "react-router-dom";
 
-export const TodaysHabits = () => {
-    const { data: user } = useAuthenticateQuery();
-    const { data: habits } = useGetUserHabitsQuery(user?.id)
-
+type Props = {
+    habits: Habit[];
+}
+export const TodaysHabits = ({ habits }: Props) => {
+    if (!habits) return null;
     return (
         <div className="todays-habits">
             {habits && [...habits]

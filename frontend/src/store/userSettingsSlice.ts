@@ -27,9 +27,14 @@ export interface UserSettingsResponse {
 
 export const userSettingsSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getUserSettings: builder.query<UserSettingsResponse, void>({
+        getCurrentUserSettings: builder.query<UserSettingsResponse, void>({
             query: () => "/user-settings",
             providesTags: ["UserSettings"]
+        }),
+
+        getUserSettings: builder.query<UserSettingsResponse, number>({
+            query: (id) => `/user-settings/${id}`,
+            providesTags: (_result, _error, id) => [{ type: "UserSettings", id }],
         }),
 
         updateUserSettings: builder.mutation<UserSettingsResponse, Partial<UserSettingsResponse>>({
@@ -52,6 +57,7 @@ export const userSettingsSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+    useGetCurrentUserSettingsQuery,
     useGetUserSettingsQuery,
     useUpdateUserSettingsMutation,
     useResetUserSettingsMutation,

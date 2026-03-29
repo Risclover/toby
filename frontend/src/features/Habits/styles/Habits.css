@@ -228,6 +228,25 @@
     /* <-- centers each checkbox in its cell */
 }
 
+.habits-private {
+    width: 100%;
+    min-height: calc(100vh - 42px - 138px);
+    padding: 2rem 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-align: center;
+    line-height: 1.2;
+    color: var(--mantine-color-gray-7);
+    font-size: var(--text-lg);
+}
+
+.habits-private svg {
+    flex-shrink: 0;
+}
+
 @media (max-width: 425px) {
     .single-weekly-habit {
         padding: .75rem 1rem;

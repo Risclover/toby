@@ -1,11 +1,13 @@
-import { habitSlice, useAuthenticateQuery, useGetUserHabitsQuery } from "@/store";
+import { habitSlice, useAuthenticateQuery, useGetUserHabitsQuery, type Habit } from "@/store";
 import { SingleWeeklyHabit } from "./SingleWeeklyHabit"
 import dayjs from "dayjs";
+import { useParams } from "react-router-dom";
 
-export const ThisWeeksHabits = () => {
-    const { data: user } = useAuthenticateQuery();
-    const { data: habits } = useGetUserHabitsQuery(user.id);
-
+type Props = {
+    habits: Habit[];
+}
+export const ThisWeeksHabits = ({ habits }: Props) => {
+    if (!habits) return null;
     return (
         <div className="this-weeks-habits">
             {[...habits]
