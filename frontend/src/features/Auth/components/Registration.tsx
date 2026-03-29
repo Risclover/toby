@@ -209,9 +209,10 @@ export const Registration = ({ createHousehold }: Props) => {
         <div className="registration">
             {page === 1 && (
                 <RegistrationPageOne
-                    onClick={handleSignup}
+                    onClick={createHousehold ? handleSignup : handleJoin}  // fix 1
                     inputProps={inputProps}
                     createHousehold={createHousehold}
+                    inviteCode={inviteCode}  // fix 2
                 />
             )}
             {page === 2 && (

@@ -115,7 +115,7 @@ export const authSlice = apiSlice.injectEndpoints({
             })
         }),
 
-        googleLogin: builder.mutation<User, { access_token: string }>({
+        googleLogin: builder.mutation<User, { access_token: string; invite_code?: string }>({
             query: (body) => ({
                 url: '/auth/google',
                 method: 'POST',

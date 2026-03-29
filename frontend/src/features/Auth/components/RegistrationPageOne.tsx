@@ -25,6 +25,7 @@ type Props = {
     onClick: (e: React.FormEvent) => void;
     inputProps: InputProps[];
     createHousehold: boolean;
+    inviteCode?: string;  // add this
 }
 
 const VisibilityToggleIcon = ({ reveal }: { reveal: boolean }) =>
@@ -34,8 +35,9 @@ const VisibilityToggleIcon = ({ reveal }: { reveal: boolean }) =>
         <HidePasswordIcon size="1rem" color="rgb(5, 5, 73)" />
     );
 
-export const RegistrationPageOne = ({ onClick, inputProps, createHousehold }: Props) => {
-    const { signin } = useGoogleAuth();
+export const RegistrationPageOne = ({ onClick, inputProps, createHousehold, inviteCode }: Props) => {
+    const { signin } = useGoogleAuth(inviteCode);  // pass it through
+
 
     return (
         <div className="registration-form">

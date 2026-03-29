@@ -1,12 +1,12 @@
-// hooks/useGoogleAuth.ts
 import { useState, useEffect } from "react";
 import { useGoogleLogin, type TokenResponse } from "@react-oauth/google";
-import { useGoogleLoginMutation } from "@/store";
+import { useGoogleLoginMutation, useJoinExistingHouseholdMutation } from "@/store";
 import { useNavigate } from "react-router-dom";
 
-export const useGoogleAuth = () => {
+export const useGoogleAuth = (inviteCode?: string) => {
     const [googleToken, setGoogleToken] = useState<TokenResponse | null>(null);
     const [googleLogin] = useGoogleLoginMutation();
+    const [joinExistingHousehold] = useJoinExistingHouseholdMutation();
     const navigate = useNavigate();
 
     const signin = useGoogleLogin({
@@ -15,14 +15,14 @@ export const useGoogleAuth = () => {
     });
 
     useEffect(() => {
-        if (googleToken?.access_token) {
-            googleLogin({ access_token: googleToken.access_token })
-                .unwrap()
-                .then(tobyUser => {
-                    navigate(tobyUser.householdId ? '/' : '/onboarding');
-                })
-                .catch(console.error)
-        }
+        if (!googleToken?.access_token) return;
+
+        googleLogin({ access_token: googleToken.access_token, invite_code: inviteCode })
+            .unwrap()
+            .then((tobyUser) => {
+                navigate(tobyUser.householdId ? '/' : '/onboarding');
+            })
+            .catch(console.error);
     }, [googleToken]);
 
     return { signin };

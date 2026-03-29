@@ -25,6 +25,7 @@ def authenticate():
 @auth_routes.route('/google', methods=['POST'])
 def google_login():
     access_token = request.json.get('access_token')
+    invite_code = request.json.get('invite_code')  # add this
     if not access_token:
         return jsonify({'error': 'Access token required'}), 400
 
@@ -40,13 +41,11 @@ def google_login():
     email = google_user['email'].strip().lower()
 
     user = User.query.filter_by(google_id=sub).first()
-
     if not user:
         user = User.query.filter(func.lower(User.email) == email).first()
         if user:
             user.google_id = sub
         else:
-            # New user — no household yet, onboarding will handle that
             user = User(
                 first_name=google_user.get('given_name', ''),
                 last_name=google_user.get('family_name', ''),
@@ -54,6 +53,12 @@ def google_login():
                 google_id=sub,
             )
             db.session.add(user)
+
+    # Join household atomically if invite code provided and user has none yet
+    if invite_code and not user.household_id:
+        household = Household.query.filter_by(invite_code=invite_code).first()
+        if household:
+            user.household_id = household.id
 
     db.session.commit()
     login_user(user)
