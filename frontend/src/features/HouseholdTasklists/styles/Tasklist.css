@@ -16,6 +16,7 @@
 .mobile-tasklist-card-header-top.header-right {
     display: flex;
     align-items: center;
+    align-self: flex-start;
     gap: 0.25rem;
     color: var(--mantine-color-gray-5);
 }
@@ -34,10 +35,7 @@
     padding-bottom: 0.5rem;
     border-top: 1px solid var(--mantine-color-gray-2);
     border-bottom: 1px solid var(--mantine-color-gray-2);
-}
-
-.mobile-tasklist-card-body {
-    height: calc(100% - 120px);
+    flex-grow: 1;
 }
 
 .tasklist-card {
@@ -45,6 +43,8 @@
     border-radius: 0.5rem;
     background: white;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
 }
 
 .tasks-list {

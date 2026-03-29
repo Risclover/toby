@@ -1,4 +1,4 @@
-import { authSlice, type RootState } from ".";
+import { authSlice, userSlice, type RootState } from ".";
 import { apiSlice } from "./apiSlice";
 import { householdSlice } from "./householdSlice"; // 👈 add this import
 import { featuredListSettingsSlice } from "./featuredListSettingSlice";
@@ -123,6 +123,7 @@ export interface CompleteTaskRequest {
     listId: number | undefined;
     completed: boolean;
     householdId?: number;
+    userId?: number;  // add this
 }
 
 export interface ToggleImportanceRequest {
@@ -203,11 +204,34 @@ export const taskSlice = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: { completed },
             }),
-            invalidatesTags: (_res, _err, { listId, householdId }): any[] => {
+
+            async onQueryStarted({ taskId, userId, completed }, { dispatch, queryFulfilled }) {
+                if (!userId) return;
+
+                // Optimistically remove the task from whichever stats bucket it's in
+                const statsPatch = dispatch(
+                    userSlice.util.updateQueryData("getUserTaskStats", userId, (draft) => {
+                        if (completed) {
+                            draft.overdue = draft.overdue.filter(t => t.id !== taskId);
+                            draft.due_today = draft.due_today.filter(t => t.id !== taskId);
+                            draft.due_soon = draft.due_soon.filter(t => t.id !== taskId);
+                        }
+                        // No undo needed for uncomplete — the task will reappear on refetch
+                    })
+                );
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    statsPatch.undo();
+                }
+            },
+
+            invalidatesTags: (_res, _err, { listId, householdId, userId }): any[] => {
                 const tags: any[] = [
                     { type: "Tasklist", id: listId },
                     { type: "Tasklist", id: "LIST" },
-                    "UserTaskStats",
+                    { type: "UserTaskStat", id: userId },  // fix: matches providesTags
                 ];
                 if (householdId != null) {
                     tags.push({ type: "Tasklist", id: `HOUSEHOLD_${householdId}` });
@@ -272,7 +296,7 @@ export const taskSlice = apiSlice.injectEndpoints({
             invalidatesTags: (_res, _err, arg) => {
                 const tags: any[] = [
                     { type: "Tasklist", id: arg.listId },
-                    "UserTaskStats",
+                    { type: "UserTaskStat" as const },
                 ];
                 if (arg.householdId != null) {
                     tags.push({ type: "Activity", id: `HOUSEHOLD_${arg.householdId}` });
@@ -289,13 +313,53 @@ export const taskSlice = apiSlice.injectEndpoints({
             invalidatesTags: (_res, _err, arg) => {
                 const tags: any[] = [
                     { type: "Tasklist", id: arg.listId },
-                    "UserTaskStats",
+                    { type: "UserTaskStat" as const },
                 ];
                 if (arg.householdId != null) {
                     tags.push({ type: "Activity", id: `HOUSEHOLD_${arg.householdId}` });
                 }
                 return tags;
             },
+        }),
+
+        updateTask: builder.mutation<Task, { taskId: number; listId: number; householdId?: number } & UpdateTaskPatch>({
+            query: ({ taskId, ...patch }) => ({
+                url: `/tasks/${taskId}`,
+                method: "PATCH",
+                body: {
+                    ...patch,
+                    dueDate: toDateOnlyString(patch.dueDate),
+                },
+            }),
+
+            async onQueryStarted(
+                { taskId, listId, householdId, ...patch },
+                { dispatch, queryFulfilled }
+            ) {
+                const normalizedPatch = {
+                    ...patch,
+                    dueDate: toDateOnlyString(patch.dueDate),
+                };
+
+                const p1 = dispatch(
+                    taskSlice.util.updateQueryData("getTasklist", listId, (draft) => {
+                        const task = draft?.tasks?.find((t) => t.id === taskId);
+                        if (task) Object.assign(task, normalizedPatch);
+                    })
+                );
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    p1.undo();
+                }
+            },
+
+            invalidatesTags: (_r, _e, { taskId, listId }) => [
+                { type: "Tasklist", id: listId },
+                { type: "Task", id: taskId },
+                { type: "UserTaskStat" as const },
+            ],
         }),
 
         clearList: builder.mutation<{ message: string }, ClearListRequest>({
@@ -365,49 +429,6 @@ export const taskSlice = apiSlice.injectEndpoints({
                 }
                 return tags;
             },
-        }),
-
-        updateTask: builder.mutation<
-            Task,
-            { taskId: number; listId: number; householdId?: number } & UpdateTaskPatch
-        >({
-            query: ({ taskId, ...patch }) => ({
-                url: `/tasks/${taskId}`,
-                method: "PATCH",
-                body: {
-                    ...patch,
-                    dueDate: toDateOnlyString(patch.dueDate), // ✅ FIX
-                },
-            }),
-
-            async onQueryStarted(
-                { taskId, listId, householdId, ...patch },
-                { dispatch, getState, queryFulfilled }
-            ) {
-                const normalizedPatch = {
-                    ...patch,
-                    dueDate: toDateOnlyString(patch.dueDate),
-                };
-
-                const p1 = dispatch(
-                    taskSlice.util.updateQueryData("getTasklist", listId, (draft) => {
-                        const task = draft?.tasks?.find((t) => t.id === taskId);
-                        if (task) Object.assign(task, normalizedPatch);
-                    })
-                );
-
-                try {
-                    await queryFulfilled;
-                } catch {
-                    p1.undo();
-                }
-            },
-
-            invalidatesTags: (_r, _e, { taskId, listId }) => [
-                { type: "Tasklist", id: listId },
-                { type: "Task", id: taskId },
-                "UserTaskStats",
-            ],
         }),
 
         toggleTaskImportance: builder.mutation<Task, ToggleImportanceRequest>({

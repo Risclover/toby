@@ -259,19 +259,68 @@
 }
 
 .add-habit-btn {
-    position: absolute;
+    position: fixed;
     right: 20px;
+    opacity: .85;
     bottom: 20px;
 }
 
+.monthly-habit {
+    background: white;
+    border-radius: .875rem;
+    box-shadow: var(--mantine-shadow-xs);
+    padding: 1rem;
+    margin: .25rem;
+}
 
+.monthly-habit-title {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.monthly-habit-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    gap: 4px;
+}
+
+.monthly-habit-view {
+    margin-top: .75rem;
+}
 
 @media (max-width: 425px) {
+    .monthly-habit-grid {
+        gap: 4px;
+    }
+
+    .monthly-habit-title {
+        font-size: var(--text-sm);
+    }
+
     .single-weekly-habit {
         padding: .75rem 1rem;
     }
 
     .single-weekly-habit-details-top {
         gap: .25rem;
+    }
+}
+
+
+@media (max-width: 390px) {
+
+    .monthly-habit-grid {
+        gap: 6px;
+    }
+
+    .monthly-habit {
+        margin: .25rem 2rem;
+    }
+
+    .monthly-habit-title {
+        font-size: var(--text-sm);
     }
 }

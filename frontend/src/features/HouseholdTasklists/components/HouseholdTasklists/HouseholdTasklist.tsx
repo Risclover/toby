@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ActionIcon, Progress, Tooltip } from "@mantine/core";
+import { ActionIcon, Progress, Text, Tooltip } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
 
 // Logic & Hooks
@@ -81,7 +81,7 @@ export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
             >
                 <div className="mobile-tasklist-card-header">
                     <div className="mobile-tasklist-card-header-top">
-                        <span className="tasklist-head-title">{list.title}</span>
+                        <Text lineClamp={2} c="black" fw={500} className="tasklist-head-title">{list.title}</Text>
                         <div className="mobile-tasklist-card-header-top header-right">
                             <Tooltip label={list.id === userSettings?.featuredTasklist.tasklistId ? "Remove as featured" : "Set as featured"}>
                                 <ActionIcon

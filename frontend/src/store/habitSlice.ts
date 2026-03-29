@@ -45,6 +45,11 @@ export const habitSlice = apiSlice.injectEndpoints({
                     : [{ type: "Habit", id: `USER-${userId}` }],
         }),
 
+        getMonthlyCompletions: builder.query<Record<number, string[]>, { year: number; month: number }>({
+            query: ({ year, month }) => `/habits/completions?year=${year}&month=${month}`,
+            providesTags: (_result, _error) => [{ type: "Habit" }],
+        }),
+
         createHabit: builder.mutation<Habit, CreateHabitArgs>({
             query: (body) => ({
                 url: "/habits",
@@ -103,6 +108,7 @@ export const habitSlice = apiSlice.injectEndpoints({
 
 export const {
     useGetUserHabitsQuery,
+    useGetMonthlyCompletionsQuery,
     useCreateHabitMutation,
     useUpdateHabitMutation,
     useDeleteHabitMutation,

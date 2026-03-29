@@ -46,9 +46,10 @@
 }
 
 .tasklist-head-title {
-    white-space: nowrap;
+    line-height: 1.2 !important;
     overflow: hidden;
-    text-overflow: ellipsis;
+    /* text-overflow: ellipsis; */
+    word-break: break-word;
 }
 
 .tasklist-head-right {

@@ -9,7 +9,7 @@ import { useAuthenticateQuery, useGetUserTaskStatsQuery } from '@/store';
 import { TimeSensitiveModal } from './TimeSensitiveModal';
 import { useState } from 'react';
 
-export function TaskStatusSection({ isReady }: { isReady: boolean }) {
+export function TaskStatsSection({ isReady }: { isReady: boolean }) {
     const isSmall = useIsSmallScreen(375);
     const isMedium = useIsSmallScreen(425);
     const { data: user } = useAuthenticateQuery();

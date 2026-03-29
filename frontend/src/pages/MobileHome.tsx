@@ -2,7 +2,7 @@ import { MobileHomeFamilyTitle } from "@/components/MobileHomeFamilyTitle"
 import "@/assets/styles/mobile.css";
 import { MobileHomeNavGrid } from "@/components/MobileHomeNavGrid";
 import { MobileLayout } from "@/layout/MobileLayout";
-import { TaskStatusSection } from "@/components/DueTaskStats/TaskStatusSelection";
+import { TaskStatsSection } from "@/components/DueTaskStats/TaskStatsSelection";
 import { TimezoneSelect } from "@/components/TimezoneSelect";
 import { useEffect, useState } from "react";
 import { useAuthenticateQuery, useGetFeaturedListSettingsQuery, useGetTasklistQuery, useGetUserTaskStatsQuery, useUpdateTimezoneMutation } from "@/store";
@@ -53,7 +53,7 @@ export const MobileHome = () => {
         <MobileLayout titleComponent={mobileHomeFamilyTitle}>
             <MobileHomeNavGrid />
             <HomepageEventsCollapseCard isReady={isCardsReady} />
-            <TaskStatusSection isReady={isStatsReady} />
+            <TaskStatsSection isReady={isStatsReady} />
             <HomepageNoticeBoardCollapseCard householdId={householdId} isReady={isCardsReady} />
 
             <HomepageListsCollapseCard isReady={isCardsReady} />

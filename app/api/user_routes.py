@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, jsonify, request
-from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment, Habit, UserSettings
 from flask_login import current_user, login_required
-from sqlalchemy import or_, func
+from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment, Habit, UserSettings, TasklistMember  # add TasklistMember
+from sqlalchemy import or_, func, exists  # add exists
 from app.extensions import db
 from app.s3_helpers import (
     upload_file_to_s3, allowed_file, get_unique_filename)
@@ -178,15 +178,26 @@ def get_task_stats(id):
         today_str = str(today)
         soon_str = str(soon_date)
 
+        # Correlated subquery: does a TasklistMember row exist for this user + tasklist?
+        user_is_list_member = exists().where(
+            TasklistMember.tasklist_id == Tasklist.id,
+            TasklistMember.user_id == id,
+        )
+
         pending_tasks = Task.query.join(Tasklist).filter(
-            Tasklist.household_id == user.household_id,  # ← scope to household
+            Tasklist.household_id == user.household_id,
             or_(
                 Task.assigned_to_id == id,
                 Task.assigned_to_id == None,
                 Task.assigned_to_id == 0,
             ),
             Task.completed_at == None,
-            Tasklist.is_archived == False
+            Tasklist.is_archived == False,
+            # NEW: only include tasklists the user is actually on
+            or_(
+                Tasklist.all_members == True,
+                user_is_list_member,
+            ),
         ).all()
 
         stats = {

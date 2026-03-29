@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 from app.extensions import db
 from app.models import Habit, HabitCompletion
 from datetime import date, timedelta
+from calendar import monthrange
 
 habit_routes = Blueprint("habits", __name__)
 
@@ -135,3 +136,31 @@ def uncomplete_habit(habit_id):
         db.session.commit()
 
     return jsonify({"habitId": habit_id, "localDate": local_date.isoformat(), "completed": False}), 200
+
+@habit_routes.route("/completions", methods=["GET"])
+@login_required
+def get_monthly_habit_completions():
+    year = request.args.get("year", type=int)
+    month = request.args.get("month", type=int)
+
+    if not year or not month or not (1 <= month <= 12):
+        return jsonify({"error": "Valid year and month required"}), 400
+
+    _, last_day = monthrange(year, month)
+    start = date(year, month, 1)
+    end = date(year, month, last_day)
+
+    habits = Habit.query.filter_by(user_id=current_user.id, is_active=True).all()
+    habit_ids = [h.id for h in habits]
+
+    completions = HabitCompletion.query.filter(
+        HabitCompletion.habit_id.in_(habit_ids),
+        HabitCompletion.local_date >= start,
+        HabitCompletion.local_date <= end,
+    ).all()
+
+    result: dict[int, list[str]] = {h.id: [] for h in habits}
+    for c in completions:
+        result[c.habit_id].append(c.local_date.isoformat())
+
+    return jsonify(result), 200

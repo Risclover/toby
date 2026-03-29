@@ -13,6 +13,7 @@ import { HabitsPrivate } from "@/features/Habits/components/HabitsPrivate";
 import { HabitsEmpty } from "@/features/Habits/components/HabitsEmpty";
 import { PlusIcon } from "@/assets/icons/PlusIcon";
 import { useIsSmallScreen } from "@/hooks";
+import { MonthlyHabitView } from "@/features/Habits/components/MonthlyHabitView";
 
 export const UserProfileHabitsTab = () => {
     const isSmall = useIsSmallScreen(425);
@@ -60,6 +61,7 @@ export const UserProfileHabitsTab = () => {
                     </div>
                     {view === "today" && <TodaysHabits habits={habits} />}
                     {view === "week" && <ThisWeeksHabits habits={habits} />}
+                    {view === "month" && <MonthlyHabitView />}
                     {myProfilePage && <div className="add-habit-btn"><ActionIcon color="rgb(5, 5, 73)" size={isSmall ? "4rem" : "5rem"} p={0} w="auto" onClick={() => openModal()} radius="5rem"><PlusIcon size={isSmall ? "1.5rem" : "2rem"} color="white" /></ActionIcon></div>}
                 </>}
             <HabitModal />
