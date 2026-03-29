@@ -363,6 +363,7 @@
     border-top-right-radius: 1rem;
     position: relative;
     overflow: visible;
+    padding-bottom: 60px;
     /* Ensure sticky works */
     /* background-color:  */
 

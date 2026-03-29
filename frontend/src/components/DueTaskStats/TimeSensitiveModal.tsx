@@ -169,7 +169,10 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
             onClose={close}
             radius="md"
             title="Time-Sensitive Tasks"
-            styles={{ content: { overflow: "hidden" }, body: { padding: 0, display: "flex", flexDirection: "column" } }}
+            styles={{
+                body: { display: "flex", flexDirection: "column", height: "100%", padding: 0, overflow: "hidden" },
+                content: { overflow: "hidden", maxHeight: "100%", display: "flex", flexDirection: "column" },
+            }}
         >
             <Tabs
                 value={currentTab}
@@ -188,43 +191,39 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                     </Tabs.Tab>
                 </Tabs.List>
 
-                <Box style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
-                    <ScrollArea h="100%">
-                        <TimeSensitiveTasksTab
-                            tabValue="overdue"
-                            emptyMsg="You have no overdue tasks - good job!"
-                            tasks={tasks.overdue}
-                            checkedIds={getCheckedIds("overdue")}
-                            allChecked={allChecked}
-                            indeterminate={indeterminate}
-                            visibleTasks={visibleTasks}
-                            onSelectAll={handleSelectAll}
-                            onToggle={handleToggle}
-                        />
-                        <TimeSensitiveTasksTab
-                            tabValue="due_today"
-                            emptyMsg="No tasks due today."
-                            tasks={tasks.due_today}
-                            checkedIds={getCheckedIds("due_today")}
-                            allChecked={allChecked}
-                            indeterminate={indeterminate}
-                            visibleTasks={visibleTasks}
-                            onSelectAll={handleSelectAll}
-                            onToggle={handleToggle}
-                        />
-                        <TimeSensitiveTasksTab
-                            tabValue="due_soon"
-                            emptyMsg="No tasks due this week."
-                            tasks={tasks.due_soon}
-                            checkedIds={getCheckedIds("due_soon")}
-                            allChecked={allChecked}
-                            indeterminate={indeterminate}
-                            visibleTasks={visibleTasks}
-                            onSelectAll={handleSelectAll}
-                            onToggle={handleToggle}
-                        />
-                    </ScrollArea>
-                </Box>
+                <TimeSensitiveTasksTab
+                    tabValue="overdue"
+                    emptyMsg="You have no overdue tasks - good job!"
+                    tasks={tasks.overdue}
+                    checkedIds={getCheckedIds("overdue")}
+                    allChecked={allChecked}
+                    indeterminate={indeterminate}
+                    visibleTasks={visibleTasks}
+                    onSelectAll={handleSelectAll}
+                    onToggle={handleToggle}
+                />
+                <TimeSensitiveTasksTab
+                    tabValue="due_today"
+                    emptyMsg="No tasks due today."
+                    tasks={tasks.due_today}
+                    checkedIds={getCheckedIds("due_today")}
+                    allChecked={allChecked}
+                    indeterminate={indeterminate}
+                    visibleTasks={visibleTasks}
+                    onSelectAll={handleSelectAll}
+                    onToggle={handleToggle}
+                />
+                <TimeSensitiveTasksTab
+                    tabValue="due_soon"
+                    emptyMsg="No tasks due this week."
+                    tasks={tasks.due_soon}
+                    checkedIds={getCheckedIds("due_soon")}
+                    allChecked={allChecked}
+                    indeterminate={indeterminate}
+                    visibleTasks={visibleTasks}
+                    onSelectAll={handleSelectAll}
+                    onToggle={handleToggle}
+                />
             </Tabs>
 
             <Modal.Header
