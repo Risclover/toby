@@ -142,3 +142,98 @@
     border-bottom: 1px solid var(--mantine-color-gray-3);
     min-height: auto;
 }
+
+.single-weekly-habit {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    box-shadow: var(--mantine-shadow-xs);
+    margin: .5rem 0;
+    padding: .75rem 1rem;
+    border-radius: .875rem;
+    gap: .5rem;
+}
+
+.single-weekly-habit-details-top {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    gap: .5rem;
+}
+
+.single-weekly-habit-name {
+    font-size: var(--text-sm);
+    line-height: 1.2;
+    font-weight: 500;
+    word-break: break-word;
+    margin-bottom: .125rem;
+}
+
+.single-weekly-habit-name.habit-name-small {
+    font-size: var(--text-sm);
+}
+
+.single-weekly-habit-description {
+    font-size: 13px;
+    line-height: 1.2;
+    color: var(--mantine-color-gray-8);
+}
+
+.single-weekly-habit-description.habit-desc-small {
+    font-size: 13px;
+    line-height: 1.1;
+}
+
+.chevron-down-icon svg {
+    transform: rotate(-90deg);
+    transition: transform 150ms ease;
+}
+
+.chevron-down-icon.icon-turned svg {
+    transform: rotate(0deg);
+}
+
+.single-weekly-habit-details {
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+    padding-bottom: .5rem;
+    margin-bottom: .25rem;
+    gap: .25rem;
+}
+
+.single-weekly-habit-days {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.single-weekly-habit-day-labels {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.single-weekly-habit-day-labels span {
+    font-weight: 500;
+    text-align: center;
+    font-size: 13px;
+}
+
+.single-weekly-habit-day-checks {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    justify-items: center;
+    /* <-- centers each checkbox in its cell */
+}
+
+@media (max-width: 425px) {
+    .single-weekly-habit {
+        padding: .75rem 1rem;
+    }
+
+    .single-weekly-habit-details-top {
+        gap: .25rem;
+    }
+}

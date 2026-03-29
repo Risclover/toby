@@ -1,5 +1,5 @@
 from app.extensions import db
-from datetime import date
+from datetime import date, timedelta
 
 
 class Habit(db.Model):
@@ -23,9 +23,16 @@ class Habit(db.Model):
 
     def to_dict(self):
         today = date.today()
-        is_completed_today = any(
-            c.local_date == today for c in self.completions
-        )
+        start_of_week = today - timedelta(days=today.weekday())  # Monday
+        week_dates = {start_of_week + timedelta(days=i) for i in range(7)}
+
+        completed_dates = {c.local_date for c in self.completions}
+
+        is_completed_today = today in completed_dates
+        completions_this_week = [
+            d.isoformat() for d in sorted(week_dates & completed_dates)
+        ]
+
         return {
             "id": self.id,
             "userId": self.user_id,
@@ -35,7 +42,8 @@ class Habit(db.Model):
             "isActive": self.is_active,
             "isPrivate": self.is_private,
             "createdAt": self.created_at,
-            "isCompletedToday": is_completed_today,  # <-- add this
+            "isCompletedToday": is_completed_today,
+            "completionsThisWeek": completions_this_week,  # e.g. ["2025-01-06", "2025-01-08"]
         }
 
     def __repr__(self):
