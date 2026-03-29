@@ -74,7 +74,7 @@ export const Registration = ({ createHousehold }: Props) => {
     };
 
     const validatePassword = () => {
-        if (password.length < 8) setPasswordError("Password must be 8 characters or longer.");
+        if (password.trim().length < 8) setPasswordError("Password must be 8 characters or longer.");
         else setPasswordError("");
         return passwordError;
     };
@@ -148,19 +148,6 @@ export const Registration = ({ createHousehold }: Props) => {
         },
     ];
 
-    const handleContinue = async (e: React.FormEvent) => {
-        await validateEmail();
-        validatePassword();
-        validateRepeatPassword();
-        validateFirstName();
-        validateLastName();
-
-        if (firstNameError || lastNameError || emailError || passwordError || repeatPasswordError) return;
-
-        if (createHousehold) handleSignup(e);
-        else handleJoin(e);
-    };
-
     const handleBack = () => setPage(1);
 
     const handleSignup = async (e: React.FormEvent) => {
@@ -172,10 +159,13 @@ export const Registration = ({ createHousehold }: Props) => {
         validateFirstName();
         validateLastName();
 
-        if (firstNameError || lastNameError || emailError || passwordError || repeatPasswordError) return;
+        if (firstNameError || lastNameError || emailError || passwordError || repeatPasswordError) {
+            return;
+        } else {
+            await signup({ email, password, firstName, lastName });
+            navigate("/onboarding");
+        }
 
-        await signup({ email, password, firstName, lastName });
-        navigate("/onboarding");
     };
 
     const handleJoin = async (e: React.FormEvent) => {
@@ -183,6 +173,8 @@ export const Registration = ({ createHousehold }: Props) => {
         const res: any = await joinHousehold({ email, firstName, lastName, password, inviteCode });
         if ("error" in res) {
             return;
+        } else {
+
         }
         navigate("/");
         setEmail("");

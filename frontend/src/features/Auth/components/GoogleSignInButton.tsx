@@ -8,6 +8,7 @@ export const GoogleSignInButton = ({ onClick, label = "Sign in with Google" }: P
         size="md"
         radius="xl"
         variant="outline"
+        type="button"
         color="gray"
         fullWidth
         fw={500}
