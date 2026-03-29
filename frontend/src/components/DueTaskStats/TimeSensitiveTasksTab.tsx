@@ -1,153 +1,77 @@
-import { Button, Checkbox, Group, Tabs, Transition } from "@mantine/core"
-import { notifications } from "@mantine/notifications"
-import { useRef, useState } from "react"
+// TimeSensitiveTasksTab.tsx
+import { Checkbox, Tabs } from "@mantine/core"
 import { TimeSensitiveTask } from "./TimeSensitiveTask"
-import type { OverdueTask } from "@/store"
-import { useIsSmallScreen } from "@/hooks"
-import { useCompleteTaskMutation, useDeleteTaskMutation } from "@/store"
 
-type Props = {
-    tabValue: string;
-    tasks: OverdueTask[];
-    emptyMsg: string;
+type TaskItem = {
+    id: number
+    title: string
+    due_date: string
+    tasklist_id: number
+    tasklist_title: string
 }
 
-export const TimeSensitiveTasksTab = ({ tabValue, tasks, emptyMsg }: Props) => {
-    const isSmall = useIsSmallScreen(425);
-    const [completeTask] = useCompleteTaskMutation();
-    const [deleteTask] = useDeleteTaskMutation();
+type Props = {
+    tabValue: string
+    tasks: TaskItem[]
+    emptyMsg: string
+    checkedIds: Set<number>
+    allChecked: boolean
+    indeterminate: boolean
+    visibleTasks: TaskItem[]
+    onSelectAll: () => void
+    onToggle: (id: number) => void
+}
 
-    const [checkedIds, setCheckedIds] = useState<Set<number>>(new Set());
-    const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<number>>(new Set());
-    const [pendingCompleteIds, setPendingCompleteIds] = useState<Set<number>>(new Set());
-
-    const pendingDeleteRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const pendingCompleteRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const allChecked = tasks.length > 0 && checkedIds.size === tasks.length;
-    const indeterminate = checkedIds.size > 0 && !allChecked;
-
-    const visibleTasks = tasks.filter(t => !pendingDeleteIds.has(t.id) && !pendingCompleteIds.has(t.id));
-
-    const handleSelectAll = () => {
-        setCheckedIds(allChecked ? new Set() : new Set(visibleTasks.map(t => t.id)));
-    };
-
-    const handleToggle = (id: number) => {
-        setCheckedIds(prev => {
-            const next = new Set(prev);
-            next.has(id) ? next.delete(id) : next.add(id);
-            return next;
-        });
-    };
-
-    const handleMassDelete = () => {
-        const ids = new Set(checkedIds);
-        setPendingDeleteIds(ids);
-        setCheckedIds(new Set());
-
-        pendingDeleteRef.current = setTimeout(async () => {
-            const selected = tasks.filter(t => ids.has(t.id));
-            await Promise.all(
-                selected.map(t => deleteTask({ taskId: t.id, listId: t.tasklist_id }))
-            );
-            // remove the setPendingDeleteIds(new Set()) call
-        }, 5000);
-
-        const notifId = notifications.show({
-            message: (
-                <Group justify="space-between" align="center">
-                    <span>{`Deleted ${ids.size} ${ids.size === 1 ? 'task' : 'tasks'}`}</span>
-                    <Button
-                        size="xs"
-                        color="rgb(5,5,73)"
-                        variant="light"
-                        onClick={() => {
-                            if (pendingDeleteRef.current) clearTimeout(pendingDeleteRef.current);
-                            setPendingDeleteIds(new Set());
-                            notifications.hide(notifId);
-                        }}
-                    >
-                        Undo
-                    </Button>
-                </Group>
-            ),
-            autoClose: 5000,
-            withCloseButton: false,
-            color: "rgb(5, 5, 73)"
-        });
-    };
-
-    const handleMassComplete = () => {
-        const ids = new Set(checkedIds);
-        setPendingCompleteIds(ids);
-        setCheckedIds(new Set());
-
-        pendingCompleteRef.current = setTimeout(async () => {
-            const selected = tasks.filter(t => ids.has(t.id));
-            await Promise.all(
-                selected.map(t => completeTask({ taskId: t.id, listId: t.tasklist_id, completed: true }))
-            );
-            // remove the setPendingCompleteIds(new Set()) call
-        }, 5000);
-
-        const notifId = notifications.show({
-            message: (
-                <Group justify="space-between" align="center">
-                    <span>{`Completed ${ids.size} ${ids.size === 1 ? 'task' : 'tasks'}`}</span>
-                    <Button
-                        size="xs"
-                        color="rgb(5,5,73)"
-                        variant="light"
-                        onClick={() => {
-                            if (pendingCompleteRef.current) clearTimeout(pendingCompleteRef.current);
-                            setPendingCompleteIds(new Set());
-                            notifications.hide(notifId);
-                        }}
-                    >
-                        Undo
-                    </Button>
-                </Group>
-            ),
-            autoClose: 5000,
-            withCloseButton: false,
-            color: "rgb(5, 5, 73)"
-        });
-    };
-
+export const TimeSensitiveTasksTab = ({
+    tabValue,
+    tasks,
+    emptyMsg,
+    checkedIds,
+    allChecked,
+    indeterminate,
+    visibleTasks,
+    onSelectAll,
+    onToggle,
+}: Props) => {
     return (
         <Tabs.Panel value={tabValue}>
-            {visibleTasks.length > 0 && <div className="list-head">
-                <div className="list-head-left">
-                    <Checkbox
-                        color="rgb(3, 3, 75)"
-                        checked={allChecked}
-                        indeterminate={indeterminate}
-                        onChange={handleSelectAll}
-                        label="Select all"
-                        size="xs"
-                        styles={{ label: { fontSize: "14px", paddingLeft: "0.5rem" } }}
-                    />
-                    {checkedIds.size > 0 && <span>{`(${checkedIds.size} selected)`}</span>}
+            {visibleTasks.length > 0 && (
+                <div className="list-head">
+                    <div className="list-head-left">
+                        <Checkbox
+                            color={
+                                tabValue === "overdue"
+                                    ? "var(--mantine-color-red-7)"
+                                    : tabValue === "due_today"
+                                        ? "var(--mantine-color-orange-7)"
+                                        : "var(--mantine-color-blue-7)"
+                            }
+                            checked={allChecked}
+                            indeterminate={indeterminate}
+                            onChange={onSelectAll}
+                            label="Select all"
+                            size="xs"
+                            styles={{ label: { fontSize: "14px", paddingLeft: "0.5rem" } }}
+                        />
+                        {checkedIds.size > 0 && <span>{`(${checkedIds.size} selected)`}</span>}
+                    </div>
                 </div>
-                <Transition mounted={checkedIds.size > 0} transition="fade-left" duration={250} timingFunction="ease">
-                    {(styles) => (
-                        <Group gap={0} style={styles}>
-                            <Button radius="sm" size="13px" p=".325rem .5rem" h="auto" variant="filled" fw={500} color="rgb(5, 5, 73)" onClick={handleMassComplete}>Complete</Button>
-                            <Button ml=".5rem" radius="sm" size="13px" p=".325rem .5rem" h="auto" variant="light" fw={500} color="red" onClick={handleMassDelete}>Delete</Button>
-                        </Group>
-                    )}
-                </Transition>
-            </div>}
+            )}
+
             <ul className="time-sensitive-tasks">
-                {visibleTasks.length === 0 ? <div className="sensitive-tasks-empty">{emptyMsg}</div> : visibleTasks.map(task => (
-                    <TimeSensitiveTask
-                        key={task.id}
-                        task={task}
-                        checked={checkedIds.has(task.id)}
-                        onToggle={handleToggle}
-                    />
-                ))}
+                {visibleTasks.length === 0 ? (
+                    <div className="sensitive-tasks-empty">{emptyMsg}</div>
+                ) : (
+                    visibleTasks.map(task => (
+                        <TimeSensitiveTask
+                            key={task.id}
+                            task={task}
+                            checked={checkedIds.has(task.id)}
+                            onToggle={onToggle}
+                            tab={tabValue}
+                        />
+                    ))
+                )}
             </ul>
         </Tabs.Panel>
     )

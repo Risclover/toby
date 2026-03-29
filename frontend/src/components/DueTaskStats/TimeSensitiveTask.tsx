@@ -5,6 +5,7 @@ import { useState } from "react"
 import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import dayjs from 'dayjs';
 import { useNavigate } from "react-router-dom";
+import { ExternalLinkIcon } from "@/assets/icons/ExternalLinkIcon";
 
 export function relativeDayLabel(
     input: string | Date | null | undefined,              // accepts "YYYY-MM-DD" or a Date
@@ -23,18 +24,29 @@ export function relativeDayLabel(
     return d.format(fmt);               // fallback formatting
 }
 
-export const TimeSensitiveTask = ({ task, checked, onToggle }: {
-    task: OverdueTask;
-    checked: boolean;
-    onToggle: (id: number) => void;
-}) => {
+type TaskItem = {
+    id: number
+    title: string
+    due_date: string
+    tasklist_id: number
+    tasklist_title: string
+}
+
+type Props = {
+    task: TaskItem
+    checked: boolean
+    onToggle: (id: number) => void
+    tab: string
+}
+
+export const TimeSensitiveTask = ({ task, checked, onToggle, tab }: Props) => {
     const navigate = useNavigate();
     return (
         <li className="time-sensitive-task">
             <div className="time-sensitive-task-info">
                 <label>
                     <Checkbox
-                        color="rgb(5, 5, 73)"
+                        color={tab === "overdue" ? "var(--mantine-color-red-7)" : tab === "due_today" ? "var(--mantine-color-orange-7)" : "var(--mantine-color-blue-7)"}
                         size="xs"
                         checked={checked}
                         onChange={() => onToggle(task.id)}
@@ -49,8 +61,9 @@ export const TimeSensitiveTask = ({ task, checked, onToggle }: {
                 </div>
 
                 <div className="reminder-separator-dot">·</div>
-                <div className="extra extra--tasklist" onClick={() => window.open(`/tasklists/${task.tasklist_id}`, "_blank")}>
+                <div className="extra extra--tasklist" style={{ color: tab === "overdue" ? "var(--mantine-color-red-7)" : tab === "due_today" ? "var(--mantine-color-orange-7)" : "var(--mantine-color-blue-7)" }} onClick={() => window.open(`/tasklists/${task.tasklist_id}`, "_blank")}>
                     <div className="extra-label">{task.tasklist_title}</div>
+                    <ExternalLinkIcon size=".8rem" color={tab === "overdue" ? "var(--mantine-color-red-7)" : tab === "due_today" ? "var(--mantine-color-orange-7)" : "var(--mantine-color-blue-7)"} />
                 </div>
             </div>
         </li>

@@ -1,28 +1,264 @@
-import { Box, Button, Checkbox, Group, Modal, Tabs } from "@mantine/core"
-import { TimeSensitiveTasksTab } from "./TimeSensitiveTasksTab";
-import { useAuthenticateQuery, useGetUserTaskStatsQuery } from "@/store";
-import { useIsSmallScreen } from "@/hooks";
-import { DueTodayTab } from "./DueTodayTab";
-import { DueSoonTab } from "./DueSoonTab";
+// TimeSensitiveModal.tsx
+import { Box, Button, Group, Modal, ScrollArea, Tabs, Transition } from "@mantine/core"
+import { notifications } from "@mantine/notifications"
+import { useRef, useState } from "react"
+import { useAuthenticateQuery, useGetUserTaskStatsQuery, useCompleteTaskMutation, useDeleteTaskMutation } from "@/store"
+import { useIsSmallScreen } from "@/hooks"
+import { TimeSensitiveTasksTab } from "./TimeSensitiveTasksTab"
 
-export const TimeSensitiveModal = ({ opened, close, activeTab }: { opened: boolean; close: () => void; activeTab?: string; }) => {
-    const { data: user } = useAuthenticateQuery();
-    const { data: tasks } = useGetUserTaskStatsQuery(user?.id, { skip: !user?.id });
-    const isSmall = useIsSmallScreen(425);
+type TaskItem = {
+    id: number
+    title: string
+    due_date: string
+    tasklist_id: number
+    tasklist_title: string
+}
 
-    if (!tasks) return null;
+type Props = {
+    opened: boolean
+    close: () => void
+    activeTab?: string
+}
+
+export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
+    const { data: user } = useAuthenticateQuery()
+    const { data: tasks } = useGetUserTaskStatsQuery(user?.id, { skip: !user?.id })
+    const isSmall = useIsSmallScreen(425)
+
+    const [completeTask] = useCompleteTaskMutation()
+    const [deleteTask] = useDeleteTaskMutation()
+
+    const [checkedIds, setCheckedIds] = useState<{
+        overdue: Set<number>
+        due_today: Set<number>
+        due_soon: Set<number>
+    }>({
+        overdue: new Set(),
+        due_today: new Set(),
+        due_soon: new Set(),
+    })
+
+    const getCheckedIds = (tab: string) => checkedIds[tab as keyof typeof checkedIds]
+    const setCheckedIdsForTab = (tab: string, ids: Set<number>) => {
+        setCheckedIds(prev => ({ ...prev, [tab]: ids }))
+    }
+
+    const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<number>>(new Set())
+    const [pendingCompleteIds, setPendingCompleteIds] = useState<Set<number>>(new Set())
+    const [currentTab, setCurrentTab] = useState(activeTab ?? "overdue")
+
+    const pendingDeleteRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const pendingCompleteRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+    if (!tasks) return null
+
+    const getList = (tab: string): TaskItem[] => {
+        if (tab === "due_today") return tasks.due_today
+        if (tab === "due_soon") return tasks.due_soon
+        return tasks.overdue
+    }
+
+    const list = getList(currentTab)
+
+    const getSelectedCount = (tab: string): number =>
+        getCheckedIds(tab).size
+
+    // Now your current tab logic uses tab-specific state
+    const currentCheckedIds = getCheckedIds(currentTab)
+    const allChecked = list.length > 0 && currentCheckedIds.size === list.length
+    const indeterminate = currentCheckedIds.size > 0 && !allChecked
+    const visibleTasks = list.filter(t => !pendingDeleteIds.has(t.id) && !pendingCompleteIds.has(t.id))
+
+    const handleSelectAll = () => {
+        setCheckedIdsForTab(
+            currentTab,
+            allChecked ? new Set() : new Set(visibleTasks.map(t => t.id))
+        )
+    }
+
+    const handleToggle = (id: number) => {
+        const currentSet = getCheckedIds(currentTab)
+        const next = new Set(currentSet)
+        next.has(id) ? next.delete(id) : next.add(id)
+        setCheckedIdsForTab(currentTab, next)
+    }
+
+    const handleMassDelete = () => {
+        const ids = new Set(getCheckedIds(currentTab))
+        if (ids.size === 0 || list.length === 0) return
+
+        setPendingDeleteIds(ids)
+        setCheckedIdsForTab(currentTab, new Set())
+
+        pendingDeleteRef.current = setTimeout(async () => {
+            const selected = list.filter(t => ids.has(t.id))
+            await Promise.all(
+                selected.map(t => deleteTask({ taskId: t.id, listId: t.tasklist_id }))
+            )
+        }, 5000)
+
+        const notifId = notifications.show({
+            message: (
+                <Group justify="space-between" align="center">
+                    <span>{`Deleted ${ids.size} ${ids.size === 1 ? "task" : "tasks"}`}</span>
+                    <Button
+                        size="xs"
+                        color="rgb(5,5,73)"
+                        variant="light"
+                        onClick={() => {
+                            if (pendingDeleteRef.current) clearTimeout(pendingDeleteRef.current)
+                            setPendingDeleteIds(new Set())
+                            notifications.hide(notifId)
+                        }}
+                    >
+                        Undo
+                    </Button>
+                </Group>
+            ),
+            autoClose: 5000,
+            withCloseButton: false,
+            color: "rgb(5, 5, 73)",
+        })
+    }
+
+    const handleMassComplete = () => {
+        const ids = new Set(getCheckedIds(currentTab))
+        if (ids.size === 0 || list.length === 0) return
+
+        setPendingCompleteIds(ids)
+        setCheckedIdsForTab(currentTab, new Set())
+
+        pendingCompleteRef.current = setTimeout(async () => {
+            const selected = list.filter(t => ids.has(t.id))
+            await Promise.all(
+                selected.map(t =>
+                    completeTask({ taskId: t.id, listId: t.tasklist_id, completed: true })
+                )
+            )
+        }, 5000)
+
+        const notifId = notifications.show({
+            message: (
+                <Group justify="space-between" align="center">
+                    <span>{`Completed ${ids.size} ${ids.size === 1 ? "task" : "tasks"}`}</span>
+                    <Button
+                        size="xs"
+                        color="rgb(5,5,73)"
+                        variant="light"
+                        onClick={() => {
+                            if (pendingCompleteRef.current) clearTimeout(pendingCompleteRef.current)
+                            setPendingCompleteIds(new Set())
+                            notifications.hide(notifId)
+                        }}
+                    >
+                        Undo
+                    </Button>
+                </Group>
+            ),
+            autoClose: 5000,
+            withCloseButton: false,
+            color: "rgb(5, 5, 73)",
+        })
+    }
+
     return (
-        <Modal fullScreen={isSmall} size="lg" opened={opened} onClose={close} radius="md" title="Time-Sensitive Tasks">
-            <Tabs defaultValue={activeTab}>
+        <Modal
+            fullScreen={isSmall}
+            size="lg"
+            opened={opened}
+            onClose={close}
+            radius="md"
+            title="Time-Sensitive Tasks"
+            styles={{ content: { overflow: "hidden" }, body: { padding: 0, display: "flex", flexDirection: "column" } }}
+        >
+            <Tabs
+                value={currentTab}
+                onChange={(value) => setCurrentTab(value ?? "overdue")}
+                style={{ display: "flex", flexDirection: "column", minHeight: 0, flex: 1 }}
+            >
                 <Tabs.List styles={{ list: { padding: "0 1rem" } }}>
-                    <Tabs.Tab value="overdue" color="red.7" className="tab-overdue">Overdue</Tabs.Tab>
-                    <Tabs.Tab value="due_today" color="orange.7" className="tab-today">Due Today</Tabs.Tab>
-                    <Tabs.Tab value="due_soon" color="blue.7" className="tab-soon">Due Soon</Tabs.Tab>
+                    <Tabs.Tab value="overdue" color="red.7" className="tab-overdue">
+                        Overdue
+                    </Tabs.Tab>
+                    <Tabs.Tab value="due_today" color="orange.7" className="tab-today">
+                        Due Today
+                    </Tabs.Tab>
+                    <Tabs.Tab value="due_soon" color="blue.7" className="tab-soon">
+                        Due Soon
+                    </Tabs.Tab>
                 </Tabs.List>
-                <TimeSensitiveTasksTab tabValue="overdue" emptyMsg="You have no overdue tasks - good job!" tasks={tasks.overdue} />
-                <TimeSensitiveTasksTab tabValue="due_today" emptyMsg="No tasks due today." tasks={tasks.due_today} />
-                <TimeSensitiveTasksTab tabValue="due_soon" emptyMsg="No tasks due this week." tasks={tasks.due_soon} />
+
+                <Box style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
+                    <ScrollArea h="100%">
+                        <TimeSensitiveTasksTab
+                            tabValue="overdue"
+                            emptyMsg="You have no overdue tasks - good job!"
+                            tasks={tasks.overdue}
+                            checkedIds={getCheckedIds("overdue")}
+                            allChecked={allChecked}
+                            indeterminate={indeterminate}
+                            visibleTasks={visibleTasks}
+                            onSelectAll={handleSelectAll}
+                            onToggle={handleToggle}
+                        />
+                        <TimeSensitiveTasksTab
+                            tabValue="due_today"
+                            emptyMsg="No tasks due today."
+                            tasks={tasks.due_today}
+                            checkedIds={getCheckedIds("due_today")}
+                            allChecked={allChecked}
+                            indeterminate={indeterminate}
+                            visibleTasks={visibleTasks}
+                            onSelectAll={handleSelectAll}
+                            onToggle={handleToggle}
+                        />
+                        <TimeSensitiveTasksTab
+                            tabValue="due_soon"
+                            emptyMsg="No tasks due this week."
+                            tasks={tasks.due_soon}
+                            checkedIds={getCheckedIds("due_soon")}
+                            allChecked={allChecked}
+                            indeterminate={indeterminate}
+                            visibleTasks={visibleTasks}
+                            onSelectAll={handleSelectAll}
+                            onToggle={handleToggle}
+                        />
+                    </ScrollArea>
+                </Box>
             </Tabs>
+
+            <Modal.Header
+                component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}
+            >
+                <Group gap=".5rem" justify="flex-end" w="100%">
+                    <Button
+                        radius="sm"
+                        size="sm"
+                        p=".5rem 1rem"
+                        h="auto"
+                        variant="outline"
+                        fw={500}
+                        color="red"
+                        onClick={handleMassDelete}
+                        disabled={getSelectedCount(currentTab) === 0}
+                    >
+                        Delete
+                    </Button>
+                    <Button
+                        radius="sm"
+                        size="sm"
+                        p=".5rem 1rem"
+                        h="auto"
+                        variant="filled"
+                        fw={500}
+                        color="rgb(5, 5, 73)"
+                        onClick={handleMassComplete}
+                        disabled={getSelectedCount(currentTab) === 0}
+                    >
+                        Complete
+                    </Button>
+                </Group>
+            </Modal.Header>
         </Modal>
     )
 }

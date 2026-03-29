@@ -680,10 +680,6 @@ form {
     min-width: 0;
 }
 
-.time-sensitive-task:last-of-type {
-    border-bottom: 1px solid var(--mantine-color-gray-2);
-}
-
 .time-sensitive-task .empty-space {
     width: 38px;
     flex-shrink: 0;
@@ -716,16 +712,25 @@ form {
 
 .sensitive-task-details .extra--tasklist {
     min-width: 0;
-    flex-shrink: 1;
     margin-right: 1rem;
     color: #041070;
     cursor: pointer;
+    flex-shrink: 1;
 }
 
 .sensitive-task-details .extra--tasklist .extra-label {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.extra--tasklist .extra-label:hover {
+    text-decoration: underline;
+}
+
+.sensitive-task-details .extra--tasklist svg {
+    flex-shrink: 0;
 }
 
 .time-sensitive-task-info-right {
@@ -766,14 +771,18 @@ form {
 }
 
 .time-sensitive-tasks-container {
-    overflow-y: auto;
+    overflow: hidden;
     scrollbar-width: thin;
     scrollbar-color: #c1c1c1 #fafafa;
-    max-height: 80vhpx;
+    max-height: 80vh;
 }
 
 .time-sensitive-tasks {
-    padding-bottom: .5rem;
+    overflow-y: auto;
+    min-height: 0px;
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #fafafa;
+    max-height: calc(100vh - 76px - 60px - 65px);
 }
 
 .tab-overdue,

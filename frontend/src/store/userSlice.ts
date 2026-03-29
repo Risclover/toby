@@ -124,9 +124,9 @@ export const userSlice = apiSlice.injectEndpoints({
         }),
 
         getUserTaskStats: builder.query<{
-            overdue: { id: number; title: string; due_date: string; tasklist_id: number; tasklist_name: string }[];
-            due_today: { id: number; title: string; due_date: string; tasklist_id: number; tasklist_name: string }[];
-            due_soon: { id: number; title: string; due_date: string; tasklist_id: number; tasklist_name: string }[];
+            overdue: { id: number; title: string; due_date: string; tasklist_id: number; tasklist_title: string }[];
+            due_today: { id: number; title: string; due_date: string; tasklist_id: number; tasklist_title: string }[];
+            due_soon: { id: number; title: string; due_date: string; tasklist_id: number; tasklist_title: string }[];
         },
             number
         >({
