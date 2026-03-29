@@ -403,13 +403,16 @@ def get_user_habits(user_id):
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # Visitors must be in the same household
     if user.household_id != current_user.household_id:
         return jsonify({"error": "Forbidden"}), 403
 
+    if current_user.id != user_id:
+        settings = UserSettings.query.filter_by(user_id=user_id).first()
+        if settings and settings.habits_privacy_mode == "all_private":
+            return jsonify([]), 200
+
     query = Habit.query.filter_by(user_id=user_id, is_active=True)
 
-    # Visitors can't see private habits
     if current_user.id != user_id:
         query = query.filter_by(is_private=False)
 
