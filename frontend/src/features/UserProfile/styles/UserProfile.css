@@ -41,6 +41,7 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: .75rem;
+    margin-bottom: 1.5rem;
 }
 
 .user-profile-stat {
@@ -84,7 +85,23 @@
     width: 24px;
 }
 
+.stat-skeleton {
+    height: 122px;
+}
+
+.stat-skeleton .user-profile-stat-icon-skeleton {
+    margin-bottom: .5rem;
+}
+
+.stat-skeleton .user-profile-stat-num {
+    margin-bottom: .5rem;
+}
+
 @media (max-width: 425px) {
+    .stat-skeleton {
+        height: 118px;
+    }
+
     .user-profile-stats {
         gap: .5rem;
     }

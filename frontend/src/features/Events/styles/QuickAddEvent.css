@@ -80,14 +80,11 @@
     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2), inset -1px -1px 3px rgba(255, 255, 255, 0.6);
     border-radius: .5rem;
     overflow: hidden;
-    padding: .25rem;
 }
 
 .todays-events {
     max-height: 150px;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #fafafa;
     padding: .25rem;
 }
 

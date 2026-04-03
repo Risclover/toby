@@ -142,15 +142,23 @@ def uncomplete_habit(habit_id):
 def get_monthly_habit_completions():
     year = request.args.get("year", type=int)
     month = request.args.get("month", type=int)
+    target_user_id = request.args.get("userId", type=int) or current_user.id
 
     if not year or not month or not (1 <= month <= 12):
         return jsonify({"error": "Valid year and month required"}), 400
+
+    # If requesting another user's data, verify same household
+    if target_user_id != current_user.id:
+        from app.models import User
+        target_user = User.query.get_or_404(target_user_id)
+        if target_user.household_id != current_user.household_id:
+            return jsonify({"error": "Forbidden"}), 403
 
     _, last_day = monthrange(year, month)
     start = date(year, month, 1)
     end = date(year, month, last_day)
 
-    habits = Habit.query.filter_by(user_id=current_user.id, is_active=True).all()
+    habits = Habit.query.filter_by(user_id=target_user_id, is_active=True).all()
     habit_ids = [h.id for h in habits]
 
     completions = HabitCompletion.query.filter(

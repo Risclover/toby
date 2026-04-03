@@ -10,7 +10,7 @@ import { Button } from "@mantine/core";
 import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/HomepageListsCollapseCard";
 import { HomepageNoticeBoardCollapseCard } from "@/components/HomepageCollapseCard/HomepageNoticeBoardCollapseCard";
 import { HomepageCheckinsCollapseCard } from "@/components/HomepageCollapseCard/HomepageCheckinsCollapseCard";
-import { HomepageActivityCollapseCard } from "@/components/HomepageCollapseCard/HouseholdActivityCollapseCard";
+import { HouseholdActivityCollapseCard } from "@/components/HomepageCollapseCard/HouseholdActivityCollapseCard";
 import { HomepageEventsCollapseCard } from "@/components/HomepageCollapseCard/HomepageEventsCollapseCard";
 import { useHousehold } from "@/hooks/useHousehold";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -58,7 +58,7 @@ export const MobileHome = () => {
 
             <HomepageListsCollapseCard isReady={isCardsReady} />
             <HomepageCheckinsCollapseCard isReady={isCardsReady} />
-            <HomepageActivityCollapseCard householdId={householdId} isReady={isCardsReady} />
+            <HouseholdActivityCollapseCard householdId={householdId} isReady={isCardsReady} />
 
 
         </MobileLayout>

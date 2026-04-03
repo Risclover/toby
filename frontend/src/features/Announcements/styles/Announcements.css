@@ -330,8 +330,6 @@
     padding: 0.5rem;
     overflow-y: auto;
     max-height: 250px;
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #fafafa;
 }
 
 .notice-board-announcement:last-child {
@@ -346,6 +344,7 @@
     padding: 0.5rem 0.725rem;
     box-shadow: var(--mantine-shadow-xs) !important;
     position: relative;
+    z-index: 10;
 }
 
 .announcements-count {

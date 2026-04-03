@@ -1,7 +1,7 @@
 // TimeSensitiveModal.tsx
 import { Box, Button, Group, Modal, ScrollArea, Tabs, Transition } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useAuthenticateQuery, useGetUserTaskStatsQuery, useCompleteTaskMutation, useDeleteTaskMutation } from "@/store"
 import { useIsSmallScreen } from "@/hooks"
 import { TimeSensitiveTasksTab } from "./TimeSensitiveTasksTab"
@@ -49,6 +49,12 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
 
     const pendingDeleteRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const pendingCompleteRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+    useEffect(() => {
+        if (opened) {
+            setCurrentTab(activeTab ?? "overdue")
+        }
+    }, [opened, activeTab])
 
     if (!tasks) return null
 

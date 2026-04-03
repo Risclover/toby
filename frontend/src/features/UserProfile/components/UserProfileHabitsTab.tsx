@@ -61,7 +61,7 @@ export const UserProfileHabitsTab = () => {
                     </div>
                     {view === "today" && <TodaysHabits habits={habits} />}
                     {view === "week" && <ThisWeeksHabits habits={habits} />}
-                    {view === "month" && <MonthlyHabitView />}
+                    {view === "month" && <MonthlyHabitView habits={habits} />}
                     {myProfilePage && <div className="add-habit-btn"><ActionIcon color="rgb(5, 5, 73)" size={isSmall ? "4rem" : "5rem"} p={0} w="auto" onClick={() => openModal()} radius="5rem"><PlusIcon size={isSmall ? "1.5rem" : "2rem"} color="white" /></ActionIcon></div>}
                 </>}
             <HabitModal />

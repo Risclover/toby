@@ -60,17 +60,15 @@ export function HabitMonthCard({ habit, completions, year, month }: Props) {
                     const todayCell = isToday(day);
 
                     let bg = "transparent";
-                    let opacity = 1;
                     let outline = "none";
 
                     if (future) {
-                        bg = "var(--color-border-tertiary)";
-                        opacity = 0.35;
+                        bg = "#f1f3f5";
                     } else if (done) {
                         bg = habit.color;
                         if (todayCell) outline = `2px solid ${habit.color}`;
                     } else {
-                        bg = habit.color + "28"; // ~15% opacity tint
+                        bg = habit.color + "28";
                     }
 
                     return (
@@ -80,7 +78,6 @@ export function HabitMonthCard({ habit, completions, year, month }: Props) {
                                 aspectRatio: "1",
                                 borderRadius: ".25rem",
                                 background: bg,
-                                opacity,
                                 outline,
                                 outlineOffset: todayCell ? 2 : 0,
                             }}

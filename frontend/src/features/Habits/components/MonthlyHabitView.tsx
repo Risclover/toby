@@ -1,27 +1,29 @@
 import { useState } from "react";
 import { SimpleGrid } from "@mantine/core";
 import { useAuthenticateQuery } from "@/store";
-import { useGetUserHabitsQuery, useGetMonthlyCompletionsQuery } from "@/store/habitSlice";
+import { useGetUserHabitsQuery, useGetMonthlyCompletionsQuery, type Habit } from "@/store/habitSlice";
 import { HabitMonthCard } from "./HabitMonthCard";
+import { useParams } from "react-router-dom";
 
 const MONTHS = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December",
 ];
 
-export function MonthlyHabitView() {
+type Props = {
+    habits: Habit[];
+}
+
+export function MonthlyHabitView({ habits }: Props) {
     const today = new Date();
     const [year, setYear] = useState(today.getFullYear());
     const [month, setMonth] = useState(today.getMonth() + 1); // 1-indexed
+    const { userId } = useParams();
 
-    const { data: user } = useAuthenticateQuery();
-    const userId = user?.id;
-
-    const { data: habits = [] } = useGetUserHabitsQuery(userId!, { skip: !userId });
 
     const { data: completionsByHabit = {} } = useGetMonthlyCompletionsQuery(
-        { year, month },
-        { skip: !userId }
+        { year, month, userId: Number(userId) },
+        { skip: !Number(userId) }
     );
 
     const prev = () => {

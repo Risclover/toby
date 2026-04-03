@@ -45,9 +45,12 @@ export const habitSlice = apiSlice.injectEndpoints({
                     : [{ type: "Habit", id: `USER-${userId}` }],
         }),
 
-        getMonthlyCompletions: builder.query<Record<number, string[]>, { year: number; month: number }>({
-            query: ({ year, month }) => `/habits/completions?year=${year}&month=${month}`,
-            providesTags: (_result, _error) => [{ type: "Habit" }],
+        getMonthlyCompletions: builder.query<Record<number, string[]>,
+            { year: number; month: number; userId: number }
+        >({
+            query: ({ year, month, userId }) =>
+                `/habits/completions?year=${year}&month=${month}&userId=${userId}`,
+            providesTags: [{ type: "Habit", id: "MONTHLY" }],
         }),
 
         createHabit: builder.mutation<Habit, CreateHabitArgs>({
@@ -90,6 +93,7 @@ export const habitSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (_result, _error, habitId) => [
                 { type: "Habit", id: habitId },
+                { type: "Habit", id: "MONTHLY" },
             ],
         }),
 
@@ -101,6 +105,7 @@ export const habitSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (_result, _error, habitId) => [
                 { type: "Habit", id: habitId },
+                { type: "Habit", id: "MONTHLY" },
             ],
         }),
     }),

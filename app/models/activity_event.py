@@ -32,7 +32,7 @@ class ActivityEvent(db.Model):
             "entityId": self.entity_id,
             "entityLabel": self.entity_label,
             "eventMetadata": self.event_metadata,
-            "createdAt": self.created_at.isoformat(),
+            "createdAt": self.created_at.isoformat() + "Z",
         }
 
     def __repr__(self):

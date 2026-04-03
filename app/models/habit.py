@@ -23,7 +23,8 @@ class Habit(db.Model):
 
     def to_dict(self):
         today = date.today()
-        start_of_week = today - timedelta(days=today.weekday())  # Monday
+        # Sunday-based week to match dayjs().startOf("week")
+        start_of_week = today - timedelta(days=(today.weekday() + 1) % 7)
         week_dates = {start_of_week + timedelta(days=i) for i in range(7)}
 
         completed_dates = {c.local_date for c in self.completions}

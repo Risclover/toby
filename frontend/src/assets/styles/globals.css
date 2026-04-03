@@ -88,6 +88,7 @@
 
 * {
     box-sizing: border-box;
+    scrollbar-width: thin;
 }
 
 html,
@@ -101,6 +102,12 @@ body {
     height: 100%;
 }
 
+html {
+    scrollbar-track-color: transparent;
+    scrollbar-width: thin;
+    /* or 'auto' */
+}
+
 body {
     margin: 0;
     /* color: var(--text); */
@@ -110,8 +117,6 @@ body {
 
 #root {
     display: flex;
-    /* background: var(--bg);
-    color: white; */
 }
 
 main {
@@ -506,8 +511,6 @@ form {
     width: 100%;
     overflow-y: auto;
     max-height: 250px;
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #fafafa;
 }
 
 
@@ -776,16 +779,12 @@ form {
 
 .time-sensitive-tasks-container {
     overflow: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #fafafa;
     max-height: 80vh;
 }
 
 .time-sensitive-tasks {
     overflow-y: auto;
     min-height: 0px;
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #fafafa;
     max-height: calc(100vh - 76px - 60px - 65px);
     padding-bottom: 5px;
 }

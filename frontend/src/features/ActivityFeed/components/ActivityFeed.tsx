@@ -7,8 +7,9 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { ActivityFeedSkeletons } from "./ActivityFeedSkeletons";
 
 type Props = {
-    isReady: boolean;
+    isReady?: boolean;
     householdId: number;
+    actorId?: number;
 };
 
 type FormattedEvent = {
@@ -16,10 +17,13 @@ type FormattedEvent = {
     line2?: React.ReactNode;
 };
 
-export const ActivityFeed = ({ isReady, householdId }: Props) => {
+export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
     const [expandedId, setExpandedId] = useState<number | null>(null);
 
-    const { data, isLoading, isSuccess, isError } = useGetActivityQuery({ householdId });
+    const { data, isLoading, isSuccess, isError } = useGetActivityQuery(
+        { householdId, actorId },
+        { skip: !householdId }
+    );
 
     const showSkeleton = isLoading || (!isSuccess && !data);
 

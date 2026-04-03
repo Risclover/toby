@@ -1,8 +1,6 @@
 .activity-feed-skeletons {
     overflow-y: auto;
     max-height: 250px;
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #fafafa;
 }
 
 .activity-feed-skeleton {
