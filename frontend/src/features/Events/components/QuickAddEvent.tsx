@@ -10,6 +10,7 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import { EventMenu } from "./EventMenu";
 import { RemainingChars } from "@/components/RemainingChars";
 import { ClockIcon } from "@/assets/icons/ClockIcon";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 function startEndIsoForLocalDay(ymd: string) {
     const [y, m, d] = ymd.split("-").map(Number);
@@ -71,7 +72,7 @@ export function QuickAddEvent({
     const [createEvent, { isLoading: creating }] = useCreateEventMutation();
     const [updateEvent, { isLoading: updating }] = useUpdateEventMutation();
     const [deleteEvent] = useDeleteEventMutation();
-
+    const { ref: nameRef, transitionProps } = useModalFocus(!edit);
     const isSaving = creating || updating;
 
     // Store the full editing event in state so it stays stable even if the date changes
@@ -250,8 +251,9 @@ export function QuickAddEvent({
     const modalTitle = isEditingRow || (edit && event) ? "Edit event" : "Add event";
 
     return (
-        <Modal opened={opened} onClose={handleClose} radius="md" title={modalTitle} centered keepMounted={false}>
+        <Modal transitionProps={transitionProps} opened={opened} onClose={handleClose} radius="md" title={modalTitle} centered keepMounted={false}>
             <TextInput
+                ref={nameRef}
                 label="Title"
                 placeholder="ex: Dentist"
                 value={title}

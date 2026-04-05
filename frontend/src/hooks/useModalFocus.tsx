@@ -1,12 +1,11 @@
 import { useEffect, useRef } from "react";
 
-export const useModalFocus = (isOpen: boolean) => {
-    const ref = useRef<HTMLInputElement>(null);
+export const useModalFocus = <T extends HTMLElement = HTMLInputElement>(autoFocus = true) => {
+    const ref = useRef<T>(null);
 
-    useEffect(() => {
-        if (!isOpen) return;
-        setTimeout(() => ref.current?.focus(), 200);
-    }, [isOpen]);
+    const transitionProps = {
+        onEntered: () => { if (autoFocus) ref.current?.focus(); }
+    };
 
-    return ref;
+    return { ref, transitionProps };
 };

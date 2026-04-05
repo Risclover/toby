@@ -6,7 +6,7 @@ import { SettingsItem } from "@/features/HouseholdTasklists";
 import { isTooLight } from "@/utils";
 import { useIsSmallScreen } from "@/hooks";
 import { useHabitModal } from "@/contexts";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { RemainingChars } from "@/components/RemainingChars";
 import { useGetCurrentUserSettingsQuery } from "@/store/userSettingsSlice";
 import { useModalFocus } from "@/hooks/useModalFocus";
@@ -27,8 +27,8 @@ export const HabitModal = ({ onSuccess }: Props) => {
     const [createHabit] = useCreateHabitMutation();
     const [updateHabit] = useUpdateHabitMutation();
     const { data: userSettings } = useGetCurrentUserSettingsQuery();
-    const nameRef = useModalFocus(isOpen);
     const isEditing = habitData?.id !== undefined;
+    const { ref: nameRef, transitionProps } = useModalFocus(!isEditing);
 
     const form = useForm<HabitFormValues>({
         initialValues: {
@@ -94,6 +94,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
     };
     return (
         <Modal
+            transitionProps={transitionProps}
             centered
             styles={{
                 body: { display: "flex", flexDirection: "column", height: "100%", padding: 0, overflow: "hidden" },

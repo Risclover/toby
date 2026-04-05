@@ -9,13 +9,14 @@ import { HouseholdMemberSelection } from "@/components/HouseholdMemberSelection"
 import { useNavigate } from "react-router-dom";
 import { useCreateTasklistModal } from "@/contexts";
 import { useHousehold } from "@/hooks/useHousehold";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 type Props = { householdId: number };
 
 export const CreateTasklist = ({ householdId }: Props) => {
     const navigate = useNavigate();
     const { isOpen, closeModal } = useCreateTasklistModal();
-
+    const { ref: nameRef, transitionProps } = useModalFocus();
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
     const [title, setTitle] = useState("");
@@ -54,6 +55,7 @@ export const CreateTasklist = ({ householdId }: Props) => {
 
     return (
         <Modal
+            transitionProps={transitionProps}
             radius="md"
             opened={isOpen}          // <- key line
             onClose={closeModal}  // <- key line
@@ -62,6 +64,7 @@ export const CreateTasklist = ({ householdId }: Props) => {
         >
             <Stack component="form" onSubmit={handleListCreation}>
                 <TextInput
+                    ref={nameRef}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     label="Title"

@@ -12,6 +12,7 @@ import EventRepeatRoundedIcon from "@mui/icons-material/EventRepeatRounded";
 import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 import { useHousehold } from "@/hooks/useHousehold";
 import { RemainingChars } from "@/components/RemainingChars";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 interface ReminderFormValues {
     message: string;
@@ -46,6 +47,8 @@ const DATE_PICKER_STYLES = {
 export const CreateReminder = () => {
     const { closeCreateReminderModal, isOpen } = useCreateReminderModal();
     const isSmallScreen = useIsSmallScreen(425);
+    const { ref: nameRef, transitionProps } = useModalFocus<HTMLTextAreaElement>();
+
 
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
@@ -98,10 +101,11 @@ export const CreateReminder = () => {
     };
 
     return (
-        <Modal centered radius="md" onClose={handleClose} title="Create reminder" opened={isOpen}>
+        <Modal transitionProps={transitionProps} centered radius="md" onClose={handleClose} title="Create reminder" opened={isOpen} >
             {/* form.onSubmit runs validation before calling handleSubmit */}
             <form onSubmit={form.onSubmit(handleSubmit)}>
                 <Textarea
+                    ref={nameRef}
                     radius="sm"
                     required
                     label="Body"

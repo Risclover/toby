@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import styles from "../styles/CreateAnnouncement.module.css";
 import { useCreateAnnouncementModal } from "@/contexts";
 import { RemainingChars } from "@/components/RemainingChars";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 
 export const CreateAnnouncement = () => {
@@ -16,6 +17,7 @@ export const CreateAnnouncement = () => {
     const [createAnnouncement] = useCreateAnnouncementMutation();
     const [error, setError] = useState("");
     const [remainingChars, setRemainingChars] = useState(255);
+    const { ref: nameRef, transitionProps } = useModalFocus<HTMLTextAreaElement>();
 
     useEffect(() => {
         setRemainingChars(255 - message.trim().length);
@@ -43,8 +45,9 @@ export const CreateAnnouncement = () => {
     }
 
     return (
-        <Modal radius="md" className="announcement-modal" opened={isOpen} onClose={closeModal} title="Create announcement" centered>
+        <Modal transitionProps={transitionProps} radius="md" className="announcement-modal" opened={isOpen} onClose={closeModal} title="Create announcement" centered>
             <Textarea
+                ref={nameRef}
                 classNames={{ input: styles.input }}
                 autosize
                 minRows={2}
