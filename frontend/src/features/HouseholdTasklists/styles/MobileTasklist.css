@@ -222,7 +222,6 @@
     }
 
     .mantine-Alert-root {
-        border-bottom: 1px solid var(--mantine-color-dark-1) !important;
         padding: 0.5rem !important;
         border-radius: 0 !important;
     }

@@ -4,13 +4,14 @@ import { useUndoArchive } from '../../hooks';
 
 export const ArchiveNotice = ({ tasklistId }: { tasklistId: number }) => {
     const { handleUndoArchive } = useUndoArchive({ tasklistId });
-    const restoreButton = <Button variant="transparent" p={4} onClick={handleUndoArchive} style={{ height: 'auto', verticalAlign: 'baseline' }} >restored</Button>
+    const restoreButton = <Button variant="transparent" p={0} pl={1} fw={500} onClick={handleUndoArchive} style={{ height: 'auto', verticalAlign: 'baseline' }} >restored</Button>
 
     return (
         <Alert
             variant="light"
             radius="xs"
             color="rgba(204, 143, 0, 1)"
+            bg="rgb(255, 249, 225)"
             title="This tasklist was archived."
             icon={<ArchivedIcon size="" color="currentColor" />}
             styles={{

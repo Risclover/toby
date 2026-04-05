@@ -35,33 +35,35 @@ export const ArchivedHouseholdTasklists = () => {
         window.open(`/profile/${userId}`, "_blank")
     }
 
-    const archivedItems = archivedLists?.map(list => <div className="archived-household-tasklists-item">
-        <div className="archived-household-tasklists-item-top">
-            <div className="archived-household-tasklists-item-title">{list.title}</div>
-            <div className="archived-table-btns">
-                <ArchivedHouseholdTasklistsMenu tasklistId={list.id} />
+    const archivedItems = archivedLists?.map(list => (
+        <div className="archived-household-tasklists-item">
+            <div className="archived-household-tasklists-item-top">
+                <div className="archived-household-tasklists-item-title">{list.title}</div>
+                <div className="archived-table-btns">
+                    <ArchivedHouseholdTasklistsMenu tasklistId={list.id} />
+                </div>
+            </div>
+            <div className="archived-household-tasklists-item-bottom">
+                <div className="archived-household-tasklists-item-data"><span>Archived on:</span> {dayjs(list.createdAt).format("MMM DD, YYYY")}</div>
+                <div className="archived-household-tasklists-item-data">
+                    <span>Archived by:</span>
+                    <Tooltip events={{ hover: true, focus: true, touch: true }} withArrow label={list.archivedBy?.firstName}>
+                        <Avatar
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    handleAvatarKeyDown(e, list.archivedBy?.id)
+                                }
+                            }}
+                            onClick={() => goToUserProfile(list.archivedBy?.id)}
+                            tabIndex={0}
+                            size="xs"
+                            src={list.archivedBy?.profileImg || undefined}
+                        />
+                    </Tooltip>
+                </div>
             </div>
         </div>
-        <div className="archived-household-tasklists-item-bottom">
-            <div className="archived-household-tasklists-item-data"><span>Archived on:</span> {dayjs(list.createdAt).format("MMM DD, YYYY")}</div>
-            <div className="archived-household-tasklists-item-data">
-                <span>Archived by:</span>
-                <Tooltip events={{ hover: true, focus: true, touch: true }} withArrow label={list.archivedBy?.firstName}>
-                    <Avatar
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                                handleAvatarKeyDown(e, list.archivedBy?.id)
-                            }
-                        }}
-                        onClick={() => goToUserProfile(list.archivedBy?.id)}
-                        tabIndex={0}
-                        size="xs"
-                        src={list.archivedBy?.profileImg || undefined}
-                    />
-                </Tooltip>
-            </div>
-        </div>
-    </div>)
+    ));
 
 
     return (

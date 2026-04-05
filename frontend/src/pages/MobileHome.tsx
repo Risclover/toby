@@ -10,18 +10,21 @@ import { Button } from "@mantine/core";
 import { HomepageListsCollapseCard } from "@/components/HomepageCollapseCard/HomepageListsCollapseCard";
 import { HomepageNoticeBoardCollapseCard } from "@/components/HomepageCollapseCard/HomepageNoticeBoardCollapseCard";
 import { HomepageCheckinsCollapseCard } from "@/components/HomepageCollapseCard/HomepageCheckinsCollapseCard";
-import { HouseholdActivityCollapseCard } from "@/components/HomepageCollapseCard/HouseholdActivityCollapseCard";
+import { HomepageActivityCollapseCard } from "@/components/HomepageCollapseCard/HomepageActivityCollapseCard";
 import { HomepageEventsCollapseCard } from "@/components/HomepageCollapseCard/HomepageEventsCollapseCard";
 import { useHousehold } from "@/hooks/useHousehold";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { HomepageHabitsCollapseCard } from "@/components/HomepageCollapseCard/HomepageHabitsCollapseCard";
+import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
 
 export const MobileHome = () => {
     const mobileHomeFamilyTitle = <MobileHomeFamilyTitle />
     const { data: user, isLoading: isAuthLoading } = useAuthenticateQuery();
-    const { data: userSettings, isLoading: isSettingsLoading } = useGetFeaturedListSettingsQuery();
+    const { data: userSettings } = useGetUserSettingsQuery(user?.id ?? skipToken);
+    const { data: settings, isLoading: isSettingsLoading } = useGetFeaturedListSettingsQuery();
     const { isLoading: isHouseholdLoading } = useHousehold();
     const { isLoading: isTasklistLoading } = useGetTasklistQuery(
-        userSettings?.featuredTasklist.tasklistId ?? skipToken
+        settings?.featuredTasklist.tasklistId ?? skipToken
     );
     const { isLoading: isTaskStatsLoading } = useGetUserTaskStatsQuery(
         user?.id ?? skipToken
@@ -55,10 +58,10 @@ export const MobileHome = () => {
             <HomepageEventsCollapseCard isReady={isCardsReady} />
             <TaskStatsSection isReady={isStatsReady} />
             <HomepageNoticeBoardCollapseCard householdId={householdId} isReady={isCardsReady} />
-
             <HomepageListsCollapseCard isReady={isCardsReady} />
+            {userSettings?.settings.habitsOnHomepage && <HomepageHabitsCollapseCard />}
             <HomepageCheckinsCollapseCard isReady={isCardsReady} />
-            <HouseholdActivityCollapseCard householdId={householdId} isReady={isCardsReady} />
+            <HomepageActivityCollapseCard householdId={householdId} isReady={isCardsReady} />
 
 
         </MobileLayout>

@@ -10,7 +10,7 @@ import { useState } from "react";
 import { ActivityFeed } from "@/features/ActivityFeed";
 import { UserProfileStat } from "./UserProfileStat";
 import { UserProfileMainTabSkeleton } from "./UserProfileMainTabSkeleton";
-import { HouseholdActivityCollapseCard } from "@/components/HomepageCollapseCard/HouseholdActivityCollapseCard";
+import { HomepageActivityCollapseCard } from "@/components/HomepageCollapseCard/HomepageActivityCollapseCard";
 
 export const UserProfileMainTab = () => {
     const { userId } = useParams();
@@ -61,7 +61,7 @@ export const UserProfileMainTab = () => {
                     <UserProfileStat key={stat.id} icon={stat.icon} stat={stat.stat} statLabel={stat.statLabel} description={stat.description} />
                 ))}
             </div>
-            <HouseholdActivityCollapseCard
+            <HomepageActivityCollapseCard
                 isReady={!!household?.id}
                 householdId={household?.id!}
                 actorId={profileUser?.id}

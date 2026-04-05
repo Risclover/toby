@@ -519,7 +519,7 @@ form {
 }
 
 .homepage-lists-tasklist li {
-    padding: 0.42375rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     display: flex;
     color: var(--mantine-color-dark-7);
     cursor: pointer !important;
@@ -530,6 +530,7 @@ form {
     hyphens: auto;
     width: 100%;
     justify-content: space-between;
+    gap: .25rem;
 }
 
 .featured-tasklist-task-left {
@@ -596,6 +597,10 @@ form {
     margin-left: 1.75rem;
     font-size: 11px;
     color: var(--mantine-color-gray-7);
+}
+
+.featured-task-details .extra {
+    margin-top: 2px !important;
 }
 
 .featured-task-details .task-extra {

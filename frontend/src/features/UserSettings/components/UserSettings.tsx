@@ -22,6 +22,7 @@ import { useIsSmallScreen } from "@/hooks";
 import { useAuthenticateQuery } from "@/store";
 import "../styles/UserSettings.css"
 import { InfoIcon } from "@/assets";
+import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -322,7 +323,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                                             <div><span style={{ fontWeight: 600 }}>All private</span>: All habits are always hidden from other members.</div>
                                         </div>
                                     } withArrow>
-                                        <ActionIcon w={0} m={0} variant="transparent" color="transparent" p={0}><InfoIcon size="1rem" color="var(--mantine-color-gray-7)" /></ActionIcon>
+                                        <ActionIcon w={0} p={0} h="auto" radius="xl" className="featured-info-icon" variant="transparent" color="transparent"><HelpOutlineRoundedIcon /></ActionIcon>
                                     </Tooltip>
                                 </Group>
                             }
@@ -347,7 +348,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                                             <div><span style={{ fontWeight: 600 }}>All private</span>: All notes are always hidden from other members.</div>
                                         </div>
                                     } withArrow>
-                                        <ActionIcon w={0} m={0} variant="transparent" color="transparent" p={0}><InfoIcon size="1rem" color="var(--mantine-color-gray-7)" /></ActionIcon>
+                                        <ActionIcon w={0} p={0} h="auto" radius="xl" className="featured-info-icon" variant="transparent" color="transparent"><HelpOutlineRoundedIcon /></ActionIcon>
                                     </Tooltip>
                                 </Group>
                             }

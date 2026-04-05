@@ -8,7 +8,7 @@ type Props = {
     actorId?: number;
 };
 
-export const HouseholdActivityCollapseCard = ({ isReady, householdId, actorId }: Props) => {
+export const HomepageActivityCollapseCard = ({ isReady, householdId, actorId }: Props) => {
     useGetActivityQuery({ householdId: householdId! }, { skip: !householdId });
 
     return (

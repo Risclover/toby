@@ -271,11 +271,11 @@ const FeaturedTasklistItem = ({ task, tasklistId, hideCompleted, settings }: Tas
                     />
                 </div>
 
-                {showDetails && !isChecked && (
+                {showDetails && !isChecked ? (
                     <div className="featured-task-details" onClick={(e) => e.stopPropagation()}>
                         <TaskExtra task={task} householdId={user?.householdId} listId={tasklistId} />
                     </div>
-                )}
+                ) : null}
             </div>
             <div className="featured-tasklist-task-right">
                 {task.isImportant ? <StarIcon size="16px" color="var(--tasklist-color)" /> : <StarIconOutline size="16px" color="var(--tasklist-color)" />}
