@@ -47,7 +47,7 @@ const HomepageNoticeBoardContent = ({ isReady, householdId }: { isReady: boolean
 
     return (
         <HomepageNoticeBoardCollapseCardContainer>
-            <HomepageCollapseCard cardKey="notice-board" title="Notice board" color="var(--mantine-color-red-6)" badge={badge}>
+            <HomepageCollapseCard cardKey="notice-board" title="Notice board" color="var(--mantine-color-red-6)" badge={badge} scrollSelector={[".notice-board-reminders", ".notice-board-announcements"]}>
                 <HomepageCollapseCardTabs
                     tabs={tabs}
                     tabColor="var(--mantine-color-red-6)"

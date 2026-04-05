@@ -26,7 +26,7 @@ export const HomepageListsCollapseCard = ({ isReady }: { isReady: boolean }) => 
     </Tooltip>
 
     return (
-        <HomepageCollapseCard cardKey="lists" title="lists" color="var(--mantine-color-cyan-6)">
+        <HomepageCollapseCard cardKey="lists" title="lists" color="var(--mantine-color-cyan-6)" scrollSelector=".homepage-lists-tasklist">
             <HomepageCollapseCardTabs
                 tabs={tabs}
                 tabColor="var(--mantine-color-cyan-6)"

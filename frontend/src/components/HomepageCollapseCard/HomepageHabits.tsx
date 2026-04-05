@@ -1,5 +1,5 @@
 import { useAuthenticateQuery, useGetUserHabitsQuery } from "@/store"
-import { Button, Checkbox } from "@mantine/core";
+import { Button, Checkbox, Transition } from "@mantine/core";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useState } from "react";
 
@@ -24,31 +24,46 @@ export const HomepageHabits = () => {
             <div className="homepage-habits-list">
                 <ul>
                     {habits.map(habit => (
-                        <li className="homepage-habit-row" key={habit.id} onClick={() => toggle(habit.id)}>
-                            <div className="homepage-habit-row-color-bar" style={{ background: habit.color }}></div>
-                            <div className="homepage-habit-main">
-                                <div className="homepage-habit-left">
-                                    <Checkbox
-                                        checked={checked.has(habit.id)}
-                                        onChange={() => toggle(habit.id)}
-                                        onClick={e => e.stopPropagation()}
-                                        color={habit.color}
-                                        radius="xl"
-                                        size="xs"
-                                        styles={{
-                                            input: {
-                                                borderColor: habit.color,
-                                                cursor: "pointer"
-                                            }
-                                        }}
-                                    />
-                                </div>
-                                <div className="homepage-habit-right">
-                                    {habit.name}
-                                    {habit.description ? <span>{habit.description}</span> : null}
-                                </div>
-                            </div>
-                        </li>
+                        <Transition
+                            key={habit.id}
+                            mounted={!checked.has(habit.id)}
+                            transition={{
+                                in: { opacity: 1, transform: 'translateY(0)' },
+                                out: { opacity: 0, transform: 'translateY(-6px)' },
+                                common: { transformOrigin: 'top' },
+                                transitionProperty: 'opacity, transform',
+                            }}
+                            duration={700}
+                            timingFunction="ease-in"
+                        >
+                            {styles => (
+                                <li className="homepage-habit-row" style={styles} onClick={() => toggle(habit.id)}>
+                                    <div className="homepage-habit-row-color-bar" style={{ background: habit.color }}></div>
+                                    <div className="homepage-habit-main">
+                                        <div className="homepage-habit-left">
+                                            <Checkbox
+                                                checked={checked.has(habit.id)}
+                                                onChange={() => toggle(habit.id)}
+                                                onClick={e => e.stopPropagation()}
+                                                color={habit.color}
+                                                radius="xl"
+                                                size="xs"
+                                                styles={{
+                                                    input: {
+                                                        borderColor: habit.color,
+                                                        cursor: "pointer"
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="homepage-habit-right">
+                                            {habit.name}
+                                            {habit.description ? <span>{habit.description}</span> : null}
+                                        </div>
+                                    </div>
+                                </li>
+                            )}
+                        </Transition>
                     ))}
                 </ul>
             </div>
@@ -56,6 +71,6 @@ export const HomepageHabits = () => {
                 <Button size="compact-sm" fw={500} color="var(--mantine-color-grape-7)" c="white" radius="xl">+ Add new habit</Button>
                 <Button p={0} size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-grape-7)">View all →</Button>
             </div>
-        </div>
+        </div >
     )
 }

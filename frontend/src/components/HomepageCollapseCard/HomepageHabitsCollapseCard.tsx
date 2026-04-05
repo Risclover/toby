@@ -6,7 +6,7 @@ import { HomepageHabits } from "./HomepageHabits";
 
 export const HomepageHabitsCollapseCard = () => {
     return (
-        <HomepageCollapseCard cardKey="habits" title="daily habits" color="var(--mantine-color-grape-6)">
+        <HomepageCollapseCard cardKey="habits" title="today's habits" color="var(--mantine-color-grape-6)" scrollSelector=".homepage-habits-list">
             <HomepageHabits />
         </HomepageCollapseCard>
     )

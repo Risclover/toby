@@ -6,3 +6,4 @@ export { useMemberSelection } from "./useMemberSelection";
 export { useOutsideClick } from "./useOutsideClick";
 export { useScrollToTop } from "./useScrollToTop";
 export { useStablePending } from "./useStablePending";
+export { useCollapseScroll } from "./useCollapseScroll";
