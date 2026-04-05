@@ -9,6 +9,7 @@ import { useHabitModal } from "@/contexts";
 import { useEffect } from "react";
 import { RemainingChars } from "@/components/RemainingChars";
 import { useGetCurrentUserSettingsQuery } from "@/store/userSettingsSlice";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 interface HabitFormValues {
     name: string;
@@ -26,7 +27,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
     const [createHabit] = useCreateHabitMutation();
     const [updateHabit] = useUpdateHabitMutation();
     const { data: userSettings } = useGetCurrentUserSettingsQuery();
-
+    const nameRef = useModalFocus(isOpen);
     const isEditing = habitData?.id !== undefined;
 
     const form = useForm<HabitFormValues>({
@@ -114,6 +115,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
                             placeholder="30-minute walk"
                             maxLength={50}
                             {...form.getInputProps("name")}
+                            ref={nameRef}
                         />
                         <RemainingChars count={form.values.name.length} max={50} />
                     </div>

@@ -1,7 +1,8 @@
 import { useHabitModal } from "@/contexts";
 import { HabitModal } from "@/features/Habits/components/HabitModal";
-import { useAuthenticateQuery, useCompleteHabitMutation, useGetUserHabitsQuery } from "@/store"
-import { Button, Checkbox, Transition } from "@mantine/core";
+import { useAuthenticateQuery, useCompleteHabitMutation, useGetUserHabitsQuery, useUncompleteHabitMutation } from "@/store"
+import { Button, Checkbox, Group, Transition } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,18 +16,27 @@ export const HomepageHabits = () => {
         new Set(habits?.filter(h => h.isCompletedToday).map(h => h.id))
     );
     const [completeHabit] = useCompleteHabitMutation();
+    const [uncompleteHabit] = useUncompleteHabitMutation();
     const listRef = useRef<HTMLDivElement>(null);
+    const prevLengthRef = useRef(habits?.length ?? 0);
+
+    // Scroll to new habit once in DOM. setTimeout unreliable — races against RTK Query + React render.
+    useEffect(() => {
+        if (!habits) return;
+        console.log("habits length:", habits.length, "prev:", prevLengthRef.current);
+        if (habits.length > prevLengthRef.current) {
+            const items = listRef.current?.querySelectorAll("li");
+            console.log("items found:", items?.length, "last:", items?.[items.length - 1]);
+            const last = items?.[items.length - 1];
+            last?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+        prevLengthRef.current = habits.length;
+    }, [habits]);
 
     useEffect(() => {
         if (!habits) return;
         setChecked(new Set(habits.filter(h => h.isCompletedToday).map(h => h.id)));
     }, [habits]);
-
-    const scrollToBottom = () => {
-        setTimeout(() => {
-            listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-        }, 0);
-    };
 
     const toggle = async (id: number) => {
         try {
@@ -40,7 +50,39 @@ export const HomepageHabits = () => {
             next.has(id) ? next.delete(id) : next.add(id);
             return next;
         });
+
+        notifications.show({
+            message: (
+                <Group justify="space-between" align="center">
+                    <span>{`Completed habit '${habits?.find(h => h.id === id)?.name}!'`}</span>
+                    <Button
+                        size="xs"
+                        color="rgb(5,5,73)"
+                        variant="light"
+                        onClick={() => handleUncompleteHabit(id)}
+                    >
+                        Undo
+                    </Button>
+                </Group>
+            ),
+            autoClose: 5000,
+            color: "rgb(5, 5, 73)",
+        })
     };
+
+    const handleUncompleteHabit = async (id: number) => {
+        await uncompleteHabit(id).unwrap();
+        setChecked(prev => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+        });
+        notifications.show({
+            message: `Marked habit '${habits?.find(h => h.id === id)?.name}' as incomplete.`,
+            autoClose: 3000,
+            color: "gray",
+        });
+    }
 
     if (!habits) return null;
 
@@ -96,7 +138,7 @@ export const HomepageHabits = () => {
                 <Button size="compact-sm" fw={500} color="var(--mantine-color-grape-7)" c="white" radius="xl" onClick={() => openModal()}>+ Add new habit</Button>
                 <Button p={0} size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-grape-7)" onClick={() => navigate(`/profile/${user.id}?tab=habits`)}>View all →</Button>
             </div>
-            <HabitModal onSuccess={scrollToBottom} />
+            <HabitModal />
         </div >
     )
 }
