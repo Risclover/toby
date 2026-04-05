@@ -7,20 +7,25 @@ import { Tabs } from "@mantine/core"
 import { UserProfileMainTab } from "@/features/UserProfile/components/ UserProfileMainTab"
 import { UserProfileHabitsTab } from "@/features/UserProfile/components/UserProfileHabitsTab"
 import { useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 import { UserProfileHeaderSkeleton } from "@/features/UserProfile/components/UserProfileHeaderSkeleton"
 import { useGetHouseholdQuery, useGetUserQuery } from "@/store"
 
 export const UserProfilePage = () => {
     const { userId } = useParams();
+    const [searchParams] = useSearchParams();
     const { data: user, isLoading: isLoadingUser } = useGetUserQuery(userId)
     const { data: household, isLoading } = useGetHouseholdQuery(user?.householdId, {
         skip: !user?.householdId
     })
+
     const titleComponent = isLoading || isLoadingUser ? <UserProfileHeaderSkeleton /> : <UserProfileHeader />
+
+    const defaultTab = searchParams.get("tab") ?? "profile";
+
     return (
         <MobileLayout titleComponent={titleComponent}>
-            <Tabs key={userId} defaultValue="profile">
+            <Tabs key={defaultTab} defaultValue={defaultTab}>
                 <UserProfileNavGrid />
                 <UserProfileMainTab />
                 <UserProfileHabitsTab />

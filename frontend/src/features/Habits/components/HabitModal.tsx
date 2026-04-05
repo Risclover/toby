@@ -17,15 +17,15 @@ interface HabitFormValues {
     isPrivate: boolean;
 }
 
-export const HabitModal = () => {
-    const isSmallScreen = useIsSmallScreen();
+type Props = {
+    onSuccess?: () => void;
+}
+
+export const HabitModal = ({ onSuccess }: Props) => {
     const { isOpen, habitData, closeModal } = useHabitModal();
     const [createHabit] = useCreateHabitMutation();
     const [updateHabit] = useUpdateHabitMutation();
-    const [deleteHabit] = useDeleteHabitMutation();
     const { data: userSettings } = useGetCurrentUserSettingsQuery();
-
-    console.log('userSettings:', userSettings?.settings.habitsPrivacyMode);
 
     const isEditing = habitData?.id !== undefined;
 
@@ -76,8 +76,6 @@ export const HabitModal = () => {
 
         try {
             if (isEditing) {
-                console.log('EDITED')
-                console.log('EDITED ID:', habitData?.id)
                 closeModal();  // <-- close first
                 await updateHabit({
                     habitId: habitData?.id!,
@@ -85,7 +83,8 @@ export const HabitModal = () => {
                 }).unwrap();
             } else {
                 await createHabit(form.values).unwrap();
-                closeModal();  // <-- create still waits, so the user sees the submit complete
+                closeModal();
+                onSuccess?.();
             }
             form.reset();
         } catch (err) {
