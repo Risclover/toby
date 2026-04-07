@@ -1,4 +1,4 @@
-import { useGetActivityQuery, type ActivityEvent } from "@/store";
+import { useGetActivityQuery, useGetHouseholdQuery, type ActivityEvent } from "@/store";
 import { Link } from "react-router-dom";
 import "../styles/ActivityFeed.css";
 import { Avatar, Box, Tooltip } from "@mantine/core";
@@ -19,6 +19,8 @@ type FormattedEvent = {
 
 export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
     const [expandedId, setExpandedId] = useState<number | null>(null);
+
+    const { data: household } = useGetHouseholdQuery(householdId, { skip: !householdId });
 
     const { data, isLoading, isSuccess, isError } = useGetActivityQuery(
         { householdId, actorId },
@@ -121,7 +123,7 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
                                 <div className="event-text">
                                     <div className="event-line1">
                                         <span className="event-main">
-                                            <Link className="event-link" to={`/profile/${event.actor.id}`}>{event.actor.displayName}</Link>{" "}
+                                            <Link className="event-link" to={`/profile/${event.actor.id}`} style={{ color: event.actor.id === household.adminId ? "var(--mantine-color-violet-7)" : "var(--mantine-color-blue-7)" }}>{event.actor.displayName}</Link>{" "}
                                             {line1}
                                         </span>
                                         <span className="event-time">{formatTime(event.createdAt)}</span>

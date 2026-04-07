@@ -17,6 +17,12 @@
     gap: .125rem;
 }
 
+.user-info-top {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
 .all-reminders-tabs-list {
     padding: 0;
     font-weight: 500;
