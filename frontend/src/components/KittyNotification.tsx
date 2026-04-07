@@ -15,6 +15,6 @@ export const KittyNotification = ({ title, message, icon, color }: Props) => {
         position: "bottom-right",
         color,
         icon: <img src={icon} alt="Kitty Icon" style={{ width: `60px !important`, height: "auto" }} />,
-        style: { borderLeft: `5px solid ${color}` }
+        style: { borderLeft: `8px solid ${color}` }
     });
 }

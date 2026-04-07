@@ -26,6 +26,7 @@ class User(db.Model, UserMixin):
     daily_checkin = db.Column(db.Boolean, default=False, nullable=False)
     last_checkin = db.Column(db.DateTime, nullable=True)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
+    removed_from_household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
 
     # Relationships
     user_mood = db.relationship(
@@ -119,6 +120,7 @@ class User(db.Model, UserMixin):
             "lastCheckin": self.last_checkin,
             "timezone": self.timezone,
             "householdId": self.household_id,
+            "removedFromHouseholdId": self.removed_from_household_id,
             "reminders": [
                 assignment.reminder.to_dict_for_user(assignment)
                 for assignment in self.reminder_assignments

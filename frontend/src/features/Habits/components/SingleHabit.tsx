@@ -59,7 +59,7 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
             KittyNotification({
                 title: "Whoops - something went wrong",
                 message: <>Couldn't change the status of "<strong style={{ fontWeight: 500 }}>{name}</strong>". Refresh and try again.</>,
-                color: "rgb(220, 80, 80)",
+                color: "rgb(234, 118, 118)",
                 icon: KittyIcons.Cry
             })
         }
@@ -78,7 +78,7 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
             KittyNotification({
                 title: "Whoops - something went wrong",
                 message: <>Couldn't delete "<strong style={{ fontWeight: 500 }}>{habit.name}</strong>". Refresh and try again.</>,
-                color: "rgb(220, 80, 80)",
+                color: "rgb(234, 118, 118)",
                 icon: KittyIcons.Pout
             });
             console.error("Failed to delete habit:", error);

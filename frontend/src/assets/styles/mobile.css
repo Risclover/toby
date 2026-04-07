@@ -466,7 +466,15 @@
 .members-modal-member {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    justify-content: space-between;
+    font-size: var(--text-sm);
+}
+
+.members-modal-member-left {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    cursor: pointer;
 }
 
 .members-modal-member div:first-of-type {

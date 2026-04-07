@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment, RepeatFrequency
+from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment, RepeatFrequency, User
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy import outerjoin, or_, and_
 import base64
@@ -401,3 +401,52 @@ def get_household_reminders_preview(household_id):
         assignment.reminder.to_dict_for_user(assignment)
         for assignment in visible
     ]), 200
+
+@household_routes.route("/<int:household_id>/members/<int:user_id>", methods=["DELETE"])
+@login_required
+def remove_household_member(household_id, user_id):
+    household = Household.query.get(household_id)
+
+    if not household:
+        return jsonify({"error": "Household not found"}), 404
+
+    if current_user.id != household.admin_id:
+        return jsonify({"error": "Forbidden: Only household admin can remove members"}), 403
+
+    if user_id == household.admin_id:
+        return jsonify({"error": "Admin cannot remove themselves"}), 403
+
+    user = User.query.get(user_id)
+    if not user or user.household_id != household_id:
+        return jsonify({"error": "User not found in this household"}), 404
+
+    # TODO: call content cleanup helper here
+
+    user.removed_from_household_id = household_id
+    user.household_id = None
+    db.session.commit()
+
+    return jsonify({"message": f"User {user_id} removed from household {household_id}"}), 200
+
+@household_routes.route("/<int:household_id>/admin", methods=["PATCH"])
+@login_required
+def transfer_admin_role(household_id):
+    household = Household.query.get(household_id)
+
+    if not household:
+        return jsonify({"error": "Household not found"}), 404
+
+    if current_user.id != household.admin_id:
+        return jsonify({"error": "Forbidden: Only current admin can transfer admin role"}), 403
+    
+    data = request.get_json()
+    new_admin_id = data.get("newAdminId")
+
+    new_admin = User.query.get(new_admin_id)
+    if not new_admin or new_admin.household_id != household_id:
+        return jsonify({"error": "New admin user not found in this household"}), 404
+
+    household.admin_id = new_admin_id
+    db.session.commit()
+
+    return jsonify({"message": f"Admin role transferred to user {new_admin_id} in household {household_id}"}), 200

@@ -7,7 +7,7 @@ class Household(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     invite_code = db.Column(db.String(64), unique=True, nullable=True, index=True)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     tzid = db.Column(db.String(64), nullable=False, default="America/Los_Angeles")
@@ -23,10 +23,11 @@ class Household(db.Model):
         back_populates="household",
         foreign_keys="[User.household_id]"
     )
-    creator = db.relationship(
+    admin = db.relationship(
         "User",
-        foreign_keys=[creator_id]
+        foreign_keys=[admin_id]
     )
+
     shopping_lists = db.relationship("ShoppingList", back_populates="household")
     tasklists = db.relationship("Tasklist", back_populates="household")
     reminders = db.relationship(
@@ -48,7 +49,7 @@ class Household(db.Model):
             "createdAt": local(self.created_at),
             "members": [member.to_dict() for member in self.members],
             "inviteCode": self.invite_code,
-            "creatorId": self.creator_id,
+            "adminId": self.admin_id,
             "tzid": self.tzid
         }
 

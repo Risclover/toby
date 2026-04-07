@@ -1,7 +1,7 @@
 import { apiSlice } from "./apiSlice";
 import type { TasklistType } from "./taskSlice";
 
-export type Household = { id: number; name: string };
+export type Household = { id: number; firstName: string; adminId: number };
 type Tasklist = { id: number; title: string; createdAt: string; memberIds: number[] };
 type TasklistTag = { type: "Tasklist"; id: number | string };
 type ShoppingCategory = { id: number; listId: number; name: string; createdAt: string; updatedAt: string };
@@ -86,6 +86,27 @@ export const householdSlice = apiSlice.injectEndpoints({
             providesTags: (_result, _err, { listId }) => [{ type: "ShoppingList", id: listId }],
         }),
 
+        removeHouseholdMember: builder.mutation<void, { householdId: number; userId: number }>({
+            query: ({ householdId, userId }) => ({
+                url: `/households/${householdId}/members/${userId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (_result, _error, { householdId }) => [
+                { type: "Household", id: householdId }
+            ],
+        }),
+
+        transferAdminRole: builder.mutation<Household, { householdId: number; userId: number }>({
+            query: ({ householdId, userId }) => ({
+                url: `/households/${householdId}/admin`,
+                method: "PATCH",
+                body: { newAdminId: userId },
+            }),
+            invalidatesTags: (_result, _error, { householdId }) => [
+                { type: "Household", id: householdId }
+            ],
+        }),
+
         // getAnnouncements: builder.query<Announcement[], { householdId: number }>({
         //     query: ({ householdId }) => `households/${householdId}/announcements`,
         //     providesTags: (result, _err, { householdId }) =>
@@ -104,4 +125,6 @@ export const {
     useGetHouseholdTasklistsQuery,
     useGetHouseholdShoppingListsQuery,
     useGetHouseholdShoppingListQuery,
+    useRemoveHouseholdMemberMutation,
+    useTransferAdminRoleMutation,
 } = householdSlice;

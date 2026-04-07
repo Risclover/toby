@@ -233,7 +233,7 @@ def create_household():
     if not household_name:
         return jsonify({"error": "Household name required"}), 400
 
-    household = Household(name=household_name, creator_id=current_user.id)
+    household = Household(name=household_name, admin_id=current_user.id)
     db.session.add(household)
     db.session.flush()
     current_user.household_id = household.id
