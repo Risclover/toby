@@ -10,6 +10,9 @@ import { useEffect, useRef } from "react";
 import { RemainingChars } from "@/components/RemainingChars";
 import { useGetCurrentUserSettingsQuery } from "@/store/userSettingsSlice";
 import { useModalFocus } from "@/hooks/useModalFocus";
+import { notifications } from "@mantine/notifications";
+import { KittyNotification } from "@/components/KittyNotification";
+import { KittyIcons } from "@/assets";
 
 interface HabitFormValues {
     name: string;
@@ -82,8 +85,20 @@ export const HabitModal = ({ onSuccess }: Props) => {
                     habitId: habitData?.id!,
                     ...form.values,
                 }).unwrap();
+                KittyNotification({
+                    title: "Habit updated",
+                    message: <>Looking good! Your changes to "<strong style={{ fontWeight: 500 }}>{form.values.name}</strong>" have been saved.</>,
+                    color: "rgb(154, 221, 166)",
+                    icon: KittyIcons.Write
+                })
             } else {
                 await createHabit(form.values).unwrap();
+                KittyNotification({
+                    title: "Habit created",
+                    message: <>Great choice! "<strong style={{ fontWeight: 500 }}>{form.values.name}</strong>" has been added to your habits.</>,
+                    color: "rgb(154, 221, 166)",
+                    icon: KittyIcons.Workout
+                })
                 closeModal();
                 onSuccess?.();
             }

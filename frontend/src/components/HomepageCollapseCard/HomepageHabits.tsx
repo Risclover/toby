@@ -1,7 +1,9 @@
 import { useHabitModal } from "@/contexts";
 import { HabitModal } from "@/features/Habits/components/HabitModal";
+import { showHabitCompleteToast } from "@/features/Habits/utils/showHabitCompleteToast";
+import { showHabitIncompleteToast } from "@/features/Habits/utils/showHabitIncompleteToast";
 import { useAuthenticateQuery, useCompleteHabitMutation, useGetUserHabitsQuery, useUncompleteHabitMutation } from "@/store"
-import { Button, Checkbox, Group, Transition } from "@mantine/core";
+import { Button, Checkbox, Group, Stack, Transition } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useRef, useState } from "react";
@@ -51,23 +53,7 @@ export const HomepageHabits = () => {
             return next;
         });
 
-        notifications.show({
-            message: (
-                <Group justify="space-between" align="center">
-                    <span>{`Completed habit '${habits?.find(h => h.id === id)?.name}!'`}</span>
-                    <Button
-                        size="xs"
-                        color="rgb(5,5,73)"
-                        variant="light"
-                        onClick={() => handleUncompleteHabit(id)}
-                    >
-                        Undo
-                    </Button>
-                </Group>
-            ),
-            autoClose: 5000,
-            color: "rgb(5, 5, 73)",
-        })
+        showHabitCompleteToast(habits?.find(h => h.id === id)?.name ?? "", () => handleUncompleteHabit(id));
     };
 
     const handleUncompleteHabit = async (id: number) => {
@@ -77,11 +63,7 @@ export const HomepageHabits = () => {
             next.delete(id);
             return next;
         });
-        notifications.show({
-            message: `Marked habit '${habits?.find(h => h.id === id)?.name}' as incomplete.`,
-            autoClose: 3000,
-            color: "gray",
-        });
+        showHabitIncompleteToast(habits?.find(h => h.id === id)?.name ?? "");
     }
 
     if (!habits) return null;

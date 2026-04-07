@@ -125,7 +125,7 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                                             isEditing={editingEvent?.id === e.id}
                                             setIsEditing={(val) => val ? openEdit(e) : null}
 
-                                            onDelete={handleDeleteEvent}
+                                            onDelete={() => handleDeleteEvent(e.id)}
 
                                         />
                                     </div>

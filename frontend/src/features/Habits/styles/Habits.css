@@ -329,6 +329,7 @@
     flex-direction: column;
     font-size: var(--text-sm);
     gap: 0.25rem;
+    word-break: break-word;
 }
 
 .homepage-habit-right span {

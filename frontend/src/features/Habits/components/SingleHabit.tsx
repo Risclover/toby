@@ -4,6 +4,11 @@ import { useState, type MouseEvent } from "react"
 import { HabitMenu } from "./HabitMenu";
 import { useCompleteHabitMutation, useDeleteHabitMutation, useUncompleteHabitMutation, type Habit } from "@/store";
 import { DeleteConfirmation } from "@/features/HouseholdTasklists";
+import { notifications } from "@mantine/notifications";
+import { showHabitIncompleteToast } from "../utils/showHabitIncompleteToast";
+import { showHabitCompleteToast } from "../utils/showHabitCompleteToast";
+import { KittyNotification } from "@/components/KittyNotification";
+import { KittyIcons } from "@/assets";
 
 type Props = {
     habit: Habit;
@@ -30,15 +35,54 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
     const [uncompleteHabit] = useUncompleteHabitMutation();
 
     const handleToggle = async () => {
-        if (habit.isCompletedToday) {
-            await uncompleteHabit(habit.id).unwrap();
-        } else {
-            await completeHabit(habit.id).unwrap();
+        try {
+            if (habit.isCompletedToday) {
+                await uncompleteHabit(habit.id).unwrap();
+                KittyNotification({
+                    title: "Habit marked incomplete",
+                    message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has returned. Go show it who's boss!</>,
+                    color: "rgb(154, 221, 166)",
+                    icon: KittyIcons.Frustrated
+                })
+                setChecked(false);
+            } else {
+                await completeHabit(habit.id).unwrap();
+                KittyNotification({
+                    title: "Habit completed",
+                    message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is done for the day. Keep it up, champ!</>,
+                    color: "rgb(154, 221, 166)",
+                    icon: KittyIcons.Celebrate
+                })
+
+            }
+        } catch (error) {
+            KittyNotification({
+                title: "Whoops - something went wrong",
+                message: <>Couldn't change the status of "<strong style={{ fontWeight: 500 }}>{name}</strong>". Refresh and try again.</>,
+                color: "rgb(220, 80, 80)",
+                icon: KittyIcons.Cry
+            })
         }
     };
 
     const handleDelete = async () => {
-        await deleteHabit(habit.id);
+        try {
+            await deleteHabit(habit.id).unwrap();
+            KittyNotification({
+                title: "Habit deleted",
+                message: <>Done - "<strong style={{ fontWeight: 500 }}>{habit.name}</strong>" has been removed from your habits. Sayonara!</>,
+                color: "rgb(154, 221, 166)",
+                icon: KittyIcons.Wave
+            })
+        } catch (error) {
+            KittyNotification({
+                title: "Whoops - something went wrong",
+                message: <>Couldn't delete "<strong style={{ fontWeight: 500 }}>{habit.name}</strong>". Refresh and try again.</>,
+                color: "rgb(220, 80, 80)",
+                icon: KittyIcons.Pout
+            });
+            console.error("Failed to delete habit:", error);
+        }
     }
 
     return (

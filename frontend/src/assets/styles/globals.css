@@ -817,6 +817,21 @@ form {
     word-break: break-word;
 }
 
+.kitty-notification-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mantine-Notification-icon {
+    width: 50px !important;
+    height: auto !important;
+}
+
+.mantine-Notification-description {
+    line-height: 1.2 !important;
+}
+
 
 @media (max-width: 425px) {
     .time-sensitive-task .empty-space {

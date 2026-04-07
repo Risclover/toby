@@ -6,15 +6,12 @@ import { PadlockIcon } from "@/assets/icons/PadlockIcon";
 import { PadlockOpenIcon } from "@/assets/icons/PadlockOpenIcon";
 import { useDeleteHabitMutation, useUpdateHabitMutation, type Habit } from "@/store";
 import { useHabitModal } from "@/contexts";
+import { notifications } from "@mantine/notifications";
 
 export const HabitMenu = ({ habit, setShowDeleteConfirmation }: { habit: Habit, setShowDeleteConfirmation: (val: boolean) => void }) => {
     const [updateHabit] = useUpdateHabitMutation();
     const [deleteHabit] = useDeleteHabitMutation();
     const { openModal } = useHabitModal();
-
-    const handleDelete = async () => {
-        await deleteHabit(habit.id);
-    }
 
     return (
         <Menu>
