@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react"
 import { useAuthenticateQuery, useGetUserTaskStatsQuery, useCompleteTaskMutation, useDeleteTaskMutation } from "@/store"
 import { useIsSmallScreen } from "@/hooks"
 import { TimeSensitiveTasksTab } from "./TimeSensitiveTasksTab"
+import { DeleteConfirmation } from "@/features"
+import { useDisclosure } from "@mantine/hooks"
+import { MassDeleteConfirmation } from "./MassDeleteConfirmation"
+import { KittyNotification } from "../KittyNotification"
+import { KittyIcons } from "@/assets"
 
 type TaskItem = {
     id: number
@@ -28,6 +33,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
     const [completeTask] = useCompleteTaskMutation()
     const [deleteTask] = useDeleteTaskMutation()
 
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [checkedIds, setCheckedIds] = useState<{
         overdue: Set<number>
         due_today: Set<number>
@@ -53,6 +59,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
     useEffect(() => {
         if (opened) {
             setCurrentTab(activeTab ?? "overdue")
+            setCheckedIds({ overdue: new Set(), due_today: new Set(), due_soon: new Set() })
         }
     }, [opened, activeTab])
 
@@ -89,42 +96,35 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
         setCheckedIdsForTab(currentTab, next)
     }
 
-    const handleMassDelete = () => {
+    const handleMassDelete = async () => {
         const ids = new Set(getCheckedIds(currentTab))
         if (ids.size === 0 || list.length === 0) return
 
         setPendingDeleteIds(ids)
         setCheckedIdsForTab(currentTab, new Set())
 
-        pendingDeleteRef.current = setTimeout(async () => {
+        try {
             const selected = list.filter(t => ids.has(t.id))
             await Promise.all(
                 selected.map(t => deleteTask({ taskId: t.id, listId: t.tasklist_id }))
             )
-        }, 5000)
+            KittyNotification({
+                title: "Tasks deleted",
+                message: "You've successfully irradicated some time-sensitive tasks.",
+                icon: KittyIcons.Dance,
+                color: "rgb(154, 221, 166)"
+            })
+        } catch (error) {
+            setPendingDeleteIds(new Set())
+            KittyNotification({
+                title: "Oh no! Your tasks are being stubborn.",
+                message: "That's weird - your tasks weren't deleted for some reason. Try again.",
+                icon: KittyIcons.Grumpy,
+                color: "rgb(234, 118, 118)"
+            })
+        }
 
-        const notifId = notifications.show({
-            message: (
-                <Group justify="space-between" align="center">
-                    <span>{`Deleted ${ids.size} ${ids.size === 1 ? "task" : "tasks"}`}</span>
-                    <Button
-                        size="xs"
-                        color="rgb(5,5,73)"
-                        variant="light"
-                        onClick={() => {
-                            if (pendingDeleteRef.current) clearTimeout(pendingDeleteRef.current)
-                            setPendingDeleteIds(new Set())
-                            notifications.hide(notifId)
-                        }}
-                    >
-                        Undo
-                    </Button>
-                </Group>
-            ),
-            autoClose: 5000,
-            withCloseButton: false,
-            color: "rgb(5, 5, 73)",
-        })
+        setShowDeleteConfirmation(false)
     }
 
     const handleMassComplete = () => {
@@ -244,7 +244,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                         variant="outline"
                         fw={500}
                         color="red"
-                        onClick={handleMassDelete}
+                        onClick={() => setShowDeleteConfirmation(true)}
                         disabled={getSelectedCount(currentTab) === 0}
                     >
                         Delete
@@ -264,6 +264,21 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                     </Button>
                 </Group>
             </Modal.Header>
+            {/* <DeleteConfirmation
+                modalTitle="Bulk delete tasks"
+                itemName={`${list.length}`}
+                itemType="tasks"
+                opened={showDeleteConfirmation}
+                setShowDeleteConfirmation={setShowDeleteConfirmation}
+                handleDeleteItem={handleMassDelete}
+            /> */}
+
+            <MassDeleteConfirmation
+                opened={showDeleteConfirmation}
+                close={() => setShowDeleteConfirmation(false)}
+                count={getSelectedCount(currentTab)}
+                handleDelete={handleMassDelete}
+            />
         </Modal>
     )
 }

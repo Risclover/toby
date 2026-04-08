@@ -100,7 +100,7 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
         <div className="upcoming-events-container">
             <Stack className="upcoming-events" gap="xs">
                 {!upcoming.length
-                    ? <div className="featured-empty-state">Your week is wide open! Time to plan something fun.</div>
+                    ? <div className="featured-empty-state">Good news, boss - your week is wide open!</div>
                     : upcoming.map((e) => {
                         // Defensive: e.startUtc is defined due to the filter; cast for TS
                         const startIso = e.startUtc as string;

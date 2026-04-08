@@ -154,7 +154,7 @@ export const GeneralTab = ({
                 divider={false}
             >
                 <Space h={12} />
-                <Button color="var(--tasklist-color)" variant="filled" onClick={handleDuplicateList}>Duplicate list</Button>
+                <Button color="var(--tasklist-color)" variant="filled" onClick={handleDuplicateList} fw={500}>Duplicate list</Button>
             </SettingsItem>
             <SettingsItem
                 layout="delete"
@@ -164,8 +164,8 @@ export const GeneralTab = ({
             >
                 <Space h={12} />
                 {tasklist?.isArchived ?
-                    <Button color="var(--tasklist-color)" variant="filled" onClick={handleUndoArchive}>Unarchive list</Button> :
-                    <Button color="var(--tasklist-color)" variant="filled" onClick={handleArchiveList}>Archive list</Button>
+                    <Button color="var(--tasklist-color)" variant="filled" onClick={handleUndoArchive} fw={500}>Unarchive list</Button> :
+                    <Button color="var(--tasklist-color)" variant="filled" onClick={handleArchiveList} fw={500}>Archive list</Button>
                 }
             </SettingsItem>
             <SettingsItem
@@ -175,7 +175,7 @@ export const GeneralTab = ({
                 divider={false}
             >
                 <Space h={12} />
-                <Button color="red.7" onClick={() => setShowDeleteConfirmation(true)}>Delete tasklist</Button>
+                <Button color="red.7" onClick={() => setShowDeleteConfirmation(true)} fw={500}>Delete tasklist</Button>
             </SettingsItem>
             {showDeleteConfirmation && <DeleteConfirmation itemName={tasklist.title} itemType="tasklist" modalTitle="Confirm delete tasklist" opened={showDeleteConfirmation} setShowDeleteConfirmation={setShowDeleteConfirmation} handleDeleteItem={handleDeleteList} />}
         </Tabs.Panel>

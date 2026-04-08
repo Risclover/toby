@@ -105,6 +105,12 @@ export const HabitModal = ({ onSuccess }: Props) => {
             form.reset();
         } catch (err) {
             console.error("Failed to save habit:", err);
+            KittyNotification({
+                title: "Oopsies, something went wrong.",
+                message: "You might want to try that again.",
+                color: "rgb(234, 118, 118)",
+                icon: KittyIcons.Rain
+            })
         }
     };
     return (

@@ -10,12 +10,12 @@ import { useIsSmallScreen } from "@/hooks";
 
 /* --- SHARED CONSTANTS --- */
 export const TIME_OPTIONS = [
+    { label: "All", value: "all" },
     { label: "Past due", value: "past_due" },
     { label: "Today", value: "today" },
     { label: "Tomorrow", value: "tomorrow" },
     { label: "This week", value: "this_week" },
     { label: "This month", value: "this_month" },
-    { label: "All", value: "all" },
 ] as const;
 
 type Props = {

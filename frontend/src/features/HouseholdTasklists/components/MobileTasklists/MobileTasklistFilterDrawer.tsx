@@ -170,7 +170,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                             <Button
                                 key={option.value}
                                 color="rgb(5, 5, 73)"
-                                size="sm"
+                                size="13px"
                                 h="auto"
                                 // c="black"
                                 fw={500}
@@ -186,10 +186,10 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
 
                 {/* Actions */}
                 <Group gap={isSmall ? "0.5rem" : "1rem"} grow className="filter-drawer-submit-btns">
-                    <Button color="rgb(5, 5, 73)" variant="light" onClick={handleReset}>
+                    <Button color="rgb(5, 5, 73)" variant="light" onClick={handleReset} fw={500}>
                         Reset
                     </Button>
-                    <Button color="rgb(5, 5, 73)" onClick={handleApply}>
+                    <Button color="rgb(5, 5, 73)" onClick={handleApply} fw={500}>
                         Apply
                     </Button>
                 </Group>

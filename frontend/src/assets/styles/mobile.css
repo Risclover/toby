@@ -441,9 +441,18 @@
     font-family: "Alan Sans", sans-serif;
 }
 
+.tasklist-header-left .mantine-Input-input {
+    font-size: 13px;
+}
+
 .mantine-Combobox-options {
     width: 100%;
-    font-family: "Alan Sans", sans-serif;
+    font-family: var(--font-family-sora);
+}
+
+.mantine-Combobox-option {
+    font-size: 13px !important;
+
 }
 
 .mobile-announcements-full {
