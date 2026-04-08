@@ -18,7 +18,7 @@ export const UserProfileHeader = () => {
         <div className="user-profile-header">
             <Avatar size={isSmall ? 42 : 48} src={user?.profileImg} styles={{ root: { border: "2px solid white" } }} />
             <div className="user-info">
-                <div className="user-info-top"><h1>{user?.firstName} {user?.lastName}</h1><Badge size="md" fw={500} color="rgb(147, 111, 206)" variant="filled" c="white">Admin</Badge></div>
+                <div className="user-info-top"><h1>{user?.firstName} {user?.lastName}</h1>{user.id === household?.adminId && <Badge size="md" fw={500} color="rgb(147, 111, 206)" variant="filled" c="white">Admin</Badge>}</div>
                 <Text c="var(--mantine-color-gray-5)" size="xs">{household?.name} · since {joinDate}</Text>
             </div>
         </div>

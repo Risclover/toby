@@ -9,6 +9,7 @@ import "../styles/UpcomingThisWeek.css"
 import { QuickAddEvent } from "./QuickAddEvent";
 import { Box } from "lucide-react";
 import { EventMenu } from "./EventMenu";
+import { useAuthenticateQuery } from "@/store";
 
 function startOfToday(d = new Date()) {
     const t = new Date(d);
@@ -41,6 +42,7 @@ function formatTime(isoUtc: string) {
 }
 
 export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; householdId: number }) {
+    const { data: currentUser } = useAuthenticateQuery();
     const [editOpen, setEditOpen] = useState(false);
     const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
     const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
@@ -120,15 +122,17 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                                             <Text fz="xs" c="var(--mantine-color-gray-7)">{right}</Text>
                                         </Stack>
                                     </Group>
-                                    <div className="event-menu-container">
-                                        <EventMenu
-                                            isEditing={editingEvent?.id === e.id}
-                                            setIsEditing={(val) => val ? openEdit(e) : null}
+                                    {(e.household.adminId === currentUser.id || e.creatorId === currentUser.id) && (
+                                        <div>
+                                            <EventMenu
+                                                isEditing={editingEvent?.id === e.id}
+                                                setIsEditing={(val) => val ? openEdit(e) : null}
 
-                                            onDelete={() => handleDeleteEvent(e.id)}
+                                                onDelete={() => handleDeleteEvent(e.id)}
 
-                                        />
-                                    </div>
+                                            />
+                                        </div>
+                                    )}
                                 </Group>
                             </Paper>
                         );
@@ -145,7 +149,7 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                 initialDate={selectedEvent?.startUtc ? new Date(selectedEvent.startUtc) : new Date()}
             />
 
-        </div>
+        </div >
     );
 }
 

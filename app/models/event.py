@@ -6,6 +6,7 @@ class Event(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     title = db.Column(db.String(120), nullable=False)
     start_utc = db.Column(db.DateTime(timezone=True), nullable=True)
     end_utc = db.Column(db.DateTime(timezone=True), nullable=True)
@@ -17,6 +18,7 @@ class Event(db.Model):
     )
     tzid = db.Column(db.String(64), nullable=False)  # e.g. "America/Los_Angeles"
     household = db.relationship('Household', backref=db.backref('events', lazy='dynamic'))
+    event_creator = db.relationship("User", foreign_keys=[creator_id])
 
     def to_dict(self):
         def to_utc_z(dt):
@@ -29,12 +31,17 @@ class Event(db.Model):
         return {
             "id": self.id,
             "householdId": self.household_id,
+            "creatorId": self.creator_id,
             "title": self.title,
             "startUtc": to_utc_z(self.start_utc),
             "endUtc": to_utc_z(self.end_utc),
             "tzid": self.tzid,
             "hasTime": bool(self.has_time),           # <-- include it
             "createdAt": to_utc_z(self.created_at),
+            "household": {
+                "id": self.household.id,
+                "adminId": self.household.admin_id,
+            }
         }
 
     def __repr__(self):

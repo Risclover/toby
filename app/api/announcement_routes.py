@@ -73,8 +73,8 @@ def delete_announcement(announcement_id: int):
         abort(404, description="Announcement not found")
 
     user_id = int(current_user.get_id())
-    if announcement.user_id != user_id:
-        abort(403, description="Only the creator can delete this announcement")
+    if announcement.user_id != user_id and current_user.id != announcement.household.admin_id:
+        abort(403, description="Only the creator and admin can delete this announcement")
 
     ActivityService.record(
         household_id=announcement.household_id,
@@ -243,8 +243,8 @@ def toggle_importance(id):
     
     user_id = current_user.id
 
-    if announcement.user_id != user_id:
-        abort(403, description="Only the creator can toggle importance")
+    if announcement.user_id != user_id and announcement.household.admin_id != user_id:
+        abort(403, description="Only the creator or admin can toggle importance")
     
     announcement.is_important = not announcement.is_important
     db.session.commit()

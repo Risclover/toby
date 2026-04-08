@@ -54,33 +54,34 @@ def get_household_tasklists(household_id):
     if current_user.household_id != household_id:
         return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
 
-    # Get ALL household lists first
+    is_admin = current_user.id == household.admin_id
+
     lists = Tasklist.query.filter_by(
-        household_id=household_id, 
+        household_id=household_id,
         is_archived=is_archived
     ).options(joinedload(Tasklist.archiver)).all()
 
-    # ✅ FILTER: creator (user_id) OR assigned (member_links)
     user_lists = []
     for tasklist in lists:
-        # 1. CREATOR ACCESS
+        # Admin sees everything
+        if is_admin:
+            user_lists.append(tasklist)
+            continue
+
         if tasklist.creator_id == current_user.id:
             user_lists.append(tasklist)
             continue
-        
-        # 2. ASSIGNED ACCESS via member_links
+
         is_assigned = TasklistMember.query.filter_by(
             tasklist_id=tasklist.id,
             user_id=current_user.id
         ).first() is not None
-        
-        # OR all_members=True
+
         if tasklist.all_members or is_assigned:
             user_lists.append(tasklist)
 
-    # Convert dates + serialize
     tasklists = []
-    for t in user_lists:  # ✅ Only user's lists
+    for t in user_lists:
         t_dict = t.to_dict()
         if hasattr(t, "created_at") and t.created_at:
             t_dict["createdAt"] = utc_datetime_to_local(current_user, t.created_at).isoformat()

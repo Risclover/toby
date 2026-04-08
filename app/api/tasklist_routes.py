@@ -11,6 +11,10 @@ from datetime import datetime, date
 
 tasklist_routes = Blueprint("tasklists", __name__)
 
+def is_household_admin(household_id):
+    household = Household.query.get(household_id)
+    return household and current_user.id == household.admin_id
+
 # TABLE OF CONTENTS
 # 1. get_tasklist: Retrieve tasklist by id
 # 2. get_tasklists: Get all of a scope's tasklists (user's or household's)
@@ -29,22 +33,15 @@ tasklist_routes = Blueprint("tasklists", __name__)
 
 @tasklist_routes.route("/<int:id>", methods=["GET"])
 def get_tasklist(id):
-    """
-    Get a specific task list by id 
-    """
     tasklist = Tasklist.query.get_or_404(id)
     return jsonify(tasklist.to_dict()), 200
 
 @tasklist_routes.route("/<int:id>", methods=["GET"])
 @login_required
 def get_tasklists(id):
-    """
-    Get tasklists: creator (user_id) OR explicitly assigned (via member_links).
-    """
     scope = request.args.get("scope", "user")
 
     if scope == "user":
-        # Personal lists (creator always sees)
         lists = Tasklist.query.filter_by(creator_id=current_user.id).all()
 
     elif scope == "household":
@@ -60,36 +57,25 @@ def get_tasklists(id):
             return jsonify({"error": "Forbidden"}), 403
 
         if only_archived_lists:
-            lists = Tasklist.query.filter_by(
-                household_id=household_id, 
-                is_archived=True
-            ).all()
+            lists = Tasklist.query.filter_by(household_id=household_id, is_archived=True).all()
         else:
-            lists = Tasklist.query.filter_by(
-                household_id=household_id, 
-                is_archived=False
-            ).all()
+            lists = Tasklist.query.filter_by(household_id=household_id, is_archived=False).all()
 
     else:
         return jsonify({"error": "invalid scope"}), 400
 
-    # ✅ FILTER: creator (creator_id) OR assigned (member_links)
     user_lists = []
     for tasklist in lists:
-        # 1. CREATOR ACCESS (creator_id matches)
         if tasklist.creator_id == current_user.id:
             user_lists.append(tasklist)
             continue
 
-        # 2. ASSIGNED ACCESS (via member_links table)
         if tasklist.household_id and current_user.is_member_of(household):
-            # Check if user is in member_links for this specific tasklist
             is_assigned = TasklistMember.query.filter_by(
                 tasklist_id=tasklist.id,
                 user_id=current_user.id
             ).first() is not None
-            
-            # OR all_members=True
+
             if tasklist.all_members or is_assigned:
                 user_lists.append(tasklist)
 
@@ -98,9 +84,6 @@ def get_tasklists(id):
 
 @tasklist_routes.route("", methods=["POST"])
 def create_tasklist():
-    """
-    Create a new task list 
-    """
     data = request.get_json()
 
     tasklist = Tasklist(
@@ -108,9 +91,9 @@ def create_tasklist():
         creator_id=data.get("creator_id", current_user.id),
         household_id=data.get("household_id")
     )
-    
+
     db.session.add(tasklist)
-    
+
     household = Household.query.get(data.get("household_id"))
     household.tasklists.append(tasklist)
 
@@ -123,7 +106,6 @@ def add_task(id):
     data = request.get_json() or {}
     tasklist = Tasklist.query.get_or_404(id)
 
-    # determine sort_index
     new_sort_index = 0
     if tasklist.new_item_position == "top":
         min_idx = (
@@ -140,13 +122,11 @@ def add_task(id):
         )
         new_sort_index = max_idx + 1
 
-    # parse due_date in UTC
     due_date_utc = None
     timezone_str = data.get("timezone") or current_user.timezone or "UTC"
     user_tz = pytz.timezone(timezone_str)
 
     if data.get("due_date"):
-        # convert user's local due date → UTC
         local_due_date = datetime.fromisoformat(data["due_date"])
         due_date_utc = user_tz.localize(local_due_date).astimezone(pytz.UTC).date()
 
@@ -163,9 +143,8 @@ def add_task(id):
     )
 
     db.session.add(task)
-    db.session.flush()  # get task.id
+    db.session.flush()
 
-    # create automatic reminders
     create_task_due_reminders(task)
 
     ActivityService.record(
@@ -183,9 +162,15 @@ def add_task(id):
 
 
 @tasklist_routes.route("/<int:list_id>/tasks/<int:id>", methods=["DELETE"])
+@login_required
 def delete_task(list_id, id):
     task = Task.query.filter_by(id=id, list_id=list_id).first_or_404()
     tasklist = Tasklist.query.get(list_id)
+
+    # Creator or admin can delete
+    if current_user.id != task.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
     deleted_task = task.to_dict()
 
     ActivityService.record(
@@ -204,18 +189,28 @@ def delete_task(list_id, id):
 
 
 @tasklist_routes.route("/<int:list_id>/tasks", methods=["DELETE"])
+@login_required
 def clear_list(list_id):
-    """
-    Remove all tasks from a list
-    """
+    tasklist = Tasklist.query.get_or_404(list_id)
+
+    # Creator or admin can clear
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
     Task.query.filter_by(list_id=list_id).delete()
     db.session.commit()
     return jsonify({"message": f"All tasks deleted from list {list_id}"}), 200
 
 
 @tasklist_routes.route("/<int:id>", methods=["DELETE"])
+@login_required
 def delete_list(id):
     tasklist = Tasklist.query.get_or_404(id)
+
+    # Creator or admin can delete
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
     FeaturedListSetting.query.filter(FeaturedListSetting.tasklist_id == id).update(
         {FeaturedListSetting.tasklist_id: None},
         synchronize_session=False
@@ -236,8 +231,13 @@ def delete_list(id):
 
 
 @tasklist_routes.route("/<int:id>", methods=["PUT"])
+@login_required
 def edit_tasklist(id):
-    tasklist = Tasklist.query.get(id)
+    tasklist = Tasklist.query.get_or_404(id)
+
+    # Creator or admin can edit
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json()
     old_title = tasklist.title
@@ -258,37 +258,36 @@ def edit_tasklist(id):
     return jsonify(tasklist.to_dict()), 200
 
 @tasklist_routes.route("/<int:list_id>/reorder", methods=['PATCH'])
+@login_required
 def reorder_tasks(list_id):
-    tasklist = Tasklist.query.get_or_404(list_id) # Fixed: use list_id, not id
-    
+    tasklist = Tasklist.query.get_or_404(list_id)
+
+    # Creator or admin can reorder
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
     data = request.get_json() or {}
     ordered_ids = data.get("orderedIds")
-    # 🚀 New: Check if the frontend is also requesting a mode change
     set_to_manual = data.get("setToManual", False)
 
-    # Allow reorder if already manual OR if we are switching to manual right now
     if tasklist.default_sort_order != SortOrder.MANUAL.value and not set_to_manual:
-        return jsonify({
-            "error": "Manual reordering is disabled unless sort order is set to 'manual'."
-        }), 400
+        return jsonify({"error": "Manual reordering is disabled unless sort order is set to 'manual'."}), 400
 
     if not isinstance(ordered_ids, list) or not ordered_ids:
-        return jsonify({ "error": "orderedIds (non-empty array) required"}), 400
-    
-    # 🚀 Update the sort indices
+        return jsonify({"error": "orderedIds (non-empty array) required"}), 400
+
     for idx, tid in enumerate(ordered_ids):
         (
             db.session.query(Task)
                 .filter(Task.id == tid, Task.list_id == list_id)
                 .update({Task.sort_index: idx}, synchronize_session=False)
         )
-    
-    # 🚀 If we are switching modes, update the tasklist setting too
+
     if set_to_manual:
         tasklist.default_sort_order = SortOrder.MANUAL.value
-    
+
     db.session.commit()
-    return jsonify(tasklist.to_dict()), 200 # Return the updated list
+    return jsonify(tasklist.to_dict()), 200
 
 @tasklist_routes.route("/<int:id>/duplicate", methods=["POST"])
 @login_required
@@ -296,8 +295,10 @@ def duplicate_list(id):
     try:
         original_list = Tasklist.query.get_or_404(id)
 
-        if current_user.id not in original_list.audience_user_ids():
-            return jsonify({"error": "Access denied"}), 403
+        # Admin bypasses audience check
+        if not is_household_admin(original_list.household_id):
+            if current_user.id not in original_list.audience_user_ids():
+                return jsonify({"error": "Access denied"}), 403
 
         new_list = original_list.duplicate()
         db.session.flush()
@@ -320,8 +321,14 @@ def duplicate_list(id):
         return jsonify({"error": "Failed to duplicate list"}), 500
 
 @tasklist_routes.route("/<int:id>/archive", methods=["PUT"])
+@login_required
 def archive_list(id):
-    tasklist = Tasklist.query.get(id)
+    tasklist = Tasklist.query.get_or_404(id)
+
+    # Creator or admin can archive
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
     tasklist.is_archived = True
     tasklist.archived_by = current_user.id
 
@@ -338,10 +345,13 @@ def archive_list(id):
     return jsonify(tasklist.to_dict())
 
 @tasklist_routes.route("/<int:id>/unarchive", methods=["PUT"])
+@login_required
 def unarchive_list(id):
-    tasklist = Tasklist.query.get(id)
-    if not tasklist:
-        return jsonify({"error": "Tasklist not found"}), 404
+    tasklist = Tasklist.query.get_or_404(id)
+
+    # Creator or admin can unarchive
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
 
     tasklist.is_archived = False
 
@@ -360,13 +370,17 @@ def unarchive_list(id):
     return jsonify(tasklist.to_dict())
 
 @tasklist_routes.route("/<int:id>/settings", methods=["PUT"])
+@login_required
 def update_list_settings(id):
     tasklist = Tasklist.query.get_or_404(id)
-    data = request.get_json() or {}
 
+    # Creator or admin can update settings
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
+    data = request.get_json() or {}
     old_title = tasklist.title
 
-    # 1. Update Standard Settings
     field_mapping = {
         "title": "title",
         "color": "color",
@@ -381,7 +395,6 @@ def update_list_settings(id):
         if json_key in data:
             setattr(tasklist, model_attr, data[json_key])
 
-    # 2. Record rename if title changed
     if "title" in data and data["title"] != old_title:
         ActivityService.record(
             household_id=tasklist.household_id,
@@ -393,14 +406,12 @@ def update_list_settings(id):
             event_metadata={"oldTitle": old_title},
         )
 
-    # 3. Update Assigned Members (Diff Logic)
     if "memberIds" in data:
         new_member_ids = set(data["memberIds"])
 
         if tasklist.household:
             household_member_ids = {u.id for u in tasklist.household.members}
 
-            # Validation
             invalid_ids = new_member_ids - household_member_ids
             if invalid_ids:
                 return jsonify({
@@ -425,56 +436,60 @@ def update_list_settings(id):
                     db.session.delete(current_links[uid])
 
                 for uid in ids_to_add:
-                    db.session.add(
-                        TasklistMember(tasklist_id=tasklist.id, user_id=uid)
-                    )
+                    db.session.add(TasklistMember(tasklist_id=tasklist.id, user_id=uid))
 
     db.session.commit()
     return jsonify(tasklist.to_dict()), 200
-
 
 
 @tasklist_routes.route("/<int:id>/complete-all", methods=["PUT"])
+@login_required
 def complete_all_tasks(id):
-    """
-    Complete all tasks in a tasklist
-    """
     tasklist = Tasklist.query.get_or_404(id)
+
+    # Creator or admin can bulk complete
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
     for task in tasklist.tasks:
         task.status = "completed"
-    
-    db.session.commit()
 
+    db.session.commit()
     return jsonify(tasklist.to_dict()), 200
 
 @tasklist_routes.route("/<int:id>/incomplete-all", methods=["PUT"])
+@login_required
 def incomplete_all_tasks(id):
-    """
-    Mark all tasks in a tasklist as incomplete 
-    """
     tasklist = Tasklist.query.get_or_404(id)
+
+    # Creator or admin can bulk incomplete
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
     for task in tasklist.tasks:
         task.status = "in_progress"
-    
-    db.session.commit()
 
+    db.session.commit()
     return jsonify(tasklist.to_dict()), 200
 
 
 @tasklist_routes.route("/<int:id>/assigned-members", methods=["PUT"])
+@login_required
 def manage_assigned_members(id):
     tasklist = Tasklist.query.get_or_404(id)
-    data = request.get_json() or {}
 
+    # Creator or admin can manage members
+    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
+    data = request.get_json() or {}
     new_member_ids = set(data.get("members", []))
 
-    # Household safety check
     if not tasklist.household:
         return jsonify({"error": "Only household lists support assigned members"}), 400
 
     household_member_ids = {u.id for u in tasklist.household.members}
 
-    # Validate incoming IDs
     invalid_ids = new_member_ids - household_member_ids
     if invalid_ids:
         return jsonify(
@@ -482,26 +497,15 @@ def manage_assigned_members(id):
             400,
         )
 
-    # Clear existing links
     for link in tasklist.member_links[:]:
         db.session.delete(link)
 
-    # Decide all_members FIRST
     if new_member_ids == household_member_ids:
-        # Everyone selected → no links needed
         tasklist.all_members = True
     else:
         tasklist.all_members = False
-
-        # Persist subset links
         for user_id in new_member_ids:
-            db.session.add(
-                TasklistMember(
-                    tasklist_id=tasklist.id,
-                    user_id=user_id,
-                )
-            )
+            db.session.add(TasklistMember(tasklist_id=tasklist.id, user_id=user_id))
 
     db.session.commit()
     return jsonify(tasklist.to_dict()), 200
-    

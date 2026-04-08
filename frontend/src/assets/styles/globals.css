@@ -349,6 +349,11 @@ form {
     background: white;
     border-radius: 0.25rem;
     /* font-weight: 400; */
+    cursor: pointer;
+}
+
+.archived-household-tasklists-item:hover {
+    background: #f2f4fc;
 }
 
 .archived-household-tasklists-item-top {

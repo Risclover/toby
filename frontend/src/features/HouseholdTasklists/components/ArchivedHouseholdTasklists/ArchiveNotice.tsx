@@ -13,11 +13,12 @@ export const ArchiveNotice = ({ tasklistId }: { tasklistId: number }) => {
             color="rgba(204, 143, 0, 1)"
             bg="rgb(255, 249, 225)"
             title="This tasklist was archived."
-            icon={<ArchivedIcon size="" color="currentColor" />}
+            icon={<ArchivedIcon size="6rem" color="currentColor" />}
             styles={{
-                root: { boxShadow: "var(--mantine-shadow-xs)", border: "1px solid transparent", fontFamily: "Source Sans 3", },
+                root: { boxShadow: "var(--mantine-shadow-xs)", border: "1px solid transparent", },
                 title: { fontFamily: "Alan Sans", fontWeight: 500 },
-                message: { lineHeight: 1.3 }
+                message: { lineHeight: 1.3 },
+                icon: { width: "6.5rem !important" }
             }}
         >
             Read-only mode active. Actions are disabled until this list is {restoreButton}.

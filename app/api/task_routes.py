@@ -1,26 +1,29 @@
 # app/routes/task_routes.py
 from flask import Blueprint, request, jsonify, abort
-from app.models import Task
+from app.models import Task, Household
 from app.extensions import db
 from datetime import datetime, date
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app.utils.reminder_utils import create_task_due_reminders
 from app.utils.activity_service import ActivityService
 import pytz
 
 task_routes = Blueprint("tasks", __name__)
 
+def is_household_admin(household_id):
+    household = Household.query.get(household_id)
+    return household and current_user.id == household.admin_id
+
 def parse_due_date(val: str) -> datetime:
-    # Accept 'YYYY-MM-DD' (date only)
     if len(val) == 10 and val.count('-') == 2:
         return datetime.fromisoformat(val)
-    
     if val.endswith('Z'):
         val = val.replace('Z', '+00:00')
     return datetime.fromisoformat(val)
 
 
 @task_routes.route("/<int:id>/completed", methods=["PUT"])
+@login_required
 def update_task_status(id):
     task = Task.query.get_or_404(id)
     data = request.get_json(silent=True) or {}
@@ -58,8 +61,21 @@ def update_task_status(id):
 
 
 @task_routes.route("/<int:id>", methods=["PATCH", "PUT"])
+@login_required
 def update_task(id):
     task = Task.query.get_or_404(id)
+
+    tasklist = task.tasklist
+    is_all_members = tasklist.all_members or task.assigned_to_id is None
+
+    if (
+        current_user.id != task.creator_id
+        and current_user.id != task.assigned_to_id
+        and not is_all_members
+        and not is_household_admin(tasklist.household_id)
+    ):
+        return jsonify({"error": "Forbidden"}), 403
+
     data = request.get_json(silent=True) or {}
 
     for field in ("title", "description", "isImportant", "status"):
@@ -72,7 +88,6 @@ def update_task(id):
     if "assignedToId" in data:
         task.assigned_to_id = data["assignedToId"]
 
-    # handle due_date with timezone
     if "dueDate" in data:
         s = data["dueDate"]
         if s:
@@ -83,9 +98,7 @@ def update_task(id):
         else:
             task.due_date = None
 
-    # create or update automatic reminders
     timezone_str = data.get("timezone") or current_user.timezone or "UTC"
-    user_tz = pytz.timezone(timezone_str)
     create_task_due_reminders(task)
 
     db.session.commit()
@@ -100,16 +113,34 @@ def get_task(id):
 
 
 @task_routes.route("/<int:id>/importance", methods=["PUT"])
+@login_required
 def toggle_importance(id):
     task = Task.query.get_or_404(id)
+
+    tasklist = task.tasklist
+    is_all_members = tasklist.all_members or task.assigned_to_id is None
+
+    if (
+        current_user.id != task.creator_id
+        and current_user.id != task.assigned_to_id
+        and not is_all_members
+        and not is_household_admin(tasklist.household_id)
+    ):
+        return jsonify({"error": "Forbidden"}), 403
+
     task.is_important = not task.is_important
     db.session.commit()
     return jsonify(task.to_dict())
 
 
 @task_routes.route("/<int:id>", methods=["DELETE"])
+@login_required
 def delete_task(id):
     task = Task.query.get_or_404(id)
+
+    # Creator or admin can delete
+    if current_user.id != task.creator_id and not is_household_admin(task.tasklist.household_id):
+        return jsonify({"error": "Forbidden"}), 403
 
     ActivityService.record(
         household_id=task.tasklist.household_id,

@@ -94,7 +94,7 @@ export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                                     {list.id === userSettings?.featuredTasklist.tasklistId ? <StarIcon color="rgb(230, 176, 2)" size="20px" /> : <StarIconOutline color="var(--mantine-color-gray-6)" size="20px" />}
                                 </ActionIcon>
                             </Tooltip>
-                            <TasklistActionsMenu tasklistId={list.id} setShowDeleteConfirmation={setShowDeleteConfirmation} />
+                            {(user.id === household?.adminId || user.id === list.creatorId) && <TasklistActionsMenu tasklistId={list.id} setShowDeleteConfirmation={setShowDeleteConfirmation} />}
                         </div>
                     </div>
                     <div className="tasklist-head-progress progress">

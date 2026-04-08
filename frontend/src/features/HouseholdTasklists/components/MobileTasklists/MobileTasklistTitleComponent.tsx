@@ -5,6 +5,8 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { type TasklistType } from "@/store/taskSlice";
 import { useIsSmallScreen } from "@/hooks";
 import { SettingsIcon } from "@/assets/icons/SettingsIcon";
+import { useAuthenticateQuery } from "@/store";
+import { useHousehold } from "@/hooks/useHousehold";
 
 
 interface TitleComponentProps {
@@ -20,6 +22,8 @@ export const MobileTasklistTitleComponent = ({
 }: TitleComponentProps) => {
     const isSmall = useIsSmallScreen(425);
     const navigate = useNavigate();
+    const { data: user } = useAuthenticateQuery();
+    const { data: household } = useHousehold();
 
     return (
         <div className="mobile-tasklist-title-bar">
@@ -32,7 +36,7 @@ export const MobileTasklistTitleComponent = ({
                     </Tooltip>
                     <Title order={1} lineClamp={1} className={`title-announcements-title${isSmall ? " smaller-header" : ""}`}>{tasklist.title}</Title>
                 </div>
-                <Tooltip label="Tasklist settings">
+                {(user.id === household?.adminId || user.id === tasklist.creatorId) && <Tooltip label="Tasklist settings">
                     <ActionIcon
                         onClick={() => setShowTasklistSettings(true)}
                         className="tasklist-settings-btn"
@@ -43,7 +47,7 @@ export const MobileTasklistTitleComponent = ({
                     >
                         <SettingsRoundedIcon />
                     </ActionIcon>
-                </Tooltip>
+                </Tooltip>}
             </div>
             <div className="progress">
                 <div className="progress-left">

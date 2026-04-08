@@ -5,12 +5,17 @@ import { apiSlice } from "./apiSlice";
 export type CalendarEvent = {
     id: number;
     householdId: number;
+    creatorId: number;
     title: string;
     startUtc?: string | null; // may be null for floating/instant
     endUtc?: string | null;   // may be null for instant
     tzid: string;
     hasTime: boolean;
     createdAt: string;
+    household: {
+        id: number;
+        adminId: number;
+    }
 };
 
 /** Creation inputs */

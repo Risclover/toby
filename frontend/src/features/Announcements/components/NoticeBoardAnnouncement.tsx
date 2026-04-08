@@ -6,6 +6,7 @@ import { AnnouncementMenu } from "./AnnouncementMenu";
 import { useAnnouncement } from "../hooks/useAnnouncement";
 import { useAuthenticateQuery, type Announcement } from "@/store"
 import { StarIcon } from "@/assets";
+import { useHousehold } from "@/hooks/useHousehold";
 
 type Props = {
     announcement: Announcement;
@@ -16,6 +17,7 @@ export const NoticeBoardAnnouncement = ({ announcement }: Props) => {
 
     const { data: user } = useAuthenticateQuery();
     const { message, creator, isImportant, seenByCurrent } = announcement;
+    const { data: household } = useHousehold();
 
     const {
         setOpenDeleteConfirmation,
@@ -53,7 +55,7 @@ export const NoticeBoardAnnouncement = ({ announcement }: Props) => {
                                 <StarIcon color="rgb(230, 176, 2)" size="18px" />
                             </div>
                         )}
-                        {user.id === creator?.id && (
+                        {((household?.adminId === user.id) || (user.id === creator?.id)) && (
                             <AnnouncementMenu
                                 ref={triggerRef}
                                 announcement={announcement}

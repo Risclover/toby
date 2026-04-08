@@ -5,13 +5,18 @@ import { Avatar, Center, Loader, Tooltip } from "@mantine/core";
 import { useAuthenticateQuery, useGetTasklistsQuery } from "@/store";
 import { ArchivedHouseholdTasklistsMenu } from "./ArchivedHouseholdTasklistsMenu";
 import { useStablePending } from "@/hooks";
+import { useHousehold } from "@/hooks/useHousehold";
+import { Tasklist } from "../HouseholdTasklists";
+import { useNavigate } from "react-router-dom";
 
 export const ArchivedHouseholdTasklists = () => {
+    const navigate = useNavigate();
     const { data: user, isSuccess: userLoaded } = useAuthenticateQuery();
     const { data: archivedLists, isFetching, isSuccess: dataLoaded } = useGetTasklistsQuery(
         { householdId: Number(user?.householdId), isArchived: true },
         { skip: !user?.householdId }
     );
+    const { data: household } = useHousehold();
 
     // Use isFetching instead of isLoading to catch re-renders
     const isActuallyLoading = !userLoaded || isFetching;
@@ -36,12 +41,12 @@ export const ArchivedHouseholdTasklists = () => {
     }
 
     const archivedItems = archivedLists?.map(list => (
-        <div className="archived-household-tasklists-item">
+        <div className="archived-household-tasklists-item" onClick={() => navigate(`/tasklists/${list.id}`)}>
             <div className="archived-household-tasklists-item-top">
                 <div className="archived-household-tasklists-item-title">{list.title}</div>
-                <div className="archived-table-btns">
+                {(user.id === household.adminId || user.id === list.creatorId) && <div className="archived-table-btns">
                     <ArchivedHouseholdTasklistsMenu tasklistId={list.id} />
-                </div>
+                </div>}
             </div>
             <div className="archived-household-tasklists-item-bottom">
                 <div className="archived-household-tasklists-item-data"><span>Archived on:</span> {dayjs(list.createdAt).format("MMM DD, YYYY")}</div>

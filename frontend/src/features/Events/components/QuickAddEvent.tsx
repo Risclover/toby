@@ -11,6 +11,7 @@ import { EventMenu } from "./EventMenu";
 import { RemainingChars } from "@/components/RemainingChars";
 import { ClockIcon } from "@/assets/icons/ClockIcon";
 import { useModalFocus } from "@/hooks/useModalFocus";
+import { useAuthenticateQuery } from "@/store";
 
 function startEndIsoForLocalDay(ymd: string) {
     const [y, m, d] = ymd.split("-").map(Number);
@@ -359,6 +360,7 @@ const EventRow = ({
     onCancelEdit: () => void;
     onDelete: (id: number) => void;
 }) => {
+    const { data: currentUser } = useAuthenticateQuery();
     return (
         <div className={`event-row${isEditing ? " editing" : ""}`}>
             <Group gap="xs" wrap="nowrap" align="center">
@@ -367,11 +369,11 @@ const EventRow = ({
                 </Text>
                 <Group gap=".25rem" miw={0} wrap="nowrap" justify="space-between" w="100%">
                     <Text size="sm" inline c="var(--mantine-color-dark-7)" fw={500} truncate miw={0}>{e.title}</Text>
-                    <EventMenu
+                    {(e.household.adminId === currentUser.id || e.creatorId === currentUser.id) && <EventMenu
                         isEditing={isEditing}
                         setIsEditing={(val) => val ? onEdit(e) : onCancelEdit()}
                         onDelete={() => onDelete(e.id)}
-                    />
+                    />}
                 </Group>
             </Group>
         </div>

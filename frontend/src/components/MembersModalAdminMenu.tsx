@@ -33,18 +33,19 @@ export const MembersModalAdminMenu = ({ member, household }: { member: Household
                     variant="transparent"
                     color="var(--mantine-color-gray-6)"
                     size="xs"
+                    onClick={(e) => e.stopPropagation()}
                 >
                     <IoEllipsisVerticalSharp />
                 </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-                {member.id !== household.adminId && <Menu.Item leftSection={<AdminBadgeIcon size="22px" color="var(--mantine-color-dark-9)" />} onClick={confirmAdminTransfer}>Transfer admin role</Menu.Item>}
-                <Menu.Item color="red.9" leftSection={<RemoveMemberIcon size="22px" color="var(--mantine-color-red-9)" />} onClick={confirmMemberRemoval}>
+                {member.id !== household.adminId && <Menu.Item leftSection={<AdminBadgeIcon size="22px" color="var(--mantine-color-dark-9)" />} onClick={(e) => { e.stopPropagation(); confirmAdminTransfer(); }}>Transfer admin role</Menu.Item>}
+                <Menu.Item color="red.9" leftSection={<RemoveMemberIcon size="22px" color="var(--mantine-color-red-9)" />} onClick={(e) => { e.stopPropagation(); confirmMemberRemoval(); }}>
                     Remove from household
                 </Menu.Item>
             </Menu.Dropdown>
             <TransferAdminRoleConfirmation opened={transferModalOpened} onClose={closeTransferModal} member={member} household={household} />
             <RemoveMemberConfirmation opened={removeModalOpened} onClose={closeRemoveModal} member={member} household={household} />
-        </Menu>
+        </Menu >
     )
 }

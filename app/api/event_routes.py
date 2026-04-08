@@ -106,6 +106,7 @@ def create_event_for_household(hid: int):
 
     ev = Event(
         household_id=hid,
+        creator_id=current_user.id, 
         title=title,
         start_utc=start,
         end_utc=end,
@@ -131,6 +132,9 @@ def update_event(hid: int, event_id: int):
     Household.query.get_or_404(hid)
     event = Event.query.filter_by(id=event_id, household_id=hid).first_or_404()
     data = request.get_json(silent=True) or {}
+
+    if current_user.id != event.creator_id and current_user.id != event.household.admin_id:
+        abort(403, description="Only the creator and admin can update this event")
 
     if "title" in data:
         title = (data.get("title") or "").strip()

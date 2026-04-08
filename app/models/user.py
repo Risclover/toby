@@ -89,6 +89,12 @@ class User(db.Model, UserMixin):
 
     user_settings = db.relationship("UserSettings", back_populates="user", uselist=False, cascade="all, delete-orphan")
 
+    created_events = db.relationship(
+        'Event',
+        foreign_keys='Event.creator_id',
+        back_populates='event_creator'
+    )
+
     # Password management
     @property
     def password(self):

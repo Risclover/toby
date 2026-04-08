@@ -29,7 +29,7 @@ export const TransferAdminRoleConfirmation = ({ opened, onClose, member, househo
     }
 
     return (
-        <Modal centered radius="md" size="md" opened={opened} onClose={onClose} withCloseButton={false} title="Confirm admin role transfer">
+        <Modal closeOnClickOutside={false} centered radius="md" size="md" opened={opened} onClose={onClose} withCloseButton={false} title="Confirm admin role transfer" onClick={(e) => e.stopPropagation()}>
             <Text c="black" size="sm">Are you sure you want to transfer your admin role to <strong style={{ fontWeight: 500 }}>{member.firstName} {member.lastName}</strong>? You will no longer be able to manage household members or content.</Text>
             <Group justify="flex-end" w="100%" gap="0.5rem" mt="1rem">
                 <Button
