@@ -19,7 +19,7 @@
 .upcoming-events {
     overflow-y: auto;
     max-height: 250px;
-    padding: 0.5rem;
+    padding: 0.75rem;
     padding-top: .25rem;
 }
 
@@ -64,4 +64,11 @@
     border-right: 1px solid var(--mantine-color-gray-4);
     padding: 0.5rem;
     padding-right: 1rem;
+}
+
+@media (max-width: 425px) {
+    .upcoming-events {
+        padding: 0.5rem;
+        padding-top: 0;
+    }
 }

@@ -27,22 +27,11 @@ export const ArchivedHouseholdTasklistsMenu = ({ tasklistId }: Props) => {
             menuItemTabIndex={0} shadow="md" width={150}
         >
             <Menu.Target>
-                <ActionIcon variant="subtle" color="rgb(5, 5, 73)" size='xs'>
+                <ActionIcon variant="subtle" color="rgb(5, 5, 73)" size='xs' onClick={(e) => e.stopPropagation()}>
                     <MoreVertRoundedIcon />
                 </ActionIcon>
-            </Menu.Target>
+            </Menu.Target >
             <Menu.Dropdown>
-                <Menu.Item
-                    tabIndex={0}
-                    leftSection={
-                        <div className="archived-menu-icon">
-                            <ViewIcon />
-                        </div>
-                    }
-                    onClick={handleView}
-                >
-                    View
-                </Menu.Item>
                 <Menu.Item
                     leftSection={
                         <div className="archived-menu-icon">
@@ -55,6 +44,6 @@ export const ArchivedHouseholdTasklistsMenu = ({ tasklistId }: Props) => {
                 </Menu.Item>
                 <Menu.Item color="red.9" leftSection={<DeleteRounded />}>Delete</Menu.Item>
             </Menu.Dropdown>
-        </Menu>
+        </Menu >
     )
 }

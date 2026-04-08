@@ -11,7 +11,7 @@ export const KittyNotification = ({ title, message, icon, color }: Props) => {
     notifications.show({
         title,
         message: <span style={{ color: "var(--mantine-color-dark-7)", wordBreak: "break-word", lineHeight: `1.2 !important` }}>{message}</span>,
-        autoClose: false,
+        autoClose: 5000,
         position: "bottom-right",
         color,
         icon: <img src={icon} alt="Kitty Icon" style={{ width: `60px !important`, height: "auto" }} />,

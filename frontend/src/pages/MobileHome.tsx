@@ -15,12 +15,11 @@ import { HomepageEventsCollapseCard } from "@/components/HomepageCollapseCard/Ho
 import { useHousehold } from "@/hooks/useHousehold";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HomepageHabitsCollapseCard } from "@/components/HomepageCollapseCard/HomepageHabitsCollapseCard";
-import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
+import { useGetCurrentUserSettingsQuery } from "@/store/userSettingsSlice";
 
 export const MobileHome = () => {
     const mobileHomeFamilyTitle = <MobileHomeFamilyTitle />
     const { data: user, isLoading: isAuthLoading } = useAuthenticateQuery();
-    const { data: userSettings } = useGetUserSettingsQuery(user?.id ?? skipToken);
     const { data: settings, isLoading: isSettingsLoading } = useGetFeaturedListSettingsQuery();
     const { isLoading: isHouseholdLoading } = useHousehold();
     const { isLoading: isTasklistLoading } = useGetTasklistQuery(
@@ -29,16 +28,30 @@ export const MobileHome = () => {
     const { isLoading: isTaskStatsLoading } = useGetUserTaskStatsQuery(
         user?.id ?? skipToken
     );
+    const { data: userSettings, isLoading: isUserSettingsLoading } = useGetCurrentUserSettingsQuery(user?.id ?? skipToken);
 
     const [updateTimezone] = useUpdateTimezoneMutation();
     const [timezone, setTimezone] = useState(user?.timezone || null);
 
-    const isStatsReady = !isAuthLoading && !isTaskStatsLoading;
+    const [minDelayPassed, setMinDelayPassed] = useState(false);
 
-    const isCardsReady = !isAuthLoading
+    useEffect(() => {
+        const timer = setTimeout(() => setMinDelayPassed(true), 1000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const isCardsReady = minDelayPassed
+        && !isAuthLoading
         && !isSettingsLoading
         && !isHouseholdLoading
-        && !isTasklistLoading;
+        && !isTasklistLoading
+        && !isUserSettingsLoading;
+
+    const isStatsReady = minDelayPassed && !isAuthLoading && !isTaskStatsLoading;
+
+    // Gate entire card layout on userSettings resolving so habits card
+    // doesn't pop in after everything else has already rendered
+    const isLayoutReady = !isUserSettingsLoading;
 
     const householdId = user?.householdId ?? (Number(localStorage.getItem("toby_household_id")) || undefined);
 
@@ -46,6 +59,7 @@ export const MobileHome = () => {
         const data = await updateTimezone(timezone);
         console.log('data:', data);
     }
+
     useEffect(() => {
         if (user?.householdId) {
             localStorage.setItem("toby_household_id", String(user.householdId));
@@ -55,15 +69,19 @@ export const MobileHome = () => {
     return (
         <MobileLayout titleComponent={mobileHomeFamilyTitle}>
             <MobileHomeNavGrid />
-            <HomepageEventsCollapseCard isReady={isCardsReady} />
-            <TaskStatsSection isReady={isStatsReady} />
-            <HomepageNoticeBoardCollapseCard householdId={householdId} isReady={isCardsReady} />
-            <HomepageListsCollapseCard isReady={isCardsReady} />
-            {userSettings?.settings.habitsOnHomepage && <HomepageHabitsCollapseCard />}
-            <HomepageCheckinsCollapseCard isReady={isCardsReady} />
-            <HomepageActivityCollapseCard householdId={householdId} isReady={isCardsReady} />
-
-
+            {isLayoutReady && (
+                <>
+                    <HomepageEventsCollapseCard isReady={isCardsReady} />
+                    <TaskStatsSection isReady={isStatsReady} />
+                    <HomepageNoticeBoardCollapseCard householdId={householdId} isReady={isCardsReady} />
+                    <HomepageListsCollapseCard isReady={isCardsReady} />
+                    {userSettings?.settings.habitsOnHomepage && (
+                        <HomepageHabitsCollapseCard isReady={isCardsReady} />
+                    )}
+                    <HomepageCheckinsCollapseCard isReady={isCardsReady} />
+                    <HomepageActivityCollapseCard householdId={householdId} isReady={isCardsReady} />
+                </>
+            )}
         </MobileLayout>
     )
 }

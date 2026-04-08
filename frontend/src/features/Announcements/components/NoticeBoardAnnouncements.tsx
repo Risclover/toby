@@ -17,20 +17,45 @@ export const NoticeBoardAnnouncements = () => {
     const windowed = getVisibleAnnouncements(data.items, unseenSnapshot);
     const displayed = importanceFilter ? windowed.filter(a => a.isImportant) : windowed;
     const displayedCount = displayed.length;
+    const hasAnyAnnouncements = windowed.length > 0;
+    const showNoAnnouncements = !hasAnyAnnouncements;
+    const showNoImportantAnnouncements = hasAnyAnnouncements && importanceFilter && displayedCount === 0;
 
     return (
         <div className="notice-board-announcements-container">
             <div className="notice-board-announcements-filter">
-                {displayed && <span className="announcements-count">
+                <span className="announcements-count">
                     Showing latest ({displayedCount} item{displayedCount !== 1 ? "s" : ""})
-                </span>}
+                </span>
                 <NoticeBoardAnnouncementsFilter setImportanceFilter={setImportanceFilter} />
             </div>
+
             <div className="notice-board-announcements">
-                <ul>{displayed?.map(announcement => <NoticeBoardAnnouncement announcement={announcement} />)}</ul>
-                {displayedCount === 0 && <div className="empty-announcements">No matching announcements.</div>}
+                {displayedCount > 0 && (
+                    <ul>
+                        {displayed.map(announcement => (
+                            <NoticeBoardAnnouncement
+                                key={announcement.id}
+                                announcement={announcement}
+                            />
+                        ))}
+                    </ul>
+                )}
+
+                {showNoAnnouncements && (
+                    <div className="empty-announcements">
+                        There's nothing here. You should announce something!
+                    </div>
+                )}
+
+                {showNoImportantAnnouncements && (
+                    <div className="empty-announcements">
+                        Looks like your household has nothing important to say right now. Check back later!
+                    </div>
+                )}
             </div>
+
             <CreateAnnouncement />
         </div>
-    )
-}
+    );
+};

@@ -95,7 +95,7 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
                             radius="md"
                             withArrow
                             transitionProps={{ duration: 200 }}
-                            label="Feature a list by clicking the star icon on any tasklist card, or select one in the Featured List Settings."
+                            label="Feature a list by using the star icons on the Tasklists page, or click the gear icon to open the Featured List Settings and select one there."
                         >
                             <Button p={0} h="auto" radius="xl" color="transparent" variant="transparent" className="featured-info-icon">
                                 <HelpOutlineRoundedIcon />

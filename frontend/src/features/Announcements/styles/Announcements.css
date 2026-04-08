@@ -363,6 +363,7 @@
 
 .empty-announcements {
     padding: 0.5rem 1rem;
+    line-height: 1.3;
     text-align: center;
     color: var(--mantine-color-gray-7);
     font-size: var(--text-sm);
