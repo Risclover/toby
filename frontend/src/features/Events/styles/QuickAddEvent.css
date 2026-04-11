@@ -70,7 +70,7 @@
     border-left: 2px solid rgb(5, 5, 73);
     padding-left: 8px;
     /* compensate for the border */
-    background-color: var(--mantine-color-gray-0);
+    background-color: #f7f8fc;
     border-radius: .25rem;
     /* subtle bg change */
 }
@@ -88,7 +88,7 @@
 }
 
 .todays-events:has(.no-events) {
-    padding: .25rem .5rem;
+    padding: .75rem;
 }
 
 .event-menu-container {

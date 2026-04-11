@@ -31,7 +31,7 @@ export const ArchivedHouseholdTasklistsMenu = ({ tasklistId }: Props) => {
                     <MoreVertRoundedIcon />
                 </ActionIcon>
             </Menu.Target >
-            <Menu.Dropdown>
+            <Menu.Dropdown onClick={(e) => e.stopPropagation()}>
                 <Menu.Item
                     leftSection={
                         <div className="archived-menu-icon">
@@ -42,7 +42,7 @@ export const ArchivedHouseholdTasklistsMenu = ({ tasklistId }: Props) => {
                 >
                     Restore
                 </Menu.Item>
-                <Menu.Item color="red.9" leftSection={<DeleteRounded />}>Delete</Menu.Item>
+                <Menu.Item color="red.9" leftSection={<DeleteRounded />} >Delete</Menu.Item>
             </Menu.Dropdown>
         </Menu >
     )

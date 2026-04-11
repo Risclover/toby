@@ -127,7 +127,7 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
 
 
                         {/* 2. TASK LIST */}
-                        <ul className="homepage-lists-tasklist">
+                        {!isVictoryState && !isEmptyState && <ul className="homepage-lists-tasklist">
                             {tasklist && displayedTasks?.map(task => (
                                 <FeaturedTasklistItem
                                     key={task.id}
@@ -137,7 +137,7 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
                                     settings={userSettings?.featuredTasklist}
                                 />
                             ))}
-                        </ul>
+                        </ul>}
 
 
                         {/* 3. MUTUALLY EXCLUSIVE EMPTY STATES */}

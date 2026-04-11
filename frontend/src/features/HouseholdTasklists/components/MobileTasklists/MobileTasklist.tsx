@@ -102,6 +102,7 @@ export const MobileTasklist = () => {
                                     variant="outline"
                                     className="tasklist-settings-footer-btn"
                                     onClick={handleArchiveList}
+                                    fw={500}
                                 >
                                     Archive list
                                 </Button>
@@ -111,6 +112,7 @@ export const MobileTasklist = () => {
                                     className="tasklist-settings-footer-btn"
                                     loaderProps={{ children: 'Saving...' }}
                                     onClick={() => setShowDeleteConfirmation(true)}
+                                    fw={500}
                                 >
                                     Delete list
                                 </Button>
