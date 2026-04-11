@@ -99,14 +99,17 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                         clearable
                         color="var(--tasklist-color)"
                         presets={[
-                            { value: dayjs().format('YYYY-MM-DD HH:mm:ss'), label: 'Today' },
-                            { value: dayjs().add(1, 'day').format('YYYY-MM-DD HH:mm:ss'), label: 'Tomorrow' },
-                            { value: dayjs().add(1, "week").format("YYYY-MM-DD HH:mm:ss"), label: "Next week" },
-                            { value: dayjs().add(1, 'month').format('YYYY-MM-DD HH:mm:ss'), label: 'Next month' },
+                            { value: dayjs().format('YYYY-MM-DD'), label: 'Today' },
+                            { value: dayjs().add(1, 'day').format('YYYY-MM-DD'), label: 'Tomorrow' },
+                            { value: dayjs().add(1, 'week').format('YYYY-MM-DD'), label: 'Next week' },
+                            { value: dayjs().add(1, 'month').format('YYYY-MM-DD'), label: 'Next month' },
                         ]}
-                        valueFormatter={({ date, format }: any) =>
-                            date ? `Due ${dayjs(date).format(format)}` : ""
-                        }
+                        valueFormatter={({ date, format }: any) => {
+                            if (!date) return "";
+                            const parsed = dayjs(date);
+                            if (!parsed.isValid()) return "";
+                            return `Due ${parsed.format(format ?? "MMM D, YYYY")}`;
+                        }}
                         firstDayOfWeek={0}
                         className="tasklist-date-picker"
                         {...form.getInputProps("dueDate")}

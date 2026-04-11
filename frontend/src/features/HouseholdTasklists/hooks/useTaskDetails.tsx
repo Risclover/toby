@@ -59,7 +59,7 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
 
     const initialValues: TaskDetailsFormValues = {
         title: task?.title.trim(),
-        notes: task?.notes?.trim(),
+        notes: task?.notes?.trim() ?? "",
         assignedToId: String(task?.assignedToId) ? Number(task?.assignedToId) : null,
         dueDate: task?.dueDate instanceof Date ? dayjs(task?.dueDate).format("YYYY-MM-DD") : task?.dueDate,
     }
