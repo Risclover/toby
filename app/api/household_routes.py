@@ -101,6 +101,7 @@ def create_household_tasklist(household_id):
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json() or {}
+    color = data.get("color" or "")
     title = (data.get("title") or "").strip()
     if not title:
         return jsonify({"error": "Title is required"}), 400
@@ -121,7 +122,7 @@ def create_household_tasklist(household_id):
         if bad:
             return jsonify({"error": "memberIds must belong to the household", "invalid": bad}), 400
 
-    tasklist = Tasklist(title=title, household_id=household_id, all_members=all_members, creator_id=current_user.id)
+    tasklist = Tasklist(title=title, color=color, household_id=household_id, all_members=all_members, creator_id=current_user.id)
     db.session.add(tasklist)
     db.session.flush()
 

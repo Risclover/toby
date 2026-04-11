@@ -63,6 +63,7 @@ type CreateTasklistBase = {
 
 type CreateForUser = CreateTasklistBase & {
     creatorId: number;
+    color: string
     householdId?: never;
     allMembers?: never;
     memberIds?: never;
@@ -70,6 +71,7 @@ type CreateForUser = CreateTasklistBase & {
 
 type CreateForHousehold = CreateTasklistBase & {
     householdId: number;
+    color: string;
     allMembers: true;          // literal true
     memberIds?: never;         // must be absent
     userId?: never;
@@ -77,6 +79,7 @@ type CreateForHousehold = CreateTasklistBase & {
 
 type CreateForHouseholdSubset = CreateTasklistBase & {
     householdId: number;
+    color: string;
     allMembers: false;         // literal false
     memberIds: number[];       // required now
     userId?: never;
@@ -245,21 +248,22 @@ export const taskSlice = apiSlice.injectEndpoints({
             query: (arg) => {
                 // user-owned
                 if ("creatorId" in arg) {
-                    const { title, creatorId } = arg;
+                    const { title, color, creatorId } = arg;
                     return {
                         url: "tasklists",
                         method: "POST",
-                        body: { title, creator_id: creatorId },
+                        body: { title, color, creator_id: creatorId },
                     };
                 }
 
                 // household-owned
-                const { title, householdId, allMembers } = arg;
+                const { title, color, householdId, allMembers } = arg;
                 return {
                     url: `households/${householdId}/tasklists`,
                     method: "POST",
                     body: {
                         title,
+                        color,
                         allMembers,
                         ...(allMembers === false ? { memberIds: arg.memberIds } : {}),
                     },

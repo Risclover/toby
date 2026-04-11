@@ -1,15 +1,15 @@
 // CreateTasklist.tsx
-import { Modal, Stack, TextInput, Button } from "@mantine/core";
+import { Modal, Stack, TextInput, Button, ColorInput, Input } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { useCreateHouseholdTasklistMutation } from "@/store/taskSlice";
-import { useState, type FormEvent } from "react";
-import { useAuthenticateQuery } from "@/store/authSlice";
-import { useGetHouseholdQuery } from "@/store/householdSlice";
-import { useMemberSelection } from "@/hooks/useMemberSelection";
-import { HouseholdMemberSelection } from "@/components/HouseholdMemberSelection";
-import { useNavigate } from "react-router-dom";
 import { useCreateTasklistModal } from "@/contexts";
 import { useHousehold } from "@/hooks/useHousehold";
 import { useModalFocus } from "@/hooks/useModalFocus";
+import { useMemberSelection } from "@/hooks/useMemberSelection";
+import { HouseholdMemberSelection } from "@/components/HouseholdMemberSelection";
+import { useNavigate } from "react-router-dom";
+import { FormColorInput } from "@/components/FormColorInput";
+import { isTooLight } from "@/utils";
 
 type Props = { householdId: number };
 
@@ -17,9 +17,17 @@ export const CreateTasklist = ({ householdId }: Props) => {
     const navigate = useNavigate();
     const { isOpen, closeModal } = useCreateTasklistModal();
     const { ref: nameRef, transitionProps } = useModalFocus();
-    const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
-    const [title, setTitle] = useState("");
+
+    const form = useForm({
+        initialValues: { title: "", color: "#15aabf" },
+        validate: {
+            title: (v) => v.trim().length === 0 ? "Title is required" : null,
+            color: (v) => isTooLight(v),
+        },
+    });
+
+    const hasColorError = isTooLight(form.values.color);
 
     const {
         allMembers,
@@ -28,63 +36,67 @@ export const CreateTasklist = ({ householdId }: Props) => {
         toggleAll,
         toggleOne,
         selected,
+        reset: resetMembers,
     } = useMemberSelection(household?.members);
 
     const [createTasklist] = useCreateHouseholdTasklistMutation();
 
-    const canSubmit =
-        title.trim().length > 0 && (allMembers || memberIds.length > 0);
+    const canSubmit = form.isValid() && (allMembers || memberIds.length > 0);
 
-    const handleListCreation = async (e: FormEvent) => {
-        e.preventDefault();
-        if (!canSubmit) return;
+    const handleClose = () => {
+        form.reset();
+        resetMembers();
+        closeModal();
+    };
 
+    const handleSubmit = form.onSubmit(async ({ title, color }) => {
         const newList = await createTasklist(
             allMembers
-                ? { title, householdId, allMembers: true, }
-                : { title, householdId, allMembers: false, memberIds }
+                ? { title, color, householdId, allMembers: true }
+                : { title, color, householdId, allMembers: false, memberIds }
         ).unwrap();
 
-        const newId = newList.id;
-
-        setTitle("");
-        toggleAll(true);
-        closeModal();
-        navigate(`/tasklists/${newId}`);
-    };
+        handleClose();
+        navigate(`/tasklists/${newList.id}`);
+    });
 
     return (
         <Modal
             transitionProps={transitionProps}
             radius="md"
-            opened={isOpen}          // <- key line
-            onClose={closeModal}  // <- key line
+            opened={isOpen}
+            onClose={handleClose}
             title="Create Tasklist"
             centered
         >
-            <Stack component="form" onSubmit={handleListCreation}>
-                <TextInput
-                    ref={nameRef}
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    label="Title"
-                    placeholder='e.g., "Weekend Grocery Run"'
-                    required
-                    maxLength={64}
-                />
-                <HouseholdMemberSelection
-                    title="Who is this list for?"
-                    members={household?.members}
-                    allMembers={allMembers}
-                    someSelected={someSelected}
-                    selected={selected}
-                    onToggleAll={toggleAll}
-                    onToggleOne={toggleOne}
-                />
-                <Button type="submit" disabled={!canSubmit} variant="filled" color="cyan">
-                    Submit
-                </Button>
-            </Stack>
+            <form onSubmit={handleSubmit}>
+                <Stack>
+                    <TextInput
+                        ref={nameRef}
+                        label="Title"
+                        placeholder='e.g., "Weekend Grocery Run"'
+                        maxLength={64}
+                        required
+                        {...form.getInputProps("title")}
+                    />
+                    <div>
+                        <FormColorInput form={form} label="Color" required={true} />
+                        {hasColorError && <Input.Error>This color is too light. Please choose something darker.</Input.Error>}
+                    </div>
+                    <HouseholdMemberSelection
+                        title="Who is this list for?"
+                        members={household?.members}
+                        allMembers={allMembers}
+                        someSelected={someSelected}
+                        selected={selected}
+                        onToggleAll={toggleAll}
+                        onToggleOne={toggleOne}
+                    />
+                    <Button type="submit" disabled={!canSubmit} variant="filled" color="cyan">
+                        Submit
+                    </Button>
+                </Stack>
+            </form>
         </Modal>
     );
 };

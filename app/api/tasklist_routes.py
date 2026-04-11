@@ -88,6 +88,7 @@ def create_tasklist():
 
     tasklist = Tasklist(
         title=data["title"],
+        color=data["color"],
         creator_id=data.get("creator_id", current_user.id),
         household_id=data.get("household_id")
     )
