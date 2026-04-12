@@ -42,8 +42,9 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
         setShowTaskDeletion,
         getFooterText,
         isSubmitting,
-        handleTaskDeletion
-    } = useTaskDetails({ taskId, listId, householdId: Number(householdId) });
+        handleTaskDeletion,
+        showAssignedTo
+    } = useTaskDetails({ taskId, listId, householdId: Number(householdId), opened });
 
     useEffect(() => {
         console.log('form:', form.getValues());
@@ -114,32 +115,33 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                         className="tasklist-date-picker"
                         {...form.getInputProps("dueDate")}
                     />
-                    <p className="task-details-label">Assigned to</p>
-                    <Select
-                        data={data}
-                        clearable
-                        placeholder="Assign to member"
-                        value={form.values.assignedToId == null ? null : String(form.values.assignedToId)}
-                        onChange={(val) => form.setFieldValue("assignedToId", val ? Number(val) : null)}
-                        renderOption={({ option }: any) => (
-                            <Group gap="sm" wrap="nowrap" align="center">
-                                <Avatar src={option.profileImg} radius="xl" size="1.25rem" />
-                                <span>{option.label}</span>
-                            </Group>
-                        )}
-                        styles={{
-                            section: { color: "var(--tasklist-color)" }
-                        }}
-                        leftSection={
-                            selected ? (
-                                <div style={{ display: "flex", alignItems: "center" }}>
-                                    <Avatar src={selected.profileImg} radius="xl" size="1.25rem" />
-                                </div>
-                            ) : (
-                                <PersonAddAltRoundedIcon />
-                            )
-                        }
-                    />
+                    {showAssignedTo && <><p className="task-details-label">Assigned to</p>
+                        <Select
+                            data={data}
+                            clearable
+                            placeholder="Assign to member"
+                            value={form.values.assignedToId == null ? null : String(form.values.assignedToId)}
+                            onChange={(val) => form.setFieldValue("assignedToId", val ? Number(val) : null)}
+                            renderOption={({ option }: any) => (
+                                <Group gap="sm" wrap="nowrap" align="center">
+                                    <Avatar src={option.profileImg} radius="xl" size="1.25rem" />
+                                    <span>{option.label}</span>
+                                </Group>
+                            )}
+                            styles={{
+                                section: { color: "var(--tasklist-color)" }
+                            }}
+                            leftSection={
+                                selected ? (
+                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                        <Avatar src={selected.profileImg} radius="xl" size="1.25rem" />
+                                    </div>
+                                ) : (
+                                    <PersonAddAltRoundedIcon />
+                                )
+                            }
+                        />
+                    </>}
                     <p className="task-details-label">Notes</p>
 
                     <Textarea

@@ -4,27 +4,30 @@ import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import { useAuthenticateQuery } from "@/store/authSlice";
 import type { Task, TasklistType } from "@/store/taskSlice";
 import { HouseholdTasklistPageCompletedTask } from "./HouseholdTasklistPageCompletedTask";
+import { HomepageCollapseCardTitle } from "@/components/HomepageCollapseCard/HomepageCollapseCardTitle";
+import { HomepageCollapseCard } from "@/components/HomepageCollapseCard/HomepageCollapseCard";
 
 type Props = {
     tasklist: TasklistType | undefined
     completed: Task[]
-    showCompleted: boolean | undefined;
-    setShowCompleted: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+    showCompleted: boolean;
+    setShowCompleted: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const HouseholdTasklistPageCompleted = ({ tasklist, completed, showCompleted, setShowCompleted }: Props) => {
     const { data: user } = useAuthenticateQuery();
 
+    if (!tasklist) return null;
     return (
-        <div className='household-tasklist-page-completed panel completed-panel'>
+        <HomepageCollapseCard title="completed" color={tasklist.color} cardKey={`tasklist-completed-${tasklist.id}`}>
             <div
-                className="household-tasklist-page-completed-title panel-header"
+                className="homepage-collapse-card-title"
                 onClick={(e) => { e.stopPropagation(); setShowCompleted((prev) => !prev) }}
                 onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") setShowCompleted(prev => !prev) }}
                 title="Click to show"
                 tabIndex={0}
             >
-                <h2>{showCompleted ? "Hide completed" : `Completed (${completed.length})`}</h2>
+                {showCompleted ? "Hide completed" : `Completed (${completed.length})`}
                 {showCompleted ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
             </div>
             {showCompleted && <div className="panel-body">
@@ -39,6 +42,6 @@ export const HouseholdTasklistPageCompleted = ({ tasklist, completed, showComple
                     />
                 ))}
             </div>}
-        </div>
+        </HomepageCollapseCard>
     )
 }

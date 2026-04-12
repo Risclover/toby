@@ -195,6 +195,44 @@
     /* padding: 1rem; */
 }
 
+.skeleton-progress-left {
+    flex-shrink: 0;
+}
+
+.skeleton-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: .5rem;
+    margin-bottom: .75rem;
+}
+
+.skeleton-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.skeleton-header-top-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.skeleton-tasklist {
+    display: flex;
+    flex-direction: column;
+    gap: .825rem;
+}
+
+.skeleton-task {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 @media(max-width: 425px) {
     .mobile-tasklist-content {
         padding: 0;

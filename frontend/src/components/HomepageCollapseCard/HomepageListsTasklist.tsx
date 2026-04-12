@@ -1,6 +1,6 @@
 import { useAddTaskMutation, useAuthenticateQuery, useCompleteTaskMutation, useGetTasklistQuery, type Task } from "@/store"
 import { useGetFeaturedListSettingsQuery, type FeaturedTasklistSettings } from "@/store/featuredListSettingSlice";
-import { ActionIcon, Button, Checkbox, Popover, Progress, ScrollArea, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Button, Checkbox, Popover, Progress, ScrollArea, TextInput, Tooltip, Transition } from "@mantine/core";
 import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent } from "react";
 import InfoOutlineRoundedIcon from '@mui/icons-material/InfoOutlineRounded';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
@@ -43,6 +43,8 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
     const { data: tasklist, isLoading: isTasklistLoading } = useGetTasklistQuery(
         featuredTasklistId ?? skipToken  // cleaner than the ternary — explicitly skips
     );
+    const incompleteCount = (tasklist?.tasks ?? []).filter(t => t.status !== "completed").length;
+    const totalCount = tasklist?.tasks?.length ?? 0;
 
     const displayedTasks = useFeaturedTasks(
         tasklist?.tasks,
@@ -64,7 +66,7 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
     const showQuickAdd = userSettings?.featuredTasklist?.showQuickAdd ?? false;
 
 
-    useTasklistTheme(tasklist?.color)
+    useTasklistTheme(featuredTasklistId ? tasklist?.color : undefined)
 
 
     const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +107,7 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
                     <>
                         <div className="featured-tasklist-title">
                             <div className="featured-tasklist-title-top">
-                                <span>{tasklist?.title}</span>
+                                <span>{tasklist?.title}</span> <span className="featured-tasklist-title-count">({incompleteCount} / {totalCount})</span>
                                 <Tooltip label="Open tasklist" withArrow openDelay={500}>
                                     <ActionIcon
                                         // onClick={() => setShowTasklistSettings(true)}
@@ -239,47 +241,56 @@ const FeaturedTasklistItem = ({ task, tasklistId, hideCompleted, settings }: Tas
     };
 
     return (
-        <li
-            className={`${isChecked ? "featured-completed-task" : ""}`}
-            onClick={onRowClick}
-            style={{ cursor: "pointer" }}
+        <Transition
+            mounted={hideCompleted ? !isChecked : true}
+            transition="fade-down"
+            duration={300}
+            timingFunction="linear"
         >
-            <div className="featured-tasklist-task-left">
-                {/* 
+            {styles => (
+                <li
+                    className={`${isChecked ? "featured-completed-task" : ""}`}
+                    onClick={onRowClick}
+                    style={{ ...styles, cursor: "pointer" }}
+                >
+                    <div className="featured-tasklist-task-left">
+                        {/* 
                   WRAPPER DIV:
                   1. onClick stopPropagation: Prevents clicks on the checkbox/label from bubbling to the LI.
                      This means clicking the checkbox triggers ONLY onCheckboxChange, not onRowClick.
                   2. display: flex: Ensures it doesn't take up extra width (fixing the "dead strip" issue).
                 */}
-                <div
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ display: "flex", alignItems: "center" }}
-                >
-                    <Checkbox
-                        size="16px"
-                        radius="xl"
-                        color="var(--tasklist-color)"
-                        label={task.title}
-                        checked={isChecked}
-                        onChange={onCheckboxChange}
-                        style={{ textDecoration: isChecked ? "line-through" : "none", color: isChecked ? "gray" : "inherit" }}
-                        styles={{
-                            label: {
-                                fontSize: "14px"
-                            }
-                        }}
-                    />
-                </div>
+                        <div
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ display: "flex", alignItems: "center" }}
+                        >
+                            <Checkbox
+                                size="16px"
+                                radius="xl"
+                                color="var(--tasklist-color)"
+                                label={task.title}
+                                checked={isChecked}
+                                onChange={onCheckboxChange}
+                                style={{ textDecoration: isChecked ? "line-through" : "none", color: isChecked ? "gray" : "inherit" }}
+                                styles={{
+                                    label: {
+                                        fontSize: "14px"
+                                    }
+                                }}
+                            />
+                        </div>
 
-                {showDetails && !isChecked ? (
-                    <div className="featured-task-details" onClick={(e) => e.stopPropagation()}>
-                        <TaskExtra task={task} householdId={user?.householdId} listId={tasklistId} />
+                        {showDetails && !isChecked ? (
+                            <div className="featured-task-details" onClick={(e) => e.stopPropagation()}>
+                                <TaskExtra task={task} householdId={user?.householdId} listId={tasklistId} />
+                            </div>
+                        ) : null}
                     </div>
-                ) : null}
-            </div>
-            <div className="featured-tasklist-task-right">
-                {task.isImportant ? <StarIcon size="16px" color="var(--tasklist-color)" /> : <StarIconOutline size="16px" color="var(--tasklist-color)" />}
-            </div>
-        </li>
+                    <div className="featured-tasklist-task-right">
+                        {task.isImportant ? <StarIcon size="16px" color="var(--tasklist-color)" /> : <StarIconOutline size="16px" color="var(--tasklist-color)" />}
+                    </div>
+                </li>
+            )}
+        </Transition>
     );
 };

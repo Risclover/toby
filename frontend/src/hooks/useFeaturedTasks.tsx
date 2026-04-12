@@ -123,7 +123,9 @@ export const useFeaturedTasks = (
 
         // 3. LIMITING
         if (maxItems > 0) {
-            result = result.slice(0, maxItems);
+            const incomplete = result.filter(t => t.status !== "completed");
+            const completed = result.filter(t => t.status === "completed");
+            result = [...incomplete.slice(0, maxItems), ...completed];
         }
 
         return result;

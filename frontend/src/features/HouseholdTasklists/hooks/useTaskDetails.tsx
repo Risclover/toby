@@ -18,6 +18,7 @@ type Props = {
     taskId: number;
     listId: number;
     householdId: number;
+    opened: boolean;
 }
 
 export type TaskDetailsFormValues = {
@@ -27,7 +28,7 @@ export type TaskDetailsFormValues = {
     notes: string | undefined;
 }
 
-export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
+export const useTaskDetails = ({ taskId, listId, householdId, opened }: Props) => {
     // Mutations
     const [updateTask] = useUpdateTaskMutation();
 
@@ -60,7 +61,7 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
     const initialValues: TaskDetailsFormValues = {
         title: task?.title.trim(),
         notes: task?.notes?.trim() ?? "",
-        assignedToId: String(task?.assignedToId) ? Number(task?.assignedToId) : null,
+        assignedToId: task?.assignedToId ?? null,
         dueDate: task?.dueDate instanceof Date ? dayjs(task?.dueDate).format("YYYY-MM-DD") : task?.dueDate,
     }
 
@@ -74,14 +75,11 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
     const initializedRef = useRef<number | null>(null);
 
     useEffect(() => {
-        if (!task) return;
-
-        if (initializedRef.current !== task.id) {
-            form.setValues(initialValues);
-            form.resetDirty();
-            initializedRef.current = task.id;
-        }
-    }, [task?.id])
+        if (!task || !opened) return;
+        form.setValues(initialValues);
+        form.resetDirty(initialValues);
+        initializedRef.current = task.id;
+    }, [task?.id, opened])
 
     // Derived data
     const membersList = useMemo(() =>
@@ -94,7 +92,7 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
                 firstName: `${m.firstName}`,
                 profileImg: `${m.profileImg}`
             }))
-        ?? [], [household]);
+        ?? [], [household, tasklist]);
 
     const data = membersList.map((m: Member) => ({
         value: String(m.id),
@@ -103,7 +101,7 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
     }));
 
     const selected = data.find((d: { value: string | null; }) => d.value === String(form.values.assignedToId)) || null;
-
+    const showAssignedTo = membersList.length > 1;
     let taskDate = new Date(task?.createdAt ?? new Date());
     const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' } as const;
 
@@ -154,8 +152,18 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
         try {
             await Promise.all([
                 updateTask(payload).unwrap(),
-                new Promise(resolve => setTimeout(resolve, 400)) // 800ms minimum
+                new Promise(resolve => setTimeout(resolve, 400))
             ]);
+
+            const freshValues: TaskDetailsFormValues = {
+                title: payload.title,
+                dueDate: payload.dueDate,
+                assignedToId: payload.assignedToId,
+                notes: payload.notes,
+            };
+
+            form.setValues(freshValues);
+            form.resetDirty(freshValues);
             setIsSubmitting(false);
         } catch (error) {
             console.error("Failed to update task:", error);
@@ -217,7 +225,8 @@ export const useTaskDetails = ({ taskId, listId, householdId }: Props) => {
         handleConfirmTaskDeletion,
         getFooterText,
         isSubmitting,
-        handleTaskDeletion
+        handleTaskDeletion,
+        showAssignedTo
     }
 
 }

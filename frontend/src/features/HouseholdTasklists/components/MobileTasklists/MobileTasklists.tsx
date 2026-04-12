@@ -4,7 +4,7 @@ import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdTasklistsQuery } from "@/store/householdSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { HouseholdTasklist } from "../HouseholdTasklists/HouseholdTasklist";
-import { ActionIcon, Button, Center, Group, Loader, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Loader, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import { CreateTasklist } from "../HouseholdTasklists/CreateTasklist"
 import { useDisclosure } from "@mantine/hooks";
 import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
@@ -38,6 +38,7 @@ export const MobileTasklists = () => {
         data: allLists = [],
         isFetching,
         isError,
+        isLoading,
         isSuccess
     } = useGetHouseholdTasklistsQuery(householdId);
 
@@ -52,14 +53,6 @@ export const MobileTasklists = () => {
 
     // 3. THE FIX: Guard the render early. 
     // Do not define titleComponent or anything else before this line.
-    if (showLoader || (isWaiting && !isSuccess)) {
-        return (
-            <Center style={{ height: '100vh', width: '100vw', position: 'fixed', inset: 0, zIndex: 9999, background: 'white' }}>
-                <Loader color="cyan" />
-            </Center>
-        );
-    }
-    console.log('listsss:', allLists)
 
     // 4. If we get here, we are GUARANTEED to have data or an error
     if (isError) return <Text>Error loading tasks.</Text>;
@@ -103,12 +96,57 @@ export const MobileTasklists = () => {
                 }
 
                 <div className="household-tasklists-grid">
-                    {lists.map(list => (
+                    {showLoader || (isWaiting && !isSuccess) ? Array.from({ length: 12 }).map((_, i) => <TasklistSkeleton />) : lists.map(list => (
                         <HouseholdTasklist key={list.id} list={list} />
                     ))}
                 </div>
             </div>
             {opened && <CreateTasklist householdId={householdId} open={open} opened={opened} close={close} />}
         </MobileLayout>
+    )
+}
+
+
+const TasklistSkeleton = () => {
+    return (
+        <div className="tasklist-card">
+            <div className="mobile-tasklist-card-header">
+                <div className="skeleton-header-top">
+                    <Skeleton h={16} w={200} />
+                    <div className="skeleton-header-top-right">
+                        <Skeleton h={20} w={20} />
+                        <Skeleton h={20} w={20} />
+                    </div>
+                </div>
+                <div className="skeleton-progress">
+                    <Skeleton h={8} w="100%" />
+                    <Skeleton h={8} w={50} />
+                </div>
+            </div>
+            <div className="mobile-tasklist-card-body">
+                <div className="skeleton-tasklist">
+                    <div className="skeleton-task">
+                        <Skeleton circle h={16} w={16} />
+                        <Skeleton h={10} w={200} />
+                    </div>
+                    <div className="skeleton-task">
+                        <Skeleton circle h={16} w={16} />
+                        <Skeleton h={10} w={200} />
+                    </div>
+                    <div className="skeleton-task">
+                        <Skeleton circle h={16} w={16} />
+                        <Skeleton h={10} w={200} />
+                    </div>
+                </div>
+            </div>
+            <div className="mobile-tasklist-card-footer">
+                <div className="skeleton-footer-left">
+                    <Skeleton h={20} w={75} />
+                </div>
+                <div className="skeleton-footer-right">
+                    <Skeleton h={16} w={100} />
+                </div>
+            </div>
+        </div>
     )
 }
