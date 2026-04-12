@@ -5,19 +5,21 @@ import DeleteRounded from '@mui/icons-material/Delete';
 
 import { ViewIcon, UnarchivedIcon, MenuTrashIcon } from "@/assets";
 import { useTasklistSettings, useUndoArchive } from "../../hooks";
+import { DeleteConfirmation } from "..";
+import { useState } from "react";
+import type { TasklistType } from "@/store";
 
 type Props = {
     tasklistId: number;
+    list: TasklistType;
 }
 
-export const ArchivedHouseholdTasklistsMenu = ({ tasklistId }: Props) => {
+export const ArchivedHouseholdTasklistsMenu = ({ list, tasklistId }: Props) => {
     const navigate = useNavigate();
     const { handleUndoArchive } = useUndoArchive({ tasklistId });
     const { handleDeleteList } = useTasklistSettings({ tasklistId });
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-    const handleView = () => {
-        navigate(`/tasklists/${tasklistId}`)
-    }
 
     return (
         <Menu
@@ -42,8 +44,9 @@ export const ArchivedHouseholdTasklistsMenu = ({ tasklistId }: Props) => {
                 >
                     Restore
                 </Menu.Item>
-                <Menu.Item color="red.9" leftSection={<DeleteRounded />} >Delete</Menu.Item>
+                <Menu.Item color="red.9" leftSection={<DeleteRounded />} onClick={() => setShowDeleteConfirmation(true)} >Delete</Menu.Item>
             </Menu.Dropdown>
+            <DeleteConfirmation modalTitle="Delete tasklist" itemType="tasklist" itemName={list.title} opened={showDeleteConfirmation} setShowDeleteConfirmation={() => setShowDeleteConfirmation(false)} handleDeleteItem={handleDeleteList} />
         </Menu >
     )
 }

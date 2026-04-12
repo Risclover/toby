@@ -15,7 +15,7 @@ export const ArchivedHouseholdTasklistsPage = () => {
                     <ActionIcon onClick={() => navigate(-1)} variant="subtle" color="white">
                         <ChevronLeftRoundedIcon />
                     </ActionIcon></Tooltip>
-                <h1>Archived Lists</h1>
+                <h1>Archived Tasklists</h1>
             </div>
         </div>
     );

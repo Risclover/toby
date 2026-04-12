@@ -10,6 +10,7 @@ import { useDisclosure } from "@mantine/hooks"
 import { MassDeleteConfirmation } from "./MassDeleteConfirmation"
 import { KittyNotification } from "../KittyNotification"
 import { KittyIcons } from "@/assets"
+import { rgbToHex } from "@mui/material/styles"
 
 type TaskItem = {
     id: number
@@ -109,8 +110,8 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                 selected.map(t => deleteTask({ taskId: t.id, listId: t.tasklist_id }))
             )
             KittyNotification({
-                title: "Tasks deleted",
-                message: "You've successfully irradicated some time-sensitive tasks.",
+                title: `Task${currentCheckedIds.size !== 1 ? "s" : ""} deleted`,
+                message: `You've successfully irradicated ${currentCheckedIds.size} time-sensitive task${currentCheckedIds.size !== 1 ? "s" : ""}.`,
                 icon: KittyIcons.Dance,
                 color: "rgb(154, 221, 166)"
             })
@@ -127,44 +128,36 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
         setShowDeleteConfirmation(false)
     }
 
-    const handleMassComplete = () => {
+    const handleMassComplete = async () => {
         const ids = new Set(getCheckedIds(currentTab))
         if (ids.size === 0 || list.length === 0) return
 
         setPendingCompleteIds(ids)
         setCheckedIdsForTab(currentTab, new Set())
 
-        pendingCompleteRef.current = setTimeout(async () => {
+        try {
             const selected = list.filter(t => ids.has(t.id))
             await Promise.all(
                 selected.map(t =>
                     completeTask({ taskId: t.id, listId: t.tasklist_id, completed: true })
                 )
             )
-        }, 5000)
-
-        const notifId = notifications.show({
-            message: (
-                <Group justify="space-between" align="center">
-                    <span>{`Completed ${ids.size} ${ids.size === 1 ? "task" : "tasks"}`}</span>
-                    <Button
-                        size="xs"
-                        color="rgb(5,5,73)"
-                        variant="light"
-                        onClick={() => {
-                            if (pendingCompleteRef.current) clearTimeout(pendingCompleteRef.current)
-                            setPendingCompleteIds(new Set())
-                            notifications.hide(notifId)
-                        }}
-                    >
-                        Undo
-                    </Button>
-                </Group>
-            ),
-            autoClose: 5000,
-            withCloseButton: false,
-            color: "rgb(5, 5, 73)",
-        })
+            setPendingCompleteIds(new Set())
+            KittyNotification({
+                title: `Task${currentCheckedIds.size !== 1 ? "s" : ""} completed`,
+                message: `You've successfully completed ${currentCheckedIds.size} time-sensitive task${currentCheckedIds.size !== 1 ? "s" : ""}.`,
+                icon: KittyIcons.Love,
+                color: "rgb(154, 221, 166)"
+            })
+        } catch (error) {
+            setPendingCompleteIds(new Set())
+            KittyNotification({
+                title: "oh no! Your tasks are being stubborn.",
+                message: "That's weird - your tasks weren't deleted for some reason. Try again.",
+                icon: KittyIcons.Grumpy,
+                color: "rgb(234, 118, 118)"
+            })
+        }
     }
 
     return (
