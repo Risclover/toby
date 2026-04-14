@@ -17,3 +17,4 @@ from .activity_event import ActivityEvent
 from .habit import Habit
 from .habit_completion import HabitCompletion
 from .user_setting import UserSettings, Theme, PrivacyMode
+from .personal_note import PersonalNote

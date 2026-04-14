@@ -52,3 +52,4 @@ export * from "./taskSlice";
 export * from "./featuredListSettingSlice";
 export * from "./userSlice";
 export * from "./habitSlice";
+export * from "./noteSlice";

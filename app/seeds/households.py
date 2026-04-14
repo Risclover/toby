@@ -5,7 +5,7 @@ from sqlalchemy import text
 def seed_households():
     household = Household(
         name="The Sara Family",
-        creator_id=1
+        admin_id=1
     )
     db.session.add(household)
     db.session.commit()

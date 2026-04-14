@@ -1,0 +1,311 @@
+.create-personal-note-form {
+    background: white;
+    margin: -1rem;
+    height: calc(100vh - 160px);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: -80px;
+}
+
+.personal-note-form-header {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.personal-note-form-header-right {
+    display: flex;
+    gap: .75rem;
+}
+
+.personal-note-form-header button {
+    flex-shrink: 0;
+}
+
+.personal-note-form-content {
+    overflow: hidden;
+    box-shadow: var(--mantine-shadow-xs);
+    margin-bottom: 1rem;
+    height: calc(100% - 40px);
+    border-top: 1px solid var(--mantine-color-gray-2);
+}
+
+.simple-editor-content {
+    height: calc(100% - 40px);
+}
+
+
+.create-personal-note-form form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.simple-editor-wrapper {
+    flex: 1;
+    overflow: auto;
+    scrollbar-color: black;
+    scrollbar-width: thin;
+    min-height: 0;
+    box-shadow: var(--mantine-shadow-xs);
+    height: 100%;
+    /* Critical — without this, flex children ignore overflow and expand anyway */
+}
+
+.tiptap.ProseMirror.simple-editor {
+    height: 100% !important;
+}
+
+.personal-note-title {
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    line-height: 1.2;
+
+}
+
+.personal-note-date {
+    margin-bottom: 1rem;
+}
+
+
+.personal-note-container {
+    background: white;
+    margin: -1rem;
+    padding: 1rem 1.5rem;
+    height: 100%;
+    border-radius: .5rem;
+}
+
+.personal-note-content p {
+    font-size: 15px;
+}
+
+.personal-note-date-container {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--mantine-color-gray-7);
+    margin-bottom: 1rem;
+    margin-top: .25rem;
+    overflow: hidden;
+}
+
+.date-dot {
+    margin: 0 4px;
+}
+
+.note-viewer .ProseMirror input[type="checkbox"] {
+    cursor: default !important;
+    pointer-events: none !important;
+}
+
+.single-note-container {
+    background: white;
+    box-shadow: var(--mantine-shadow-xs);
+    border-radius: .5rem;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex-wrap: nowrap;
+    margin: 0 auto;
+    padding: 1rem;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.single-note-container:hover {
+    /* transform: translateY(-2px); */
+    box-shadow: none;
+    border-color: var(--mantine-color-gray-3);
+}
+
+.single-note-container:hover {
+    color: rgb(5, 5, 73);
+}
+
+.single-note-container::after {
+    content: "";
+    position: absolute;
+    bottom: 2rem;
+    /* Sits just above the footer */
+    left: 0;
+    width: 100%;
+    height: 2rem;
+    background: linear-gradient(to bottom, transparent, white);
+    pointer-events: none;
+}
+
+.single-note-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    text-wrap: nowrap;
+    flex-shrink: 0;
+    padding-bottom: .75rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--mantine-color-gray-3);
+}
+
+.personal-notes-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: stretch;
+    margin-top: 1rem;
+}
+
+.single-note-content {
+    padding-bottom: 40px;
+}
+
+.single-note-content p {
+    line-height: 1.3;
+    font-size: 15px;
+    color: black;
+}
+
+.single-note-footer {
+    padding-left: 1rem;
+    padding-bottom: .75rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    font-size: 13px;
+    background: white;
+    padding-top: .5rem;
+    color: var(--mantine-color-gray-7);
+    /* font-style: italic; */
+    /* text-align: right; */
+    padding-right: 1rem;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+
+.single-note-images {
+    display: flex;
+    gap: .5rem;
+    margin: 0 auto;
+    margin-top: 1rem;
+}
+
+.single-note-image-thumb {
+    width: 32%;
+    max-width: 130px;
+    aspect-ratio: 3/2;
+    object-fit: cover;
+    border-radius: 0.3rem;
+    flex-shrink: 0;
+    border: 1px solid var(--mantine-color-gray-4);
+}
+
+.single-note-footer-right {
+    font-size: var(--text-sm);
+    color: var(--mantine-color-gray-6);
+    font-style: italic;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 0;
+    opacity: 0;
+    transition: opacity 100ms ease;
+}
+
+.single-note-container:hover .single-note-footer-right {
+    opacity: 1;
+    animation: read-forward 400ms steps(4, end) forwards;
+}
+
+.single-note-container:not(:hover) .single-note-footer-right {
+    animation: read-backward 400ms steps(4, end) forwards;
+}
+
+
+@keyframes read-forward {
+    0% {
+        width: 0;
+    }
+
+    25% {
+        width: 3ch;
+    }
+
+    /* "Rea" */
+    50% {
+        width: 4.5ch;
+    }
+
+    /* "Read" */
+    75% {
+        width: 6ch;
+    }
+
+    /* "Read >" */
+    100% {
+        width: 8ch;
+    }
+
+    /* "Read >>>" */
+}
+
+@keyframes read-backward {
+    0% {
+        width: 8ch;
+    }
+
+    25% {
+        width: 6ch;
+    }
+
+    50% {
+        width: 4.5ch;
+    }
+
+    75% {
+        width: 3ch;
+    }
+
+    100% {
+        width: 0;
+    }
+}
+
+@media (max-width: 425px) {
+    .single-note-container {
+        padding: 1rem;
+    }
+}
+
+
+@media (width >=40rem) {
+    .personal-notes-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+
+@media (width >=64rem) {
+    .personal-notes-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr))
+    }
+}
+
+@media (width >=80rem) {
+    .personal-notes-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media(width >=84rem) {
+    .personal-notes-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}

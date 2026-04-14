@@ -19,6 +19,8 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { GuestRoute } from "./GuestRoute";
 import UserProfilePageDemo from "@/pages/UserProfileDemo";
 import { UserProfilePage } from "@/pages/UserProfilePage";
+import { PersonalNote } from "@/features/PersonalNotes/components/PersonalNote";
+import { UserProfileNotesTab } from "@/features/UserProfile/components/UserProfileNotesTab";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
@@ -41,6 +43,8 @@ export const AppRoutes = () => {
             <Route path="/onboarding" element={<OnboardingRoute />} />
             <Route path="/demo" element={<UserProfilePageDemo />} />
             <Route path="/profile/:userId" element={<UserProfilePage />} />
+            <Route path="/profile/:userId" element={<UserProfilePage />} />
+            <Route path="/profile/:userId/notes/:noteId" element={<UserProfilePage defaultTab="notes" />} />
         </Routes>
     )
 }

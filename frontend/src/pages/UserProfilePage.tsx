@@ -10,8 +10,9 @@ import { useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { UserProfileHeaderSkeleton } from "@/features/UserProfile/components/UserProfileHeaderSkeleton"
 import { useGetHouseholdQuery, useGetUserQuery } from "@/store"
+import { UserProfileNotesTab } from "@/features/UserProfile/components/UserProfileNotesTab"
 
-export const UserProfilePage = () => {
+export const UserProfilePage = ({ defaultTab }: { defaultTab: string }) => {
     const { userId } = useParams();
     const [searchParams] = useSearchParams();
     const { data: user, isLoading: isLoadingUser } = useGetUserQuery(userId)
@@ -21,14 +22,15 @@ export const UserProfilePage = () => {
 
     const titleComponent = isLoading || isLoadingUser ? <UserProfileHeaderSkeleton /> : <UserProfileHeader />
 
-    const defaultTab = searchParams.get("tab") ?? "profile";
+    const tabToRead = defaultTab || (searchParams.get("tab") ?? "profile");
 
     return (
         <MobileLayout titleComponent={titleComponent}>
-            <Tabs key={defaultTab} defaultValue={defaultTab}>
+            <Tabs style={{ overflow: "hidden", height: "100%", borderTopLeftRadius: "1rem", borderTopRightRadius: "1rem" }} key={defaultTab} defaultValue={tabToRead}>
                 <UserProfileNavGrid />
                 <UserProfileMainTab />
                 <UserProfileHabitsTab />
+                <UserProfileNotesTab />
             </Tabs>
         </MobileLayout>
     )

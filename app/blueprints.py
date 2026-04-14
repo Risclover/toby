@@ -16,7 +16,8 @@ _BLUEPRINT_PATHS = (
     "app.api.featured_list_setting_routes:featured_list_setting_routes",
     "app.api.activity_event_routes:activity_routes",
     "app.api.habit_routes:habit_routes",
-    "app.api.user_setting_routes:user_setting_routes"
+    "app.api.user_setting_routes:user_setting_routes",
+    "app.api.personal_note_routes:personal_note_routes"
 )
 
 def register_blueprints(app):

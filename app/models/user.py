@@ -95,6 +95,8 @@ class User(db.Model, UserMixin):
         back_populates='event_creator'
     )
 
+    notes = db.relationship("PersonalNote", back_populates="author")
+
     # Password management
     @property
     def password(self):
