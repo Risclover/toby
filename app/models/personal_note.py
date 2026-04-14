@@ -9,12 +9,14 @@ class PersonalNote(db.Model):
     title = db.Column(db.String(50), nullable=True)
     body = db.Column(db.Text, nullable=False)
     color = db.Column(db.String(50), default="rgb(5, 5, 73)", nullable=True)
+    category_id = db.Column(db.Integer, db.ForeignKey("personal_note_categories.id"), nullable=True)
     is_private = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
     # Relationships
     author = db.relationship("User", back_populates="notes")
+    category = db.relationship("PersonalNoteCategory", back_populates="category_notes")
 
     def to_dict(self):
         return {

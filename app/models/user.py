@@ -96,6 +96,7 @@ class User(db.Model, UserMixin):
     )
 
     notes = db.relationship("PersonalNote", back_populates="author")
+    note_categories = db.relationship("PersonalNoteCategory", back_populates="user")
 
     # Password management
     @property
