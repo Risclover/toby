@@ -460,32 +460,3 @@ def get_user_note(id, note_id):
         return {"error": "Forbidden"}, 403
 
     return note.to_dict, 200
-
-
-@user_routes.route("/<int:id>/note-categories/<int:category_id>")
-@login_required
-def get_user_note_category(id, category_id):
-    user = User.query.get(id)
-    if not user:
-        return {"error": "User not found"}, 404
-
-    note_category = PersonalNoteCategory.query.get(category_id)
-    if not note_category:
-        return {"error": "Category not found"}, 404
-
-    return note_category.to_dict(), 200
-
-
-@user_routes.route("/<int:id>/note-categories")
-@login_required
-def get_user_note_categories(id):
-    user = User.query.get(id)
-
-    if not user:
-        return {"error": "User not found"}, 404
-    if user.id != current_user.id:
-        return {"Forbidden"}, 403
-
-    note_categories = user.note_categories
-
-    return [category.to_dict() for category in note_categories], 200

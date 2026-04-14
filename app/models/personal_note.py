@@ -25,6 +25,7 @@ class PersonalNote(db.Model):
             "title": self.title,
             "body": self.body,
             "color": self.color,
+            "categoryId": self.category_id,
             "isPrivate": self.is_private,
             "createdAt": self.created_at.isoformat() + "Z",
             "updatedAt": self.updated_at.isoformat() + "Z",

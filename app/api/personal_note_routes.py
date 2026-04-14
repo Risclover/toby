@@ -107,25 +107,7 @@ def upload_note_image():
         return upload, 400
 
     return {"url": upload["url"]}, 200
-
-@personal_note_routes.route("/<int:id>/category")
-@login_required
-def get_note_category(id):
-    note = PersonalNote.query.get(id)
-
-    if not note:
-        return {"error": "Note not found"}, 404
     
-    if note.user_id != current_user.id:
-        return {"error": "Forbidden"}, 403
-
-    note_category = note.category
-
-    if not note_category:
-        return {"error": "Category not found"}, 404
-
-    return note_category.to_dict(), 200
-
 @personal_note_routes.route("/<string:id>/category", methods=["PATCH"])
 @login_required
 def update_note_category(id):
