@@ -42,8 +42,7 @@ export const AppRoutes = () => {
             <Route path="/reminders" element={<ProtectedRoute><AllRemindersPage /></ProtectedRoute>} />
             <Route path="/onboarding" element={<OnboardingRoute />} />
             <Route path="/demo" element={<UserProfilePageDemo />} />
-            <Route path="/profile/:userId" element={<UserProfilePage />} />
-            <Route path="/profile/:userId" element={<UserProfilePage />} />
+            <Route path="/profile/:userId" element={<UserProfilePage defaultTab="profile" />} />
             <Route path="/profile/:userId/notes/:noteId" element={<UserProfilePage defaultTab="notes" />} />
         </Routes>
     )

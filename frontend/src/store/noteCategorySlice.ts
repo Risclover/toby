@@ -37,7 +37,7 @@ export const noteCategoryApiSlice = apiSlice.injectEndpoints({
 
         createNoteCategory: builder.mutation<PersonalNoteCategory, CreateCategoryPayload>({
             query: (body) => ({
-                url: `/personal-note-categories/`,
+                url: `/personal-note-categories`,
                 method: "POST",
                 body,
             }),

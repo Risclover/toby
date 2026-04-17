@@ -9,11 +9,13 @@
 
 .personal-note-form-header {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
     width: 100%;
     justify-content: space-between;
-    gap: 2rem;
-    padding: 1rem;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+    padding: 0 1rem;
 }
 
 .personal-note-form-header-right {
@@ -25,16 +27,27 @@
     flex-shrink: 0;
 }
 
-.personal-note-form-content {
+.create-note-modal-form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     overflow: hidden;
-    box-shadow: var(--mantine-shadow-xs);
-    margin-bottom: 1rem;
+}
+
+.personal-note-form-content {
     height: calc(100% - 40px);
     border-top: 1px solid var(--mantine-color-gray-2);
+    flex: 1;
+    /* Takes all remaining height */
+    min-height: 0;
+    /* Critical — allows flex child to shrink below content size */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .simple-editor-content {
-    height: calc(100% - 40px);
+    height: calc(100% - 44px);
 }
 
 
@@ -42,12 +55,10 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    overflow: hidden;
 }
 
 .simple-editor-wrapper {
     flex: 1;
-    overflow: auto;
     scrollbar-color: black;
     scrollbar-width: thin;
     min-height: 0;
@@ -56,9 +67,6 @@
     /* Critical — without this, flex children ignore overflow and expand anyway */
 }
 
-.tiptap.ProseMirror.simple-editor {
-    height: 100% !important;
-}
 
 .personal-note-title {
     font-size: var(--text-2xl);
@@ -112,7 +120,6 @@
     flex-wrap: nowrap;
     margin: 0 auto;
     padding: 1rem;
-    overflow: hidden;
     position: relative;
     cursor: pointer;
     border: 1px solid transparent;
@@ -149,9 +156,9 @@
     width: 100%;
     text-wrap: nowrap;
     flex-shrink: 0;
+    border-bottom: 1px solid var(--mantine-color-gray-3);
     padding-bottom: .75rem;
     margin-bottom: 1rem;
-    border-bottom: 1px solid var(--mantine-color-gray-3);
 }
 
 .personal-notes-grid {
@@ -229,6 +236,42 @@
     animation: read-backward 400ms steps(4, end) forwards;
 }
 
+.personal-note-form-subheader {
+    display: flex;
+    gap: .5rem;
+    margin-top: .5rem;
+}
+
+.personal-note-form-category {
+    border-radius: 5rem !important;
+    font-size: var(--text-xs);
+    /* height: 20px; */
+    padding: .25rem .75rem !important;
+    height: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    font-weight: 500;
+    background: var(--mantine-color-gray-1);
+    color: var(--mantine-color-gray-8);
+    cursor: pointer;
+}
+
+.personal-note-form-category svg {
+    margin-right: .5rem;
+}
+
+.personal-note-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    flex-shrink: 0;
+    padding: 1rem;
+    padding-top: 0;
+}
+
 
 @keyframes read-forward {
     0% {
@@ -276,6 +319,17 @@
 
     100% {
         width: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .simple-editor-content {
+        margin-top: 0;
+        height: 100%;
+    }
+
+    .personal-note-form-footer {
+        padding-top: 1rem;
     }
 }
 

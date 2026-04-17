@@ -8,7 +8,6 @@ class PersonalNote(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     title = db.Column(db.String(50), nullable=True)
     body = db.Column(db.Text, nullable=False)
-    color = db.Column(db.String(50), default="rgb(5, 5, 73)", nullable=True)
     category_id = db.Column(db.Integer, db.ForeignKey("personal_note_categories.id"), nullable=True)
     is_private = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -24,7 +23,6 @@ class PersonalNote(db.Model):
             "userId": self.user_id,
             "title": self.title,
             "body": self.body,
-            "color": self.color,
             "categoryId": self.category_id,
             "isPrivate": self.is_private,
             "createdAt": self.created_at.isoformat() + "Z",

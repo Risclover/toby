@@ -1,4 +1,4 @@
-import { useGetUserNoteQuery, useUpdateNoteMutation } from "@/store/noteSlice";
+import { useGetNoteQuery, useGetUserNoteQuery, useUpdateNoteMutation } from "@/store/noteSlice";
 import { useEffect } from "react";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { NoteViewer } from "./NoteViewer";
@@ -18,27 +18,15 @@ interface Props {
 
 export const PersonalNote = ({ noteId, onBack }: Props) => {
     const { data: currentUser } = useAuthenticateQuery();
-    const { data: note, isLoading: noteLoading } = useGetUserNoteQuery(
-        { userId: currentUser!?.id, noteId },
-        { skip: !currentUser || !noteId }
-    );
+
+    const { data: note } = useGetNoteQuery(noteId, { skip: !currentUser || !noteId })
+
+    console.log('NOTE 2:', note)
 
     const [updateNote] = useUpdateNoteMutation();
 
     // Pass it to the helper
 
-    const isAuthor = currentUser?.id === note?.userId;
-
-    const form = useForm<NoteFormValues>({
-        initialValues: { title: "" }
-    });
-
-    useEffect(() => {
-        if (note) {
-            form.setValues({ title: note.title ?? "" });
-            form.resetDirty();
-        }
-    }, [note?.id]);
 
     const formatDate = (triggerDate?: string, createdAt?: string): string => {
         if (triggerDate) {
@@ -58,30 +46,21 @@ export const PersonalNote = ({ noteId, onBack }: Props) => {
         return new Date(normalized!).toLocaleDateString();
     };
 
-    const handleSave = form.onSubmit(async (values) => {
-        await updateNote({
-            id: noteId,
-            title: values.title || undefined,
-            body: note!.body,
-            color: note!.color,
-            isPrivate: note!.isPrivate
-        }).unwrap();
-        form.resetDirty();
-    });
-
-    if (!currentUser || !noteId) return null;
-    if (noteLoading) return null;
     if (!note) return null;
 
     return (
-        <div className="personal-note-container">
-
+        <div
+            style={{
+                borderTop: `10px solid ${note.category && note.category?.color ? note.category?.color : "transparent"}`
+            }}
+            className="personal-note-container"
+        >
             <div className="personal-note-top-bar">
                 <Button variant="subtle" size="sm" onClick={onBack}>← Back</Button>
             </div>
             <div className="personal-note-title">{note.title}</div>
             <div className="personal-note-date-container">Posted <span className="personal-note-date">{formatDate(undefined, note.createdAt)}</span> {note.updatedAt !== note.createdAt ? <><span className="date-dot">·</span> Last modified {formatDate(undefined, note.updatedAt)}</> : ""}</div>
             <div className="personal-note-content"><NoteViewer content={note.body} /></div>
-        </div>
+        </div >
     );
 };

@@ -38,6 +38,8 @@ export const SingleNote = ({ note, onNoteClick }: Props) => {
         return new Date(normalized!).toLocaleDateString();
     };
 
+    console.log('NOTE:', note)
+
     return (
         <div className="single-note-container" style={{ borderLeft: `4px solid ${note.color}` }} onMouseEnter={() => setMountReadBtn(true)}
             onMouseLeave={() => setMountReadBtn(false)} onClick={() => onNoteClick(note.id)}>

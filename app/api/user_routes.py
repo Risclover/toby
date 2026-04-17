@@ -435,28 +435,28 @@ def get_user_habits(user_id):
 @login_required
 def get_user_notes(id):
     if current_user.id != id:
-        return {"error": "Forbidden"}, 403
+        return jsonify({"error": "Forbidden"}), 403
 
     notes = PersonalNote.query.filter_by(user_id=id).order_by(PersonalNote.updated_at.desc()).all()
-    return {"notes": [note.to_dict() for note in notes]}, 200
+    return jsonify({"notes": [note.to_dict() for note in notes]}), 200
 
 @user_routes.route("/<int:id>/notes/<string:note_id>", methods=["GET"])
 @login_required
 def get_user_note(id, note_id):
     user = User.query.get(id)
     if not user:
-        return {"error": "User not found"}, 404
+        return jsonify({"error": "User not found"}), 404
 
     note = PersonalNote.query.get(note_id)
     if not note:
-        return {"error": "Note not found"}, 404
+        return jsonify({"error": "Note not found"}), 404
 
     # Private notes only visible to author
     if note.is_private and current_user.id != note.user_id:
-        return {"error": "Forbidden"}, 403
+        return jsonify({"error": "Forbidden"}), 403
 
     # Non-private notes only visible to same household
     if not note.is_private and current_user.household_id != user.household_id:
-        return {"error": "Forbidden"}, 403
+        return jsonify({"error": "Forbidden"}), 403
 
-    return note.to_dict, 200
+    return jsonify(note.to_dict()), 200

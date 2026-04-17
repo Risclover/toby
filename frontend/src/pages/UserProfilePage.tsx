@@ -22,7 +22,7 @@ export const UserProfilePage = ({ defaultTab }: { defaultTab: string }) => {
 
     const titleComponent = isLoading || isLoadingUser ? <UserProfileHeaderSkeleton /> : <UserProfileHeader />
 
-    const tabToRead = defaultTab || (searchParams.get("tab") ?? "profile");
+    const tabToRead = (searchParams.get("tab") ?? defaultTab);
 
     return (
         <MobileLayout titleComponent={titleComponent}>

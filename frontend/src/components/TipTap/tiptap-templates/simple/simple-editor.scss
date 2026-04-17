@@ -57,7 +57,7 @@ body,
 .simple-editor-wrapper {
   width: 100%; // was 100vw
   height: auto; // was 100vh
-  overflow: visible; // was auto
+  overflow-y: hidden; // was auto
 }
 
 .simple-editor-content {
@@ -69,11 +69,14 @@ body,
   flex-direction: column;
   flex: 1;
   font-size: var(--text-sm);
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .simple-editor-content .tiptap.ProseMirror.simple-editor {
   flex: 1;
   padding: 1rem; // was 3rem 3rem 30vh — 30vh only makes sense full-page
+  overflow-y: auto;
 }
 
 @media screen and (max-width: 480px) {

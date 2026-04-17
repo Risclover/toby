@@ -3,26 +3,31 @@ import { apiSlice } from "./apiSlice";
 export interface PersonalNote {
     id: string;
     userId: number;
+    categoryId?: number;
     title: string | null;
     body: string;
-    color: string;
     isPrivate: boolean;
     createdAt: string;
     updatedAt: string;
+    category: {
+        id: number;
+        color: string;
+        name: string;
+    }
 }
 
 interface CreateNotePayload {
     title?: string;
     body: string;
-    color: string;
+    categoryId?: number;
     isPrivate: boolean;
 }
 
 interface UpdateNotePayload {
     id: string | undefined;
     title?: string;
+    categoryId?: number;
     body: string;
-    color: string;
     isPrivate: boolean;
 }
 

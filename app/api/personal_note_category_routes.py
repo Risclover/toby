@@ -10,7 +10,7 @@ personal_note_category_routes = Blueprint("personal-note-categories", __name__)
 @login_required
 def get_note_categories():
     categories = PersonalNoteCategory.query.filter_by(user_id=current_user.id).all()
-    return {"categories": [category.to_dict() for category in categories]}, 200
+    return jsonify([category.to_dict() for category in categories]), 200
 
 @personal_note_category_routes.route("/<int:id>")
 @login_required
@@ -18,11 +18,11 @@ def get_note_category(id):
     category = PersonalNoteCategory.query.get(id)
 
     if not category:
-        return {"error": "Category doesn't exist"}, 404
+        return jsonify({"error": "Category doesn't exist"}), 404
     if category.user_id != current_user.id:
-        return {"error": "Forbidden"}, 403
+        return jsonify({"error": "Forbidden"}), 403
 
-    return category.to_dict(), 200
+    return jsonify(category.to_dict()), 200
 
 @personal_note_category_routes.route("", methods=["POST"])
 @login_required
@@ -31,7 +31,7 @@ def create_note_category():
 
     name = data.get("name", "").strip()
     if not name:
-        return {"error": "Name is required"}, 400
+        return jsonify({"error": "Name is required"}), 400
     color = data.get("color") or "rgb(5, 5, 73)"
 
     category = PersonalNoteCategory(
@@ -43,7 +43,7 @@ def create_note_category():
     db.session.add(category)
     db.session.commit()
     
-    return category.to_dict(), 201
+    return jsonify(category.to_dict()), 201
 
 @personal_note_category_routes.route("/<int:id>", methods=["PUT"])
 @login_required
@@ -51,15 +51,15 @@ def edit_note_category(id):
     category = PersonalNoteCategory.query.get(id)
 
     if not category:
-        return {"error": "Category does not exist"}, 404
+        return jsonify({"error": "Category does not exist"}), 404
     if category.user_id != current_user.id:
-        return {"error": "Forbidden"}, 403
+        return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json()
     
     name = data.get("name", "").strip()
     if not name:
-        return {"error": "Name is required"}, 400
+        return jsonify({"error": "Name is required"}), 400
     color = data.get("color") or "rgb(5, 5, 73)"
 
     category.name = name
@@ -67,7 +67,7 @@ def edit_note_category(id):
 
     db.session.commit()
 
-    return category.to_dict(), 200
+    return jsonify(category.to_dict()), 200
 
 @personal_note_category_routes.route("/<int:id>", methods=["DELETE"])
 @login_required
@@ -75,11 +75,11 @@ def delete_note_category(id):
     category = PersonalNoteCategory.query.get(id)
 
     if not category:
-        return {"error": "Category does not exist"}, 404
+        return jsonify({"error": "Category does not exist"}), 404
     if category.user_id != current_user.id:
-        return {"error": "Forbidden"}, 403  
+        return jsonify({"error": "Forbidden"}), 403  
 
     db.session.delete(category)
     db.session.commit()
 
-    return {"message": "Category successfully deleted"}, 200
+    return jsonify({"message": "Category successfully deleted"}), 200

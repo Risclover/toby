@@ -25,21 +25,11 @@ export const UserProfileNotesTab = () => {
         navigate(`/profile/${userId}?tab=notes`);
     };
 
+    console.log('activeNoteId:', activeNoteId)
+
     return (
         <Tabs.Panel value="notes" className="user-profile-main-container">
-            {activeNoteId ? (
-                <PersonalNote noteId={activeNoteId} onBack={handleBack} />
-            ) : showNoteForm ? (
-                <CreatePersonalNote
-                    setShowNoteForm={setShowNoteForm}
-                    onNoteCreated={(id) => handleNoteClick(id)}
-                />
-            ) : (
-                <PersonalNotes
-                    setShowNoteForm={setShowNoteForm}
-                    onNoteClick={handleNoteClick}
-                />
-            )}
+            {activeNoteId ? <PersonalNote noteId={activeNoteId} onBack={handleBack} /> : <PersonalNotes onNoteClick={handleNoteClick} />}
         </Tabs.Panel>
     );
 };

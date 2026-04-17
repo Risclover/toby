@@ -1,36 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { useCreateNoteMutation } from "@/store/noteSlice";
-import { Button, Textarea, Text, Switch, Group } from "@mantine/core";
+import { Button, Textarea, Text, Switch, Group, Badge, Chip, Modal, UnstyledButton, Tooltip } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { SimpleEditor } from "@/components/TipTap/tiptap-templates/simple/simple-editor";
 import { useModalFocus } from "@/hooks/useModalFocus";
 import { useNavigate, useParams } from "react-router-dom";
 import { FormColorInput } from "@/components/FormColorInput";
+import { CreateNoteCategory } from "@/features/PersonalNoteCategories/components/CreateNoteCategory";
+import { FaGlobeAmericas } from "react-icons/fa";
+import { IoIosLock } from "react-icons/io";
+import { FaFolderClosed } from "react-icons/fa6";
+import { FaLock } from "react-icons/fa6";
+import { useIsMobile, useIsSmallScreen } from "@/hooks";
+import { PersonalNoteCategories } from "@/features/PersonalNoteCategories/components/PersonalNoteCategories";
+import { VscClose } from "react-icons/vsc";
+
+
+
 
 interface NoteFormValues {
     title: string;
     body: string;
     isPrivate: boolean;
-    color: string;
 }
 
 type Props = {
+    showNoteForm: boolean;
     setShowNoteForm: (val: boolean) => void;
-    onNoteCreated: (val: string) => void;
 }
 
 const MAX_BODY_LENGTH = 10000;
 
-export const CreatePersonalNote = ({ setShowNoteForm, onNoteCreated }: Props) => {
+export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => {
+    const isSmallScreen = useIsSmallScreen(480);
+    const isMobile = useIsMobile();
     const navigate = useNavigate();
     const { userId } = useParams();
     const [createPersonalNote] = useCreateNoteMutation();
     const [charCount, setCharCount] = useState(0);
     const [editorKey, setEditorKey] = useState(0);
+    const [isPrivate, setIsPrivate] = useState(false);
+    const [showNoteCategoryModal, setShowNoteCategoryModal] = useState(false);
     const { ref: nameRef, transitionProps } = useModalFocus<HTMLTextAreaElement>();
 
     const form = useForm<NoteFormValues>({
-        initialValues: { title: "", body: "", isPrivate: false, color: "rgb(5, 5, 73)" },
+        initialValues: { title: "", body: "", isPrivate: false },
         validate: {
             body: (value) => {
                 const plain = value.replace(/<[^>]*>/g, "").trim();
@@ -43,28 +57,47 @@ export const CreatePersonalNote = ({ setShowNoteForm, onNoteCreated }: Props) =>
 
 
     const handleCreateNote = form.onSubmit(async (values) => {
-        const data = await createPersonalNote({
+        await createPersonalNote({
             title: values.title || undefined,
             body: values.body,
-            isPrivate: values.isPrivate,
-            color: values.color
+            isPrivate: isPrivate
         }).unwrap();
 
         form.reset();
         setCharCount(0);
         setEditorKey(k => k + 1); // Force SimpleEditor remount with empty content
         setShowNoteForm(false);
-        onNoteCreated(data.id);
     });
 
     const handleCancel = () => {
         setShowNoteForm(false);
-
     }
 
+    const handleChangeVisibility = (e: MouseEvent) => {
+        e.preventDefault();
+        setIsPrivate(prev => !prev);
+        form.setFieldValue("isPrivate", isPrivate);
+    }
+
+    const handleClose = () => {
+        setShowNoteForm(false);
+        form.reset();
+    }
+
+    const handleOpenCategories = () => {
+        setShowNoteCategoryModal(true);
+    }
+
+    useEffect(() => {
+        console.log('form:', form);
+    }, [form])
+
     return (
-        <div className="create-personal-note-form">
-            <form onSubmit={handleCreateNote}>
+        <Modal styles={{
+            body: { display: "flex", flexDirection: "column", padding: 0, height: "100%", overflow: 'hidden' },
+            content: { overflow: 'hidden', display: "flex", flexDirection: "column" }
+        }} fullScreen opened={showNoteForm} onClose={handleClose}>
+            <form onSubmit={handleCreateNote} className="create-note-modal-form">
                 <div className="personal-note-form-header">
                     <Textarea
                         placeholder="Add title"
@@ -83,13 +116,28 @@ export const CreatePersonalNote = ({ setShowNoteForm, onNoteCreated }: Props) =>
                                 fontWeight: 600,
                                 color: "black",
                                 marginRight: "3rem",
-                                padding: 0
+                                padding: 0,
+                                lineHeight: 1.2
                             }
                         }}
                     />
-                    <div className="personal-note-form-header-right">
-                        <Button onClick={handleCancel} fw={500} size="sm" p=".5rem 1rem" h="auto" radius="sm" color="rgb(5, 5, 73)" variant="outline">Cancel</Button>
-                        <Button disabled={!form.isDirty() || !form.isValid()} fw={500} size="sm" p=".5rem 1.25rem" h="auto" radius="sm" color="rgb(5, 5, 73)" type="submit">Save</Button>
+
+                    <div className="personal-note-form-subheader">
+                        <Tooltip.Group openDelay={300} closeDelay={100}>
+                            <PersonalNoteCategories setShowNoteCategoryModal={setShowNoteCategoryModal} />
+                            <Tooltip withArrow label="Choose category">
+                                <button className="personal-note-form-category" onClick={handleOpenCategories}>
+                                    <FaFolderClosed size=".825rem" color="var(--mantine-color-gray-7)" /> Uncategorized
+                                </button>
+                            </Tooltip>
+
+                            <Tooltip withArrow label="Change note visibility">
+                                <button onClick={handleChangeVisibility} className="personal-note-form-category">
+                                    {isPrivate ?
+                                        <><FaGlobeAmericas size=".825rem" color="var(--mantine-color-gray-7)" /> Public</> : <><FaLock size=".825rem" color="var(--mantine-color-gray-7)" /> Private</>}
+                                </button>
+                            </Tooltip>
+                        </Tooltip.Group>
                     </div>
                 </div>
 
@@ -101,21 +149,18 @@ export const CreatePersonalNote = ({ setShowNoteForm, onNoteCreated }: Props) =>
                             setCharCount(html.replace(/<[^>]*>/g, "").length);
                         }}
                     />
-                    <Text size="xs" c={charCount > MAX_BODY_LENGTH ? "red" : "dimmed"} mt={4}>
+                    <Text ml={10} size="xs" c={charCount > MAX_BODY_LENGTH ? "red" : "dimmed"} mt={4}>
                         {charCount.toLocaleString()} / {MAX_BODY_LENGTH.toLocaleString()}
                     </Text>
                     {form.errors.body && (
                         <Text size="xs" c="red" mt={4}>{form.errors.body}</Text>
                     )}
                 </div>
-                <FormColorInput form={form} label="Color" required />
-                <Group>Make private?
-                    <Switch
-                        size="md"
-                        withThumbIndicator={false}
-                        {...form.getInputProps('isPrivate', { type: 'checkbox' })}
-                    /></Group>
+                <div className="personal-note-form-footer">
+                    <Button mb={isSmallScreen ? "40px" : ""} m={isSmallScreen ? "0 auto 40px auto" : "0 0 40px 0"} w={isSmallScreen ? "300px" : "100px"} disabled={!form.isDirty() || !form.isValid()} fw={500} size="sm" p={isSmallScreen ? ".75rem 1.25rem" : ".5rem 1.25rem"} h="auto" radius="xl" color="rgb(5, 5, 73)" type="submit">Post</Button>
+                </div>
             </form>
-        </div>
+            <CreateNoteCategory opened={showNoteCategoryModal} close={() => setShowNoteCategoryModal(false)} />
+        </Modal>
     );
 };

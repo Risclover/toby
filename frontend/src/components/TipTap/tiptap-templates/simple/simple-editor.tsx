@@ -112,9 +112,9 @@ const MainToolbarContent = ({
       <ToolbarGroup>
         <MarkButton type="bold" />
         <MarkButton type="italic" />
+        <MarkButton type="underline" />
         <MarkButton type="strike" />
         <MarkButton type="code" />
-        <MarkButton type="underline" />
         {!isMobile ? (
           <ColorHighlightPopover />
         ) : (
