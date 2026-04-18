@@ -6,6 +6,8 @@ import { useForm } from "@mantine/form";
 import { Button, Textarea } from "@mantine/core";
 import { formatAnnouncementTimestamp } from "@/features/Announcements";
 import { getReminderTime } from "@/features/Reminders/utils/getReminderTime";
+import { useGetCategoriesQuery } from "@/store";
+import { getLightColor } from "@/utils/getLightColor";
 
 interface NoteFormValues {
     title: string;
@@ -18,10 +20,10 @@ interface Props {
 
 export const PersonalNote = ({ noteId, onBack }: Props) => {
     const { data: currentUser } = useAuthenticateQuery();
-
+    const { data: noteCategories } = useGetCategoriesQuery();
     const { data: note } = useGetNoteQuery(noteId, { skip: !currentUser || !noteId })
 
-    console.log('NOTE 2:', note)
+    console.log('NOTE 2:', noteCategories?.find(category => category.id === note?.categoryId))
 
     const [updateNote] = useUpdateNoteMutation();
 
@@ -50,16 +52,14 @@ export const PersonalNote = ({ noteId, onBack }: Props) => {
 
     return (
         <div
-            style={{
-                borderTop: `10px solid ${note.category && note.category?.color ? note.category?.color : "transparent"}`
-            }}
             className="personal-note-container"
         >
-            <div className="personal-note-top-bar">
-                <Button variant="subtle" size="sm" onClick={onBack}>← Back</Button>
+            <div className="personal-note-header">
+                <div className="personal-note-title">{note.title}</div>
+                <div className="personal-note-form-subheader">
+                    {note.category && <div className="personal-note-category" style={{ background: getLightColor(note.category?.color || "#000000"), color: note.category?.color }}>{note.category?.name}</div>}
+                    <div className="personal-note-date-container">Posted <span className="personal-note-date">{formatDate(undefined, note.createdAt)}</span> {note.updatedAt !== note.createdAt ? <><span className="date-dot">·</span> Last modified {formatDate(undefined, note.updatedAt)}</> : ""}</div></div>
             </div>
-            <div className="personal-note-title">{note.title}</div>
-            <div className="personal-note-date-container">Posted <span className="personal-note-date">{formatDate(undefined, note.createdAt)}</span> {note.updatedAt !== note.createdAt ? <><span className="date-dot">·</span> Last modified {formatDate(undefined, note.updatedAt)}</> : ""}</div>
             <div className="personal-note-content"><NoteViewer content={note.body} /></div>
         </div >
     );

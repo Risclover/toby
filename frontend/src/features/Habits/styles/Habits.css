@@ -298,6 +298,8 @@
 .homepage-habits-list {
     position: relative;
     overflow: hidden;
+    overflow-y: auto;
+    max-height: 250px;
     padding: 0 .75rem;
     min-height: 44px;
 }

@@ -3,6 +3,7 @@ import { useCreateNoteCategoryMutation, useGetCategoriesQuery } from "@/store/no
 import { Button, Modal, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import "../styles/PersonalNoteCategories.css"
+import { isTooLight } from "@/utils";
 
 interface CreateCategoryForm {
     name: string;
@@ -39,6 +40,8 @@ export const CreateNoteCategory = ({ opened, close }: Props) => {
         close();
     })
 
+    const hasColorError = isTooLight(form.values.color);
+
     if (!categories) return null;
 
     return (
@@ -48,11 +51,12 @@ export const CreateNoteCategory = ({ opened, close }: Props) => {
                     label="Name"
                     required
                     radius="md"
+                    maxLength={20}
                     {...form.getInputProps("name")}
                 />
 
                 <FormColorInput form={form} required={false} />
-
+                {hasColorError ? "This color is too light. Please choose something darker." : null}
                 <Button type="submit">Submit</Button>
             </form>
             <div className="categories-list">

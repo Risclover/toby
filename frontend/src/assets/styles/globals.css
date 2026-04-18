@@ -165,6 +165,12 @@ html.prefers-collapsed .sidebar .nav-link .label {
     /* let .sidebar's width drive the column */
 }
 
+.tiptap p {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    font-weight: normal;
+}
+
 .sidebar {
     background: var(--surface);
 }
@@ -400,13 +406,13 @@ form {
     align-self: center;
 }
 
-.mantine-Menu-itemLabel:not(:last-child) {
+/* .mantine-Menu-itemLabel:not(:last-child) {
     line-height: 1;
     align-self: center;
     display: flex;
     align-items: center;
     color: rgb(5, 5, 73);
-}
+} */
 
 .mantine-Menu-itemSection {
     display: flex;
@@ -826,6 +832,7 @@ form {
     height: auto !important;
 }
 
+.mantine-Notification-title,
 .mantine-Notification-description {
     line-height: 1.2 !important;
 }

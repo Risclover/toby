@@ -11,9 +11,9 @@ export interface PersonalNote {
     updatedAt: string;
     category: {
         id: number;
-        color: string;
         name: string;
-    }
+        color: string;
+    } | null;
 }
 
 interface CreateNotePayload {
