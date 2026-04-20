@@ -3,6 +3,7 @@ import { Collapse } from "@mantine/core"
 import { HomepageCollapseCardBody } from "./HomepageCollapseCardBody"
 import { HomepageCollapseCardTitle } from "./HomepageCollapseCardTitle"
 import { useCollapseScroll } from "@/hooks"
+import { getCardOpen, setCardOpen } from "@/utils"
 
 type Props = {
     cardKey: string;
@@ -14,20 +15,16 @@ type Props = {
 }
 
 export const HomepageCollapseCard = ({ cardKey, title, color, badge, scrollSelector, children }: Props) => {
-    const CARD_KEY = `homepage-card-${cardKey}`;
-    const [showCard, setShowCard] = useState(() => {
-        const saved = localStorage.getItem(CARD_KEY);
-        return saved !== null ? JSON.parse(saved) : true;
-    });
+    const [showCard, setShowCard] = useState(() => getCardOpen(cardKey));
     const [hasAnimated, setHasAnimated] = useState(!showCard);
     const { containerRef, resetScroll } = useCollapseScroll(scrollSelector ?? []);
 
     useEffect(() => {
-        localStorage.setItem(CARD_KEY, JSON.stringify(showCard));
-    }, [showCard]);
+        setCardOpen(cardKey, showCard);
+    }, [cardKey, showCard]);
 
     const handleToggle = () => {
-        if (!showCard) resetScroll(); // reset before opening
+        if (!showCard) resetScroll();
         setShowCard((v: boolean) => !v);
         setHasAnimated(true);
     };

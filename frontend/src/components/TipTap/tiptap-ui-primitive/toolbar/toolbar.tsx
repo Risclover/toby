@@ -4,6 +4,7 @@ import "@/components/TipTap/tiptap-ui-primitive/toolbar/toolbar.scss"
 import { cn } from "@/lib/tiptap-utils"
 import { useMenuNavigation } from "@/hooks/use-menu-navigation"
 import { useComposedRef } from "@/hooks/use-composed-ref"
+import { useIsMobile, useIsSmallScreen } from "@/hooks"
 
 type BaseProps = React.HTMLAttributes<HTMLDivElement>
 
@@ -81,6 +82,9 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
   ({ children, className, variant = "fixed", ...props }, ref) => {
     const toolbarRef = useRef<HTMLDivElement>(null)
     const composedRef = useComposedRef(toolbarRef, ref)
+    const isMobile = useIsMobile()
+    const isSmallScreen = useIsSmallScreen(480)
+    const mobileMode = isMobile && isSmallScreen
     useToolbarNavigation(toolbarRef)
 
     return (
@@ -89,6 +93,7 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
         role="toolbar"
         aria-label="toolbar"
         data-variant={variant}
+        data-mobile={mobileMode}
         className={cn("tiptap-toolbar", className)}
         {...props}
       >

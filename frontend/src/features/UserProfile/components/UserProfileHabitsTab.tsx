@@ -38,17 +38,18 @@ export const UserProfileHabitsTab = () => {
                             fullWidth
                             styles={{
                                 root: {
-                                    borderRadius: ".5rem",
+                                    borderRadius: isSmall ? "0" : ".5rem",
                                     boxShadow: "var(--mantine-shadow-xs)",
                                     backgroundColor: "white",
-                                    margin: "0 auto"
+                                    margin: "0 auto",
+                                    marginBottom: isSmall ? "0" : "1rem"
                                 },
                                 label: {
                                     paddingLeft: "1rem",
                                     paddingRight: "1rem",
-                                    padding: ".325rem 1rem",
+                                    padding: isSmall ? ".325rem 1rem" : ".5rem 1rem",
                                     fontWeight: "500",
-                                    fontSize: "13px"
+                                    fontSize: isSmall ? "13px" : "14px"
                                 }
                             }}
                             color="rgb(46, 46, 106)"

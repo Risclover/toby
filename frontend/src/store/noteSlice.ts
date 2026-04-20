@@ -4,7 +4,7 @@ export interface PersonalNote {
     id: string;
     userId: number;
     categoryId?: number;
-    title: string | null;
+    title: string;
     body: string;
     isPrivate: boolean;
     createdAt: string;
@@ -17,7 +17,7 @@ export interface PersonalNote {
 }
 
 interface CreateNotePayload {
-    title?: string;
+    title: string;
     body: string;
     categoryId?: number;
     isPrivate: boolean;
@@ -25,7 +25,7 @@ interface CreateNotePayload {
 
 interface UpdateNotePayload {
     id: string | undefined;
-    title?: string;
+    title: string;
     categoryId?: number;
     body: string;
     isPrivate: boolean;

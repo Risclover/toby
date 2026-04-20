@@ -36,7 +36,7 @@
 }
 
 .user-profile-main-container {
-    padding: .75rem 1rem;
+    padding: 1rem 1.5rem;
     height: 100%;
 }
 
@@ -131,6 +131,6 @@
     }
 
     .user-profile-main-container {
-        padding: 1rem;
+        padding: 0;
     }
 }

@@ -6,9 +6,10 @@ class PersonalNote(db.Model):
 
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4())[:8])
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    title = db.Column(db.String(50), nullable=True)
+    title = db.Column(db.String(50), nullable=False)
     body = db.Column(db.Text, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("personal_note_categories.id"), nullable=True)
+    is_favorite = db.Column(db.Boolean, default=False)
     is_private = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
@@ -25,6 +26,7 @@ class PersonalNote(db.Model):
             "body": self.body,
             "categoryId": self.category_id,
             "isPrivate": self.is_private,
+            "isFavorite": self.is_favorite,
             "category": {
                 "id": self.category.id,
                 "name": self.category.name,

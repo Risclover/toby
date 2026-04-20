@@ -44,10 +44,12 @@ def get_note(id):
 def create_note():
     data = request.get_json()
     body = data.get("body", "").strip()
-    title = data.get("title", "").strip() or None
+    title = data.get("title", "").strip()
     category_id = data.get("categoryId") or None
     is_private = data.get("isPrivate") or False
 
+    if not title:
+        return jsonify({"error": "Title is required"}), 400
     if not body:
         return jsonify({"error": "Body is required"}), 400
     if len(body) > 10000:
@@ -77,10 +79,12 @@ def update_note(id):
 
     data = request.get_json()
     body = data.get("body", "").strip()
-    title = data.get("title", "").strip() or None
+    title = data.get("title", "").strip()
     category_id = data.get("categoryId") or None
     is_private = data.get("isPrivate") or False
 
+    if not title:
+        return jsonify({"error": "Title is required"}), 400
     if not body:
         return jsonify({"error": "Body is required"}), 400
     if len(body) > 10000:
@@ -132,4 +136,19 @@ def update_note_category(id):
     db.session.commit()
 
     return jsonify(note.to_dict()), 200
+
+@personal_note_routes.route("/<string:id>/favorite", methods=["PATCH"])
+@login_required
+def toggle_note_favorite(id):
+    note = PersonalNote.query.get(id)
+
+    if not note:
+        return jsonify({ "error": "Note not found" }), 404
+    if note.user_id != current_user.id:
+        return jsonify({ "error": "Forbidden" }), 403
+
+    note.is_favorite = not note.is_favorite
+    db.session.commit()
+    return jsonify(note.to_dict()), 200
+
 

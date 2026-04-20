@@ -77,7 +77,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
         KittyNotification({
             title: "Habit marked incomplete",
             message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has returned. Go show it who's boss!</>,
-            color: "rgb(154, 221, 166)",
+            color: "green",
             icon: KittyIcons.Frustrated
         })
     };
@@ -97,7 +97,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
         KittyNotification({
             title: "Habit completed",
             message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is done for the day. Keep it up, champ!</>,
-            color: "rgb(154, 221, 166)",
+            color: "green",
             icon: KittyIcons.Celebrate
         })
     }
@@ -114,7 +114,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
                 KittyNotification({
                     title: "Habit marked incomplete",
                     message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has returned. Go show it who's boss!</>,
-                    color: "rgb(154, 221, 166)",
+                    color: "green",
                     icon: KittyIcons.Frustrated
                 })
                 setChecked(false);
@@ -123,7 +123,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
                 KittyNotification({
                     title: "Habit completed",
                     message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is done for the day. Keep it up, champ!</>,
-                    color: "rgb(154, 221, 166)",
+                    color: "green",
                     icon: KittyIcons.Celebrate
                 })
 
@@ -132,7 +132,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
             KittyNotification({
                 title: "Whoops - something went wrong",
                 message: <>Couldn't change the status of "<strong style={{ fontWeight: 500 }}>{name}</strong>". Refresh and try again.</>,
-                color: "rgb(234, 118, 118)",
+                color: "red",
                 icon: KittyIcons.Cry
             })
         }

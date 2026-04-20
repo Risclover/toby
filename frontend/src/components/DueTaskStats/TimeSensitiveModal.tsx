@@ -113,7 +113,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                 title: `Task${currentCheckedIds.size !== 1 ? "s" : ""} deleted`,
                 message: `You've successfully irradicated ${currentCheckedIds.size} time-sensitive task${currentCheckedIds.size !== 1 ? "s" : ""}.`,
                 icon: KittyIcons.Dance,
-                color: "rgb(154, 221, 166)"
+                color: "green"
             })
         } catch (error) {
             setPendingDeleteIds(new Set())
@@ -121,7 +121,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                 title: "Oh no! Your tasks are being stubborn.",
                 message: "That's weird - your tasks weren't deleted for some reason. Try again.",
                 icon: KittyIcons.Grumpy,
-                color: "rgb(234, 118, 118)"
+                color: "red"
             })
         }
 
@@ -147,7 +147,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                 title: `Task${currentCheckedIds.size !== 1 ? "s" : ""} completed`,
                 message: `You've successfully completed ${currentCheckedIds.size} time-sensitive task${currentCheckedIds.size !== 1 ? "s" : ""}.`,
                 icon: KittyIcons.Love,
-                color: "rgb(154, 221, 166)"
+                color: "green"
             })
         } catch (error) {
             setPendingCompleteIds(new Set())
@@ -155,7 +155,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                 title: "oh no! Your tasks are being stubborn.",
                 message: "That's weird - your tasks weren't deleted for some reason. Try again.",
                 icon: KittyIcons.Grumpy,
-                color: "rgb(234, 118, 118)"
+                color: "red"
             })
         }
     }

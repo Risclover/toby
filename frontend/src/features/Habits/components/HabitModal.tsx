@@ -88,7 +88,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
                 KittyNotification({
                     title: "Habit updated",
                     message: <>Looking good! Your changes to "<strong style={{ fontWeight: 500 }}>{form.values.name}</strong>" have been saved.</>,
-                    color: "rgb(154, 221, 166)",
+                    color: "green",
                     icon: KittyIcons.Write
                 })
             } else {
@@ -96,7 +96,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
                 KittyNotification({
                     title: "Habit created",
                     message: <>Great choice! "<strong style={{ fontWeight: 500 }}>{form.values.name}</strong>" has been added to your habits.</>,
-                    color: "rgb(154, 221, 166)",
+                    color: "green",
                     icon: KittyIcons.Workout
                 })
                 closeModal();
@@ -108,7 +108,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
             KittyNotification({
                 title: "Oopsies, something went wrong.",
                 message: "You might want to try that again.",
-                color: "rgb(234, 118, 118)",
+                color: "red",
                 icon: KittyIcons.Rain
             })
         }

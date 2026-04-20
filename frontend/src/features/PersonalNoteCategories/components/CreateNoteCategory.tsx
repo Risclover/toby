@@ -18,6 +18,7 @@ export const CreateNoteCategory = ({ opened, close }: Props) => {
     const [createCategory] = useCreateNoteCategoryMutation();
     const { data: categories } = useGetCategoriesQuery();
     console.log('CATEGORIES:', categories)
+
     const form = useForm<CreateCategoryForm>({
         initialValues: {
             name: "",

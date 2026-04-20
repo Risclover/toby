@@ -41,7 +41,7 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
                 KittyNotification({
                     title: "Habit marked incomplete",
                     message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has returned. Go show it who's boss!</>,
-                    color: "rgb(154, 221, 166)",
+                    color: "green",
                     icon: KittyIcons.Frustrated
                 })
                 setChecked(false);
@@ -50,7 +50,7 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
                 KittyNotification({
                     title: "Habit completed",
                     message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is done for the day. Keep it up, champ!</>,
-                    color: "rgb(154, 221, 166)",
+                    color: "green",
                     icon: KittyIcons.Celebrate
                 })
 
@@ -59,7 +59,7 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
             KittyNotification({
                 title: "Whoops - something went wrong",
                 message: <>Couldn't change the status of "<strong style={{ fontWeight: 500 }}>{name}</strong>". Refresh and try again.</>,
-                color: "rgb(234, 118, 118)",
+                color: "red",
                 icon: KittyIcons.Cry
             })
         }
@@ -71,14 +71,14 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
             KittyNotification({
                 title: "Habit deleted",
                 message: <>Done - "<strong style={{ fontWeight: 500 }}>{habit.name}</strong>" has been removed from your habits. Sayonara!</>,
-                color: "rgb(154, 221, 166)",
+                color: "green",
                 icon: KittyIcons.Wave
             })
         } catch (error) {
             KittyNotification({
                 title: "Whoops - something went wrong",
                 message: <>Couldn't delete "<strong style={{ fontWeight: 500 }}>{habit.name}</strong>". Refresh and try again.</>,
-                color: "rgb(234, 118, 118)",
+                color: "red",
                 icon: KittyIcons.Pout
             });
             console.error("Failed to delete habit:", error);
@@ -88,7 +88,7 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
     return (
         <div
             className="single-habit"
-            style={{ borderLeft: `4px solid ${color}`, opacity: habit.isCompletedToday ? 0.7 : 1, transition: "opacity 0.15s" }}
+            style={{ borderLeft: `6px solid ${color}`, opacity: habit.isCompletedToday ? 0.7 : 1, transition: "opacity 0.15s" }}
         >
             <div className="single-habit-left" onClick={handleToggle} style={{ cursor: "pointer" }}>
                 <div

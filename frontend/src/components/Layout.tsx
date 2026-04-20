@@ -29,9 +29,9 @@ export const Layout = () => {
 
     return (
         <div className="flex flex-1 gap-4 pt-0 w-full">
-            {(!isMobile && !isSmallScreen) &&
+            {/* {(!isMobile && !isSmallScreen) &&
                 <Sidebar setSidebarExpanded={setSidebarExpanded} sidebarExpanded={sidebarExpanded} />
-            }
+            } */}
             <main className="w-full">
                 <AppRoutes />
                 {householdId && <CreateTasklist householdId={householdId} />}

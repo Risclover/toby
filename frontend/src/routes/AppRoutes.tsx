@@ -24,7 +24,7 @@ import { UserProfileNotesTab } from "@/features/UserProfile/components/UserProfi
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
-    const isSmallScreen = useIsSmallScreen();
+    const isSmallScreen = useIsSmallScreen(700);
 
     return (
         <Routes>

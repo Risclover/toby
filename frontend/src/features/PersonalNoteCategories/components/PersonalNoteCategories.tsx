@@ -28,6 +28,7 @@ export const PersonalNoteCategories = ({
 
     const handleCategoryClick = (category: PersonalNoteCategory) => {
         onSelectCategory(selectedCategory === category ? null : category);
+        setShowNoteCategoryModal(false);
         form.setFieldValue("categoryId", category.id)
     };
 
@@ -85,9 +86,8 @@ export const PersonalNoteCategories = ({
 
     const buttonContent = (
         <>
-            {selectedCategory
-                ? <div className="category-item-color category-target-color" style={{ background: selectedCategory.color }} />
-                : <FaFolderClosed size=".825rem" color="var(--mantine-color-gray-7)" />
+            {!selectedCategory ?
+                < FaFolderClosed size=".825rem" color="var(--mantine-color-gray-7)" /> : null
             }
             {selectedCategory ? selectedCategory.name : "Uncategorized"}
         </>

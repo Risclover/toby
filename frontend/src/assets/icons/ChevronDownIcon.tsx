@@ -1,14 +1,16 @@
 type Props = {
     size: string;
     color: string;
+    style?: any;
 }
 
-export const ChevronDownIcon = ({ size, color }: Props) => {
+export const ChevronDownIcon = ({ size, color, style }: Props) => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -960 960 960"
             height={size}
+            style={style}
             width={size}
             fill={color}
         >

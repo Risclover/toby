@@ -14,14 +14,14 @@ export const TransferAdminRoleConfirmation = ({ opened, onClose, member, househo
                 title: "Admin role transferred",
                 message: <><strong style={{ fontWeight: 500 }}>{member.firstName} {member.lastName}</strong> is the new household admin. Long live the new king/queen! 👑</>,
                 icon: KittyIcons.Bubbles,
-                color: "rgb(154, 221, 166)"
+                color: "gr"
             })
         } catch (error) {
             KittyNotification({
                 title: "Whoops - something went wrong",
                 message: "Admin role couldn't be transferred. Please try again.",
                 icon: KittyIcons.Frustrated,
-                color: "rgb(234, 118, 118)"
+                color: "red"
             })
 
             console.error("Failed to transfer admin role:", error);

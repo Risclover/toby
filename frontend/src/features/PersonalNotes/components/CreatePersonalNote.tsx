@@ -1,85 +1,42 @@
-import { useEffect, useState, type MouseEvent } from "react";
-import { useCreateNoteMutation } from "@/store/noteSlice";
-import { Button, Text, Modal, Tooltip } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useState, type MouseEvent } from "react";
+import { Button, Text, Modal, Tooltip, Textarea } from "@mantine/core";
 import { SimpleEditor } from "@/components/TipTap/tiptap-templates/simple/simple-editor";
 import { useModalFocus } from "@/hooks/useModalFocus";
-import { useNavigate, useParams } from "react-router-dom";
 import { CreateNoteCategory } from "@/features/PersonalNoteCategories/components/CreateNoteCategory";
 import { FaGlobeAmericas } from "react-icons/fa";
 import { FaLock } from "react-icons/fa6";
-import { useIsMobile, useIsSmallScreen } from "@/hooks";
+import { useIsSmallScreen } from "@/hooks";
 import { PersonalNoteCategories } from "@/features/PersonalNoteCategories/components/PersonalNoteCategories";
 import { PersonalNoteCategoriesDrawer } from "@/features/PersonalNoteCategories/components/PersonalNoteCategoriesDrawer";
-import { Textarea } from "@mantine/core";
-import type { PersonalNoteCategory } from "@/store";
-
-export interface NoteFormValues {
-    title: string;
-    body: string;
-    isPrivate: boolean;
-    categoryId: number | undefined;
-}
+import { useCreateNoteForm } from "../hooks/useCreateNoteForm";
 
 type Props = {
     showNoteForm: boolean;
     setShowNoteForm: (val: boolean) => void;
 };
 
-const MAX_BODY_LENGTH = 10000;
-
 export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => {
     const isSmallScreen = useIsSmallScreen(480);
-    const isMobile = useIsMobile();
-    const navigate = useNavigate();
-    const { userId } = useParams();
-    const [createPersonalNote] = useCreateNoteMutation();
-    const [charCount, setCharCount] = useState(0);
-    const [editorKey, setEditorKey] = useState(0);
-    const [isPrivate, setIsPrivate] = useState(false);
     const [showNoteCategoryModal, setShowNoteCategoryModal] = useState(false);
     const [showNoteCategoryDrawer, setShowNoteCategoryDrawer] = useState(false);
-    // Lifted up from PersonalNoteCategories so it can be submitted with the note
-    const [selectedCategory, setSelectedCategory] = useState<PersonalNoteCategory | null>(null);
     const { ref: nameRef } = useModalFocus<HTMLTextAreaElement>();
 
-    const form = useForm<NoteFormValues>({
-        initialValues: { title: "", body: "", isPrivate: false, categoryId: undefined },
-        validate: {
-            body: (value) => {
-                const plain = value.replace(/<[^>]*>/g, "").trim();
-                if (plain.length === 0) return "Please give your note some content.";
-                if (plain.length > MAX_BODY_LENGTH)
-                    return `Content must be ${MAX_BODY_LENGTH.toLocaleString()} characters or fewer.`;
-                return null;
-            },
-        },
-    });
-
-    const handleCreateNote = form.onSubmit(async (values) => {
-        const data = await createPersonalNote({
-            title: values.title || undefined,
-            body: values.body,
-            isPrivate,
-            categoryId: values.categoryId
-        }).unwrap();
-        console.log('data:', data);
-        form.reset();
-        setCharCount(0);
-        setEditorKey(k => k + 1);
-        setSelectedCategory(null);
-        setShowNoteForm(false);
-    });
+    const {
+        form,
+        charCount,
+        editorKey,
+        selectedCategory,
+        handleSelectCategory,
+        handleBodyChange,
+        handleToggleVisibility,
+        handleSubmit,
+        handleReset,
+        MAX_BODY_LENGTH,
+    } = useCreateNoteForm(() => setShowNoteForm(false));
 
     const handleClose = () => {
         setShowNoteForm(false);
-        form.reset();
-        setSelectedCategory(null);
-    };
-
-    const handleChangeVisibility = (e: MouseEvent) => {
-        e.preventDefault();
-        setIsPrivate(prev => !prev);
+        handleReset();
     };
 
     return (
@@ -92,7 +49,7 @@ export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => 
             opened={showNoteForm}
             onClose={handleClose}
         >
-            <form onSubmit={handleCreateNote} className="create-note-modal-form">
+            <form onSubmit={handleSubmit} className="create-note-modal-form">
                 <div className="personal-note-form-header">
                     <Textarea
                         placeholder="Add title"
@@ -116,44 +73,44 @@ export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => 
                             },
                         }}
                     />
-
                     <div className="personal-note-form-subheader">
                         <Tooltip.Group openDelay={300} closeDelay={100}>
                             {isSmallScreen ? (
                                 <>
                                     <PersonalNoteCategories
+                                        form={form}
                                         setShowNoteCategoryModal={setShowNoteCategoryModal}
                                         selectedCategory={selectedCategory}
-                                        onSelectCategory={setSelectedCategory}
+                                        onSelectCategory={handleSelectCategory}
                                         isSmallScreen
                                         onOpenDrawer={() => setShowNoteCategoryDrawer(true)}
-                                        form={form}
                                     />
                                     <PersonalNoteCategoriesDrawer
+                                        form={form}
                                         showNoteCategoryDrawer={showNoteCategoryDrawer}
                                         setShowNoteCategoryDrawer={setShowNoteCategoryDrawer}
                                         setShowNoteCategoryModal={setShowNoteCategoryModal}
                                         selectedCategory={selectedCategory}
-                                        onSelectCategory={setSelectedCategory}
-                                        form={form}
+                                        onSelectCategory={handleSelectCategory}
                                     />
                                 </>
                             ) : (
                                 <PersonalNoteCategories
+                                    form={form}
                                     setShowNoteCategoryModal={setShowNoteCategoryModal}
                                     selectedCategory={selectedCategory}
-                                    onSelectCategory={setSelectedCategory}
-                                    form={form}
+                                    onSelectCategory={handleSelectCategory}
                                 />
                             )}
-
                             <Tooltip withArrow label="Change note visibility">
-                                <button onClick={handleChangeVisibility} className="personal-note-form-category">
-                                    {!isPrivate ? (
-                                        <><FaGlobeAmericas size="14px" color="var(--mantine-color-gray-7)" /> Public</>
-                                    ) : (
-                                        <><FaLock size=".825rem" color="var(--mantine-color-gray-7)" /> Private</>
-                                    )}
+                                <button
+                                    onClick={(e) => { e.preventDefault(); handleToggleVisibility(); }}
+                                    className="personal-note-form-category"
+                                >
+                                    {form.values.isPrivate
+                                        ? <><FaLock size=".825rem" color="var(--mantine-color-gray-7)" /> Private</>
+                                        : <><FaGlobeAmericas size="14px" color="var(--mantine-color-gray-7)" /> Public</>
+                                    }
                                 </button>
                             </Tooltip>
                         </Tooltip.Group>
@@ -161,13 +118,7 @@ export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => 
                 </div>
 
                 <div className="personal-note-form-content">
-                    <SimpleEditor
-                        key={editorKey}
-                        onChange={(html) => {
-                            form.setFieldValue("body", html);
-                            setCharCount(html.replace(/<[^>]*>/g, "").length);
-                        }}
-                    />
+                    <SimpleEditor key={editorKey} onChange={handleBodyChange} />
                     <Text ml={10} size="xs" c={charCount > MAX_BODY_LENGTH ? "red" : "dimmed"} mt={4}>
                         {charCount.toLocaleString()} / {MAX_BODY_LENGTH.toLocaleString()}
                     </Text>

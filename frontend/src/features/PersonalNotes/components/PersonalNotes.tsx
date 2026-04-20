@@ -1,29 +1,63 @@
-import { useGetUserNotesQuery } from "@/store/noteSlice"
-import { useNavigate, useParams } from "react-router-dom"
-import { CreatePersonalNote } from "./CreatePersonalNote";
-import { NoteViewer } from "./NoteViewer";
-import { SimpleEditor } from "@/components/TipTap/tiptap-templates/simple/simple-editor";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useGetUserNotesQuery } from "@/store/noteSlice";
 import { Button } from "@mantine/core";
-import { useState } from "react";
-import "../styles/PersonalNotes.css"
-import { useGetUserQuery } from "@/store";
-import { SingleNote } from "./SingleNote";
+import { CreatePersonalNote } from "./CreatePersonalNote";
+import { PersonalNoteGridItem } from "./PersonalNoteGridItem";
+import { PersonalNotesOptions, type NotesView } from "./PersonalNotesOptions";
+import "../styles/PersonalNotes.css";
+import { PersonalNoteListItem } from "./PersonalNoteListItem";
 
-export const PersonalNotes = ({ onNoteClick }: { onNoteClick: (val: string) => void; }) => {
-    const navigate = useNavigate();
+type Props = {
+    onNoteClick: (id: string) => void;
+}
+
+
+export const PersonalNotes = ({ onNoteClick }: Props) => {
     const { userId } = useParams();
-    const { data: user } = useGetUserQuery(Number(userId));
-    const { data: notes } = useGetUserNotesQuery(Number(userId))
+    const { data: notes } = useGetUserNotesQuery(Number(userId));
+    const [view, setView] = useState<NotesView>(() => {
+        const saved = localStorage.getItem("notes-view");
+        return saved !== null ? JSON.parse(saved) : "board";
+    });
     const [showNoteForm, setShowNoteForm] = useState(false);
 
-    console.log('NOTES:', notes)
+    useEffect(() => {
+        localStorage.setItem("notes-view", JSON.stringify(view));
+    }, [view])
+
     return (
         <div className="personal-notes-container">
-            <Button fw={500} size="sm" p=".5rem 1rem" h="auto" radius="sm" onClick={() => setShowNoteForm(true)}>Create note +</Button>
-            <div className="personal-notes-grid">
-                {notes?.map(note => <SingleNote onNoteClick={onNoteClick} note={note} />)}
-            </div>
+            <PersonalNotesOptions
+                view={view}
+                onViewChange={setView}
+                onCreateNote={() => setShowNoteForm(true)}
+            />
+            <Button
+                fw={500}
+                size="sm"
+                p=".5rem 1rem"
+                h="auto"
+                radius="sm"
+                onClick={() => setShowNoteForm(true)}
+            >
+                Create note +
+            </Button>
+            {view === "board" && (
+                <div className="personal-notes-grid">
+                    {notes?.map(note => (
+                        <PersonalNoteGridItem key={note.id} note={note} onNoteClick={onNoteClick} />
+                    ))}
+                </div>
+            )}
+            {view === "list" && (
+                <div className="personal-notes-list">
+                    {notes?.map(note => (
+                        <PersonalNoteListItem key={note.id} note={note} onNoteClick={onNoteClick} />
+                    ))}
+                </div>
+            )}
             <CreatePersonalNote showNoteForm={showNoteForm} setShowNoteForm={setShowNoteForm} />
         </div>
-    )
-}
+    );
+};

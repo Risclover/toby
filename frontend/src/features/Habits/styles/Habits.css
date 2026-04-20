@@ -5,13 +5,12 @@
     width: 100%;
 } */
 
-
 .single-habit {
     display: flex;
     align-items: flex-start;
     margin: .5rem 0;
     background: white;
-    border-radius: .875rem;
+    border-radius: .75rem;
     min-height: 55px;
     box-shadow: var(--mantine-shadow-xs);
     padding: 0 .875rem;
@@ -55,7 +54,7 @@
 }
 
 .single-habit:hover {
-    border-color: var(--mantine-color-gray-5);
+    background: #f7f8fc;
 }
 
 .single-habit-accent {
@@ -413,6 +412,21 @@
     .single-weekly-habit-details-top {
         gap: .25rem;
     }
+
+    .habits-control-container {
+        margin: .5rem .75rem;
+    }
+
+    .single-habit {
+        margin: 0 .75rem;
+        border-radius: 0;
+        border-left-width: 6px !important;
+    }
+
+    .single-habit:not(:last-child) {
+        border-bottom: 1px solid var(--mantine-color-gray-2);
+    }
+
 }
 
 
