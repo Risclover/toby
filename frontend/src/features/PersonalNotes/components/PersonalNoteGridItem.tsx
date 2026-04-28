@@ -1,4 +1,4 @@
-import { useToggleNoteFavoriteMutation, type PersonalNote } from "@/store";
+import { useAuthenticateQuery, useToggleNoteFavoriteMutation, type PersonalNote } from "@/store";
 import { getLightColor } from "@/utils/getLightColor";
 import { formatNoteDate } from "../utils/formatNoteDate";
 import { parseNoteContent } from "../utils/parseNoteContent";
@@ -6,6 +6,7 @@ import { ActionIcon, Text } from "@mantine/core";
 import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
 import type { MouseEvent } from "react";
+import { useParams } from "react-router-dom";
 
 type Props = {
     note: PersonalNote;
@@ -14,7 +15,8 @@ type Props = {
 
 export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
     const { text, images } = parseNoteContent(note.body);
-
+    const { data: currentUser } = useAuthenticateQuery();
+    const { userId } = useParams();
     const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
 
     const handleToggleFavorite = async (e: MouseEvent) => {
@@ -22,6 +24,7 @@ export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
         await toggleNoteFavorite(note.id).unwrap();
     }
 
+    const isOwner = currentUser?.id === Number(userId);
     return (
         <div
             className="single-note-container"
@@ -32,9 +35,9 @@ export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
                 <div className="single-note-container-header">
                     <div className="single-note-container-header--top">
                         {note.title && <div className="single-note-title">{note.title}</div>}
-                        <ActionIcon className="single-note-favorite-btn" onClick={handleToggleFavorite} size="md" color="rgb(5, 5, 73)" variant="transparent">
+                        {isOwner && <ActionIcon className="single-note-favorite-btn" onClick={handleToggleFavorite} size="md" color="rgb(5, 5, 73)" variant="transparent">
                             {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
-                        </ActionIcon>
+                        </ActionIcon>}
                     </div>
                     <div className="single-note-date-container">
                         Posted <span className="personal-note-date">{formatNoteDate(note.createdAt)}</span>

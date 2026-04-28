@@ -18,6 +18,14 @@
   width: 100%;
   padding: 0 0.5rem;
   flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none; // hide scrollbar on Firefox
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // hide scrollbar on Chrome
 }
 
 .tiptap-toolbar {
@@ -75,7 +83,7 @@
 
       .tiptap-toolbar-scroll {
         overflow-x: auto;
-        overflow-y: hidden;
+        // overflow-y: hidden;
         overscroll-behavior-x: contain;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
@@ -129,5 +137,40 @@
       border: none;
       box-shadow: none;
     }
+  }
+}
+
+.tiptap-toolbar {
+  display: flex;
+  align-items: center;
+}
+
+.tiptap-toolbar-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.tiptap-toolbar-chevron {
+  flex-shrink: 0;
+  padding: 0 6px;
+  height: 100%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--mantine-color-gray-5);
+  background: transparent;
+
+  &:hover {
+    color: var(--mantine-color-dark-9);
   }
 }

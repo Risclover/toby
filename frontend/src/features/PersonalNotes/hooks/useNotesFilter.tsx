@@ -36,7 +36,7 @@ const getInitialFilters = (): NotesFilterState => {
     return INITIAL_FILTERS;
 };
 
-export const useNotesFilter = (notes: PersonalNote[] | undefined) => {
+export const useNotesFilter = (notes: PersonalNote[] | undefined, isOwner: boolean) => {
 
     const [searchInput, setSearchInput] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -83,6 +83,7 @@ export const useNotesFilter = (notes: PersonalNote[] | undefined) => {
 
         return [...notes]
             .filter(note => {
+                if (!isOwner && note.isPrivate) return false;
                 if (filters.favoritism && !note.isFavorite) return false;
                 if (filters.visibility === "public" && note.isPrivate) return false;
                 if (filters.visibility === "private" && !note.isPrivate) return false;

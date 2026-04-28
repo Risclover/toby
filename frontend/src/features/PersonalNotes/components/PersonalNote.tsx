@@ -8,6 +8,7 @@ import { ChevronDownIcon } from "@/assets/icons/ChevronDownIcon";
 import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
 import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
+import { useParams } from "react-router-dom";
 
 type Props = {
     noteId: string;
@@ -18,8 +19,11 @@ type Props = {
 export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
     const { filters, updateFilters } = useNotesFilterContext();
     const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
+    const { userId } = useParams();
     const { data: currentUser } = useAuthenticateQuery();
     const { data: note } = useGetNoteQuery(noteId, { skip: !currentUser || !noteId });
+
+    const isOwner = currentUser?.id === Number(userId);
 
     const handleToggleFavorite = async () => {
         await toggleNoteFavorite(noteId);
@@ -34,9 +38,9 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
                     <ChevronDownIcon style={{ transform: "rotate(90deg)", marginRight: ".25rem" }} size="1rem" color="rgb(5, 5, 73)" />
                     Back
                 </Button>
-                <ActionIcon onClick={handleToggleFavorite} size="md" color="rgb(5, 5, 73)" variant="transparent">
+                {isOwner && <ActionIcon className="single-note-favorite-btn" onClick={handleToggleFavorite} size="md" color="rgb(5, 5, 73)" variant="transparent">
                     {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
-                </ActionIcon>
+                </ActionIcon>}
             </div>
             <div className="personal-note-header">
                 <div className="personal-note-title">{note.title}</div>

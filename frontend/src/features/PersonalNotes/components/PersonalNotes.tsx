@@ -12,7 +12,7 @@ import { PersonalNotesFilterDrawer } from "./PersonalNotesFilterDrawer";
 import { PersonalNotesToolbar } from "./PersonalNotesToolbar";
 import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
 import "../styles/PersonalNotes.css";
-import { useAuthenticateQuery, useGetCategoriesQuery, type PersonalNote } from "@/store";
+import { useAuthenticateQuery, useGetCategoriesQuery, useGetUserNoteCategoriesQuery, type PersonalNote } from "@/store";
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
 import { FaXmark } from "react-icons/fa6";
 import { AnimatePresence, motion } from "framer-motion";
@@ -24,7 +24,9 @@ type Props = {
 };
 
 export const PersonalNotes = ({ onNoteClick }: Props) => {
-    const { data: categories } = useGetCategoriesQuery();
+    const { userId } = useParams();
+    const { data: categories } = useGetUserNoteCategoriesQuery(Number(userId));
+
     const {
         searchInput,
         setSearchInput,
@@ -42,8 +44,6 @@ export const PersonalNotes = ({ onNoteClick }: Props) => {
     useEffect(() => {
         isFirstRender.current = false;
     }, []);
-
-    console.log('FILTERS:', filters.categoryIds);
 
     const [view, setView] = useState<NotesView>(() => {
         const saved = localStorage.getItem("notes-view");
@@ -71,7 +71,6 @@ export const PersonalNotes = ({ onNoteClick }: Props) => {
     };
 
     const isEmpty = paginatedNotes.length === 0;
-
 
     return (
         <div className="personal-notes-container">

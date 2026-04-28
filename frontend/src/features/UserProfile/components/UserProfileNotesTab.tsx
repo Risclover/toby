@@ -6,13 +6,17 @@ import { useGetUserNotesQuery } from "@/store/noteSlice";
 import { Tabs } from "@mantine/core";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
+import { useAuthenticateQuery } from "@/store";
+import { NotesPrivate } from "@/features/PersonalNotes/components/NotesPrivate";
 
 export const UserProfileNotesTab = () => {
     const { userId } = useParams();
+    const { data: currentUser } = useAuthenticateQuery();
     const { data: notes } = useGetUserNotesQuery(Number(userId));
 
     return (
-        <NotesFilterProvider notes={notes}>
+        <NotesFilterProvider notes={notes} isOwner={currentUser?.id === Number(userId)}>
             <UserProfileNotesTabInner />
         </NotesFilterProvider>
     );
@@ -23,6 +27,9 @@ const UserProfileNotesTabInner = () => {
     const navigate = useNavigate();
     const [activeNoteId, setActiveNoteId] = useState<string | null>(noteIdFromUrl ?? null);
     const { updateFilters, filters } = useNotesFilterContext();
+    const { data: userSettings } = useGetUserSettingsQuery(Number(userId));
+    const { data: user } = useAuthenticateQuery();
+    const { data: notes } = useGetUserNotesQuery(Number(userId))
 
     const handleNoteClick = (id: string) => {
         setActiveNoteId(id);
@@ -40,14 +47,17 @@ const UserProfileNotesTabInner = () => {
         navigate(`/profile/${userId}?tab=notes`);
     };
 
-    console.log(filters.categoryIds)
+    const myProfilePage = user?.id === Number(userId);
 
     return (
         <Tabs.Panel value="notes" className="user-profile-main-container">
-            {activeNoteId
+            {/* TODO: "Empty notes" state */}
+            {userSettings?.settings.notesPrivacyMode === "all_private" && !myProfilePage ? <NotesPrivate /> : myProfilePage && notes?.length === 0 ? "Empty notes" : activeNoteId ? <PersonalNote onCategoryClick={handleCategoryClick} noteId={activeNoteId} onBack={handleBack} />
+                : <PersonalNotes onNoteClick={handleNoteClick} />}
+            {/* {activeNoteId
                 ? <PersonalNote onCategoryClick={handleCategoryClick} noteId={activeNoteId} onBack={handleBack} />
                 : <PersonalNotes onNoteClick={handleNoteClick} />
-            }
+            } */}
         </Tabs.Panel>
     );
 };

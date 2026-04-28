@@ -434,10 +434,12 @@ def get_user_habits(user_id):
 @user_routes.route("/<int:id>/notes", methods=["GET"])
 @login_required
 def get_user_notes(id):
-    if current_user.id != id:
-        return jsonify({"error": "Forbidden"}), 403
+    query = PersonalNote.query.filter_by(user_id=id)
 
-    notes = PersonalNote.query.filter_by(user_id=id).order_by(PersonalNote.updated_at.desc()).all()
+    if current_user.id != id:
+        query = query.filter_by(is_private=False)
+
+    notes = query.order_by(PersonalNote.updated_at.desc()).all()
     return jsonify({"notes": [note.to_dict() for note in notes]}), 200
 
 @user_routes.route("/<int:id>/notes/<string:note_id>", methods=["GET"])

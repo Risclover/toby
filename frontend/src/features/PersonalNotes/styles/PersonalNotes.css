@@ -809,6 +809,10 @@
     padding-top: 0;
 }
 
+.notes-options-drawer--body>.notes-filter-section-body {
+    padding-top: 0;
+}
+
 .notes-category-banner {
     background: white;
     border-radius: .5rem;
@@ -867,6 +871,10 @@
     justify-content: space-between;
     width: 100%;
     flex-wrap: wrap;
+}
+
+.notes-filter-section-categories {
+    border-bottom: 0;
 }
 
 .personal-note-top-bar {

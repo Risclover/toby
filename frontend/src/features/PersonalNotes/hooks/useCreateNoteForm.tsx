@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useForm } from "@mantine/form";
 import { useCreateNoteMutation } from "@/store/noteSlice";
-import type { PersonalNoteCategory } from "@/store";
+import { useAuthenticateQuery, type PersonalNoteCategory } from "@/store";
 import { KittyNotification } from "@/components/KittyNotification";
 import { KittyIcons } from "@/assets";
+import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
 
 const MAX_BODY_LENGTH = 10000;
 
@@ -12,9 +13,11 @@ export const useCreateNoteForm = (onSuccess?: () => void) => {
     const [charCount, setCharCount] = useState(0);
     const [editorKey, setEditorKey] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState<PersonalNoteCategory | null>(null);
+    const { data: currentUser } = useAuthenticateQuery();
+    const { data: userSettings } = useGetUserSettingsQuery(currentUser?.id);
 
     const form = useForm({
-        initialValues: { title: "", body: "", isPrivate: false, categoryId: undefined as number | undefined },
+        initialValues: { title: "", body: "", isPrivate: userSettings?.settings.notesPrivacyMode === "private_by_default" ? true : false, categoryId: undefined as number | undefined },
         validate: {
             title: (value) => value.trim().length === 0 ? "Please give your note a title." : null,
             body: (value) => {

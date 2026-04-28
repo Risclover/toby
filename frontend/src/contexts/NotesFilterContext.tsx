@@ -12,7 +12,7 @@ export const useNotesFilterContext = () => {
     return ctx;
 };
 
-export const NotesFilterProvider = ({ notes, children }: { notes: PersonalNote[] | undefined, children: React.ReactNode }) => {
-    const value = useNotesFilter(notes);
+export const NotesFilterProvider = ({ notes, isOwner, children }: { notes: PersonalNote[] | undefined, isOwner: boolean, children: React.ReactNode }) => {
+    const value = useNotesFilter(notes, isOwner);
     return <NotesFilterContext.Provider value={value}>{children}</NotesFilterContext.Provider>;
 };

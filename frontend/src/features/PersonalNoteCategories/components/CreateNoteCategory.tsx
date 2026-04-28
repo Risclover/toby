@@ -69,10 +69,10 @@ export const CreateNoteCategory = ({ opened, close, onCategoryCreated }: Props) 
                 />
                 <RemainingChars count={form.values.name.trim().length} max={20} />
                 <FormColorInput label="Color" form={form} required />
-                <div className="form-input-error" style={{ height: "16px" }}>{hasColorError ? "This color is too light. Please choose something darker." : null}</div>
+                <div className="form-input-error" style={{ height: "16px", marginTop: "4px" }}>{hasColorError ? "This color is too light. Please choose something darker." : null}</div>
 
                 <div className="create-notes-category-form--footer">
-                    <Group justify="flex-end" mt="xs">
+                    <Group justify="flex-end" mt="md">
                         <Button h="auto" p=".5rem 1rem" size="sm" fw={500} color="rgb(5, 5, 73)" variant="outline" onClick={handleClose}>
                             Cancel
                         </Button>

@@ -9,6 +9,8 @@ import { useIsSmallScreen } from "@/hooks";
 import { PersonalNoteCategories } from "@/features/PersonalNoteCategories/components/PersonalNoteCategories";
 import { PersonalNoteCategoriesDrawer } from "@/features/PersonalNoteCategories/components/PersonalNoteCategoriesDrawer";
 import { useCreateNoteForm } from "../hooks/useCreateNoteForm";
+import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
+import { useAuthenticateQuery } from "@/store";
 
 type Props = {
     showNoteForm: boolean;

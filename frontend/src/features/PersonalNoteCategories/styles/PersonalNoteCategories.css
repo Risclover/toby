@@ -139,7 +139,6 @@
 .create-notes-category-form {
     display: flex;
     flex-direction: column;
-    gap: .25rem;
 }
 
 .create-notes-category-form--footer {}

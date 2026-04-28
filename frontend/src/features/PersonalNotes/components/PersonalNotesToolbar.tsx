@@ -123,7 +123,7 @@ export const PersonalNotesToolbar = ({
                     </ActionIcon>
                 )}
             </motion.div>
-            {userIsAuthor && <div className="personal-notes-toolbar--right">
+            <div className="personal-notes-toolbar--right">
                 {/* Controls sit on the left naturally, get pushed off as search expands */}
                 <PersonalNotesOptionsDrawer
                     isFiltered={isFiltered}
@@ -132,11 +132,11 @@ export const PersonalNotesToolbar = ({
                     view={view}
                     onViewChange={onViewChange}
                 />
-                <Button color="rgb(5, 5, 73)" size={isSmall ? "13px" : "sm"} h="auto" p=".5rem 1rem" fw={500} onClick={() => setShowNoteForm(true)}>
+                {userIsAuthor && <Button color="rgb(5, 5, 73)" size={isSmall ? "13px" : "sm"} h="auto" p=".5rem 1rem" fw={500} onClick={() => setShowNoteForm(true)}>
                     Create note
-                </Button>
+                </Button>}
                 {/* Search sits on the right, expands leftward pushing controls off */}
-            </div>}
+            </div>
 
         </div >
     );
