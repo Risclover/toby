@@ -133,18 +133,18 @@ export const PersonalNoteCategories = ({
                         <Menu.Item
                             fw={400}
                             leftSection={
-                                <div style={{ background: category.color, color: category.color }} className="category-item-color" />
+                                <div style={{ background: category.color }} className="category-item-color" />
                             }
                             rightSection={
                                 selectedCategory === category && (
-                                    <div className="category-check"><FaCheck color="var(--mantine-color-green-5)" size="1rem" /></div>
+                                    <div className="category-check"><FaCheck color={category.color} size="1rem" /></div>
                                 )
                             }
                             key={category.id}
                             color={category.color}
                             onClick={() => handleCategoryClick(category)}
                             style={{
-                                color: category.color,
+                                color: "black",
                                 "--item-bg": category.color ? getLightColor(category.color) : "transparent",
                             } as React.CSSProperties}
                             className={`category-menu-item${selectedCategory === category ? " active" : ""}`}
@@ -153,7 +153,7 @@ export const PersonalNoteCategories = ({
 
                         </Menu.Item>
                     ))}
-                    <Menu.Item leftSection={<FaPlus color="var(--mantine-color-gray-7)" size="1rem" />} onClick={() => setShowNoteCategoryModal(true)}>
+                    <Menu.Item leftSection={<FaPlus color="var(--mantine-color-gray-7)" size="18px" />} onClick={() => setShowNoteCategoryModal(true)}>
                         <div className="category-menu-item">
                             Add category
                         </div>

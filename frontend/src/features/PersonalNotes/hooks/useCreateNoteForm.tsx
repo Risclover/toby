@@ -47,6 +47,7 @@ export const useCreateNoteForm = (onSuccess: () => void) => {
                 title: values.title,
                 body: values.body,
                 isPrivate: values.isPrivate,
+                isFavorite: false,
                 categoryId: values.categoryId,
             }).unwrap();
             form.reset();

@@ -25,7 +25,7 @@ export const SingleWeeklyHabit = ({ habit }: Props) => {
     const completedSet = new Set(habit.completionsThisWeek);
 
     return (
-        <div className="single-weekly-habit" style={{ borderLeft: `4px solid ${habit.color}` }}>
+        <div className="single-weekly-habit" style={{ borderLeft: `5px solid ${habit.color}` }}>
             {habit.description
                 ?
                 <div className="single-weekly-habit-details">

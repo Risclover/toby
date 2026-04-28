@@ -5,17 +5,24 @@
     width: 100%;
 } */
 
+.single-habit-container {
+    padding: 3px 0;
+    margin: .5rem 0;
+    background: white;
+    border-radius: .5rem;
+    min-height: 55px;
+    box-shadow: var(--mantine-shadow-xs);
+    overflow: hidden;
+}
+
 .single-habit {
     display: flex;
     align-items: flex-start;
-    margin: .5rem 0;
-    background: white;
-    border-radius: .75rem;
-    min-height: 55px;
-    box-shadow: var(--mantine-shadow-xs);
     padding: 0 .875rem;
     padding-top: 1rem;
     overflow: hidden;
+    min-height: 55px;
+
     transition: border-color 0.15s, opacity 0.15s;
 }
 
@@ -148,9 +155,9 @@
     flex-direction: column;
     background: white;
     box-shadow: var(--mantine-shadow-xs);
-    margin: .5rem 0;
+    margin: 1rem 0;
     padding: .75rem 1rem;
-    border-radius: .875rem;
+    border-radius: .5rem;
     gap: .5rem;
 }
 
@@ -266,10 +273,9 @@
 
 .monthly-habit {
     background: white;
-    border-radius: .875rem;
+    border-radius: .5rem;
     box-shadow: var(--mantine-shadow-xs);
     padding: 1rem;
-    margin: .25rem;
 }
 
 .monthly-habit-title {
@@ -287,7 +293,7 @@
 }
 
 .monthly-habit-view {
-    margin-top: .75rem;
+    margin-top: .5rem;
 }
 
 .homepage-habits-container {
@@ -405,8 +411,14 @@
         font-size: var(--text-sm);
     }
 
+    .monthly-habit-view {
+        padding: 0 .75rem;
+    }
+
     .single-weekly-habit {
         padding: .75rem 1rem;
+        margin: .5rem 0;
+        border-radius: 0;
     }
 
     .single-weekly-habit-details-top {
@@ -418,29 +430,42 @@
     }
 
     .single-habit {
-        margin: 0 .75rem;
-        border-radius: 0;
-        border-left-width: 6px !important;
+        padding-top: calc(1rem + 1.5px);
     }
 
-    .single-habit:not(:last-child) {
-        border-bottom: 1px solid var(--mantine-color-gray-2);
+    .single-habit-container {
+        margin: 0 .75rem;
+        border-radius: 0;
+    }
+
+    .single-habit-container:not(:last-child) {
+        border-bottom: 1px solid var(--mantine-color-gray-3);
+    }
+
+    .this-weeks-habits {
+        padding: 0 .75rem;
     }
 
 }
 
 
-@media (max-width: 390px) {
+@media (max-width: 398px) {
 
     .monthly-habit-grid {
         gap: 6px;
     }
 
     .monthly-habit {
-        margin: .25rem 2rem;
+        padding: 1.5rem 1.75rem;
+        border-radius: 0;
     }
 
     .monthly-habit-title {
-        font-size: var(--text-sm);
+        font-size: var(--text-base);
+        line-height: 1.2;
+    }
+
+    .monthly-habit-header {
+        margin-bottom: 1rem !important;
     }
 }

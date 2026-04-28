@@ -109,7 +109,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                             variant={localFilters?.importance === "important" ? "filled" : "outline"}
                             onClick={() => setLocalFilters({ ...localFilters, importance: "important" })}
                         >
-                            Important
+                            Important only
                         </Button>
                     </Group>
                 </Stack>

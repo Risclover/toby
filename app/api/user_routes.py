@@ -460,3 +460,13 @@ def get_user_note(id, note_id):
         return jsonify({"error": "Forbidden"}), 403
 
     return jsonify(note.to_dict()), 200
+
+@user_routes.route("/<int:id>/note-categories")
+def get_user_note_categories(id):
+    user = User.query.get(id)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    categories = PersonalNoteCategory.query.filter_by(user_id=id).order_by(func.lower(PersonalNoteCategory.name)).all()
+    return jsonify([c.to_dict() for c in categories])

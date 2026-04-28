@@ -1,6 +1,6 @@
 import { FormColorInput } from "@/components/FormColorInput";
 import { useCreateNoteCategoryMutation, useGetCategoriesQuery } from "@/store/noteCategorySlice";
-import { Button, Modal, TextInput } from "@mantine/core"
+import { Button, Group, Modal, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import "../styles/PersonalNoteCategories.css"
 import { isTooLight } from "@/utils";
@@ -46,8 +46,8 @@ export const CreateNoteCategory = ({ opened, close }: Props) => {
     if (!categories) return null;
 
     return (
-        <Modal opened={opened} onClose={close} title="Create notes category" radius="md" size="md">
-            <form onSubmit={handleSubmit}>
+        <Modal opened={opened} onClose={close} title="Create notes category" radius="md" size="sm">
+            <form className="create-notes-category-form" onSubmit={handleSubmit}>
                 <TextInput
                     label="Name"
                     required
@@ -58,11 +58,13 @@ export const CreateNoteCategory = ({ opened, close }: Props) => {
 
                 <FormColorInput form={form} required={false} />
                 {hasColorError ? "This color is too light. Please choose something darker." : null}
-                <Button type="submit">Submit</Button>
+
+                <div className="create-notes-category-form--footer">
+                    <Group justify="flex-end">
+                        <Button type="submit" fw={500}>Submit</Button>
+                    </Group>
+                </div>
             </form>
-            <div className="categories-list">
-                {categories.map(category => <div className="single-category"><div className="category-color" style={{ backgroundColor: category.color }}></div>{category?.name}</div>)}
-            </div>
         </Modal>
     )
 }

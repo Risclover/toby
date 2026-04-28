@@ -9,6 +9,7 @@ import { showHabitIncompleteToast } from "../utils/showHabitIncompleteToast";
 import { showHabitCompleteToast } from "../utils/showHabitCompleteToast";
 import { KittyNotification } from "@/components/KittyNotification";
 import { KittyIcons } from "@/assets";
+import { useIsSmallScreen } from "@/hooks";
 
 type Props = {
     habit: Habit;
@@ -28,6 +29,7 @@ function hexToRgba(hex: string, alpha: number): string {
 }
 
 export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: Props) => {
+    const isSmall = useIsSmallScreen(425);
     const [checked, setChecked] = useState(habit.isCompletedToday);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteHabit] = useDeleteHabitMutation();
@@ -86,67 +88,69 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
     }
 
     return (
-        <div
-            className="single-habit"
-            style={{ borderLeft: `6px solid ${color}`, opacity: habit.isCompletedToday ? 0.7 : 1, transition: "opacity 0.15s" }}
-        >
-            <div className="single-habit-left" onClick={handleToggle} style={{ cursor: "pointer" }}>
-                <div
-                    style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: "50%",
-                        border: `1.5px solid ${color}`,
-                        background: habit.isCompletedToday ? color : "transparent",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                        transition: "all 0.15s",
-                    }}
-                >
-                    {habit.isCompletedToday && (
-                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="1.5,6 5,9.5 10.5,3" />
-                        </svg>
+        <div className="single-habit-container" style={{ borderLeft: !isSmall ? `5px solid ${color}` : "" }}>
+            <div
+                className="single-habit"
+                style={{ borderLeft: isSmall ? `4px solid ${color}` : "", opacity: habit.isCompletedToday ? 0.7 : 1, transition: "opacity 0.15s" }}
+            >
+                <div className="single-habit-left" onClick={handleToggle} style={{ cursor: "pointer" }}>
+                    <div
+                        style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: "50%",
+                            border: `1.5px solid ${color}`,
+                            background: habit.isCompletedToday ? color : "transparent",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                            transition: "all 0.15s",
+                        }}
+                    >
+                        {habit.isCompletedToday && (
+                            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="1.5,6 5,9.5 10.5,3" />
+                            </svg>
+                        )}
+                    </div>
+                </div>
+
+                <div className="single-habit-details">
+                    <div
+                        className="single-habit-name"
+                        style={{
+
+                            color: habit.isCompletedToday ? "var(--mantine-color-dimmed)" : undefined,
+                            textDecoration: habit.isCompletedToday ? "line-through" : "none",
+                            transition: "all 0.15s",
+                        }}
+                    >
+                        {name}
+                    </div>
+                    {description && (
+                        <div className="single-habit-description" style={{ opacity: habit.isCompletedToday ? 0.6 : 1 }}>
+                            {description}
+                        </div>
                     )}
                 </div>
-            </div>
-
-            <div className="single-habit-details">
-                <div
-                    className="single-habit-name"
-                    style={{
-
-                        color: habit.isCompletedToday ? "var(--mantine-color-dimmed)" : undefined,
-                        textDecoration: habit.isCompletedToday ? "line-through" : "none",
-                        transition: "all 0.15s",
-                    }}
-                >
-                    {name}
+                <div className="single-habit-right">
+                    {isPrivate && <PadlockIcon size="1.15rem" color="var(--mantine-color-red-5)" />}
+                    <HabitMenu setShowDeleteConfirmation={setShowDeleteConfirmation} habit={habit} />
                 </div>
-                {description && (
-                    <div className="single-habit-description" style={{ opacity: habit.isCompletedToday ? 0.6 : 1 }}>
-                        {description}
+                {showDeleteConfirmation &&
+                    <div onClick={(e) => e.stopPropagation()}>
+                        <DeleteConfirmation
+                            modalTitle="Delete habit"
+                            itemName={habit.name}
+                            itemType="habit"
+                            opened={showDeleteConfirmation}
+                            setShowDeleteConfirmation={setShowDeleteConfirmation}
+                            handleDeleteItem={handleDelete}
+                        />
                     </div>
-                )}
+                }
             </div>
-            <div className="single-habit-right">
-                {isPrivate && <PadlockIcon size="1.15rem" color="var(--mantine-color-red-5)" />}
-                <HabitMenu setShowDeleteConfirmation={setShowDeleteConfirmation} habit={habit} />
-            </div>
-            {showDeleteConfirmation &&
-                <div onClick={(e) => e.stopPropagation()}>
-                    <DeleteConfirmation
-                        modalTitle="Delete habit"
-                        itemName={habit.name}
-                        itemType="habit"
-                        opened={showDeleteConfirmation}
-                        setShowDeleteConfirmation={setShowDeleteConfirmation}
-                        handleDeleteItem={handleDelete}
-                    />
-                </div>
-            }
         </div>
     )
 }

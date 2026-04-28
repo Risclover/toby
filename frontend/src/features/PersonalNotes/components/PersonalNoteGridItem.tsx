@@ -1,9 +1,11 @@
-import type { PersonalNote } from "@/store";
+import { useToggleNoteFavoriteMutation, type PersonalNote } from "@/store";
 import { getLightColor } from "@/utils/getLightColor";
 import { formatNoteDate } from "../utils/formatNoteDate";
 import { parseNoteContent } from "../utils/parseNoteContent";
-import { Text } from "@mantine/core";
-import { FaLock } from "react-icons/fa6";
+import { ActionIcon, Text } from "@mantine/core";
+import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
+import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
+import type { MouseEvent } from "react";
 
 type Props = {
     note: PersonalNote;
@@ -13,6 +15,13 @@ type Props = {
 export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
     const { text, images } = parseNoteContent(note.body);
 
+    const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
+
+    const handleToggleFavorite = async (e: MouseEvent) => {
+        e.stopPropagation();
+        await toggleNoteFavorite(note.id).unwrap();
+    }
+
     return (
         <div
             className="single-note-container"
@@ -20,8 +29,13 @@ export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
             onClick={() => onNoteClick(note.id)}
         >
             <div className="single-note-container-main">
-                <div className="single-note-container-top">
-                    {note.title && <div className="single-note-title">{note.title}</div>}
+                <div className="single-note-container-header">
+                    <div className="single-note-container-header--top">
+                        {note.title && <div className="single-note-title">{note.title}</div>}
+                        <ActionIcon className="single-note-favorite-btn" onClick={handleToggleFavorite} size="md" color="rgb(5, 5, 73)" variant="transparent">
+                            {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
+                        </ActionIcon>
+                    </div>
                     <div className="single-note-date-container">
                         Posted <span className="personal-note-date">{formatNoteDate(note.createdAt)}</span>
                         {note.updatedAt !== note.createdAt && (
@@ -44,17 +58,7 @@ export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
                 <div className="single-note-footer">
                     <div className="single-note-footer-left">
                         <div className="single-note-subheader">
-                            {note.category && (
-                                <div
-                                    className="personal-note-category"
-                                    style={{
-                                        background: getLightColor(note.category.color ?? "#000000"),
-                                        color: note.category.color,
-                                    }}
-                                >
-                                    {note.category.name}
-                                </div>
-                            )}
+                            {note.category && <PersonalNoteCategoryPill category={note.category} />}
                             {note.isPrivate && (
                                 <div className="personal-note-form-category">
                                     <FaLock size=".75rem" color="var(--mantine-color-gray-7)" /> Private

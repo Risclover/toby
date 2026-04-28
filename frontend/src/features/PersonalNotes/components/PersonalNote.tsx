@@ -1,45 +1,50 @@
-import { useGetNoteQuery } from "@/store/noteSlice";
+import { useGetNoteQuery, useToggleNoteFavoriteMutation } from "@/store/noteSlice";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { NoteViewer } from "./NoteViewer";
-import { Button } from "@mantine/core";
+import { ActionIcon, Button } from "@mantine/core";
 import { getLightColor } from "@/utils/getLightColor";
 import { formatNoteDate } from "../utils/formatNoteDate";
 import { ChevronDownIcon } from "@/assets/icons/ChevronDownIcon";
-import { FaLock } from "react-icons/fa6";
+import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
+import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
+import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
 
 type Props = {
     noteId: string;
     onBack: () => void;
+    onCategoryClick: (categoryId: number) => void;
 }
 
-export const PersonalNote = ({ noteId, onBack }: Props) => {
+export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
+    const { filters, updateFilters } = useNotesFilterContext();
+    const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
     const { data: currentUser } = useAuthenticateQuery();
     const { data: note } = useGetNoteQuery(noteId, { skip: !currentUser || !noteId });
+
+    const handleToggleFavorite = async () => {
+        await toggleNoteFavorite(noteId);
+    }
 
     if (!note) return null;
 
     return (
         <div className="personal-note-container">
             <div className="personal-note-top-bar">
-                <Button fw={500} p={0} variant="transparent" size="md" onClick={onBack}>
-                    <ChevronDownIcon style={{ transform: "rotate(90deg)", marginRight: ".25rem" }} size="1rem" color="var(--mantine-color-blue-7)" />
+                <Button color="rgb(5, 5, 73)" fw={500} p={0} variant="transparent" size="md" h="auto" onClick={onBack}>
+                    <ChevronDownIcon style={{ transform: "rotate(90deg)", marginRight: ".25rem" }} size="1rem" color="rgb(5, 5, 73)" />
                     Back
                 </Button>
+                <ActionIcon onClick={handleToggleFavorite} size="md" color="rgb(5, 5, 73)" variant="transparent">
+                    {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
+                </ActionIcon>
             </div>
             <div className="personal-note-header">
                 <div className="personal-note-title">{note.title}</div>
                 <div className="personal-note-form-subheader">
-                    {note.category && (
-                        <div
-                            className="personal-note-category"
-                            style={{
-                                background: getLightColor(note.category.color ?? "#000000"),
-                                color: note.category.color,
-                            }}
-                        >
-                            {note.category.name}
-                        </div>
-                    )}
+                    {note.category && <PersonalNoteCategoryPill onClick={(e) => {
+                        e.stopPropagation();
+                        onCategoryClick(note.category!.id);
+                    }} category={note.category} />}
                     {note.isPrivate && (
                         <div className="personal-note-form-category">
                             <FaLock size=".75rem" color="var(--mantine-color-gray-7)" /> Private

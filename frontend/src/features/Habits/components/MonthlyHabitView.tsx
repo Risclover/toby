@@ -4,6 +4,7 @@ import { useAuthenticateQuery } from "@/store";
 import { useGetUserHabitsQuery, useGetMonthlyCompletionsQuery, type Habit } from "@/store/habitSlice";
 import { HabitMonthCard } from "./HabitMonthCard";
 import { useParams } from "react-router-dom";
+import { useIsSmallScreen } from "@/hooks";
 
 const MONTHS = [
     "January", "February", "March", "April", "May", "June",
@@ -15,6 +16,7 @@ type Props = {
 }
 
 export function MonthlyHabitView({ habits }: Props) {
+    const isSmall = useIsSmallScreen(425);
     const today = new Date();
     const [year, setYear] = useState(today.getFullYear());
     const [month, setMonth] = useState(today.getMonth() + 1); // 1-indexed
@@ -44,18 +46,18 @@ export function MonthlyHabitView({ habits }: Props) {
         <div className="monthly-habit-view">
             {/* Month navigation */}
             <div style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 1rem",
-                gap: 12, marginBottom: ".75rem", background: "white", borderRadius: ".875rem", boxShadow: "var(--mantine-shadow-xs)"
+                display: "flex", alignItems: "center", justifyContent: "space-between", padding: ".25rem 1rem",
+                gap: 12, marginBottom: isSmall ? ".5rem" : "1rem", background: "white", borderRadius: isSmall ? 0 : ".5rem", boxShadow: "var(--mantine-shadow-xs)"
             }}>
                 <button onClick={prev} style={{ padding: "5px 12px", fontSize: 15 }}>&#8592;</button>
                 <span style={{
-                    fontSize: 17, fontWeight: 500,
+                    fontSize: isSmall ? 15 : 20, fontWeight: 500,
                     color: "var(--color-text-primary)",
                     minWidth: 160, textAlign: "center",
                 }}>
                     {MONTHS[month - 1]} {year}
                 </span>
-                <button onClick={next} disabled={isNextDisabled} style={{ padding: "5px 12px", fontSize: 15 }}>
+                <button onClick={next} disabled={isNextDisabled} style={{ padding: "5px 12px", fontSize: isSmall ? 15 : 20 }}>
                     &#8594;
                 </button>
             </div>

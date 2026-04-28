@@ -80,6 +80,10 @@
     background-color: rgb(245, 245, 255) !important;
 }
 
+.mantine-Switch-track {
+    cursor: pointer !important;
+}
+
 /* .mantine-TextInput-input {
     background: var(--input-background) !important;
 }

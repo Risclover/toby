@@ -7,6 +7,7 @@ export interface PersonalNote {
     title: string;
     body: string;
     isPrivate: boolean;
+    isFavorite: boolean; // was missing from type despite being in backend to_dict()
     createdAt: string;
     updatedAt: string;
     category: {
@@ -21,6 +22,7 @@ interface CreateNotePayload {
     body: string;
     categoryId?: number;
     isPrivate: boolean;
+    isFavorite: boolean;
 }
 
 interface UpdateNotePayload {
@@ -29,9 +31,10 @@ interface UpdateNotePayload {
     categoryId?: number;
     body: string;
     isPrivate: boolean;
+    isFavorite: boolean;
 }
 
-export const noteApiSlice = apiSlice.injectEndpoints({
+export const noteSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getUserNotes: builder.query<PersonalNote[], number>({
             query: (userId) => `/users/${userId}/notes`,
@@ -78,6 +81,17 @@ export const noteApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: [{ type: "Note", id: "LIST" }],
         }),
+
+        toggleNoteFavorite: builder.mutation<PersonalNote, string>({
+            query: (id) => ({
+                url: `/personal-notes/${id}/favorite`,
+                method: "PATCH",
+            }),
+            invalidatesTags: (result, error, id) => [
+                { type: "Note", id },
+                { type: "Note", id: "LIST" },
+            ],
+        }),
     }),
 });
 
@@ -88,4 +102,5 @@ export const {
     useCreateNoteMutation,
     useUpdateNoteMutation,
     useDeleteNoteMutation,
-} = noteApiSlice;
+    useToggleNoteFavoriteMutation,
+} = noteSlice;

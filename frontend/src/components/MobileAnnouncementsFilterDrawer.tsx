@@ -55,7 +55,7 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
                             h="auto"
                             p="0.5rem 1rem"
                             fw={500} variant={localFilters.importance === "important" ? "filled" : "outline"} onClick={() => setLocalFilters({ ...localFilters, importance: "important" })}>
-                            Important
+                            Important Only
                         </Button>
                     </Group>
                 </Stack>

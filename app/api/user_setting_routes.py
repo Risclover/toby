@@ -114,3 +114,4 @@ def reset_settings():
         "user": user.to_dict(),
         "settings": user_settings.to_dict(),
     }), 200
+    

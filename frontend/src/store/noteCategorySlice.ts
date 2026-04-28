@@ -75,6 +75,12 @@ export const noteCategoryApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: [{ type: "NoteCategory", id: "LIST" }]
         }),
+
+        getUserNoteCategories: builder.query<PersonalNoteCategory[], number>({
+            query: (userId) => `/users/${userId}/note-categories`,
+            transformResponse: (res: PersonalNoteCategory[]) => res,
+            providesTags: [{ type: "NoteCategory", id: "LIST" }],
+        }),
     })
 })
 
@@ -84,5 +90,6 @@ export const {
     useDeleteNoteCategoryMutation,
     useGetCategoryQuery,
     useUpdateCategoryMutation,
-    useUpdateNoteCategoryMutation
+    useUpdateNoteCategoryMutation,
+    useGetUserNoteCategoriesQuery
 } = noteCategoryApiSlice

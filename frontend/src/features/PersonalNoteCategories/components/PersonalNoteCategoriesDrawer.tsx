@@ -5,7 +5,6 @@ import { FaPlus } from "react-icons/fa6";
 import { FaCheck } from "react-icons/fa6";
 import { getLightColor } from "@/utils/getLightColor";
 import type { UseFormReturnType } from "@mantine/form";
-import type { NoteFormValues } from "@/features/PersonalNotes/components/CreatePersonalNote";
 
 type Props = {
     showNoteCategoryDrawer: boolean;
@@ -13,7 +12,22 @@ type Props = {
     setShowNoteCategoryModal: (val: boolean) => void;
     selectedCategory: PersonalNoteCategory | null;
     onSelectCategory: (category: PersonalNoteCategory | null) => void;
-    form: UseFormReturnType<NoteFormValues, (values: NoteFormValues) => NoteFormValues>;
+    form: UseFormReturnType<{
+        title: string;
+        body: string;
+        isPrivate: boolean;
+        categoryId: number | undefined;
+    }, (values: {
+        title: string;
+        body: string;
+        isPrivate: boolean;
+        categoryId: number | undefined;
+    }) => {
+        title: string;
+        body: string;
+        isPrivate: boolean;
+        categoryId: number | undefined;
+    }>
 };
 
 export const PersonalNoteCategoriesDrawer = ({
@@ -61,7 +75,7 @@ export const PersonalNoteCategoriesDrawer = ({
                         className={`category-drawer-item ${selectedCategory === category ? "active" : ""}`}
                         onClick={() => handleCategoryClick(category)}
                         style={{
-                            color: category.color,
+                            // color: category.color,
                             "--item-bg": category.color ? getLightColor(category.color) : "transparent",
                         } as React.CSSProperties}
                     >
@@ -70,7 +84,7 @@ export const PersonalNoteCategoriesDrawer = ({
                             <span className="category-drawer-item-name">{category.name}</span>
                         </div>
                         {selectedCategory === category && (
-                            <span className="category-drawer-check"><FaCheck color="var(--mantine-color-green-5)" size="20px" /></span>
+                            <span className="category-drawer-check"><FaCheck color={category.color} size="1rem" /></span>
                         )}
                     </div>
                 ))}
@@ -81,7 +95,7 @@ export const PersonalNoteCategoriesDrawer = ({
                         setShowNoteCategoryDrawer(false);
                     }}
                 >
-                    <FaPlus color="var(--mantine-color-gray-7)" size="20px" />
+                    <FaPlus color="var(--mantine-color-gray-7)" size="18px" />
                     Add category
                 </div>
             </div>
