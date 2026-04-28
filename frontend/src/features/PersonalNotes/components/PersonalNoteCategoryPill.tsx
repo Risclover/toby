@@ -1,5 +1,7 @@
 import { getLightColor } from "@/utils/getLightColor";
 import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
+import { isTooLight } from "@/utils";
+import { getContrastTextColor } from "@/utils/getContrastTextColor";
 
 type Props = {
     category: { id: number; name: string; color?: string | null };
@@ -23,7 +25,7 @@ export const PersonalNoteCategoryPill = ({ category, onClick }: Props) => {
             className="personal-note-category"
             style={{
                 background: getLightColor(category.color ?? "#000000"),
-                color: category.color ?? undefined,
+                color: getContrastTextColor(category.color),
                 cursor: "pointer",
             }}
             onClick={handleClick}

@@ -259,8 +259,8 @@ html.prefers-collapsed .sidebar .nav-link .label {
 }
 
 .form-input-error {
-    color: var(--mantine-color-red-5);
-    font-size: 0.8rem;
+    color: var(--mantine-color-red-6);
+    font-size: var(--text-xs);
     line-height: 1.3;
 }
 

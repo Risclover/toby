@@ -5,6 +5,7 @@ import { FaPlus } from "react-icons/fa6";
 import { FaCheck } from "react-icons/fa6";
 import { getLightColor } from "@/utils/getLightColor";
 import type { UseFormReturnType } from "@mantine/form";
+import { getContrastTextColor } from "@/utils/getContrastTextColor";
 
 type Props = {
     showNoteCategoryDrawer: boolean;
@@ -77,6 +78,7 @@ export const PersonalNoteCategoriesDrawer = ({
                         style={{
                             // color: category.color,
                             "--item-bg": category.color ? getLightColor(category.color) : "transparent",
+                            color: getContrastTextColor(category.color)
                         } as React.CSSProperties}
                     >
                         <div className="category-drawer-item-details">

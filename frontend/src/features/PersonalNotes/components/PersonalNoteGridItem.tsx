@@ -25,7 +25,7 @@ export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
     return (
         <div
             className="single-note-container"
-            style={{ borderTop: `5px solid ${note.category ? getLightColor(note.category.color ?? "#000000", 1) : "transparent"}` }}
+            style={{ borderTop: `6px solid ${note.category ? getLightColor(note.category.color ?? "#000000", 1) : "transparent"}` }}
             onClick={() => onNoteClick(note.id)}
         >
             <div className="single-note-container-main">

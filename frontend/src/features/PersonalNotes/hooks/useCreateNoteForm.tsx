@@ -7,7 +7,7 @@ import { KittyIcons } from "@/assets";
 
 const MAX_BODY_LENGTH = 10000;
 
-export const useCreateNoteForm = (onSuccess: () => void) => {
+export const useCreateNoteForm = (onSuccess?: () => void) => {
     const [createPersonalNote] = useCreateNoteMutation();
     const [charCount, setCharCount] = useState(0);
     const [editorKey, setEditorKey] = useState(0);

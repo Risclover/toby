@@ -1,5 +1,6 @@
 import type { NoteFormValues } from "@/features/PersonalNotes/components/CreatePersonalNote";
 import { useGetCategoriesQuery, type PersonalNoteCategory } from "@/store";
+import { getContrastTextColor } from "@/utils/getContrastTextColor";
 import { getLightColor } from "@/utils/getLightColor";
 import { Button, Menu, Tooltip } from "@mantine/core";
 import type { UseFormReturnType } from "@mantine/form";
@@ -98,9 +99,13 @@ export const PersonalNoteCategories = ({
         fw: 500,
         variant: "light" as const,
         className: "personal-note-form-category",
-        color: selectedCategory ? selectedCategory.color : "var(--mantine-color-gray-7)",
+        color: selectedCategory?.color || "var(--mantine-color-gray-7)",
+        styles: {
+            label: {
+                color: selectedCategory ? getContrastTextColor(selectedCategory.color) : undefined,
+            }
+        },
         style: {
-            // border: `1px solid ${selectedCategory?.color || "#000000"}`,
             borderTopRightRadius: selectedCategory ? 0 : undefined,
             borderBottomRightRadius: selectedCategory ? 0 : undefined,
         },
@@ -123,7 +128,7 @@ export const PersonalNoteCategories = ({
             <Menu radius="md" shadow="xs" withArrow arrowOffset={20} arrowPosition="side">
                 <Tooltip withArrow label="Choose category">
                     <Menu.Target>
-                        <Button {...buttonProps}>
+                        <Button autoContrast {...buttonProps}>
                             {buttonContent}
                         </Button>
                     </Menu.Target>

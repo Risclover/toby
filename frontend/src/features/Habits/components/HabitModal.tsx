@@ -174,7 +174,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
             </div>
             <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}>
                 <Group justify="flex-end" w="100%">
-                    <Button type="button" onClick={handleSubmit} disabled={form.values.color.trim().length === 0 || form.values.name.trim().length === 0} color="rgb(5, 5, 73)" radius="xl">
+                    <Button type="button" onClick={handleSubmit} disabled={form.values.color.trim().length === 0 || form.values.name.trim().length === 0} color="rgb(5, 5, 73)" radius="sm" fw={500}>
                         Submit
                     </Button>
                 </Group>

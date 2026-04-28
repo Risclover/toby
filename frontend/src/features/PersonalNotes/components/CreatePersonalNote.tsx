@@ -145,7 +145,11 @@ export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => 
                     </Button>
                 </div>
             </form>
-            <CreateNoteCategory opened={showNoteCategoryModal} close={() => setShowNoteCategoryModal(false)} />
+            <CreateNoteCategory
+                opened={showNoteCategoryModal}
+                close={() => setShowNoteCategoryModal(false)}
+                onCategoryCreated={handleSelectCategory}
+            />
         </Modal>
     );
 };
