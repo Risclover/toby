@@ -9,6 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
 import { useAuthenticateQuery } from "@/store";
 import { NotesPrivate } from "@/features/PersonalNotes/components/NotesPrivate";
+import { NotesEmpty } from "@/features/PersonalNotes/components/NotesEmpty";
 
 export const UserProfileNotesTab = () => {
     const { userId } = useParams();
@@ -29,7 +30,7 @@ const UserProfileNotesTabInner = () => {
     const { updateFilters, filters } = useNotesFilterContext();
     const { data: userSettings } = useGetUserSettingsQuery(Number(userId));
     const { data: user } = useAuthenticateQuery();
-    const { data: notes } = useGetUserNotesQuery(Number(userId))
+    const { data: notes, isFetching } = useGetUserNotesQuery(Number(userId));
 
     const handleNoteClick = (id: string) => {
         setActiveNoteId(id);
@@ -51,13 +52,15 @@ const UserProfileNotesTabInner = () => {
 
     return (
         <Tabs.Panel value="notes" className="user-profile-main-container">
-            {/* TODO: "Empty notes" state */}
-            {userSettings?.settings.notesPrivacyMode === "all_private" && !myProfilePage ? <NotesPrivate /> : myProfilePage && notes?.length === 0 ? "Empty notes" : activeNoteId ? <PersonalNote onCategoryClick={handleCategoryClick} noteId={activeNoteId} onBack={handleBack} />
-                : <PersonalNotes onNoteClick={handleNoteClick} />}
-            {/* {activeNoteId
-                ? <PersonalNote onCategoryClick={handleCategoryClick} noteId={activeNoteId} onBack={handleBack} />
-                : <PersonalNotes onNoteClick={handleNoteClick} />
-            } */}
+            {userSettings?.settings.notesPrivacyMode === "all_private" && !myProfilePage
+                ? <NotesPrivate />
+                : myProfilePage && notes?.length === 0 && !isFetching
+                    ? <NotesEmpty />
+                    : activeNoteId
+                        ? <PersonalNote onCategoryClick={handleCategoryClick} noteId={activeNoteId} onBack={handleBack} />
+                        : <PersonalNotes onNoteClick={handleNoteClick} />
+            }
+            <CreatePersonalNote />
         </Tabs.Panel>
     );
 };

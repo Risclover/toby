@@ -11,6 +11,8 @@ import { PersonalNoteCategoriesDrawer } from "@/features/PersonalNoteCategories/
 import { useCreateNoteForm } from "../hooks/useCreateNoteForm";
 import { usePersonalNoteModal } from "@/contexts/PersonalNoteModalContext";
 import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
+import { useLocation } from "react-router-dom";
+import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
 
 
 
@@ -20,6 +22,7 @@ export const CreatePersonalNote = () => {
     const [showNoteCategoryModal, setShowNoteCategoryModal] = useState(false);
     const [showNoteCategoryDrawer, setShowNoteCategoryDrawer] = useState(false);
     const { ref: nameRef } = useModalFocus<HTMLTextAreaElement>();
+    useCloseModalOnNavigate(closeModal);
 
     const {
         form,

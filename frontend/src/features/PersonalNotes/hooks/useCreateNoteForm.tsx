@@ -127,6 +127,15 @@ export const useCreateNoteForm = (onSuccess: () => void) => {
         }
     }, [isOpen]);
 
+    useEffect(() => {
+        if (!selectedCategory || !categories) return;
+        const stillExists = categories.some(c => c.id === selectedCategory.id);
+        if (!stillExists) {
+            setSelectedCategory(null);
+            form.setFieldValue("categoryId", undefined);
+        }
+    }, [categories]);
+
     return {
         form,
         charCount,

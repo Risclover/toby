@@ -13,6 +13,7 @@ import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 import { useHousehold } from "@/hooks/useHousehold";
 import { RemainingChars } from "@/components/RemainingChars";
 import { useModalFocus } from "@/hooks/useModalFocus";
+import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
 
 interface ReminderFormValues {
     message: string;
@@ -48,7 +49,7 @@ export const CreateReminder = () => {
     const { closeCreateReminderModal, isOpen } = useCreateReminderModal();
     const isSmallScreen = useIsSmallScreen(425);
     const { ref: nameRef, transitionProps } = useModalFocus<HTMLTextAreaElement>();
-
+    useCloseModalOnNavigate(closeCreateReminderModal)
 
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();

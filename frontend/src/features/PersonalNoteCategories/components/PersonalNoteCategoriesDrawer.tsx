@@ -6,6 +6,10 @@ import { FaCheck } from "react-icons/fa6";
 import { getLightColor } from "@/utils/getLightColor";
 import type { UseFormReturnType } from "@mantine/form";
 import { getContrastTextColor } from "@/utils/getContrastTextColor";
+import { FaPencilAlt } from "react-icons/fa";
+import { PiNotePencilFill } from "react-icons/pi";
+import { useState } from "react";
+import { ManageCategories } from "./ManageCategories";
 
 type Props = {
     showNoteCategoryDrawer: boolean;
@@ -41,6 +45,7 @@ export const PersonalNoteCategoriesDrawer = ({
 }: Props) => {
     const isSmall = useIsSmallScreen();
     const { data: categories } = useGetCategoriesQuery();
+    const [showManageCategories, setShowManageCategories] = useState(false);
 
     const handleCategoryClick = (category: PersonalNoteCategory) => {
         onSelectCategory(selectedCategory === category ? null : category);
@@ -50,57 +55,68 @@ export const PersonalNoteCategoriesDrawer = ({
     };
 
     return (
-        <Drawer
-            className="filter-drawer"
-            size="auto"
-            styles={{
-                content: {
-                    height: "min-content",
-                    borderTopLeftRadius: "1rem",
-                    borderTopRightRadius: "1rem",
-                },
-                body: {
-                    padding: isSmall ? ".5rem" : ".75rem",
-                },
-            }}
-            opened={showNoteCategoryDrawer}
-            onClose={() => setShowNoteCategoryDrawer(false)}
-            position="bottom"
-            withCloseButton={false}
-        >
-            <div className="h-1 w-12 bg-muted mx-auto rounded-full mb-4" />
-            <div className="category-drawer-items">
-                {categories?.map(category => (
-                    <div
-                        key={category.id}
-                        className={`category-drawer-item ${selectedCategory === category ? "active" : ""}`}
-                        onClick={() => handleCategoryClick(category)}
-                        style={{
-                            // color: category.color,
-                            "--item-bg": category.color ? getLightColor(category.color) : "transparent",
-                            color: getContrastTextColor(category.color)
-                        } as React.CSSProperties}
-                    >
-                        <div className="category-drawer-item-details">
-                            <div style={{ background: category.color }} className="category-item-color" />
-                            <span className="category-drawer-item-name">{category.name}</span>
+        <>
+            <Drawer
+                title="Categories"
+                className="filter-drawer"
+                size="auto"
+                styles={{
+                    content: {
+                        height: "min-content",
+                        borderTopLeftRadius: "1rem",
+                        borderTopRightRadius: "1rem",
+                    },
+                    body: {
+                        padding: isSmall ? ".5rem" : ".75rem",
+                        paddingTop: 0
+                    },
+                }}
+                opened={showNoteCategoryDrawer}
+                onClose={() => setShowNoteCategoryDrawer(false)}
+                position="bottom"
+                withCloseButton={true}
+            >
+                <div className="category-drawer-items">
+                    {categories?.map(category => (
+                        <div
+                            key={category.id}
+                            className={`category-drawer-item ${selectedCategory === category ? "active" : ""}`}
+                            onClick={() => handleCategoryClick(category)}
+                            style={{
+                                // color: category.color,
+                                "--item-bg": category.color ? getLightColor(category.color) : "transparent",
+                                color: getContrastTextColor(category.color)
+                            } as React.CSSProperties}
+                        >
+                            <div className="category-drawer-item-details">
+                                <div style={{ background: category.color }} className="category-item-color" />
+                                <span className="category-drawer-item-name">{category.name}</span>
+                            </div>
+                            {selectedCategory === category && (
+                                <span className="category-drawer-check"><FaCheck color={category.color} size="1rem" /></span>
+                            )}
                         </div>
-                        {selectedCategory === category && (
-                            <span className="category-drawer-check"><FaCheck color={category.color} size="1rem" /></span>
-                        )}
+                    ))}
+                    <div style={{ borderTop: categories && categories.length > 0 ? "1px solid var(--mantine-color-gray-4)" : "", marginTop: categories && categories.length > 0 ? ".5rem" : "", paddingTop: categories && categories.length > 0 ? ".5rem" : "" }} className="category-drawer-extra-options">
+                        <div
+                            className={`category-drawer-item add-note-category ${categories && categories.length >= 10 ? "add-category-disabled" : ""}`}
+                            onClick={() => {
+                                setShowNoteCategoryModal(true);
+                                setShowNoteCategoryDrawer(false);
+                            }}
+                        >
+                            <div className="add-note-category"><FaPlus color="var(--mantine-color-gray-7)" size="18px" />
+                                Add category</div>
+                            <div style={{ justifySelf: "flex-end", alignSelf: "flex-end", fontSize: "12px" }}>{categories && categories.length >= 10 ? <div style={{ color: "red", marginLeft: ".25rem" }}>Limit reached</div> : `(Used: ${categories?.length}/10)`}</div>
+                        </div>
+                        {categories && categories.length > 0 && <div className="category-drawer-item manage-note-category" onClick={() => { setShowNoteCategoryDrawer(false); setShowManageCategories(true); }}>
+                            <PiNotePencilFill color="var(--mantine-color-gray-7)" size="18px" />
+                            Manage categories
+                        </div>}
                     </div>
-                ))}
-                <div
-                    className="category-drawer-item add-note-category"
-                    onClick={() => {
-                        setShowNoteCategoryModal(true);
-                        setShowNoteCategoryDrawer(false);
-                    }}
-                >
-                    <FaPlus color="var(--mantine-color-gray-7)" size="18px" />
-                    Add category
                 </div>
-            </div>
-        </Drawer >
+            </Drawer>
+            <ManageCategories opened={showManageCategories} setShowManageCategories={setShowManageCategories} />
+        </>
     );
 };

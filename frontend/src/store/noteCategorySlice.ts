@@ -73,7 +73,11 @@ export const noteCategoryApiSlice = apiSlice.injectEndpoints({
                 url: `/personal-note-categories/${id}`,
                 method: "DELETE"
             }),
-            invalidatesTags: [{ type: "NoteCategory", id: "LIST" }]
+            invalidatesTags: (result, error, id) => [
+                { type: "NoteCategory", id },
+                { type: "NoteCategory", id: "LIST" },
+                { type: "Note", id: "LIST" }
+            ],
         }),
 
         getUserNoteCategories: builder.query<PersonalNoteCategory[], number>({

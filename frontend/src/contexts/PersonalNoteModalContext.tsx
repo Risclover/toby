@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 interface PersonalNoteData {
     id?: string;
@@ -24,6 +24,7 @@ export const PersonalNoteModalProvider = ({ children, }: { children: ReactNode; 
     const [personalNoteData, setPersonalNoteData] =
         useState<PersonalNoteData | null>(null);
 
+
     const openModal = (data: PersonalNoteData = {}) => {
         setPersonalNoteData(data);
         setIsOpen(true);
@@ -33,6 +34,7 @@ export const PersonalNoteModalProvider = ({ children, }: { children: ReactNode; 
         setPersonalNoteData(null);
         setIsOpen(false);
     };
+
 
     return (
         <PersonalNoteModalContext.Provider

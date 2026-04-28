@@ -6,6 +6,7 @@ import styles from "../styles/CreateAnnouncement.module.css";
 import { useCreateAnnouncementModal } from "@/contexts";
 import { RemainingChars } from "@/components/RemainingChars";
 import { useModalFocus } from "@/hooks/useModalFocus";
+import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
 
 
 export const CreateAnnouncement = () => {
@@ -18,6 +19,7 @@ export const CreateAnnouncement = () => {
     const [error, setError] = useState("");
     const [remainingChars, setRemainingChars] = useState(255);
     const { ref: nameRef, transitionProps } = useModalFocus<HTMLTextAreaElement>();
+    useCloseModalOnNavigate(closeModal);
 
     useEffect(() => {
         setRemainingChars(255 - message.trim().length);

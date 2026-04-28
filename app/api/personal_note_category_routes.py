@@ -77,8 +77,9 @@ def delete_note_category(id):
     if not category:
         return jsonify({"error": "Category does not exist"}), 404
     if category.user_id != current_user.id:
-        return jsonify({"error": "Forbidden"}), 403  
+        return jsonify({"error": "Forbidden"}), 403
 
+    PersonalNote.query.filter_by(category_id=id).update({"category_id": None})
     db.session.delete(category)
     db.session.commit()
 

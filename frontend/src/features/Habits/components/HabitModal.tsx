@@ -10,6 +10,7 @@ import { useGetCurrentUserSettingsQuery } from "@/store/userSettingsSlice";
 import { useModalFocus } from "@/hooks/useModalFocus";
 import { KittyNotification } from "@/components/KittyNotification";
 import { KittyIcons } from "@/assets";
+import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
 
 interface HabitFormValues {
     name: string;
@@ -29,6 +30,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
     const { data: userSettings } = useGetCurrentUserSettingsQuery();
     const isEditing = habitData?.id !== undefined;
     const { ref: nameRef, transitionProps } = useModalFocus(!isEditing);
+    useCloseModalOnNavigate(closeModal);
 
     const form = useForm<HabitFormValues>({
         initialValues: {

@@ -10,6 +10,7 @@ import { HouseholdMemberSelection } from "@/components/HouseholdMemberSelection"
 import { useNavigate } from "react-router-dom";
 import { FormColorInput } from "@/components/FormColorInput";
 import { isTooLight } from "@/utils";
+import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
 
 type Props = { householdId: number };
 
@@ -18,7 +19,7 @@ export const CreateTasklist = ({ householdId }: Props) => {
     const { isOpen, closeModal } = useCreateTasklistModal();
     const { ref: nameRef, transitionProps } = useModalFocus();
     const { data: household } = useHousehold();
-
+    useCloseModalOnNavigate(closeModal)
     const form = useForm({
         initialValues: { title: "", color: "#15aabf" },
         validate: {

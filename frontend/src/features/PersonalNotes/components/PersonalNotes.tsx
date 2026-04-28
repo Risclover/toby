@@ -172,7 +172,6 @@ export const PersonalNotes = ({ onNoteClick }: Props) => {
                 opened={showFilterDrawer}
                 onClose={() => setShowFilterDrawer(false)}
             />
-            <CreatePersonalNote />
         </div>
     );
 };
