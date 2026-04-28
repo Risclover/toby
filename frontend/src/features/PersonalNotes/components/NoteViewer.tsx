@@ -9,6 +9,7 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { common, createLowlight } from "lowlight";
 import { TaskList, TaskItem } from "@tiptap/extension-list";
 import Highlight from "@tiptap/extension-highlight";
+import { useEffect } from "react";
 
 const lowlight = createLowlight(common);
 
@@ -36,6 +37,13 @@ export const NoteViewer = ({ content }: NoteViewerProps) => {
         content,
         editable: false,
     });
+
+    useEffect(() => {
+        if (!editor || editor.isDestroyed) return;
+        if (content !== undefined && editor.getHTML() !== content) {
+            editor.commands.setContent(content ?? "");
+        }
+    }, [content, editor]);
 
     return <EditorContent editor={editor} />;
 };
