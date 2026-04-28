@@ -4,13 +4,13 @@ import { useGetCategoriesQuery, useGetUserNoteCategoriesQuery } from "@/store/no
 import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
 import { FaCheck } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
+import { getContrastTextColor } from "@/utils/getContrastTextColor";
 
 export const CategoryFilterSectionBody = () => {
     const { filters, updateFilters } = useNotesFilterContext();
     const { userId } = useParams();
     const { data: categories } = useGetUserNoteCategoriesQuery(Number(userId));
 
-    console.log('CATEGORIES:', categories);
     const toggle = (id: number) => {
         const already = filters.categoryIds.includes(id);
         updateFilters({
@@ -47,7 +47,12 @@ export const CategoryFilterSectionBody = () => {
             <Chip.Group multiple>
                 <Group gap="6px">
                     {categories.map(cat => (
-                        <Chip styles={{ label: { fontFamily: "var(--font-family-sora)", fontSize: "13px" } }} key={cat.id} icon={<FaCheck />} size="sm" variant="light" color={cat.color} checked={filters.categoryIds.includes(cat.id)} onClick={() => toggle(cat.id)}>{cat.name}</Chip>
+                        <Chip
+                            styles={{
+                                label: {
+                                    fontFamily: "var(--font-family-sora)", fontSize: "13px", color: filters.categoryIds.includes(cat.id) ? getContrastTextColor(cat.color) : undefined,
+                                }
+                            }} key={cat.id} icon={<FaCheck />} size="sm" variant="light" color={cat.color} checked={filters.categoryIds.includes(cat.id)} onClick={() => toggle(cat.id)}>{cat.name}</Chip>
                     ))}
                 </Group>
             </Chip.Group>

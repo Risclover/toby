@@ -34,6 +34,9 @@ def get_note(id):
     if not note:
         return jsonify({"error": "Note not found"}), 404
 
+    if note.is_private and current_user.id != note.user_id:
+        return jsonify({"error": "Forbidden"}), 404
+
     return jsonify(note.to_dict()), 200
 
 

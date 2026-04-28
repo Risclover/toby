@@ -1,23 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
-import { useCreateNoteMutation } from "@/store/noteSlice";
-import { useAuthenticateQuery, type PersonalNoteCategory } from "@/store";
+import { useCreateNoteMutation, useUpdateNoteMutation } from "@/store/noteSlice";
+import { useAuthenticateQuery, useGetCategoriesQuery, type PersonalNoteCategory } from "@/store";
 import { KittyNotification } from "@/components/KittyNotification";
 import { KittyIcons } from "@/assets";
 import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
+import { usePersonalNoteModal } from "@/contexts/PersonalNoteModalContext";
 
 const MAX_BODY_LENGTH = 10000;
 
-export const useCreateNoteForm = (onSuccess?: () => void) => {
+export const useCreateNoteForm = (onSuccess: () => void) => {
     const [createPersonalNote] = useCreateNoteMutation();
+    const [updatePersonalNote] = useUpdateNoteMutation();
     const [charCount, setCharCount] = useState(0);
     const [editorKey, setEditorKey] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState<PersonalNoteCategory | null>(null);
     const { data: currentUser } = useAuthenticateQuery();
     const { data: userSettings } = useGetUserSettingsQuery(currentUser?.id);
+    const { isOpen, personalNoteData } = usePersonalNoteModal();
+    const { data: categories } = useGetCategoriesQuery();
+
+    const isEditing = personalNoteData?.id !== undefined;
 
     const form = useForm({
-        initialValues: { title: "", body: "", isPrivate: userSettings?.settings.notesPrivacyMode === "private_by_default" ? true : false, categoryId: undefined as number | undefined },
+        initialValues: { title: "", body: "", isPrivate: userSettings?.settings.notesPrivacyMode === "private_by_default", categoryId: undefined as number | undefined },
         validate: {
             title: (value) => value.trim().length === 0 ? "Please give your note a title." : null,
             body: (value) => {
@@ -46,33 +52,50 @@ export const useCreateNoteForm = (onSuccess?: () => void) => {
 
     const handleSubmit = form.onSubmit(async (values) => {
         try {
-            await createPersonalNote({
-                title: values.title,
-                body: values.body,
-                isPrivate: values.isPrivate,
-                isFavorite: false,
-                categoryId: values.categoryId,
-            }).unwrap();
-            form.reset();
-            setCharCount(0);
-            setEditorKey(k => k + 1);
-            setSelectedCategory(null);
-            onSuccess();
-            KittyNotification({
-                title: "Note created successfully",
-                message: <>You successfully posted a new note: "<strong style={{ fontWeight: 500 }}>{values.title}</strong>".</>,
-                icon: KittyIcons.Write,
-                color: "green"
-            })
+            if (isEditing) {
+                await updatePersonalNote({
+                    id: personalNoteData?.id!,
+                    ...form.values
+                }).unwrap();
+                KittyNotification({
+                    title: "Note updated",
+                    message: <>Looking good! Your changes to "<strong style={{ fontWeight: 500 }}>{form.values.title}</strong>" have been saved.</>,
+                    color: "green",
+                    icon: KittyIcons.Write
+                })
+                form.reset();
+                setCharCount(0);
+                setEditorKey(k => k + 1);
+                onSuccess();
+            } else {
+                await createPersonalNote({
+                    title: values.title,
+                    body: values.body,
+                    isPrivate: values.isPrivate,
+                    isFavorite: false,
+                    categoryId: values.categoryId,
+                }).unwrap();
+                form.reset();
+                setCharCount(0);
+                setEditorKey(k => k + 1);
+                setSelectedCategory(null);
+                onSuccess();
+                KittyNotification({
+                    title: "Note created successfully",
+                    message: <>You successfully posted a new note: "<strong style={{ fontWeight: 500 }}>{values.title}</strong>".</>,
+                    icon: KittyIcons.Computer,
+                    color: "green"
+                })
+            }
         } catch (error) {
             KittyNotification({
                 title: "Whoops - something went wrong",
-                message: "Failed to create note. Try again.",
+                message: `Failed to ${isEditing ? "create" : "edit"} note. Try again.`,
                 icon: KittyIcons.Cry,
                 color: "red"
             })
 
-            console.error("Failed to create note:", error);
+            console.error("Failed to create or edit note:", error);
         }
     });
 
@@ -81,6 +104,28 @@ export const useCreateNoteForm = (onSuccess?: () => void) => {
         setCharCount(0);
         setSelectedCategory(null);
     };
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        if (personalNoteData?.id !== null && personalNoteData?.id !== undefined) {
+            form.setValues({
+                title: personalNoteData.title ?? "",
+                body: personalNoteData.body ?? "",
+                categoryId: personalNoteData.categoryId ?? undefined,
+                isPrivate: personalNoteData.isPrivate ?? false,
+            });
+            setSelectedCategory(categories?.find(c => c.id === personalNoteData.categoryId) ?? null);
+        } else {
+            form.setValues({
+                title: "",
+                body: "",
+                categoryId: undefined,
+                isPrivate: userSettings?.settings?.notesPrivacyMode === "private_by_default",
+            });
+            setSelectedCategory(null);  // ← and this
+        }
+    }, [isOpen]);
 
     return {
         form,
@@ -93,5 +138,6 @@ export const useCreateNoteForm = (onSuccess?: () => void) => {
         handleSubmit,
         handleReset,
         MAX_BODY_LENGTH,
+        isEditing
     };
 };

@@ -162,7 +162,7 @@ const MobileToolbarContent = ({
 )
 
 interface SimpleEditorProps {
-  initialContent?: string
+  initialContent?: string | null
   onChange?: (html: string) => void
 }
 

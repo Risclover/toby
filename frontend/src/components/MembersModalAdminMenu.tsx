@@ -22,7 +22,8 @@ export const MembersModalAdminMenu = ({ member, household }: { member: Household
         openRemoveModal();
     }
     return (
-        <Menu withinPortal={true}
+        <Menu
+            withinPortal={true}
             menuItemTabIndex={0}
             shadow="xs"
         >
@@ -39,7 +40,11 @@ export const MembersModalAdminMenu = ({ member, household }: { member: Household
                 </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-                {member.id !== household.adminId && <Menu.Item leftSection={<AdminBadgeIcon size="22px" color="var(--mantine-color-dark-9)" />} onClick={(e) => { e.stopPropagation(); confirmAdminTransfer(); }}>Transfer admin role</Menu.Item>}
+                {member.id !== household.adminId &&
+                    <Menu.Item leftSection={<AdminBadgeIcon size="22px" color="var(--mantine-color-dark-9)" />} onClick={(e) => { e.stopPropagation(); confirmAdminTransfer(); }}>
+                        Transfer admin role
+                    </Menu.Item>
+                }
                 <Menu.Item color="red.9" leftSection={<RemoveMemberIcon size="22px" color="var(--mantine-color-red-9)" />} onClick={(e) => { e.stopPropagation(); confirmMemberRemoval(); }}>
                     Remove from household
                 </Menu.Item>

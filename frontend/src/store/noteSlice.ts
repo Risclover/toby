@@ -31,7 +31,6 @@ interface UpdateNotePayload {
     categoryId?: number;
     body: string;
     isPrivate: boolean;
-    isFavorite: boolean;
 }
 
 export const noteSlice = apiSlice.injectEndpoints({
@@ -68,6 +67,19 @@ export const noteSlice = apiSlice.injectEndpoints({
                 method: "PUT",
                 body,
             }),
+            async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+                try {
+                    const { data: updated } = await queryFulfilled;
+                    console.log("onQueryStarted fired, id:", id, "updated:", updated);
+                    dispatch(
+                        noteSlice.util.updateQueryData("getNote", id!, (draft) => {
+                            Object.assign(draft, updated);
+                        })
+                    );
+                } catch (e) {
+                    console.error("onQueryStarted failed:", e);
+                }
+            },
             invalidatesTags: (result, error, { id }) => [
                 { type: "Note", id },
                 { type: "Note", id: "LIST" },

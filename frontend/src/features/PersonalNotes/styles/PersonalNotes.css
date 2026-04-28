@@ -885,6 +885,12 @@
     padding-top: .5rem;
 }
 
+.single-note-container-header--top-right {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
 @keyframes read-forward {
     0% {
         width: 0;

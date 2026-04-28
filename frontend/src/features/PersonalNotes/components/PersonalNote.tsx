@@ -2,13 +2,14 @@ import { useGetNoteQuery, useToggleNoteFavoriteMutation } from "@/store/noteSlic
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { NoteViewer } from "./NoteViewer";
 import { ActionIcon, Button } from "@mantine/core";
-import { getLightColor } from "@/utils/getLightColor";
 import { formatNoteDate } from "../utils/formatNoteDate";
 import { ChevronDownIcon } from "@/assets/icons/ChevronDownIcon";
 import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
-import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
+import { SingleNotePrivate } from "./SingleNotePrivate";
+import { PersonalNoteMenu } from "./PersonalNoteMenu";
+import { CreatePersonalNote } from "./CreatePersonalNote";
 
 type Props = {
     noteId: string;
@@ -17,11 +18,10 @@ type Props = {
 }
 
 export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
-    const { filters, updateFilters } = useNotesFilterContext();
     const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
     const { userId } = useParams();
     const { data: currentUser } = useAuthenticateQuery();
-    const { data: note } = useGetNoteQuery(noteId, { skip: !currentUser || !noteId });
+    const { data: note, isError } = useGetNoteQuery(noteId, { skip: !currentUser || !noteId });
 
     const isOwner = currentUser?.id === Number(userId);
 
@@ -29,6 +29,9 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
         await toggleNoteFavorite(noteId);
     }
 
+    if (isError) {
+        return <SingleNotePrivate />;
+    }
     if (!note) return null;
 
     return (
@@ -38,9 +41,14 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
                     <ChevronDownIcon style={{ transform: "rotate(90deg)", marginRight: ".25rem" }} size="1rem" color="rgb(5, 5, 73)" />
                     Back
                 </Button>
-                {isOwner && <ActionIcon className="single-note-favorite-btn" onClick={handleToggleFavorite} size="md" color="rgb(5, 5, 73)" variant="transparent">
-                    {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
-                </ActionIcon>}
+                <div className="single-note-container-header--top-right">
+                    {isOwner &&
+                        <ActionIcon className="single-note-favorite-btn" onClick={handleToggleFavorite} size="md" color="red.5" variant="transparent">
+                            {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
+                        </ActionIcon>
+                    }
+                    <PersonalNoteMenu note={note} />
+                </div>
             </div>
             <div className="personal-note-header">
                 <div className="personal-note-title">{note.title}</div>
@@ -65,6 +73,7 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
             <div className="personal-note-content">
                 <NoteViewer content={note.body} />
             </div>
+            <CreatePersonalNote />
         </div>
     );
 };

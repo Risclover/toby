@@ -1,16 +1,13 @@
 import { Button, Group, Input, Modal, Stack, Switch, Textarea, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import { FormColorInput } from "@/components/FormColorInput";
-import { useCreateHabitMutation, useDeleteHabitMutation, useUpdateHabitMutation } from "@/store";
-import { SettingsItem } from "@/features/HouseholdTasklists";
+import { useCreateHabitMutation, useUpdateHabitMutation } from "@/store";
 import { isTooLight } from "@/utils";
-import { useIsSmallScreen } from "@/hooks";
 import { useHabitModal } from "@/contexts";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { RemainingChars } from "@/components/RemainingChars";
 import { useGetCurrentUserSettingsQuery } from "@/store/userSettingsSlice";
 import { useModalFocus } from "@/hooks/useModalFocus";
-import { notifications } from "@mantine/notifications";
 import { KittyNotification } from "@/components/KittyNotification";
 import { KittyIcons } from "@/assets";
 

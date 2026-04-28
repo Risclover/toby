@@ -6,6 +6,7 @@ import { ActionIcon, Text } from "@mantine/core";
 import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
 import { useParams } from "react-router-dom";
+import { PersonalNoteMenu } from "./PersonalNoteMenu";
 
 type Props = {
     note: PersonalNote;
@@ -33,9 +34,14 @@ export const PersonalNoteListItem = ({ note, onNoteClick }: Props) => {
                 <div className="single-note-container-header list-container-top">
                     <div className="single-note-container-header--top">
                         {note.title && <div className="single-note-title list-note-title">{note.title}</div>}
-                        {isOwner && <ActionIcon className="single-note-favorite-btn" onClick={handleToggleFavorite} size="md" color="rgb(5, 5, 73)" variant="transparent">
-                            {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
-                        </ActionIcon>}
+                        <div className="single-note-container-header--top-right">
+                            {isOwner &&
+                                <ActionIcon className="single-note-favorite-btn" onClick={handleToggleFavorite} size="md" color="red.5" variant="transparent">
+                                    {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
+                                </ActionIcon>
+                            }
+                            <PersonalNoteMenu note={note} />
+                        </div>
                     </div>
                     <div className="single-note-date-container list-date-container">
                         Posted <span className="personal-note-date list-note-date">{formatNoteDate(note.createdAt)}</span>

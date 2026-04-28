@@ -11,6 +11,7 @@ import { PersonalNotesOptionsDrawer } from "./PersonalNotesOptionsDrawer/Persona
 import type { SortOption } from "../hooks/useNotesFilter";
 import { useParams } from "react-router-dom";
 import { useAuthenticateQuery } from "@/store";
+import { usePersonalNoteModal } from "@/contexts/PersonalNoteModalContext";
 
 type Props = {
     search: string;
@@ -37,6 +38,7 @@ export const PersonalNotesToolbar = ({
     onSortChange,
     setShowNoteForm
 }: Props) => {
+    const { openModal } = usePersonalNoteModal();
     const { userId } = useParams();
     const { data: currentUser } = useAuthenticateQuery();
     const userIsAuthor = !!currentUser && Number(userId) === currentUser.id;
@@ -132,7 +134,7 @@ export const PersonalNotesToolbar = ({
                     view={view}
                     onViewChange={onViewChange}
                 />
-                {userIsAuthor && <Button color="rgb(5, 5, 73)" size={isSmall ? "13px" : "sm"} h="auto" p=".5rem 1rem" fw={500} onClick={() => setShowNoteForm(true)}>
+                {userIsAuthor && <Button color="rgb(5, 5, 73)" size={isSmall ? "13px" : "sm"} h="auto" p=".5rem 1rem" fw={500} onClick={() => openModal()}>
                     Create note
                 </Button>}
                 {/* Search sits on the right, expands leftward pushing controls off */}

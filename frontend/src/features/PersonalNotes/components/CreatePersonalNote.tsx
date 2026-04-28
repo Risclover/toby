@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import { Button, Text, Modal, Tooltip, Textarea } from "@mantine/core";
 import { SimpleEditor } from "@/components/TipTap/tiptap-templates/simple/simple-editor";
 import { useModalFocus } from "@/hooks/useModalFocus";
@@ -9,15 +9,13 @@ import { useIsSmallScreen } from "@/hooks";
 import { PersonalNoteCategories } from "@/features/PersonalNoteCategories/components/PersonalNoteCategories";
 import { PersonalNoteCategoriesDrawer } from "@/features/PersonalNoteCategories/components/PersonalNoteCategoriesDrawer";
 import { useCreateNoteForm } from "../hooks/useCreateNoteForm";
+import { usePersonalNoteModal } from "@/contexts/PersonalNoteModalContext";
 import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
-import { useAuthenticateQuery } from "@/store";
 
-type Props = {
-    showNoteForm: boolean;
-    setShowNoteForm: (val: boolean) => void;
-};
 
-export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => {
+
+export const CreatePersonalNote = () => {
+    const { isOpen, personalNoteData, closeModal } = usePersonalNoteModal();
     const isSmallScreen = useIsSmallScreen(480);
     const [showNoteCategoryModal, setShowNoteCategoryModal] = useState(false);
     const [showNoteCategoryDrawer, setShowNoteCategoryDrawer] = useState(false);
@@ -34,10 +32,11 @@ export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => 
         handleSubmit,
         handleReset,
         MAX_BODY_LENGTH,
-    } = useCreateNoteForm(() => setShowNoteForm(false));
+        isEditing
+    } = useCreateNoteForm(() => closeModal());
 
     const handleClose = () => {
-        setShowNoteForm(false);
+        closeModal();
         handleReset();
     };
 
@@ -48,7 +47,7 @@ export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => 
                 content: { overflow: "hidden", display: "flex", flexDirection: "column" },
             }}
             fullScreen
-            opened={showNoteForm}
+            opened={isOpen}
             onClose={handleClose}
         >
             <form onSubmit={handleSubmit} className="create-note-modal-form">
@@ -120,7 +119,7 @@ export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => 
                 </div>
 
                 <div className="personal-note-form-content">
-                    <SimpleEditor key={editorKey} onChange={handleBodyChange} />
+                    <SimpleEditor initialContent={personalNoteData && personalNoteData.body} key={editorKey} onChange={handleBodyChange} />
                     <Text ml={10} size="xs" c={charCount > MAX_BODY_LENGTH ? "red" : "dimmed"} mt={4}>
                         {charCount.toLocaleString()} / {MAX_BODY_LENGTH.toLocaleString()}
                     </Text>
@@ -143,7 +142,7 @@ export const CreatePersonalNote = ({ showNoteForm, setShowNoteForm }: Props) => 
                         color="rgb(5, 5, 73)"
                         type="submit"
                     >
-                        Post
+                        {isEditing ? "Save" : "Post"}
                     </Button>
                 </div>
             </form>
