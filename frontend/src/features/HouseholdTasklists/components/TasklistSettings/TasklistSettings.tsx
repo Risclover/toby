@@ -3,7 +3,7 @@ import { useTasklistSettings } from "../../hooks";
 import { GeneralTab } from "./GeneralTab";
 import { BehaviorTab } from "./BehaviorTab";
 import { AppearanceTab } from "./AppearanceTab";
-import { DiscardWarning } from "./DiscardWarning";
+import { DiscardWarning } from "../../../../components/DiscardWarning";
 import { isTooLight } from "@/utils";
 import { useParams } from "react-router-dom";
 import { useIsSmallScreen } from "@/hooks";

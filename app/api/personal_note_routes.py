@@ -4,6 +4,7 @@ from app.extensions import db
 from app.models import User, Household, PersonalNote, PersonalNoteCategory
 from datetime import date 
 from app.s3_helpers import allowed_file, get_unique_filename, upload_file_to_s3
+from sqlalchemy import not_
 
 personal_note_routes = Blueprint("personal-notes", __name__)
 
@@ -138,18 +139,27 @@ def update_note_category(id):
 
     return jsonify(note.to_dict()), 200
 
+from sqlalchemy import not_
+
 @personal_note_routes.route("/<string:id>/favorite", methods=["PATCH"])
 @login_required
 def toggle_note_favorite(id):
     note = PersonalNote.query.get(id)
 
     if not note:
-        return jsonify({ "error": "Note not found" }), 404
+        return jsonify({"error": "Note not found"}), 404
     if note.user_id != current_user.id:
-        return jsonify({ "error": "Forbidden" }), 403
+        return jsonify({"error": "Forbidden"}), 403
 
-    note.is_favorite = not note.is_favorite
+    db.session.execute(
+        db.update(PersonalNote)
+        .where(PersonalNote.id == id)
+        .values(
+            is_favorite=not note.is_favorite,
+            updated_at=note.updated_at
+        )
+    )
     db.session.commit()
+    db.session.refresh(note)
     return jsonify(note.to_dict()), 200
-
 

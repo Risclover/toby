@@ -8,9 +8,10 @@ type Props = {
     setShowDeleteConfirmation: (val: boolean) => void;
     handleDeleteItem: () => void;
     triggerRef?: React.RefObject<HTMLButtonElement | null>;
+    stack?: any;
 }
 
-export const DeleteConfirmation = ({ modalTitle, itemName, itemType, opened, setShowDeleteConfirmation, handleDeleteItem, triggerRef }: Props) => {
+export const DeleteConfirmation = ({ modalTitle, itemName, itemType, opened, setShowDeleteConfirmation, handleDeleteItem, triggerRef, stack }: Props) => {
     return (
         <Modal centered size="sm" withCloseButton={false} closeOnClickOutside={false} closeOnEscape={false} radius="md" yOffset="13vh" opened={opened} onClose={() => setShowDeleteConfirmation(false)} title={modalTitle} onClick={(e) => e.stopPropagation()}>
             <Text c="black" size="sm">Are you sure you want to delete {itemType === "tasks" ? "these " : !itemName ? "this " : "the "}{itemType} <span className="delete-item-name">{itemName}</span>? This action cannot be undone.</Text>

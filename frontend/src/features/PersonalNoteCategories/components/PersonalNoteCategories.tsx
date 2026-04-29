@@ -152,8 +152,9 @@ export const PersonalNoteCategories = ({
                             color={category.color}
                             onClick={() => handleCategoryClick(category)}
                             style={{
-                                color: "black",
+                                // color: category.color,
                                 "--item-bg": category.color ? getLightColor(category.color) : "transparent",
+                                color: getContrastTextColor(category.color)
                             } as React.CSSProperties}
                             className={`category-menu-item${selectedCategory === category ? " active" : ""}`}
                         >

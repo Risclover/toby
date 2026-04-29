@@ -108,13 +108,14 @@ export const useCreateNoteForm = (onSuccess: () => void) => {
     useEffect(() => {
         if (!isOpen) return;
 
-        if (personalNoteData?.id !== null && personalNoteData?.id !== undefined) {
+        if (personalNoteData?.id !== undefined) {
             form.setValues({
                 title: personalNoteData.title ?? "",
                 body: personalNoteData.body ?? "",
                 categoryId: personalNoteData.categoryId ?? undefined,
                 isPrivate: personalNoteData.isPrivate ?? false,
             });
+            form.resetDirty();
             setSelectedCategory(categories?.find(c => c.id === personalNoteData.categoryId) ?? null);
         } else {
             form.setValues({
@@ -123,7 +124,8 @@ export const useCreateNoteForm = (onSuccess: () => void) => {
                 categoryId: undefined,
                 isPrivate: userSettings?.settings?.notesPrivacyMode === "private_by_default",
             });
-            setSelectedCategory(null);  // ← and this
+            form.resetDirty();
+            setSelectedCategory(null);
         }
     }, [isOpen]);
 
