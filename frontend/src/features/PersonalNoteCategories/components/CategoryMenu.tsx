@@ -79,7 +79,7 @@ export const CategoryMenu = ({ category, setShowManageCategories, onEditClick }:
                     </Menu.Item>
                 </Menu.Dropdown>
             </Menu>
-            <DeleteConfirmation modalTitle="Delete note" itemName={category.name} itemType="category" opened={showConfirmDelete} handleDeleteItem={handleDeleteCategory} setShowDeleteConfirmation={setShowConfirmDelete} />
+            <DeleteConfirmation modalTitle="Delete note" itemName={category.name} itemType="category" opened={showConfirmDelete} handleDeleteItem={handleDeleteCategory} setShowDeleteConfirmation={setShowConfirmDelete} zIndex={99999} />
         </>
     )
 }
