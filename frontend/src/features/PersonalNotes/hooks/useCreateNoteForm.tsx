@@ -90,8 +90,8 @@ export const useCreateNoteForm = (onSuccess: () => void) => {
         } catch (error) {
             KittyNotification({
                 title: "Whoops - something went wrong",
-                message: `Failed to ${isEditing ? "create" : "edit"} note. Try again.`,
-                icon: KittyIcons.Cry,
+                message: <>I didn't feel like {isEditing ? "editing" : "creating"} your note "<strong style={{ fontWeight: 500 }}>{values.title}</strong>". You'll have to try again.</>,
+                icon: KittyIcons.Grumpy,
                 color: "red"
             })
 

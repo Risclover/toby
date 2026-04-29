@@ -6,6 +6,8 @@ import "../styles/PersonalNoteCategories.css";
 import { isTooLight } from "@/utils";
 import { RemainingChars } from "@/components/RemainingChars";
 import { useEffect } from "react";
+import { KittyNotification } from "@/components/KittyNotification";
+import { KittyIcons } from "@/assets";
 
 type Props = {
     opened?: boolean;
@@ -45,22 +47,44 @@ export const CreateNoteCategory = ({ opened, close, onCategoryCreated, stack, ca
     };
 
     const handleSubmit = form.onSubmit(async () => {
-        if (isEditing) {
-            await updateCategory({
-                id: category.id,
-                name: form.values.name,
-                color: form.values.color,
-            }).unwrap();
-        } else {
-            const data = await createCategory({
-                name: form.values.name,
-                color: form.values.color || ""
-            }).unwrap();
-            onCategoryCreated?.(data);
+        try {
+            if (isEditing) {
+                await updateCategory({
+                    id: category.id,
+                    name: form.values.name,
+                    color: form.values.color,
+                }).unwrap();
+                KittyNotification({
+                    title: "Category updated",
+                    message: <>You've successfully given category "<strong style={{ fontWeight: 500 }}>{form.values.name}</strong>" a new look!</>,
+                    icon: KittyIcons.Dance,
+                    color: "green"
+                });
+            } else {
+                const data = await createCategory({
+                    name: form.values.name,
+                    color: form.values.color || ""
+                }).unwrap();
+                KittyNotification({
+                    title: "Category created",
+                    message: <>Category "<strong style={{ fontWeight: 500 }}>{form.values.name}</strong>" has been created!</>,
+                    icon: KittyIcons.Dance,
+                    color: "green"
+                });
+                onCategoryCreated?.(data);
+            }
+            form.reset();
+            close?.();
+        } catch (error) {
+            KittyNotification({
+                title: "It didn't work!",
+                message: <>Couldn't {isEditing ? "update" : "create"} category "<strong style={{ fontWeight: 500 }}>{form.values.name}</strong>". Try again.</>,
+                color: "red",
+                icon: KittyIcons.Confused
+            })
         }
-        form.reset();
-        close?.();
     });
+
 
     const hasColorError = isTooLight(form.values.color);
 

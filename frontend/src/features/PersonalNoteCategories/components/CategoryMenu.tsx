@@ -30,8 +30,9 @@ export const CategoryMenu = ({ category, setShowManageCategories, onEditClick }:
             })
             setShowConfirmDelete(false);
         } catch (error) {
+            setShowConfirmDelete(false);
             KittyNotification({
-                title: "Dang it, something went wrong!",
+                title: "Ugh, that didn't work!",
                 message: <>Something went wrong. Try again.</>,
                 icon: KittyIcons.Rain,
                 color: "red"
