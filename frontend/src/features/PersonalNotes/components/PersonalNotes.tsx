@@ -4,7 +4,6 @@ import {
     Button,
     Text,
 } from "@mantine/core";
-import { CreatePersonalNote } from "./CreatePersonalNote";
 import { PersonalNoteGridItem } from "./PersonalNoteGridItem";
 import { PersonalNoteListItem } from "./PersonalNoteListItem";
 import { type NotesView } from "./PersonalNotesViewOptions";
@@ -12,12 +11,13 @@ import { PersonalNotesFilterDrawer } from "./PersonalNotesFilterDrawer";
 import { PersonalNotesToolbar } from "./PersonalNotesToolbar";
 import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
 import "../styles/PersonalNotes.css";
-import { useAuthenticateQuery, useGetCategoriesQuery, useGetUserNoteCategoriesQuery, type PersonalNote } from "@/store";
+import { useGetUserNoteCategoriesQuery, useGetUserNotesQuery } from "@/store";
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
 import { FaXmark } from "react-icons/fa6";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ViewOption } from "../hooks/useNotesFilter";
 import { useParams } from "react-router-dom";
+import { PersonalNoteGridSkeleton, PersonalNoteListSkeleton } from "./PersonalNoteSkeletons";
 
 type Props = {
     onNoteClick: (id: string) => void;
@@ -26,6 +26,7 @@ type Props = {
 export const PersonalNotes = ({ onNoteClick }: Props) => {
     const { userId } = useParams();
     const { data: categories } = useGetUserNoteCategoriesQuery(Number(userId));
+    const { isLoading } = useGetUserNotesQuery(Number(userId));
 
     const {
         searchInput,
@@ -39,6 +40,7 @@ export const PersonalNotes = ({ onNoteClick }: Props) => {
         loadMore,
         totalCount,
     } = useNotesFilterContext();
+
     const isFirstRender = useRef(true);
 
     useEffect(() => {
@@ -49,7 +51,6 @@ export const PersonalNotes = ({ onNoteClick }: Props) => {
         const saved = localStorage.getItem("notes-view");
         return saved !== null ? JSON.parse(saved) : "grid";
     });
-    const [showNoteForm, setShowNoteForm] = useState(false);
     const [showFilterDrawer, setShowFilterDrawer] = useState(false);
 
     const sentinelRef = useRef<HTMLDivElement>(null);
@@ -79,13 +80,10 @@ export const PersonalNotes = ({ onNoteClick }: Props) => {
                     search={searchInput}
                     onSearchChange={setSearchInput}
                     isFiltered={isFiltered}
-                    onFilterClick={() => setShowFilterDrawer(true)}
-                    onOptionsClick={() => { }}
                     view={view}
                     onViewChange={handleViewChange}
                     sort={filters.sort}
                     onSortChange={(val) => updateFilters({ sort: val })}
-                    setShowNoteForm={setShowNoteForm}
                 />
             </div>
             {filters.categoryIds.length > 0 && (
@@ -135,7 +133,26 @@ export const PersonalNotes = ({ onNoteClick }: Props) => {
                 </div>
             )}
 
-            {isEmpty ? (
+            {isLoading ? (
+                <>
+                    {view === "grid" && (
+                        <div className="personal-notes-grid">
+                            {Array.from({ length: 12 }).map((_, i) => (
+                                <PersonalNoteGridSkeleton key={i} />
+                            ))}
+                        </div>
+                    )}
+                    {view === "list" && (
+                        <div className="personal-notes-list-container">
+                            <div className="personal-notes-list">
+                                {Array.from({ length: 12 }).map((_, i) => (
+                                    <PersonalNoteListSkeleton key={i} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </>
+            ) : isEmpty ? (
                 <div className="notes-empty-state">
                     <Text c="dimmed" size="sm">
                         {isFiltered ? "No notes match your search or filters." : "No notes yet."}

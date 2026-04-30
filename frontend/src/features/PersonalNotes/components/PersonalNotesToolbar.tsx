@@ -17,26 +17,20 @@ type Props = {
     search: string;
     onSearchChange: (val: string) => void;
     isFiltered: boolean;
-    onFilterClick: () => void;
-    onOptionsClick: () => void;
     view: NotesView;
     onViewChange: (next: NotesView) => void;
     sort: SortOption;
     onSortChange: (val: SortOption) => void;
-    setShowNoteForm: (val: boolean) => void;
 };
 
 export const PersonalNotesToolbar = ({
     search,
     onSearchChange,
     isFiltered,
-    onFilterClick,
-    onOptionsClick,
     view,
     onViewChange,
     sort,
     onSortChange,
-    setShowNoteForm
 }: Props) => {
     const { openModal } = usePersonalNoteModal();
     const { userId } = useParams();
