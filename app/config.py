@@ -24,3 +24,4 @@ class Config:
             "scopes": ["openid", "email", "profile"],
         }
     }
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB upload limit

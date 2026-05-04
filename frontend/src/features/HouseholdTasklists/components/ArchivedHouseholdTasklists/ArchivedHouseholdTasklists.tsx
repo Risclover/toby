@@ -8,7 +8,7 @@ import { useStablePending } from "@/hooks";
 import { useHousehold } from "@/hooks/useHousehold";
 import { Tasklist } from "../HouseholdTasklists";
 import { useNavigate } from "react-router-dom";
-import { DeleteConfirmation } from "..";
+import { DeleteConfirmation } from "@/components";
 import { useState } from "react";
 
 export const ArchivedHouseholdTasklists = () => {

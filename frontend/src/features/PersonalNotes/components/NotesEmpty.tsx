@@ -1,7 +1,7 @@
-import { useHabitModal } from "@/contexts";
-import { usePersonalNoteModal } from "@/contexts/PersonalNoteModalContext";
 import { Button } from "@mantine/core";
+import { usePersonalNoteModal } from "@/contexts";
 
+/** Notes empty state */
 export const NotesEmpty = () => {
     const { openModal } = usePersonalNoteModal();
 

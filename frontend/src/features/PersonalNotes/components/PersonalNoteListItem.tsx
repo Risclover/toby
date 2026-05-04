@@ -1,18 +1,22 @@
+import { useParams } from "react-router-dom";
+import { ActionIcon, Text } from "@mantine/core";
+
 import { useAuthenticateQuery, useToggleNoteFavoriteMutation, type PersonalNote } from "@/store";
-import { getLightColor } from "@/utils/getLightColor";
 import { formatNoteDate } from "../utils/formatNoteDate";
 import { parseNoteContent } from "../utils/parseNoteContent";
-import { ActionIcon, Text } from "@mantine/core";
-import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
-import { useParams } from "react-router-dom";
 import { PersonalNoteMenu } from "./PersonalNoteMenu";
 
+import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
+
 type Props = {
+    /** The note to display */
     note: PersonalNote;
+    /** Called when the user clicks on the note */
     onNoteClick: (id: string) => void;
 }
 
+/** Single note item in the notes list view */
 export const PersonalNoteListItem = ({ note, onNoteClick }: Props) => {
     const { text, images } = parseNoteContent(note.body);
     const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
@@ -40,7 +44,7 @@ export const PersonalNoteListItem = ({ note, onNoteClick }: Props) => {
                                     {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
                                 </ActionIcon>
                             }
-                            <PersonalNoteMenu note={note} />
+                            {isOwner && <PersonalNoteMenu note={note} />}
                         </div>
                     </div>
                     <div className="single-note-date-container list-date-container">

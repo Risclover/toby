@@ -4,7 +4,7 @@ import { UserProfileNavGrid } from "@/features/UserProfile/components/UserProfil
 import { MobileLayout } from "@/layout"
 import "../features/UserProfile/styles/UserProfile.css"
 import { Tabs } from "@mantine/core"
-import { UserProfileMainTab } from "@/features/UserProfile/components/ UserProfileMainTab"
+import { UserProfileMainTab } from "@/features/UserProfile/components/UserProfileMainTab"
 import { UserProfileHabitsTab } from "@/features/UserProfile/components/UserProfileHabitsTab"
 import { useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"

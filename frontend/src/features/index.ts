@@ -6,3 +6,6 @@ export * from "./HouseholdTasklists";
 export * from "./Mood";
 export * from "./Shopping";
 export * from "./ActivityFeed"
+export * from "./PersonalNoteCategories";
+export * from "./PersonalNotes";
+export * from "./UserProfile";

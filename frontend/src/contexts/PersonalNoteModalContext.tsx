@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 interface PersonalNoteData {
     id?: string;
@@ -16,14 +16,15 @@ interface PersonalNoteModalContextType {
     closeModal: () => void;
 }
 
-const PersonalNoteModalContext =
-    createContext<PersonalNoteModalContextType | null>(null);
+type ProviderProps = {
+    children: React.ReactNode
+}
 
-export const PersonalNoteModalProvider = ({ children, }: { children: ReactNode; }) => {
+const PersonalNoteModalContext = createContext<PersonalNoteModalContextType | null>(null);
+
+export const PersonalNoteModalProvider = ({ children }: ProviderProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [personalNoteData, setPersonalNoteData] =
-        useState<PersonalNoteData | null>(null);
-
+    const [personalNoteData, setPersonalNoteData] = useState<PersonalNoteData | null>(null);
 
     const openModal = (data: PersonalNoteData = {}) => {
         setPersonalNoteData(data);
@@ -34,7 +35,6 @@ export const PersonalNoteModalProvider = ({ children, }: { children: ReactNode; 
         setPersonalNoteData(null);
         setIsOpen(false);
     };
-
 
     return (
         <PersonalNoteModalContext.Provider
@@ -47,12 +47,6 @@ export const PersonalNoteModalProvider = ({ children, }: { children: ReactNode; 
 
 export const usePersonalNoteModal = (): PersonalNoteModalContextType => {
     const context = useContext(PersonalNoteModalContext);
-
-    if (!context) {
-        throw new Error(
-            "usePersonalNoteModal must be used within a PersonalNoteModalProvider"
-        );
-    }
-
+    if (!context) throw new Error("usePersonalNoteModal must be used within a PersonalNoteModalProvider");
     return context;
 };

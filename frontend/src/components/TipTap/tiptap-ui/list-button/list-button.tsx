@@ -4,7 +4,7 @@ import { forwardRef, useCallback } from "react"
 import { parseShortcutKeys } from "@/lib/tiptap-utils"
 
 // --- Hooks ---
-import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
+import { useTiptapEditor } from "@/hooks/useTiptapEditor"
 
 // --- UI Primitives ---
 import type { ButtonProps } from "@/components/TipTap/tiptap-ui-primitive/button"

@@ -1,15 +1,5 @@
-import { Button, CheckIcon, Drawer, Radio, Text } from "@mantine/core";
-import type { SortOption } from "../../hooks/useNotesFilter";
-import { FaCheck } from "react-icons/fa6";
-import { useState } from "react";
-import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
-
-type Props = {
-    stack: any;
-    drawerProps: any;
-    sort: SortOption;
-    onSortChange: (val: SortOption) => void;
-};
+import { CheckIcon, Drawer, Radio, useModalsStack, type DrawerProps } from "@mantine/core";
+import type { SortOption } from "../../hooks";
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
     { value: "newest", label: "Newest first" },
@@ -19,15 +9,19 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
     { value: "private_first", label: "Private first" },
 ];
 
-export const PersonalNotesSortDrawer = ({ stack, drawerProps, sort, onSortChange }: Props) => {
-    const { filters, isFiltered, updateFilters, saveDefaults } = useNotesFilterContext();
-    const [saved, setSaved] = useState(false);
-    const handleSaveDefaults = () => {
-        saveDefaults();
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-    };
+type Props = {
+    /** Drawer stack instance, for usage inside `Drawer.Stack`. */
+    stack: ReturnType<typeof useModalsStack>;
+    /** Props for drawer component */
+    drawerProps: DrawerProps;
+    /** Active sort option */
+    sort: SortOption;
+    /** Handler for when user changes active sort option */
+    onSortChange: (val: SortOption) => void;
+};
 
+/** 'Sort by' options drawer, where user can use radio buttons to select how they want notes to be sorted. */
+export const PersonalNotesSortDrawer = ({ stack, drawerProps, sort, onSortChange }: Props) => {
     return (
         <Drawer
             title="Sort by"
@@ -48,7 +42,7 @@ export const PersonalNotesSortDrawer = ({ stack, drawerProps, sort, onSortChange
                                 value={option.value}
                                 label={option.label}
                                 labelPosition="left"
-                                onClick={(e) => e.stopPropagation()} // prevent double-firing
+                                onClick={(e) => e.stopPropagation()}
                                 styles={{
                                     root: {
                                         width: "100%",
@@ -70,21 +64,6 @@ export const PersonalNotesSortDrawer = ({ stack, drawerProps, sort, onSortChange
                     ))}
                 </div>
             </Radio.Group>
-            {/* <div className="notes-save-defaults">
-                <Button
-                    variant="light"
-                    color="rgb(5, 5, 73)"
-                    size="sm"
-                    fullWidth
-                    onClick={handleSaveDefaults}
-                    leftSection={saved ? <FaCheck size=".75rem" /> : undefined}
-                >
-                    {saved ? "Saved!" : "Save View & Sort As Default"}
-                </Button>
-                <Text size="xs" c="dimmed" ta="center" mt={4}>
-                    Does not save active filters.
-                </Text>
-            </div> */}
         </Drawer>
     );
 };

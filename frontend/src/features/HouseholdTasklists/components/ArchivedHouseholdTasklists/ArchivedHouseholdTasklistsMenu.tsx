@@ -5,7 +5,7 @@ import DeleteRounded from '@mui/icons-material/Delete';
 
 import { ViewIcon, UnarchivedIcon, MenuTrashIcon } from "@/assets";
 import { useTasklistSettings, useUndoArchive } from "../../hooks";
-import { DeleteConfirmation } from "..";
+import { DeleteConfirmation } from "@/components";
 import { useState } from "react";
 import type { TasklistType } from "@/store";
 

@@ -60,9 +60,9 @@ import { HighlighterIcon } from "@/components/TipTap/tiptap-icons/highlighter-ic
 import { LinkIcon } from "@/components/TipTap/tiptap-icons/link-icon"
 
 // --- Hooks ---
-import { useIsBreakpoint } from "@/hooks/use-is-breakpoint"
-import { useWindowSize } from "@/hooks/use-window-size"
-import { useCursorVisibility } from "@/hooks/use-cursor-visibility"
+import { useIsBreakpoint } from "@/hooks/useIsBreakpoint"
+import { useWindowSize } from "@/hooks/useWindowSize"
+import { useCursorVisibility } from "@/hooks/useCursorVisibility"
 
 // --- Components ---
 import { ThemeToggle } from "@/components/TipTap/tiptap-templates/simple/theme-toggle"

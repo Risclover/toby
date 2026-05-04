@@ -1,17 +1,14 @@
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ActionIcon, Menu } from "@mantine/core"
+
+import { KittyNotification, DeleteConfirmation } from "@/components";
+import { usePersonalNoteModal } from "@/contexts";
+import { useDeleteNoteMutation, type PersonalNote } from "@/store";
+
 import { IoEllipsisVerticalSharp } from "react-icons/io5";
 import DeleteRounded from '@mui/icons-material/Delete';
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
-import { PadlockIcon } from "@/assets/icons/PadlockIcon";
-import { PadlockOpenIcon } from "@/assets/icons/PadlockOpenIcon";
-import { useDeleteHabitMutation, useDeleteNoteMutation, useUpdateHabitMutation, type Habit, type PersonalNote } from "@/store";
-import { useHabitModal } from "@/contexts";
-import { notifications } from "@mantine/notifications";
-import { usePersonalNoteModal } from "@/contexts/PersonalNoteModalContext";
-import { DeleteConfirmation } from "@/features/HouseholdTasklists";
-import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
-import { KittyNotification } from "@/components/KittyNotification";
 import { KittyIcons } from "@/assets";
 
 export const PersonalNoteMenu = ({ note }: { note: PersonalNote }) => {

@@ -33,6 +33,9 @@ interface UpdateNotePayload {
     isPrivate: boolean;
 }
 
+export type NotesView = "grid" | "list";
+
+
 export const noteSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getUserNotes: builder.query<PersonalNote[], number>({

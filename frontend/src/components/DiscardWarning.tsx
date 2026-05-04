@@ -9,7 +9,7 @@ type Props = {
 
 export const DiscardWarning = ({ opened, setShowDiscardWarning, handleClose, discardNote }: Props) => {
     return (
-        <Modal radius="md" yOffset='13vh' zIndex={99999} withCloseButton={false} closeOnClickOutside={false} closeOnEscape={false} size="sm" opened={opened} onClose={handleClose} title="Discard unsaved changes?" styles={{
+        <Modal centered radius="md" yOffset='13vh' zIndex={99999} withCloseButton={false} closeOnClickOutside={false} closeOnEscape={false} size="sm" opened={opened} onClose={handleClose} title="Discard unsaved changes?" styles={{
             body: { padding: 0 },
             header: { paddingTop: 0, paddingBottom: 0 }
         }}>

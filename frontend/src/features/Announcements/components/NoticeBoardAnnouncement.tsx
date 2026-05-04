@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Avatar, Badge, Text } from "@mantine/core";
-import { DeleteConfirmation } from "@/features";
+import { DeleteConfirmation } from "@/components";
 import { AnnouncementMenu } from "./AnnouncementMenu";
 import { useAnnouncement } from "../hooks/useAnnouncement";
 import { useAuthenticateQuery, type Announcement } from "@/store"

@@ -3,7 +3,7 @@ import { Button, Checkbox, Flex, Input, MultiSelect, Space, Switch, Tabs, TextIn
 import type { UseFormReturnType } from "@mantine/form";
 import { SettingsItem } from "./SettingsItem";
 import { type TasklistType } from "@/store/taskSlice";
-import { DeleteConfirmation } from "../../../../components/DeleteConfirmation";
+import { DeleteConfirmation } from "@/components";
 import { useTasklistSettings } from "../../hooks";
 import { useIsSmallScreen } from "@/hooks";
 

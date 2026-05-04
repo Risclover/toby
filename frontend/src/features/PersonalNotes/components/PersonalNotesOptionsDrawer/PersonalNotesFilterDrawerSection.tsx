@@ -1,12 +1,12 @@
-import { Text } from "@mantine/core";
 import type { ReactNode } from "react";
 
 type Props = {
-    label: string;
+    /** Body of section */
     body: ReactNode;
 }
 
-export const PersonalNotesFilterDrawerSection = ({ label, body }: Props) => {
+/** Presentational component, section of the filters drawer */
+export const PersonalNotesFilterDrawerSection = ({ body }: Props) => {
     return (
         <div className="personal-notes-filter-drawer-section">
             <div className="personal-notes-filter-drawer-section--body">

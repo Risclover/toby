@@ -3,7 +3,7 @@ import { Checkbox } from "@mantine/core"
 import { useState, type MouseEvent } from "react"
 import { HabitMenu } from "./HabitMenu";
 import { useCompleteHabitMutation, useDeleteHabitMutation, useUncompleteHabitMutation, type Habit } from "@/store";
-import { DeleteConfirmation } from "@/features/HouseholdTasklists";
+import { DeleteConfirmation } from "@/components";
 import { notifications } from "@mantine/notifications";
 import { showHabitIncompleteToast } from "../utils/showHabitIncompleteToast";
 import { showHabitCompleteToast } from "../utils/showHabitCompleteToast";

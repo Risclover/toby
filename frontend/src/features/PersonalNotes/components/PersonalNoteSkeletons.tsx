@@ -1,5 +1,6 @@
 import { Skeleton } from "@mantine/core"
 
+/** Grid note loading skeleton */
 export const PersonalNoteGridSkeleton = () => {
     return (
         <div className="personal-note-skeleton-container">
@@ -31,6 +32,7 @@ export const PersonalNoteGridSkeleton = () => {
     )
 }
 
+/** List note loading skeleton */
 export const PersonalNoteListSkeleton = () => {
     return (
         <div className="single-note-container list-container">

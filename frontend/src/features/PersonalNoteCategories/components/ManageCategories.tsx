@@ -1,28 +1,49 @@
-import { useGetCategoriesQuery } from "@/store";
 import { Modal, useModalsStack } from "@mantine/core";
+
 import { CategoryMenu } from "./CategoryMenu";
 import { CreateNoteCategory } from "./CreateNoteCategory";
-import { useState } from "react";
-import type { PersonalNoteCategory } from "@/store/noteCategorySlice";
+import { MAX_CATEGORIES, useManageCategories } from "../hooks";
 
 type Props = {
+    /** Modal visibility */
     opened: boolean;
+    /** Closes the modal */
     setShowManageCategories: (val: boolean) => void;
 }
 
+/**
+ * Modal for viewing, editing, and deleting personal note categories.
+ *
+ * Uses a modal stack to layer the edit form on top without closing the list.
+ * Category limit is enforced via `MAX_CATEGORIES` from `useManageCategories`.
+ */
 export const ManageCategories = ({ opened, setShowManageCategories }: Props) => {
-    const stack = useModalsStack(['manage', 'edit']);
-    const { data: categories } = useGetCategoriesQuery();
-    const [editingCategory, setEditingCategory] = useState<PersonalNoteCategory | null>(null);
-
-    const handleEditClick = (category: PersonalNoteCategory) => {
-        setEditingCategory(category);
-        stack.open('edit');
-    };
+    const {
+        stack,
+        categories,
+        editingCategory,
+        handleEditClick,
+        handleClose,
+        handleCreateCategoryClose
+    } = useManageCategories({ opened, setShowManageCategories });
 
     return (
         <Modal.Stack>
-            <Modal {...stack.register('manage')} centered title="Manage categories" opened={opened} onClose={() => setShowManageCategories(false)} size="xs">
+            <Modal
+                {...stack.register('manage')}
+                centered
+                title="Manage categories"
+                opened={opened}
+                onClose={handleClose}
+                size="xs"
+                closeOnEscape={false}
+                onKeyDownCapture={(e) => {
+                    if (e.key === "Escape") {
+                        e.stopPropagation();
+                        handleClose();
+                    }
+                }}
+            >
                 {categories?.length === 0
                     ? <div className="empty-categories-menu">No categories yet</div>
                     : categories?.map(category => (
@@ -32,21 +53,20 @@ export const ManageCategories = ({ opened, setShowManageCategories }: Props) => 
                                 <span className="category-drawer-item-name">{category.name}</span>
                             </div>
                             <div className="manage-category-menu">
-                                <CategoryMenu
-                                    setShowManageCategories={setShowManageCategories}
-                                    category={category}
-                                    onEditClick={handleEditClick}
-                                />
+                                <CategoryMenu category={category} onEditClick={handleEditClick} />
                             </div>
                         </div>
                     ))
                 }
-                <div className="manage-categories-capacity">Categories used: {categories?.length ?? 0} / 10</div>
+                {/* Displays current usage against the category limit */}
+                <div className="manage-categories-capacity">
+                    Categories used: {categories?.length ?? 0} / {MAX_CATEGORIES}
+                </div>
             </Modal>
             <CreateNoteCategory
-                stack={stack}
+                stack={stack as ReturnType<typeof useModalsStack>}
                 category={editingCategory}
-                close={() => { setEditingCategory(null); stack.close('edit'); }}
+                close={handleCreateCategoryClose}
             />
         </Modal.Stack>
     );

@@ -14,7 +14,7 @@ import { TrashIcon } from "@/assets/icons/TrashIcon";
 import { useIsSmallScreen } from "@/hooks";
 import { useEffect } from "react";
 import { useGetTaskQuery } from "@/store";
-import { DeleteConfirmation } from "../TasklistSettings";
+import { DeleteConfirmation } from "@/components";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);

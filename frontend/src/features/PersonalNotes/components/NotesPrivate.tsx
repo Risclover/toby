@@ -1,5 +1,6 @@
 import { PadlockIcon } from "@/assets/icons/PadlockIcon"
 
+/** Notes private state */
 export const NotesPrivate = () => {
     return (
         <div className="habits-private">

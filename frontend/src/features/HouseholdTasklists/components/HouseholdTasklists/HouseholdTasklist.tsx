@@ -24,7 +24,7 @@ import { useTasklistActions } from "../../hooks/useTasklistActions";
 import { useHouseholdTasklistLogic } from "../../hooks/useHouseholdTasklistLogic";
 import { TasklistActionsMenu } from "./TasklistActionsMenu";
 import { useTasklistSettings } from "../../hooks";
-import { DeleteConfirmation } from "../TasklistSettings";
+import { DeleteConfirmation } from "@/components";
 import { Tasklist } from "./Tasklist";
 import { useHousehold } from "@/hooks/useHousehold";
 import { useGetFeaturedListSettingsQuery } from "@/store";

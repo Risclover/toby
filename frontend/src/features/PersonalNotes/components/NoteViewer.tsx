@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -9,7 +11,6 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { common, createLowlight } from "lowlight";
 import { TaskList, TaskItem } from "@tiptap/extension-list";
 import Highlight from "@tiptap/extension-highlight";
-import { useEffect } from "react";
 
 const lowlight = createLowlight(common);
 
@@ -17,6 +18,7 @@ interface NoteViewerProps {
     content?: string;
 }
 
+/** Renders note from rich text editor */
 export const NoteViewer = ({ content }: NoteViewerProps) => {
     const editor = useEditor({
         extensions: [

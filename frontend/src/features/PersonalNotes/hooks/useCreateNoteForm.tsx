@@ -1,31 +1,66 @@
 import { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
-import { useCreateNoteMutation, useUpdateNoteMutation } from "@/store/noteSlice";
-import { useAuthenticateQuery, useGetCategoriesQuery, type PersonalNoteCategory } from "@/store";
-import { KittyNotification } from "@/components/KittyNotification";
+import { usePersonalNoteModal } from "@/contexts";
+import { KittyNotification } from "@/components";
+import {
+    useCreateNoteMutation,
+    useUpdateNoteMutation,
+    useGetUserSettingsQuery,
+    useAuthenticateQuery,
+    useGetCategoriesQuery,
+    type PersonalNoteCategory
+} from "@/store";
 import { KittyIcons } from "@/assets";
-import { useGetUserSettingsQuery } from "@/store/userSettingsSlice";
-import { usePersonalNoteModal } from "@/contexts/PersonalNoteModalContext";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface NoteFormValues {
+    title: string;
+    body: string;
+    isPrivate: boolean;
+    categoryId: number | undefined;
+}
+
+type UseCreateNoteFormProps = {
+    setShowDiscardWarning: (val: boolean) => void;
+    closeModal: () => void;
+};
+
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const MAX_BODY_LENGTH = 10000;
 
-export const useCreateNoteForm = (onSuccess: () => void) => {
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+
+/** Hook for managing the state and logic of the create/edit note form */
+export const useCreateNoteForm = ({ setShowDiscardWarning, closeModal }: UseCreateNoteFormProps) => {
     const [createPersonalNote] = useCreateNoteMutation();
     const [updatePersonalNote] = useUpdateNoteMutation();
+
+    const { data: currentUser } = useAuthenticateQuery();
+    const { data: userSettings } = useGetUserSettingsQuery(currentUser?.id);
+    const { data: categories } = useGetCategoriesQuery();
+    const { isOpen, personalNoteData } = usePersonalNoteModal();
+
+    // ── State ─────────────────────────────────────────────────────────────────────
+
     const [charCount, setCharCount] = useState(0);
     const [editorKey, setEditorKey] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState<PersonalNoteCategory | null>(null);
-    const { data: currentUser } = useAuthenticateQuery();
-    const { data: userSettings } = useGetUserSettingsQuery(currentUser?.id);
-    const { isOpen, personalNoteData } = usePersonalNoteModal();
-    const { data: categories } = useGetCategoriesQuery();
 
     const isEditing = personalNoteData?.id !== undefined;
+    const defaultPrivacy = userSettings?.settings?.notesPrivacyMode === "private_by_default";
 
-    const form = useForm({
-        initialValues: { title: "", body: "", isPrivate: userSettings?.settings.notesPrivacyMode === "private_by_default", categoryId: undefined as number | undefined },
+    const form = useForm<NoteFormValues>({
+        initialValues: {
+            title: "",
+            body: "",
+            isPrivate: defaultPrivacy,
+            categoryId: undefined,
+        },
         validate: {
-            title: (value) => value.trim().length === 0 ? "Please give your note a title." : null,
+            title: (value) =>
+                value.trim().length === 0 ? "Please give your note a title." : null,
             body: (value) => {
                 const plain = value.replace(/<[^>]*>/g, "").trim();
                 if (plain.length === 0) return "Please give your note some content.";
@@ -35,6 +70,17 @@ export const useCreateNoteForm = (onSuccess: () => void) => {
             },
         },
     });
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    const resetForm = () => {
+        form.reset();
+        setCharCount(0);
+        setEditorKey(k => k + 1);
+        setSelectedCategory(null);
+    };
+
+    // ── Handlers ──────────────────────────────────────────────────────────────
 
     const handleSelectCategory = (category: PersonalNoteCategory | null) => {
         setSelectedCategory(category);
@@ -50,93 +96,90 @@ export const useCreateNoteForm = (onSuccess: () => void) => {
         form.setFieldValue("isPrivate", !form.values.isPrivate);
     };
 
+    const handleClose = () => {
+        if (form.isDirty()) {
+            setShowDiscardWarning(true);
+        } else {
+            closeModal();
+            resetForm();
+        }
+    };
+
+    const handleDiscard = () => {
+        setShowDiscardWarning(false);
+        closeModal();
+        resetForm();
+    };
+
     const handleSubmit = form.onSubmit(async (values) => {
         try {
             if (isEditing) {
-                await updatePersonalNote({
-                    id: personalNoteData?.id!,
-                    ...form.values
-                }).unwrap();
+                await updatePersonalNote({ id: personalNoteData!.id, ...values }).unwrap();
                 KittyNotification({
                     title: "Note updated",
-                    message: <>Looking good! Your changes to "<strong style={{ fontWeight: 500 }}>{form.values.title}</strong>" have been saved.</>,
+                    message: <>Looking good! Your changes to "<strong style={{ fontWeight: 500 }}>{values.title}</strong>" have been saved.</>,
                     color: "green",
-                    icon: KittyIcons.Write
-                })
-                form.reset();
-                setCharCount(0);
-                setEditorKey(k => k + 1);
-                onSuccess();
+                    icon: KittyIcons.Write,
+                });
             } else {
                 await createPersonalNote({
-                    title: values.title,
-                    body: values.body,
-                    isPrivate: values.isPrivate,
+                    ...values,
                     isFavorite: false,
-                    categoryId: values.categoryId,
                 }).unwrap();
-                form.reset();
-                setCharCount(0);
-                setEditorKey(k => k + 1);
-                setSelectedCategory(null);
-                onSuccess();
                 KittyNotification({
                     title: "Note created successfully",
                     message: <>You successfully posted a new note: "<strong style={{ fontWeight: 500 }}>{values.title}</strong>".</>,
                     icon: KittyIcons.Computer,
-                    color: "green"
-                })
+                    color: "green",
+                });
             }
+            resetForm();
+            closeModal();
         } catch (error) {
             KittyNotification({
                 title: "Whoops - something went wrong",
                 message: <>I didn't feel like {isEditing ? "editing" : "creating"} your note "<strong style={{ fontWeight: 500 }}>{values.title}</strong>". You'll have to try again.</>,
                 icon: KittyIcons.Grumpy,
-                color: "red"
-            })
-
+                color: "red",
+            });
             console.error("Failed to create or edit note:", error);
         }
     });
 
-    const handleReset = () => {
-        form.reset();
-        setCharCount(0);
-        setSelectedCategory(null);
-    };
+    // ── Effects ───────────────────────────────────────────────────────────────
 
+    // Populate form when modal opens for editing; reset to defaults when opening for creation.
+    // Intentionally keyed only to isOpen; we want a snapshot of modal state at open time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!isOpen) return;
 
-        if (personalNoteData?.id !== undefined) {
+        if (isEditing) {
             form.setValues({
                 title: personalNoteData.title ?? "",
                 body: personalNoteData.body ?? "",
                 categoryId: personalNoteData.categoryId ?? undefined,
                 isPrivate: personalNoteData.isPrivate ?? false,
             });
-            form.resetDirty();
             setSelectedCategory(categories?.find(c => c.id === personalNoteData.categoryId) ?? null);
         } else {
-            form.setValues({
-                title: "",
-                body: "",
-                categoryId: undefined,
-                isPrivate: userSettings?.settings?.notesPrivacyMode === "private_by_default",
-            });
-            form.resetDirty();
+            form.setValues({ title: "", body: "", categoryId: undefined, isPrivate: defaultPrivacy });
             setSelectedCategory(null);
         }
+        form.resetDirty();
     }, [isOpen]);
 
+    // Clear selected category if it was deleted while the modal is open.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!selectedCategory || !categories) return;
-        const stillExists = categories.some(c => c.id === selectedCategory.id);
-        if (!stillExists) {
+        if (!categories.some(c => c.id === selectedCategory.id)) {
             setSelectedCategory(null);
             form.setFieldValue("categoryId", undefined);
         }
     }, [categories]);
+
+    // ─────────────────────────────────────────────────────────────────────────
 
     return {
         form,
@@ -147,8 +190,10 @@ export const useCreateNoteForm = (onSuccess: () => void) => {
         handleBodyChange,
         handleToggleVisibility,
         handleSubmit,
-        handleReset,
+        handleClose,
+        handleDiscard,
+        handleReset: resetForm,
+        isEditing,
         MAX_BODY_LENGTH,
-        isEditing
     };
 };

@@ -24,8 +24,6 @@
     align-items: center;
     justify-content: space-between;
     line-height: 1.2;
-    /* color: black; */
-    /* font-size: 13px !important; */
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -39,7 +37,6 @@
 }
 
 .category-item-color {
-    /* display: inline-block; */
     height: 18px;
     width: 18px;
     border-radius: 100%;
@@ -91,7 +88,6 @@
 .category-drawer-item,
 .manage-category-item {
     display: flex;
-    /* line-height: 1.2; */
     align-items: center;
     justify-content: space-between;
     font-size: var(--text-sm);
@@ -102,7 +98,6 @@
     cursor: pointer;
     border-radius: .5rem;
     font-family: var(--font-family-sora);
-    /* font-weight: 500; */
 }
 
 .manage-category-item {
@@ -112,7 +107,6 @@
 .manage-categories-capacity {
     font-size: var(--text-xs);
     display: flex;
-    /* justify-content: flex-end; */
     width: 100%;
     margin-top: .5rem;
     margin-left: .5rem;
@@ -146,9 +140,7 @@
     display: flex;
     align-items: center;
     flex-shrink: 1;
-    /* was flex-shrink: 0 — this was the culprit */
     min-width: 0;
-    /* allows it to shrink below content size */
     overflow: hidden;
 }
 
@@ -186,4 +178,25 @@
     flex-direction: column;
 }
 
-.create-notes-category-form--footer {}
+.category-picker-small {
+    display: flex;
+    align-items: center;
+}
+
+.category-drawer-extra-options--divided {
+    border-top: 1px solid var(--mantine-color-gray-4);
+    margin-top: .5rem;
+    padding-top: .5rem;
+}
+
+.category-menu-capacity {
+    justify-self: flex-end;
+    align-self: baseline;
+    font-size: 12px;
+    margin-left: .5rem;
+}
+
+.category-menu-capacity--limit {
+    color: red;
+    margin-left: .25rem;
+}

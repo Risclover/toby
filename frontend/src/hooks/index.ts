@@ -7,3 +7,5 @@ export { useOutsideClick } from "./useOutsideClick";
 export { useScrollToTop } from "./useScrollToTop";
 export { useStablePending } from "./useStablePending";
 export { useCollapseScroll } from "./useCollapseScroll";
+export { useModalFocus } from "./useModalFocus";
+export { useCloseModalOnNavigate } from "./useCloseModalOnNavigate";

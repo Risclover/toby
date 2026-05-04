@@ -1,77 +1,34 @@
-import { useIsSmallScreen } from "@/hooks";
-import { ActionIcon, Drawer, Indicator, useDrawersStack } from "@mantine/core";
-import { OptionsDrawerButton } from "./OptionsDrawerButton";
-import { TbArrowsSort } from "react-icons/tb";
-import { LuListFilter } from "react-icons/lu";
-import { HiViewGrid } from "react-icons/hi";
-import { IoOptions } from "react-icons/io5";
-import { PersonalNotesSortDrawer } from "./PersonalNotesSortDrawer";
-import type { SortOption, ViewOption } from "../../hooks/useNotesFilter";
-import { PersonalNotesFilterDrawer } from "./PersonalNotesFilterDrawer";
-import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
-import { PersonalNotesViewDrawer } from "./PersonalNotesViewDrawer";
+import { ActionIcon, Drawer, Indicator, useModalsStack } from "@mantine/core";
 
-const SORT_LABELS: Record<SortOption, string> = {
-    newest: "Newest first",
-    oldest: "Oldest first",
-    alpha: "A → Z",
-    category_alpha: "By category",
-    private_first: "Private first",
-};
+import { OptionsDrawerButton } from "./OptionsDrawerButton";
+import { PersonalNotesSortDrawer } from "./PersonalNotesSortDrawer";
+import { PersonalNotesFilterDrawer } from "./PersonalNotesFilterDrawer";
+import { PersonalNotesViewDrawer } from "./PersonalNotesViewDrawer";
+import { usePersonalNotesOptionsDrawer, type SortOption, type ViewOption } from "../../hooks";
+
+import { IoOptions } from "react-icons/io5";
 
 type Props = {
-    isFiltered: boolean;
+    /** Active sort option */
     sort: SortOption;
+    /** Handler for when user changes active sort */
     onSortChange: (val: SortOption) => void;
+    /** Active view option */
     view: ViewOption;
+    /** Handler for when user changes active view */
     onViewChange: (val: ViewOption) => void;
 };
 
+/** 
+ * Options drawer, which serves as the first "page" before user goes into sort, filter, or view options
+ */
 export const PersonalNotesOptionsDrawer = ({ sort, onSortChange, view, onViewChange }: Props) => {
-    const stack = useDrawersStack(["options", "filters", "sort", "view"]);
-    const isSmall = useIsSmallScreen(425);
-    const { filters, isFiltered } = useNotesFilterContext();
-
-    const filterCount = [
-        filters.favoritism,
-        filters.visibility !== "all",
-        filters.categoryIds.length > 0,
-    ].filter(Boolean).length;
-
-    const optionsDrawerButtons = [
-        {
-            title: "Sort by",
-            icon: <TbArrowsSort />,
-            activeOption: SORT_LABELS[sort],
-            onClick: () => stack.open("sort"),
-        },
-        {
-            title: "Filters",
-            icon: <LuListFilter />,
-            activeOption: filterCount > 0 ? `${filterCount} filter${filterCount !== 1 ? "s" : ""}` : "",
-            onClick: () => stack.open("filters"),
-        },
-        {
-            title: "View",
-            icon: <HiViewGrid />,
-            activeOption: view === "grid" ? "Grid view" : "List view",
-            onClick: () => stack.open("view"),
-        },
-    ];
-
-    const drawerProps = {
-        styles: {
-            content: {
-                height: "min-content",
-                borderTopLeftRadius: "1rem",
-                borderTopRightRadius: "1rem",
-            },
-            body: { padding: "1rem", paddingTop: ".5rem" },
-        },
-        size: "auto",
-        className: "notes-options-drawer",
-        position: "bottom",
-    } as const;
+    const {
+        stack,
+        isFiltered,
+        optionsDrawerButtons,
+        drawerProps
+    } = usePersonalNotesOptionsDrawer({ sort, view });
 
     return (
         <>
@@ -91,20 +48,25 @@ export const PersonalNotesOptionsDrawer = ({ sort, onSortChange, view, onViewCha
                 </Drawer>
                 <PersonalNotesSortDrawer
                     drawerProps={drawerProps}
-                    stack={stack}
+                    stack={stack as ReturnType<typeof useModalsStack>}
                     sort={sort}
                     onSortChange={onSortChange}
                 />
-                <PersonalNotesFilterDrawer drawerProps={drawerProps} stack={stack} />
+                <PersonalNotesFilterDrawer
+                    drawerProps={drawerProps}
+                    stack={stack as ReturnType<typeof useModalsStack>}
+                />
                 <PersonalNotesViewDrawer
                     drawerProps={drawerProps}
-                    stack={stack}
+                    stack={stack as ReturnType<typeof useModalsStack>}
                     view={view}
                     onViewChange={onViewChange}
                 />
             </Drawer.Stack>
 
+            {/* Button that opens options drawer */}
             <div className="personal-notes-controls">
+                {/* Indicator turns on when a filter is active */}
                 <Indicator
                     styles={{
                         root: {
@@ -127,7 +89,6 @@ export const PersonalNotesOptionsDrawer = ({ sort, onSortChange, view, onViewCha
                         onClick={() => stack.open("options")}
                         styles={{
                             root: {
-
                                 alignSelf: "center"
                             }
                         }}

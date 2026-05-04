@@ -1,13 +1,20 @@
-import { ChevronRightIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { ChevronRightIcon } from "lucide-react";
 
 type Props = {
+    /** Icon that sits on left of label */
     icon: ReactNode;
+    /** Button label */
     title: string;
+    /** Selected option */
     activeOption: string;
+    /** Button's click handler */
     onClick: () => void;
 }
 
+/**
+ * Button in options drawer (Sort by, Filters, View)
+ */
 export const OptionsDrawerButton = ({ icon, title, activeOption, onClick }: Props) => {
     return (
         <button className="notes-options-drawer-btn" onClick={onClick}>

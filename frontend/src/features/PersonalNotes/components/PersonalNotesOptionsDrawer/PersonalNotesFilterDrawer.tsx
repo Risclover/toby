@@ -1,17 +1,12 @@
-import { Drawer } from "@mantine/core"
-import { type FavoriteFilter, type VisibilityFilter } from "../../hooks/useNotesFilter";
+import { useParams } from "react-router-dom";
+import { Drawer, useModalsStack, type DrawerProps } from "@mantine/core"
+
 import { PersonalNotesFilterDrawerSection } from "./PersonalNotesFilterDrawerSection";
-import { NotesFilterSectionBody } from "./NotesFilterSectionBody";
-import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
-import { useAuthenticateQuery, useGetCategoriesQuery } from "@/store";
+import { VisibilityFilterSectionBody } from "./VisibilityFilterSectionBody";
 import { CategoryFilterSectionBody } from "./CategoryFilterSectionBody";
 import { FavoritesFilterSectionBody } from "./FavoritesFilterSectionBody";
-import { useParams } from "react-router-dom";
-
-type Props = {
-    drawerProps: any;
-    stack: any;
-}
+import { type VisibilityFilter } from "../../hooks";
+import { useAuthenticateQuery } from "@/store";
 
 const VISIBILITY_OPTIONS: { value: VisibilityFilter; label: string }[] = [
     { value: "all", label: "All" },
@@ -19,24 +14,35 @@ const VISIBILITY_OPTIONS: { value: VisibilityFilter; label: string }[] = [
     { value: "private", label: "Private" },
 ];
 
+type Props = {
+    /** Drawer stack instance, for usage inside `Drawer.Stack`. */
+    stack: ReturnType<typeof useModalsStack>;
+    /** Props for drawer component */
+    drawerProps: DrawerProps;
+}
+
+/** Filters drawer, inside of options drawer stack */
 export const PersonalNotesFilterDrawer = ({ drawerProps, stack }: Props) => {
     const { userId } = useParams();
     const { data: currentUser } = useAuthenticateQuery();
+
     const userIsAuthor = !!currentUser && Number(userId) === currentUser.id;
+
     const filterSections = [
         {
             label: "Favorites",
-            body: <FavoritesFilterSectionBody filterKey="favoritism" />,
+            body: <FavoritesFilterSectionBody />,
         },
         {
             label: "Visibility",
-            body: <NotesFilterSectionBody filterKey="visibility" options={VISIBILITY_OPTIONS} />,
+            body: <VisibilityFilterSectionBody options={VISIBILITY_OPTIONS} />,
         },
         {
             label: "Categories",
             body: <CategoryFilterSectionBody />
         },
     ];
+
     return (
         <Drawer
             title="Filters"
@@ -45,7 +51,7 @@ export const PersonalNotesFilterDrawer = ({ drawerProps, stack }: Props) => {
         >
             <div className="notes-options-drawer--body">
                 {userIsAuthor ? filterSections.map(btn => (
-                    <PersonalNotesFilterDrawerSection label={btn.label} body={btn.body} />
+                    <PersonalNotesFilterDrawerSection body={btn.body} />
                 )) : <CategoryFilterSectionBody />}
             </div>
         </Drawer>

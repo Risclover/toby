@@ -1,32 +1,38 @@
 // PersonalNotesToolbar.tsx
 import { useEffect, useRef, useState } from "react";
-import { ActionIcon, Button, Indicator } from "@mantine/core";
-import { FaMagnifyingGlass, FaXmark } from "react-icons/fa6";
-import FilterAltRoundedIcon from "@mui/icons-material/FilterAltRounded";
-import { PersonalNotesViewOptions, type NotesView } from "./PersonalNotesViewOptions";
-import { animate, motion, progress, useMotionValue, useTransform } from "framer-motion";
-import { IoOptions } from "react-icons/io5";
-import { useIsSmallScreen } from "@/hooks";
-import { PersonalNotesOptionsDrawer } from "./PersonalNotesOptionsDrawer/PersonalNotesOptionsDrawer";
-import type { SortOption } from "../hooks/useNotesFilter";
 import { useParams } from "react-router-dom";
-import { useAuthenticateQuery } from "@/store";
-import { usePersonalNoteModal } from "@/contexts/PersonalNoteModalContext";
+import { animate, motion, useMotionValue, useTransform } from "framer-motion";
+import { ActionIcon, Button } from "@mantine/core";
+
+import { usePersonalNoteModal } from "@/contexts";
+import { PersonalNotesOptionsDrawer } from "./PersonalNotesOptionsDrawer";
+import { useIsSmallScreen } from "@/hooks";
+import type { SortOption } from "../hooks";
+import { useAuthenticateQuery, type NotesView } from "@/store";
+
+import { FaMagnifyingGlass, FaXmark } from "react-icons/fa6";
 
 type Props = {
+    /** Current search query */
     search: string;
+    /** Handler for updating the search query */
     onSearchChange: (val: string) => void;
+    /** Whether any filters are currently applied */
     isFiltered: boolean;
+    /** Current notes view (grid or list) */
     view: NotesView;
+    /** Handler for changing the notes view */
     onViewChange: (next: NotesView) => void;
+    /** Current sort option */
     sort: SortOption;
+    /** Handler for changing the sort option */
     onSortChange: (val: SortOption) => void;
 };
 
+/** Toolbar component for the personal notes page, containing the search input, sort/filter/view options, and create note button */
 export const PersonalNotesToolbar = ({
     search,
     onSearchChange,
-    isFiltered,
     view,
     onViewChange,
     sort,
@@ -45,10 +51,12 @@ export const PersonalNotesToolbar = ({
     const progress = useMotionValue(0);
 
     const searchWidth = useTransform(progress, (p) => {
-        const full = toolbarWidthRef.current;
         let paddingSize = 6.4;
         let iconSize = 38;
-        const startWidth = iconSize + paddingSize; // 36px icon + 0.4rem padding (0.4 * 16)
+
+        const startWidth = iconSize + paddingSize;
+        const full = toolbarWidthRef.current;
+
         return startWidth + (full - startWidth - 32) * p;
     });
 
@@ -120,18 +128,23 @@ export const PersonalNotesToolbar = ({
                 )}
             </motion.div>
             <div className="personal-notes-toolbar--right">
-                {/* Controls sit on the left naturally, get pushed off as search expands */}
                 <PersonalNotesOptionsDrawer
-                    isFiltered={isFiltered}
                     sort={sort}
                     onSortChange={onSortChange}
                     view={view}
                     onViewChange={onViewChange}
                 />
-                {userIsAuthor && <Button color="rgb(5, 5, 73)" size={isSmall ? "13px" : "sm"} h="auto" p=".5rem 1rem" fw={500} onClick={() => openModal()}>
-                    Create note
-                </Button>}
-                {/* Search sits on the right, expands leftward pushing controls off */}
+                {userIsAuthor &&
+                    <Button
+                        color="rgb(5, 5, 73)"
+                        size={isSmall ? "13px" : "sm"}
+                        h="auto"
+                        p=".5rem 1rem"
+                        fw={500}
+                        onClick={() => openModal()}
+                    >
+                        Create note
+                    </Button>}
             </div>
 
         </div >

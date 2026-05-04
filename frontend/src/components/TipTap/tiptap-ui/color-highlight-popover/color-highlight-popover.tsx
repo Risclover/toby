@@ -2,9 +2,9 @@ import { forwardRef, useMemo, useRef, useState } from "react"
 import { type Editor } from "@tiptap/react"
 
 // --- Hooks ---
-import { useMenuNavigation } from "@/hooks/use-menu-navigation"
-import { useIsBreakpoint } from "@/hooks/use-is-breakpoint"
-import { useTiptapEditor } from "@/hooks/use-tiptap-editor"
+import { useMenuNavigation } from "@/hooks/useMenuNavigation"
+import { useIsBreakpoint } from "@/hooks/useIsBreakpoint"
+import { useTiptapEditor } from "@/hooks/useTiptapEditor"
 
 // --- Icons ---
 import { BanIcon } from "@/components/TipTap/tiptap-icons/ban-icon"

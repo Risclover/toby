@@ -1,22 +1,28 @@
-import { useGetNoteQuery, useToggleNoteFavoriteMutation } from "@/store/noteSlice";
-import { useAuthenticateQuery } from "@/store/authSlice";
-import { NoteViewer } from "./NoteViewer";
+import { useParams } from "react-router-dom";
 import { ActionIcon, Button } from "@mantine/core";
+
+import { NoteViewer } from "./NoteViewer";
 import { formatNoteDate } from "../utils/formatNoteDate";
-import { ChevronDownIcon } from "@/assets/icons/ChevronDownIcon";
-import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
-import { Navigate, useParams } from "react-router-dom";
 import { SingleNotePrivate } from "./SingleNotePrivate";
 import { PersonalNoteMenu } from "./PersonalNoteMenu";
 import { CreatePersonalNote } from "./CreatePersonalNote";
+import { useAuthenticateQuery } from "@/store/authSlice";
+import { useGetNoteQuery, useToggleNoteFavoriteMutation } from "@/store/noteSlice";
+
+import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
+import { ChevronDownIcon } from "@/assets/icons/ChevronDownIcon";
 
 type Props = {
+    /** ID of the note to display */
     noteId: string;
+    /** Called when the user wants to go back to the notes list */
     onBack: () => void;
+    /** Called when the user clicks on the note's category pill */
     onCategoryClick: (categoryId: number) => void;
 }
 
+/** Single note page */
 export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
     const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
     const { userId } = useParams();
@@ -32,6 +38,7 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
     if (isError) {
         return <SingleNotePrivate />;
     }
+
     if (!note) return null;
 
     return (
@@ -47,7 +54,7 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
                             {!note.isFavorite ? <FaRegHeart size="1.25rem" /> : <FaHeart size="1.25rem" />}
                         </ActionIcon>
                     }
-                    <PersonalNoteMenu note={note} />
+                    {isOwner && <PersonalNoteMenu note={note} />}
                 </div>
             </div>
             <div className="personal-note-header">
@@ -65,7 +72,9 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
                     <div className="personal-note-date-container">
                         Posted <span className="personal-note-date">{formatNoteDate(note.createdAt)}</span>
                         {note.updatedAt !== note.createdAt && (
-                            <> <span className="date-dot">·</span> Last modified {formatNoteDate(note.updatedAt)}</>
+                            <>
+                                <span className="date-dot">·</span> Last modified {formatNoteDate(note.updatedAt)}
+                            </>
                         )}
                     </div>
                 </div>

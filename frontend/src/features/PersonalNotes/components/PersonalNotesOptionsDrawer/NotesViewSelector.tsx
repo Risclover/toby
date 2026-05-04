@@ -1,14 +1,37 @@
-import { Box, Checkbox, Flex, Group, rem, Stack, Text } from "@mantine/core";
-import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
+import { Box, Checkbox, Flex, Group, rem, Stack } from "@mantine/core";
+
+import { useIsSmallScreen } from "@/hooks";
 import type { ViewOption } from "../../hooks/useNotesFilter";
 
-function MiniLine({ width, height, opacity = 1, marginTop, color = "currentColor" }: {
+type MiniLineProps = {
     width: string | number;
     height: string | number;
     opacity?: number;
     marginTop?: string | number;
     color?: string;
-}) {
+}
+
+type NoteCardProps = {
+    faded?: boolean;
+}
+
+type PreviewWindowProps = {
+    label: string;
+    onClick: () => void;
+    onKeyDown: (e: any) => void;
+    activeView: string | undefined;
+    children: React.ReactNode;
+}
+
+type NotesViewSelectorProps = {
+    activeView: ViewOption;
+    setActiveView: (val: ViewOption) => void;
+}
+
+/**
+ * Mimics text
+ */
+function MiniLine({ width, height, opacity = 1, marginTop, color = "currentColor" }: MiniLineProps) {
     return (
         <Box style={{
             width,
@@ -21,6 +44,9 @@ function MiniLine({ width, height, opacity = 1, marginTop, color = "currentColor
     );
 }
 
+/**
+ * Mimics a category pill
+ */
 function MiniPill() {
     return (
         <Box style={{
@@ -33,7 +59,10 @@ function MiniPill() {
     );
 }
 
-function ListNoteCard({ faded }: { faded?: boolean }) {
+/**
+ * Mimics card from list view
+ */
+function ListNoteCard({ faded }: NoteCardProps) {
     return (
         <Box
             px={8}
@@ -51,7 +80,10 @@ function ListNoteCard({ faded }: { faded?: boolean }) {
     );
 }
 
-function GridNoteCard({ faded }: { faded?: boolean }) {
+/**
+ * Mimics card from grid view
+ */
+function GridNoteCard({ faded }: NoteCardProps) {
     return (
         <Box style={{
             border: "1px solid var(--mantine-color-gray-3)",
@@ -72,13 +104,10 @@ function GridNoteCard({ faded }: { faded?: boolean }) {
     );
 }
 
-function PreviewWindow({ label, onClick, onKeyDown, activeView, children }: {
-    label: string;
-    onClick: () => void;
-    onKeyDown: (e: any) => void;
-    activeView: string | undefined;
-    children: React.ReactNode;
-}) {
+/**
+ * Notes view component, including radio, label, and skeleton preview
+ */
+function PreviewWindow({ label, onClick, onKeyDown, activeView, children }: PreviewWindowProps) {
     return (
         <Stack gap="0.25rem">
             <Box
@@ -120,10 +149,10 @@ function PreviewWindow({ label, onClick, onKeyDown, activeView, children }: {
     );
 }
 
-export function NotesViewSelector({ activeView, setActiveView }: {
-    activeView: ViewOption;
-    setActiveView: (val: ViewOption) => void;
-}) {
+/**
+ * Notes view selector components; serves as container of the whole thing
+ */
+export function NotesViewSelector({ activeView, setActiveView }: NotesViewSelectorProps) {
     const isSmallScreen = useIsSmallScreen();
 
     const handleKeyDown = (view: ViewOption) => (e: any) => {
@@ -139,10 +168,7 @@ export function NotesViewSelector({ activeView, setActiveView }: {
                 onKeyDown={handleKeyDown("grid")}
             >
                 <Flex direction="column" gap={4} p={0} style={{ flex: 1 }}>
-                    <GridNoteCard />
-                    <GridNoteCard />
-                    <GridNoteCard faded />
-                    <GridNoteCard faded />
+                    {Array.from({ length: 4 }).map((_, i) => i > 1 ? <GridNoteCard faded /> : <GridNoteCard />)}
                 </Flex>
             </PreviewWindow>
             <PreviewWindow
@@ -151,10 +177,7 @@ export function NotesViewSelector({ activeView, setActiveView }: {
                 onClick={() => setActiveView("list")}
                 onKeyDown={handleKeyDown("list")}
             >
-                <ListNoteCard />
-                <ListNoteCard />
-                <ListNoteCard />
-                <ListNoteCard faded />
+                {Array.from({ length: 4 }).map((_, i) => i === 3 ? <ListNoteCard faded /> : <ListNoteCard />)}
             </PreviewWindow>
         </Flex>
     );

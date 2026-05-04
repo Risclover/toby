@@ -1,13 +1,14 @@
-import { getLightColor } from "@/utils/getLightColor";
-import { useNotesFilterContext } from "@/contexts/NotesFilterContext";
-import { isTooLight } from "@/utils";
-import { getContrastTextColor } from "@/utils/getContrastTextColor";
+import { useNotesFilterContext } from "@/contexts";
+import { getLightColor, getContrastTextColor } from "@/utils";
 
 type Props = {
+    /** The category to display */
     category: { id: number; name: string; color?: string | null };
+    /** Optional click handler; defaults to applying this category as a filter */
     onClick?: (e: React.MouseEvent) => void;
 };
 
+/** Pill component for displaying a note's category */
 export const PersonalNoteCategoryPill = ({ category, onClick }: Props) => {
     const { updateFilters } = useNotesFilterContext();
 

@@ -2,7 +2,7 @@ import { Tabs } from "@mantine/core"
 import { TbFlameFilled } from "react-icons/tb";
 import StickyNote2RoundedIcon from '@mui/icons-material/StickyNote2Rounded';
 import PersonIcon from '@mui/icons-material/Person';
-import { UserProfileMainTab } from "./ UserProfileMainTab";
+import { UserProfileMainTab } from "./UserProfileMainTab";
 
 export const UserProfileNavGrid = () => {
     return (

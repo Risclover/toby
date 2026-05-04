@@ -19,7 +19,7 @@ import "../../styles/MobileTasklist.css"
 import { useStablePending } from "@/hooks";
 import { useTasklistSettings, useTasklistStats } from "../../hooks";
 import { useState } from "react";
-import { DeleteConfirmation } from "../TasklistSettings";
+import { DeleteConfirmation } from "@/components";
 import { useAuthenticateQuery, useGetHouseholdQuery } from "@/store";
 import { useHousehold } from "@/hooks/useHousehold";
 
