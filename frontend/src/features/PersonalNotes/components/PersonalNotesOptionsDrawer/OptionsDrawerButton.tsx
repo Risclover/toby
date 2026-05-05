@@ -12,9 +12,7 @@ type Props = {
     onClick: () => void;
 }
 
-/**
- * Button in options drawer (Sort by, Filters, View)
- */
+/** Button in options drawer (Sort by, Filters, or View) */
 export const OptionsDrawerButton = ({ icon, title, activeOption, onClick }: Props) => {
     return (
         <button className="notes-options-drawer-btn" onClick={onClick}>

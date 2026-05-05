@@ -1,15 +1,13 @@
-import type { MouseEvent } from "react";
-import { useParams } from "react-router-dom";
 import { ActionIcon, Text } from "@mantine/core";
 
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
 import { PersonalNoteMenu } from "./PersonalNoteMenu";
-import { useAuthenticateQuery, useToggleNoteFavoriteMutation, type PersonalNote } from "@/store";
+import { type PersonalNote } from "@/store";
 import { getLightColor } from "@/utils/getLightColor";
 import { formatNoteDate } from "../utils/formatNoteDate";
-import { parseNoteContent } from "../utils/parseNoteContent";
 
 import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
+import { usePersonalNoteItem } from "../hooks/usePersonalNoteItem";
 
 type Props = {
     /** The note to display */
@@ -20,17 +18,12 @@ type Props = {
 
 /** Single note item in the notes grid */
 export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
-    const { text, images } = parseNoteContent(note.body);
-    const { data: currentUser } = useAuthenticateQuery();
-    const { userId } = useParams();
-    const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
-
-    const handleToggleFavorite = async (e: MouseEvent) => {
-        e.stopPropagation();
-        await toggleNoteFavorite(note.id).unwrap();
-    }
-
-    const isOwner = currentUser?.id === Number(userId);
+    const {
+        handleToggleFavorite,
+        images,
+        text,
+        isOwner
+    } = usePersonalNoteItem({ note });
     return (
         <div
             className="single-note-container"

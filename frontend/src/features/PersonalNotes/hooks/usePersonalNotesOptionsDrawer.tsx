@@ -17,6 +17,7 @@ type UsePersonalNotesOptionsDrawerProps = {
     sort: SortOption;
     view: ViewOption;
 }
+
 export const usePersonalNotesOptionsDrawer = ({ sort, view }: UsePersonalNotesOptionsDrawerProps) => {
     const stack = useDrawersStack(["options", "filters", "sort", "view"]);
     const { filters, isFiltered } = useNotesFilterContext();

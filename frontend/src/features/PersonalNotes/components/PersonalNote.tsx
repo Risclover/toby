@@ -1,14 +1,12 @@
-import { useParams } from "react-router-dom";
 import { ActionIcon, Button } from "@mantine/core";
 
 import { NoteViewer } from "./NoteViewer";
-import { formatNoteDate } from "../utils/formatNoteDate";
 import { PersonalNoteCategoryPill } from "./PersonalNoteCategoryPill";
 import { SingleNotePrivate } from "./SingleNotePrivate";
 import { PersonalNoteMenu } from "./PersonalNoteMenu";
 import { CreatePersonalNote } from "./CreatePersonalNote";
-import { useAuthenticateQuery } from "@/store/authSlice";
-import { useGetNoteQuery, useToggleNoteFavoriteMutation } from "@/store/noteSlice";
+import { usePersonalNote } from "../hooks";
+import { formatNoteDate } from "../utils/formatNoteDate";
 
 import { FaHeart, FaLock, FaRegHeart } from "react-icons/fa6";
 import { ChevronDownIcon } from "@/assets/icons/ChevronDownIcon";
@@ -24,21 +22,14 @@ type Props = {
 
 /** Single note page */
 export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
-    const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
-    const { userId } = useParams();
-    const { data: currentUser } = useAuthenticateQuery();
-    const { data: note, isError } = useGetNoteQuery(noteId, { skip: !currentUser || !noteId });
+    const {
+        handleToggleFavorite,
+        note,
+        isError,
+        isOwner
+    } = usePersonalNote({ noteId })
 
-    const isOwner = currentUser?.id === Number(userId);
-
-    const handleToggleFavorite = async () => {
-        await toggleNoteFavorite(noteId);
-    }
-
-    if (isError) {
-        return <SingleNotePrivate />;
-    }
-
+    if (isError) return <SingleNotePrivate />;
     if (!note) return null;
 
     return (
