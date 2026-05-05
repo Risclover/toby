@@ -1,16 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { animate, useMotionValue, useTransform } from "framer-motion";
+
 import { usePersonalNoteModal } from "@/contexts";
 import { useIsSmallScreen } from "@/hooks";
 import { useAuthenticateQuery } from "@/store";
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const SEARCH_ANIMATION_DURATION = 0.22;
-const SEARCH_ICON_SIZE = 38;
-const SEARCH_PADDING_SIZE = 6.4;
-const SEARCH_RIGHT_OFFSET = 32;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -18,6 +12,13 @@ type UsePersonalNotesToolbarProps = {
     /** Handler for changing search query */
     onSearchChange: (val: string) => void;
 };
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const SEARCH_ANIMATION_DURATION = 0.22;
+const SEARCH_ICON_SIZE = 38;
+const SEARCH_PADDING_SIZE = 6.4;
+const SEARCH_RIGHT_OFFSET = 32;
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 

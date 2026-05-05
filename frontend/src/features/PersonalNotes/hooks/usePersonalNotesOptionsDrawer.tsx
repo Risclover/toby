@@ -1,9 +1,22 @@
-import { useNotesFilterContext } from "@/contexts";
 import { useDrawersStack, type DrawerProps } from "@mantine/core";
+
+import { useNotesFilterContext } from "@/contexts";
+import type { SortOption, ViewOption } from "./useNotesFilter";
+
 import { HiViewGrid } from "react-icons/hi";
 import { LuListFilter } from "react-icons/lu";
 import { TbArrowsSort } from "react-icons/tb";
-import type { SortOption, ViewOption } from "./useNotesFilter";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type UsePersonalNotesOptionsDrawerProps = {
+    /** Active sort option */
+    sort: SortOption;
+    /** Active view option */
+    view: ViewOption;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────────
 
 export const SORT_LABELS: Record<SortOption, string> = {
     newest: "Newest first",
@@ -13,11 +26,8 @@ export const SORT_LABELS: Record<SortOption, string> = {
     private_first: "Private first",
 };
 
-type UsePersonalNotesOptionsDrawerProps = {
-    sort: SortOption;
-    view: ViewOption;
-}
-
+// ─── Hook ────────────────────────────────────────────────────────────────────
+/** Custom hook for the PersonalNotesOptionsDrawer component */
 export const usePersonalNotesOptionsDrawer = ({ sort, view }: UsePersonalNotesOptionsDrawerProps) => {
     const stack = useDrawersStack(["options", "filters", "sort", "view"]);
     const { filters, isFiltered } = useNotesFilterContext();

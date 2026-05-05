@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { useParams } from "react-router-dom";
 import { useGetUserNoteCategoriesQuery, type NotesView, type PersonalNote } from "@/store";
 import { parseNoteContent } from "../utils/parseNoteContent";
 

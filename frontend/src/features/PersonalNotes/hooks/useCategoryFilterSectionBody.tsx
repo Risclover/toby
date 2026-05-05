@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import { useGetUserNoteCategoriesQuery } from "@/store";
 import type { NotesFilterState } from "./useNotesFilter";
+import { useGetUserNoteCategoriesQuery } from "@/store";
 
 type UseCategoryFilterSectionBodyProps = {
     /** Active filters */

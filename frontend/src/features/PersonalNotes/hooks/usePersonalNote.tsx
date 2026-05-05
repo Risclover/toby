@@ -1,5 +1,5 @@
-import { useAuthenticateQuery, useGetNoteQuery, useToggleNoteFavoriteMutation } from "@/store";
 import { useParams } from "react-router-dom";
+import { useAuthenticateQuery, useGetNoteQuery, useToggleNoteFavoriteMutation } from "@/store";
 
 type UsePersonalNoteProps = {
     /** ID of the displayed note */

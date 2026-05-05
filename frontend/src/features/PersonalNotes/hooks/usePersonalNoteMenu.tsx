@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
+import { KittyNotification } from "@/components";
 import { usePersonalNoteModal } from "@/contexts";
 import { useDeleteNoteMutation, type PersonalNote } from "@/store";
-import { KittyNotification } from "@/components";
+
 import { KittyIcons } from "@/assets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

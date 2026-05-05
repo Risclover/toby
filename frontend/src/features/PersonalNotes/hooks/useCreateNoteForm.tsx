@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
-import { usePersonalNoteModal } from "@/contexts";
+
 import { KittyNotification } from "@/components";
+import { usePersonalNoteModal } from "@/contexts";
 import {
     useCreateNoteMutation,
     useUpdateNoteMutation,
@@ -10,6 +11,7 @@ import {
     useGetCategoriesQuery,
     type PersonalNoteCategory
 } from "@/store";
+
 import { KittyIcons } from "@/assets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
