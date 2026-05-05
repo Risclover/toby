@@ -11,6 +11,7 @@ import { ActivityFeed } from "@/features/ActivityFeed";
 import { UserProfileStat } from "./UserProfileStat";
 import { UserProfileMainTabSkeleton } from "./UserProfileMainTabSkeleton";
 import { HomepageActivityCollapseCard } from "@/components/HomepageCollapseCard/HomepageActivityCollapseCard";
+import { CheckCircleIcon } from "@/assets/icons/CheckCircleIcon";
 
 export const UserProfileMainTab = () => {
     const { userId } = useParams();
@@ -51,7 +52,7 @@ export const UserProfileMainTab = () => {
         },
         {
             id: 4,
-            icon: <TbFlameFilled />,
+            icon: <CheckCircleIcon size="1rem" color="black" />,
             stat: 6,
             statLabel: " days",
             description: "best habit streak"

@@ -11,3 +11,4 @@ export { TodayIcon } from "./TodayIcon";
 export { TrashIcon } from "./TrashIcon";
 export { UnarchivedIcon } from "./UnarchivedIcon";
 export { ViewIcon } from "./ViewIcon";
+export { UserStatIcons } from "./UserStats";
