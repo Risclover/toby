@@ -7,13 +7,14 @@ type NotesFilterContext = ReturnType<typeof useNotesFilter>;
 type NotesFilterProviderProps = {
     notes: PersonalNote[] | undefined;
     isOwner: boolean;
+    userId: number;
     children: React.ReactNode
 }
 
 const NotesFilterContext = createContext<NotesFilterContext | null>(null);
 
-export const NotesFilterProvider = ({ notes, isOwner, children }: NotesFilterProviderProps) => {
-    const value = useNotesFilter(notes, isOwner);
+export const NotesFilterProvider = ({ notes, isOwner, userId, children }: NotesFilterProviderProps) => {
+    const value = useNotesFilter(notes, isOwner, userId);
     return (
         <NotesFilterContext.Provider value={value}>
             {children}

@@ -17,7 +17,7 @@ export const UserProfileNotesTab = () => {
     const { data: notes } = useGetUserNotesQuery(Number(userId));
 
     return (
-        <NotesFilterProvider notes={notes} isOwner={currentUser?.id === Number(userId)}>
+        <NotesFilterProvider notes={notes} isOwner={currentUser?.id === Number(userId)} userId={Number(userId)}>
             <UserProfileNotesTabInner />
         </NotesFilterProvider>
     );

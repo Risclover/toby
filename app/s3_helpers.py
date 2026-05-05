@@ -8,6 +8,7 @@ from botocore.exceptions import BotoCoreError, ClientError
 BUCKET_NAME = os.environ.get("S3_BUCKET")
 S3_KEY = os.environ.get("S3_KEY")
 S3_SECRET = os.environ.get("S3_SECRET")
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 # Public URL base (virtual-hosted–style)
 S3_LOCATION = f"https://{BUCKET_NAME}.s3.amazonaws.com/"
@@ -55,6 +56,12 @@ def upload_file_to_s3(file, acl: str = "public-read") -> dict:
         return {"errors": "S3_BUCKET is not configured"}
     if not getattr(file, "filename", None):
         return {"errors": "No filename provided"}
+
+    file.seek(0, 2)
+    size = file.tell()
+    file.seek(0)
+    if size > MAX_FILE_SIZE:
+        return {"errors": f"File exceeds the {MAX_FILE_SIZE // (1024 * 1024)}MB size limit"}
 
     # Build ExtraArgs safely
     extra_args = {"ACL": acl}

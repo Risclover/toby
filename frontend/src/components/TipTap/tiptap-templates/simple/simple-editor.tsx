@@ -75,6 +75,8 @@ import "@/components/TipTap/tiptap-templates/simple/simple-editor.scss"
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight"
 import { common, createLowlight } from "lowlight";
 import "highlight.js/styles/atom-one-light.css";
+import { KittyNotification } from "@/components/KittyNotification"
+import { KittyIcons } from "@/assets"
 
 
 const lowlight = createLowlight(common);
@@ -209,7 +211,14 @@ export function SimpleEditor({ initialContent = "", onChange }: SimpleEditorProp
         maxSize: MAX_FILE_SIZE,
         limit: 3,
         upload: handleImageUpload,
-        onError: (error) => console.error("Upload failed:", error),
+        onError: (error) => {
+          KittyNotification({
+            title: "Upload failed",
+            message: error.message,
+            color: "red",
+            icon: KittyIcons.Grumpy,
+          });
+        },
       }),
     ],
     content: initialContent,

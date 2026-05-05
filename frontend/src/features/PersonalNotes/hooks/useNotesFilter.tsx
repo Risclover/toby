@@ -47,17 +47,14 @@ function loadFilterState(userId: number): NotesFilterState {
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 /** Manages filtering, sorting, searching, and pagination of personal notes. */
-export const useNotesFilter = (notes: PersonalNote[] | undefined, isOwner: boolean) => {
-    const { userId } = useParams();
-    const numericUserId = Number(userId);
-
-    const { data: categories } = useGetUserNoteCategoriesQuery(numericUserId);
+export const useNotesFilter = (notes: PersonalNote[] | undefined, isOwner: boolean, userId: number) => {
+    const { data: categories } = useGetUserNoteCategoriesQuery(userId);
 
     // ── State ─────────────────────────────────────────────────────────────────
 
     const [searchInput, setSearchInput] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
-    const [filters, setFilters] = useState<NotesFilterState>(() => loadFilterState(numericUserId));
+    const [filters, setFilters] = useState<NotesFilterState>(() => loadFilterState(userId));
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
     const [view, setView] = useState<NotesView>(() => {
         const saved = localStorage.getItem(VIEW_KEY);
@@ -121,17 +118,17 @@ export const useNotesFilter = (notes: PersonalNote[] | undefined, isOwner: boole
     const updateFilters = useCallback((next: Partial<NotesFilterState>) => {
         setFilters(prev => {
             const updated = { ...prev, ...next };
-            sessionStorage.setItem(SESSION_KEY(numericUserId), JSON.stringify(updated));
+            sessionStorage.setItem(SESSION_KEY(userId), JSON.stringify(updated));
             return updated;
         });
-    }, [numericUserId]);
+    }, [userId]);
 
     const resetFilters = useCallback(() => {
-        sessionStorage.removeItem(SESSION_KEY(numericUserId));
+        sessionStorage.removeItem(SESSION_KEY(userId));
         setFilters(INITIAL_FILTERS);
         setSearchInput("");
         setDebouncedSearch("");
-    }, [numericUserId]);
+    }, [userId]);
 
     const saveDefaults = useCallback(() => {
         localStorage.setItem(DEFAULTS_KEY, JSON.stringify({ sort: filters.sort }));
@@ -161,10 +158,10 @@ export const useNotesFilter = (notes: PersonalNote[] | undefined, isOwner: boole
 
     // Re-initialize state when navigating to a different user's notes page
     useEffect(() => {
-        setFilters(loadFilterState(numericUserId));
+        setFilters(loadFilterState(userId));
         setSearchInput("");
         setDebouncedSearch("");
-    }, [numericUserId]);
+    }, [userId]);
 
     // Infinite scroll via IntersectionObserver
     useEffect(() => {
@@ -195,5 +192,7 @@ export const useNotesFilter = (notes: PersonalNote[] | undefined, isOwner: boole
         isEmpty: paginatedNotes.length === 0,
         sentinelRef,
         categories,
+        loadMore,
+        hasMore
     };
 };
