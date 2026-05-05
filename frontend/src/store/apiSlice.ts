@@ -12,7 +12,8 @@ export const apiSlice = createApi({
   tagTypes: [
     "Activity", "Household", "Tasklist", "Task", "ShoppingList", "ShoppingItem",
     "Announcement", "ShoppingCategory", "Session", "User", "Mood",
-    "Checkin", "Calendar", "UserTaskStat", "Reminder", "FeaturedListSettings", "Habit", "UserSettings", "Auth", "Note", "NoteCategory"
+    "Checkin", "Calendar", "UserTaskStat", "Reminder", "FeaturedListSettings", "Habit", "UserSettings", "Auth", "Note", "NoteCategory",
+    "UserStats"
   ],
   endpoints: () => ({}),
 });

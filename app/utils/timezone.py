@@ -57,3 +57,20 @@ def now_utc():
     Returns current UTC time.
     """
     return datetime.utcnow().replace(tzinfo=pytz.UTC)
+
+def get_month_bounds_utc(user):
+    """
+    Returns (start, end) of the current calendar month in UTC,
+    calculated relative to the user's local timezone.
+    """
+    user_tz = get_user_timezone(user)
+    now_local = datetime.now(user_tz)
+
+    start_local = now_local.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    if now_local.month == 12:
+        end_local = start_local.replace(year=now_local.year + 1, month=1)
+    else:
+        end_local = start_local.replace(month=now_local.month + 1)
+
+    return start_local.astimezone(pytz.UTC), end_local.astimezone(pytz.UTC)

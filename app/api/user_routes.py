@@ -9,9 +9,19 @@ from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo 
 from pytz import all_timezones  # for validating IANA timezones
 from app.utils.activity_service import ActivityService
+from app.utils.stats import compute_user_stats
 
 
 user_routes = Blueprint('users', __name__)
+
+VALID_STAT_IDS = {
+    "tasksCompleted", "tasksCreated", "tasksAssigned",
+    "tasksCompletedThisMonth", "overdueTasksResolved",
+    "longestCheckinStreak", "currentCheckinStreak",
+    "totalCheckins", "checkinRate30Days", "perfectWeeks", 
+    "bestHabitStreak", "mostConsistentHabit", "habitRateThisMonth",
+    "avgDailyHabitRate", "perfectHabitDays"
+}
 
 def today_local_date():
     tzid = getattr(current_app.config, "DEFAULT_TZID", "America/Los_Angeles")
@@ -472,3 +482,31 @@ def get_user_note_categories(id):
 
     categories = PersonalNoteCategory.query.filter_by(user_id=id).order_by(func.lower(PersonalNoteCategory.name)).all()
     return jsonify([c.to_dict() for c in categories])
+
+@user_routes.route("/<int:user_id>/stats")
+@login_required
+def get_user_stats(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.household_id != current_user.household_id:
+        return {"error": "Unauthorized"}, 403
+    
+    return compute_user_stats(user), 200
+
+@user_routes.route("/<int:user_id>/featured-stats", methods=["PATCH"])
+@login_required
+def update_featured_stats(user_id):
+    if current_user.id != user_id:
+        return {"error": "Unauthorized"}, 403
+
+    data = request.get_json()
+    stat_ids = data.get("featuredStats", [])
+
+    if not isinstance(stat_ids, list) or len(stat_ids) > 4:
+        return {"error": "featuredStats must be a list of up to 4 stat IDs"}, 400
+
+    if any(s not in VALID_STAT_IDS for s in stat_ids):
+        return {"error": "Invalid stat ID"}, 400
+
+    current_user.featured_stats = stat_ids
+    db.session.commit()
+    return {"featuredStats": current_user.featured_stats}, 200

@@ -3,7 +3,7 @@ import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
 import { TbFlameFilled } from "react-icons/tb";
 import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
-import { useGetActivityQuery, useGetHouseholdQuery, useGetUserProfileStatsQuery, useGetUserQuery } from "@/store";
+import { useGetActivityQuery, useGetHouseholdQuery, useGetUserProfileStatsQuery, useGetUserQuery, useGetUserStatsQuery, useUpdateFeaturedStatsMutation } from "@/store";
 import { useParams } from "react-router-dom";
 import { UserSettings } from "@/features/UserSettings/components/UserSettings";
 import { useState } from "react";
@@ -20,6 +20,12 @@ export const UserProfileMainTab = () => {
         skip: !userId,
     });
     const [showUserSettings, setShowUserSettings] = useState(false);
+    const { data: userStats } = useGetUserStatsQuery(Number(userId), {
+        skip: !userId,
+    });
+    const [updateFeaturedStats] = useUpdateFeaturedStatsMutation();
+
+    console.log('USER STATS:', userStats);
 
     const statsInfo = [
         {
@@ -56,6 +62,10 @@ export const UserProfileMainTab = () => {
         <Tabs.Panel value="profile" className="user-profile-main-container">
             <Button onClick={() => setShowUserSettings(true)}>Settings</Button>
             <UserSettings opened={showUserSettings} onClose={() => setShowUserSettings(false)} />
+            <div className="user-profile-section-header">
+                <div className="user-profile-section-title">Featured Stats</div>
+                <Button fw={500} h="auto" p="1rem .5rem" size="sm" color="rgb(5, 5, 73)">View more</Button>
+            </div>
             <div className="user-profile-stats">
                 {isLoading ? Array.from({ length: 4 }).map((_, i) => <UserProfileMainTabSkeleton key={i} />) : statsInfo.map((stat) => (
                     <UserProfileStat key={stat.id} icon={stat.icon} stat={stat.stat} statLabel={stat.statLabel} description={stat.description} />

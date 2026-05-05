@@ -29,6 +29,24 @@ export type OverdueTask = {
     tasklist_title: string;
 }
 
+export type UserStats = {
+    tasksCompleted: number;
+    tasksCreated: number;
+    tasksAssigned: number;
+    tasksCompletedThisMonth: number;
+    overdueTasksResolved: number;
+    longestCheckinStreak: number;
+    currentCheckinStreak: number;
+    totalCheckins: number;
+    checkinRate30Days: number;
+    perfectWeeks: number;
+    bestHabitStreak: number;
+    mostConsistentHabit: string;
+    habitRateThisMonth: number;
+    avgDailyHabitRate: number;
+    perfectHabitDays: number;
+}
+
 export const userSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getUser: builder.query({
@@ -169,8 +187,23 @@ export const userSlice = apiSlice.injectEndpoints({
             query: (userId) => `/users/profile/${userId}`,
             providesTags: (_result, _error, userId) => [{ type: "User", id: userId }],
         }),
-    }),
-});
+
+        getUserStats: builder.query<UserStats, number>({
+            query: (userId) => `/users/${userId}/stats`,
+            providesTags: (_result, _error, userId) => [{ type: "UserStats", id: userId }],
+        }),
+
+        updateFeaturedStats: builder.mutation<void, { userId: number; statIds: string[] }>({
+            query: ({ userId, statIds }) => ({
+                url: `/users/${userId}/featured-stats`,
+                method: 'PATCH',
+                // Fix: This now matches data.get("featuredStats") in your Flask route
+                body: { featuredStats: statIds },
+            }),
+            invalidatesTags: (_, __, { userId }) => [{ type: 'UserStats', id: userId }],
+        })
+    })
+})
 
 export const {
     useGetUserQuery,
@@ -183,4 +216,6 @@ export const {
     useGetUserTaskStatsQuery,
     useUpdateTimezoneMutation,
     useGetUserProfileStatsQuery,
+    useGetUserStatsQuery,
+    useUpdateFeaturedStatsMutation
 } = userSlice;

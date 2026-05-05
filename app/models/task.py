@@ -1,4 +1,3 @@
-# app/models/task.py
 from app.extensions import db
 from datetime import datetime
 from app.utils.timezone import utc_datetime_to_local
@@ -22,7 +21,12 @@ class Task(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
     completed_at = db.Column(db.DateTime, nullable=True)
-
+    
+    completed_by = db.relationship(
+        "User",
+        foreign_keys=[completed_by_id],
+        back_populates="completed_tasks"
+    )
     tasklist=db.relationship("Tasklist", back_populates="tasks")
     assigned_to = db.relationship(
         "User", 

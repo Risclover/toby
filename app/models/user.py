@@ -27,8 +27,10 @@ class User(db.Model, UserMixin):
     last_checkin = db.Column(db.DateTime, nullable=True)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
     removed_from_household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
+    featured_stats = db.Column(db.JSON, nullable=True)
 
     # Relationships
+    completed_tasks = db.relationship("Task", foreign_keys="Task.completed_by_id", back_populates="completed_by")
     user_mood = db.relationship(
         "Mood",
         back_populates="user",
