@@ -51,7 +51,7 @@ const UserProfileNotesTabInner = () => {
     const myProfilePage = user?.id === Number(userId);
 
     return (
-        <Tabs.Panel value="notes" className="user-profile-main-container">
+        <Tabs.Panel value="notes" className="user-profile-tab-container">
             {userSettings?.settings.notesPrivacyMode === "all_private" && !myProfilePage
                 ? <NotesPrivate />
                 : myProfilePage && notes?.length === 0 && !isFetching

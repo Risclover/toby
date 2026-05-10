@@ -609,10 +609,6 @@
     font-family: var(--font-family-sora);
 }
 
-.notes-options-drawer .mantine-Drawer-title {
-
-    font-weight: 500;
-}
 
 .notes-options-drawer--body {
     display: flex;

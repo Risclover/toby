@@ -163,6 +163,7 @@ export const useCreateNoteForm = ({ setShowDiscardWarning, closeModal }: UseCrea
                 categoryId: personalNoteData.categoryId ?? undefined,
                 isPrivate: personalNoteData.isPrivate ?? false,
             });
+            setCharCount((personalNoteData.body ?? "").replace(/<[^>]*>/g, "").length);
             setSelectedCategory(categories?.find(c => c.id === personalNoteData.categoryId) ?? null);
         } else {
             form.setValues({ title: "", body: "", categoryId: undefined, isPrivate: defaultPrivacy });
@@ -180,6 +181,8 @@ export const useCreateNoteForm = ({ setShowDiscardWarning, closeModal }: UseCrea
             form.setFieldValue("categoryId", undefined);
         }
     }, [categories]);
+
+
 
     // ─────────────────────────────────────────────────────────────────────────
 

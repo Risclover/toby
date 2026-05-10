@@ -1,7 +1,7 @@
 type Props = {
     size: string;
     color: string;
-    open: boolean;
+    open?: boolean;
 }
 
 export const RightClosedChevronIcon = ({ size, color, open }: Props) => {

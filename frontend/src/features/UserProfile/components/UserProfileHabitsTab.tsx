@@ -28,7 +28,7 @@ export const UserProfileHabitsTab = () => {
     if (!habits) return null;
 
     return (
-        <Tabs.Panel value="habits" className="user-profile-main-container">
+        <Tabs.Panel value="habits" className="user-profile-tab-container">
             {userSettings?.settings.habitsPrivacyMode === "all_private" && !myProfilePage ? <HabitsPrivate /> : myProfilePage && habits?.length === 0 ? <HabitsEmpty /> :
                 <>
                     <div className="habits-control-container">

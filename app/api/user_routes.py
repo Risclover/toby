@@ -15,12 +15,12 @@ from app.utils.stats import compute_user_stats
 user_routes = Blueprint('users', __name__)
 
 VALID_STAT_IDS = {
-    "tasksCompleted", "tasksCreated", "tasksAssigned",
-    "tasksCompletedThisMonth", "overdueTasksResolved",
+    "tasksCompleted", "tasksCreated",
+    "tasksCompletedThisMonth",
     "longestCheckinStreak", "currentCheckinStreak",
-    "totalCheckins", "checkinRate30Days", "perfectWeeks", 
-    "bestHabitStreak", "mostConsistentHabit", "habitRateThisMonth",
-    "avgDailyHabitRate", "perfectHabitDays"
+    "totalCheckins", "checkinRate30Days",
+    "bestHabitStreak", "habitRateThisMonth",
+    "perfectHabitDays"
 }
 
 def today_local_date():

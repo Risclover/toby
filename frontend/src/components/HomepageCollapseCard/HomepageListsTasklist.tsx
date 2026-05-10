@@ -16,6 +16,7 @@ import type { FeaturedTasklistSettingsForm } from "../FeaturedListSettings/Featu
 import { StarIcon, StarIconOutline } from "@/assets";
 import { MobileTasklistSkeleton } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklistSkeleton";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { InfoTooltip } from "../InfoTooltip";
 
 
 type TasklistItemProps = {
@@ -90,19 +91,8 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
                 (
                     <div className="featured-empty-state">
                         No tasklist featured.
-                        <Tooltip
-                            events={{ hover: true, focus: true, touch: true }}
-                            multiline
-                            w={220}
-                            radius="md"
-                            withArrow
-                            transitionProps={{ duration: 200 }}
-                            label="Feature a list by using the star icons on the Tasklists page, or click the gear icon to open the Featured List Settings and select one there."
-                        >
-                            <Button p={0} h="auto" radius="xl" color="transparent" variant="transparent" className="featured-info-icon">
-                                <HelpOutlineRoundedIcon />
-                            </Button>
-                        </Tooltip></div>
+                        <InfoTooltip tooltipLabel="Feature a list by using the star icons on the Tasklists page, or click the gear icon to open the Featured List Settings and select one there." tooltipWidth={220} />
+                    </div>
                 ) : (
                     <>
                         <div className="featured-tasklist-title">

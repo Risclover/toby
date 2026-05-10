@@ -9,9 +9,11 @@ import DeleteRounded from '@mui/icons-material/Delete';
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 
 type Props = {
+    /** Note for which this menu is for */
     note: PersonalNote;
 }
 
+/** Menu for a note ('edit' and 'delete' options) */
 export const PersonalNoteMenu = ({ note }: Props) => {
     const {
         openModal,

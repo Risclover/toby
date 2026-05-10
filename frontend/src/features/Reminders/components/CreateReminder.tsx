@@ -14,6 +14,7 @@ import { useHousehold } from "@/hooks/useHousehold";
 import { RemainingChars } from "@/components/RemainingChars";
 import { useModalFocus } from "@/hooks/useModalFocus";
 import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
+import { InfoTooltip } from "@/components/InfoTooltip";
 
 interface ReminderFormValues {
     message: string;
@@ -126,26 +127,8 @@ export const CreateReminder = () => {
                             label={
                                 <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
                                     Trigger date (optional)
-                                    <Tooltip
-                                        events={{ hover: true, focus: true, touch: true }}
-                                        multiline
-                                        w={220}
-                                        radius="md"
-                                        withArrow
-                                        transitionProps={{ duration: 200 }}
-                                        label="Reminders with no trigger date appear right away. Reminders with a trigger date appear at midnight on the selected day."
-                                    >
-                                        <Button
-                                            p={0}
-                                            h="auto"
-                                            radius="xl"
-                                            color="transparent"
-                                            variant="transparent"
-                                            className="featured-info-icon"
-                                        >
-                                            <HelpOutlineRoundedIcon />
-                                        </Button>
-                                    </Tooltip>
+                                    <InfoTooltip tooltipLabel="Reminders with no trigger date appear right away. Reminders with a trigger date appear at midnight on the selected day." />
+
                                 </span>
                             }
                             dropdownType={isSmallScreen ? "modal" : "popover"}

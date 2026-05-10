@@ -34,16 +34,12 @@ export type UserStats = {
     tasksCreated: number;
     tasksAssigned: number;
     tasksCompletedThisMonth: number;
-    overdueTasksResolved: number;
     longestCheckinStreak: number;
     currentCheckinStreak: number;
     totalCheckins: number;
     checkinRate30Days: number;
-    perfectWeeks: number;
     bestHabitStreak: number;
-    mostConsistentHabit: string;
     habitRateThisMonth: number;
-    avgDailyHabitRate: number;
     perfectHabitDays: number;
 }
 
@@ -197,9 +193,20 @@ export const userSlice = apiSlice.injectEndpoints({
             query: ({ userId, statIds }) => ({
                 url: `/users/${userId}/featured-stats`,
                 method: 'PATCH',
-                // Fix: This now matches data.get("featuredStats") in your Flask route
                 body: { featuredStats: statIds },
             }),
+            async onQueryStarted({ userId, statIds }, { dispatch, queryFulfilled }) {
+                const patch = dispatch(
+                    userSlice.util.updateQueryData("getUser", userId, (draft: any) => {
+                        draft.featuredStats = statIds;
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patch.undo();
+                }
+            },
             invalidatesTags: (_, __, { userId }) => [{ type: 'UserStats', id: userId }],
         })
     })

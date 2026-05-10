@@ -87,9 +87,12 @@ def compute_user_stats(user) -> dict:
     total_checkins = len(checkin_dates)
 
     thirty_ago = today_local - timedelta(days=29)
-    checkin_rate_30 = round(
-        sum(1 for d in checkin_dates if d >= thirty_ago) / 30 * 100
-    )
+    if checkin_dates:
+        first_checkin = checkin_dates[0]
+        total_days = (today_local - first_checkin).days + 1
+        overall_checkin_rate = round(total_checkins / total_days * 100)
+    else:
+        overall_checkin_rate = 0
 
     week_day_sets = defaultdict(set)
     for d in checkin_dates:
@@ -154,7 +157,7 @@ def compute_user_stats(user) -> dict:
 
         while cursor <= today_local:
             active_on_day = sum(
-                1 for h in habits
+                1 for h in active_habits
                 if h.created_at and h.created_at.date() <= cursor
             )
             if active_on_day > 0:
@@ -170,17 +173,12 @@ def compute_user_stats(user) -> dict:
     return {
         "tasksCompleted": tasks_completed,
         "tasksCreated": tasks_created,
-        "tasksAssigned": tasks_assigned,
         "tasksCompletedThisMonth": tasks_completed_month,
-        "overdueTasksResolved": overdue_resolved,
         "longestCheckinStreak": longest_ci_streak,
         "currentCheckinStreak": current_ci_streak,
         "totalCheckins": total_checkins,
-        "checkinRate30Days": checkin_rate_30,
-        "perfectWeeks": perfect_weeks_count,
+        "checkinRate30Days": overall_checkin_rate,
         "bestHabitStreak": best_habit_streak,
-        "mostConsistentHabit": best_habit_name,
         "habitRateThisMonth": habit_rate_month,
-        "avgDailyHabitRate": avg_daily_rate,
         "perfectHabitDays": perfect_habit_days,
     }

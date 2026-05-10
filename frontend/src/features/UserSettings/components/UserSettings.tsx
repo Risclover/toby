@@ -23,6 +23,7 @@ import { useAuthenticateQuery } from "@/store";
 import "../styles/UserSettings.css"
 import { InfoIcon } from "@/assets";
 import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
+import { InfoTooltip } from "@/components/InfoTooltip";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -316,15 +317,16 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                             label={
                                 <Group justify="start" gap={0}>
                                     Habits privacy
-                                    <Tooltip multiline events={{ hover: true, focus: true, touch: true }} label={
-                                        <div>
-                                            <div><span style={{ fontWeight: 600 }}>Public</span>: Habits are public by default.</div>
-                                            <div><span style={{ fontWeight: 600 }}>Private by default</span>: New habits are automatically marked as private in the creation form.</div>
-                                            <div><span style={{ fontWeight: 600 }}>All private</span>: All habits are always hidden from other members.</div>
-                                        </div>
-                                    } withArrow>
-                                        <ActionIcon w={0} p={0} h="auto" radius="xl" className="featured-info-icon" variant="transparent" color="transparent"><HelpOutlineRoundedIcon /></ActionIcon>
-                                    </Tooltip>
+                                    <InfoTooltip
+                                        tooltipLabel={
+                                            <div>
+                                                <div><span style={{ fontWeight: 600 }}>Public</span>: Habits are public by default.</div>
+                                                <div><span style={{ fontWeight: 600 }}>Private by default</span>: New habits are automatically marked as private in the creation form.</div>
+                                                <div><span style={{ fontWeight: 600 }}>All private</span>: All habits are always hidden from other members.</div>
+                                            </div>
+                                        }
+                                        tooltipWidth={400}
+                                    />
                                 </Group>
                             }
                             description="Controls who can see your habit entries"
@@ -341,15 +343,17 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                             label={
                                 <Group justify="start" gap={0}>
                                     Notes privacy
-                                    <Tooltip multiline events={{ hover: true, focus: true, touch: true }} label={
-                                        <div>
-                                            <div><span style={{ fontWeight: 600 }}>Public</span>: Notes are public by default.</div>
-                                            <div><span style={{ fontWeight: 600 }}>Private by default</span>: New notes are automatically marked as private in the creation form.</div>
-                                            <div><span style={{ fontWeight: 600 }}>All private</span>: All notes are always hidden from other members.</div>
-                                        </div>
-                                    } withArrow>
-                                        <ActionIcon w={0} p={0} h="auto" radius="xl" className="featured-info-icon" variant="transparent" color="transparent"><HelpOutlineRoundedIcon /></ActionIcon>
-                                    </Tooltip>
+                                    <InfoTooltip
+                                        tooltipLabel={
+                                            <div>
+                                                <div><span style={{ fontWeight: 600 }}>Public</span>: Notes are public by default.</div>
+                                                <div><span style={{ fontWeight: 600 }}>Private by default</span>: New notes are automatically marked as private in the creation form.</div>
+                                                <div><span style={{ fontWeight: 600 }}>All private</span>: All notes are always hidden from other members.</div>
+                                            </div>
+                                        }
+                                        tooltipWidth={400}
+                                    />
+
                                 </Group>
                             }
                             description="Controls who can see your personal notes"

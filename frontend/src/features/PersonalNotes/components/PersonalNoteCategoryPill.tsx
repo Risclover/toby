@@ -1,4 +1,5 @@
 import { useNotesFilterContext } from "@/contexts";
+import { useScrollToTop } from "@/hooks";
 import { getLightColor, getContrastTextColor } from "@/utils";
 
 type Props = {
@@ -18,6 +19,8 @@ export const PersonalNoteCategoryPill = ({ category, onClick }: Props) => {
             onClick(e);
         } else {
             updateFilters({ categoryIds: [category.id] });
+            useScrollToTop();
+
         }
     };
 

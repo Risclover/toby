@@ -138,7 +138,8 @@ class User(db.Model, UserMixin):
             ],
             "habits": [
                 habit.to_dict() for habit in self.habits
-            ]
+            ],
+            "featuredStats": self.featured_stats if self.featured_stats else []
         }
 
     def to_dict_with_mood(self):

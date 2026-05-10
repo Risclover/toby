@@ -15,6 +15,7 @@ import Highlight from "@tiptap/extension-highlight";
 const lowlight = createLowlight(common);
 
 interface NoteViewerProps {
+    /** Note content */
     content?: string;
 }
 
