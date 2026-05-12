@@ -81,16 +81,32 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
                 }
             }
             case "shopping_list": {
+                const listLink = event.entityId
+                    ? <Link className="event-link" to={`/shopping/${event.entityId}`} target="_blank" rel="noreferrer">{event.entityLabel}</Link>
+                    : <>{event.entityLabel}</>;
+                const duplicatedFrom = event.eventMetadata?.duplicatedFrom;
                 switch (event.action) {
-                    case "created": return { line1: <>created shopping list {event.entityLabel}</> };
+                    case "created": return duplicatedFrom
+                        ? { line1: <>duplicated shopping list {listLink} from {duplicatedFrom}</> }
+                        : { line1: <>created shopping list {listLink}</> };
                     case "deleted": return { line1: <>deleted shopping list {event.entityLabel}</> };
-                    default: return { line1: <>updated shopping list {event.entityLabel}</> };
+                    case "archived": return { line1: <>archived shopping list {listLink}</> };
+                    case "unarchived": return { line1: <>unarchived shopping list {listLink}</> };
+                    case "renamed": return { line1: <>renamed {event.eventMetadata?.oldTitle} to {event.entityLabel}</> };
+                    case "completed": return { line1: <>completed all items in {listLink}</> };
+                    case "uncompleted": return { line1: <>marked all items incomplete in {listLink}</> };
+                    default: return { line1: <>updated shopping list {listLink}</> };
                 }
             }
             case "shopping_item": {
+                const listTitle = event.eventMetadata?.listTitle;
+                const listId = event.eventMetadata?.listId;
+                const inList = listTitle && listId
+                    ? <> in <Link className="event-link" to={`/shopping/${listId}`} target="_blank" rel="noreferrer">{listTitle}</Link></>
+                    : null;
                 switch (event.action) {
-                    case "created": return { line1: <>added to the shopping list:</>, line2: label(event.entityLabel) };
-                    case "purchased": return { line1: <>checked off:</>, line2: label(event.entityLabel) };
+                    case "created": return { line1: <>added an item{inList}</>, line2: label(event.entityLabel) };
+                    case "purchased": return { line1: <>checked off an item{inList}</>, line2: label(event.entityLabel) };
                     case "unpurchased": return { line1: <>unchecked:</>, line2: label(event.entityLabel) };
                     case "deleted": return { line1: <>removed from the shopping list:</>, line2: label(event.entityLabel) };
                     default: return { line1: <>updated:</>, line2: label(event.entityLabel) };

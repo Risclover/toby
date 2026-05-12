@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Tabs } from "@mantine/core"
-import { useGetHouseholdQuery, useGetUserProfileStatsQuery, useGetUserQuery } from "@/store";
+import { useGetHouseholdQuery, useGetUserQuery } from "@/store";
 import { UserSettings } from "@/features/UserSettings/components/UserSettings";
 import { HomepageActivityCollapseCard } from "@/components/HomepageCollapseCard/HomepageActivityCollapseCard";
 import { UserStatsDrawer } from "./UserStatsDrawer";
@@ -12,10 +12,7 @@ export const UserProfileMainTab = () => {
     const { userId } = useParams();
     const { data: profileUser } = useGetUserQuery(Number(userId))
     const { data: household } = useGetHouseholdQuery(profileUser?.householdId)
-    const { isLoading } = useGetUserProfileStatsQuery(Number(userId), {
-        skip: !userId,
-    });
-    const { featuredStatsInfo } = useUserStats();
+    const { featuredStatsInfo, isLoading } = useUserStats();
 
     const [showUserSettings, setShowUserSettings] = useState(false);
     const [showStatsDrawer, setShowStatsDrawer] = useState(false);

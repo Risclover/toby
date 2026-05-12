@@ -67,7 +67,7 @@ export const CreateTasklist = ({ householdId }: Props) => {
             radius="md"
             opened={isOpen}
             onClose={handleClose}
-            title="Create Tasklist"
+            title="Create tasklist"
             centered
         >
             <form onSubmit={handleSubmit}>

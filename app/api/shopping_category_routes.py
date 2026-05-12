@@ -1,15 +1,17 @@
 # app/routes/shopping_category_routes.py
 from flask import Blueprint, request, jsonify
+from flask_login import current_user, login_required
 from app.models import ShoppingCategory, ShoppingList
 from app.extensions import db
 from sqlalchemy import func
 
 shopping_category_routes = Blueprint("shopping-categories", __name__)
 
+
 @shopping_category_routes.route("", methods=["GET"])
+@login_required
 def get_list_categories():
-    data = request.get_json() or {}
-    list_id = data.get("listId")
+    list_id = request.args.get("listId", type=int)
 
     if not list_id:
         return jsonify({"error": "listId is required"}), 400
@@ -19,13 +21,15 @@ def get_list_categories():
 
 
 @shopping_category_routes.route("", methods=["POST"])
+@login_required
 def create_shopping_category():
     data = request.get_json() or {}
     name = data.get("name")
+    color = data.get("color")
     list_id = data.get("listId")
 
-    if not name or not list_id:
-        return jsonify({"error": "Name and listId are required"}), 400
+    if not name or not color or not list_id:
+        return jsonify({"error": "Name, color, and listId are required"}), 400
 
     duplicate = (
         ShoppingCategory.query
@@ -35,39 +39,53 @@ def create_shopping_category():
         )
         .first()
     )
-    
+
     if duplicate:
         return jsonify({"error": "Category already exists"}), 409
 
-    category = ShoppingCategory(name=name, list_id=list_id)
+    category = ShoppingCategory(name=name, color=color, list_id=list_id)
     db.session.add(category)
     db.session.commit()
 
-    return jsonify(category.to_dict()), 201 
+    return jsonify(category.to_dict()), 201
+
+
+@shopping_category_routes.route("/<int:id>", methods=["PATCH"])
+@login_required
+def edit_category(id):
+    category = ShoppingCategory.query.get_or_404(id)
+    data = request.get_json() or {}
+
+    if "name" in data:
+        name = data["name"]
+        if not name or not name.strip():
+            return jsonify({"error": "Name must be a non-empty string"}), 400
+
+        duplicate = (
+            ShoppingCategory.query
+            .filter(
+                ShoppingCategory.list_id == category.list_id,
+                ShoppingCategory.id != id,
+                func.lower(func.trim(ShoppingCategory.name)) == func.lower(func.trim(name)),
+            )
+            .first()
+        )
+        if duplicate:
+            return jsonify({"error": "Category name already exists in this list"}), 409
+
+        category.name = name.strip()
+
+    if "color" in data:
+        category.color = data["color"]
+
+    db.session.commit()
+    return jsonify(category.to_dict()), 200
 
 
 @shopping_category_routes.route("/<int:id>", methods=["DELETE"])
+@login_required
 def delete_shopping_category(id):
-    category = ShoppingCategory.query.get(id)
-    if not category:
-        return jsonify({"error": "Shopping category not found"}), 404
-
+    category = ShoppingCategory.query.get_or_404(id)
     db.session.delete(category)
     db.session.commit()
     return jsonify({"message": "Shopping category deleted"}), 200
-
-
-@shopping_category_routes.route("/<int:id>", methods=["PUT"])
-def edit_category(id):
-    category = ShoppingCategory.query.get(id)
-    if not category:
-        return jsonify({"error": "Shopping category not found"}), 404
-
-    data = request.get_json() or {}
-    name = data.get("name")
-    if not name:
-        return jsonify({"error": "Name is required"}), 400
-
-    category.name = name
-    db.session.commit()
-    return jsonify({"message": "Shopping category edited successfully"}), 200

@@ -7,8 +7,9 @@ import { UserStatIcons } from "@/assets";
 export const useUserStats = () => {
     const { userId } = useParams();
     const { data: user } = useAuthenticateQuery();
-    const { data: userStats, isLoading } = useGetUserStatsQuery(Number(userId));
-    const { data: profileUser } = useGetUserQuery(Number(userId));
+    const { data: userStats, isLoading: statsLoading } = useGetUserStatsQuery(Number(userId));
+    const { data: profileUser, isLoading: userLoading } = useGetUserQuery(Number(userId));
+    console.log('userStats:', userStats, 'isLoading:', statsLoading);
 
     const isOwner = user?.id === Number(userId);
     const featuredStats = profileUser?.featuredStats ?? [];
@@ -127,7 +128,7 @@ export const useUserStats = () => {
         statsInfo,
         featuredStatsInfo,
         featuredStats,
-        isLoading,
+        isLoading: statsLoading || userLoading || !userStats || !profileUser,
         isOwner
     }
 }

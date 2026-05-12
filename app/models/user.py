@@ -2,6 +2,7 @@ from app.extensions import db
 from flask_login import UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models.tasklist_member import TasklistMember
+from app.models.shopping_list_member import ShoppingListMember
 from sqlalchemy import Index
 
 def default_display(context):
@@ -61,6 +62,26 @@ class User(db.Model, UserMixin):
         foreign_keys="[Tasklist.archived_by]",
         back_populates="archiver"
     )
+
+    shopping_lists = db.relationship(
+        "ShoppingList",
+        foreign_keys="ShoppingList.creator_id",
+        back_populates="creator"
+    )
+    shopping_list_memberships = db.relationship("ShoppingListMember", back_populates="user", cascade="all, delete-orphan")
+    shopping_lists_participating = db.relationship(
+        "ShoppingList",
+        secondary=lambda: ShoppingListMember.__table__,
+        back_populates="members",
+        lazy="selectin",
+        viewonly=True
+    )
+    archived_shopping_lists = db.relationship(
+        "ShoppingList",
+        foreign_keys="[ShoppingList.archived_by]",
+        back_populates="archiver"
+    )
+    
 
     # 3. Same here, references the Task model's foreign key
     tasks = db.relationship(

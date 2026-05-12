@@ -60,10 +60,6 @@
     word-break: break-word;
 }
 
-.single-habit:hover {
-    background: #f7f8fc;
-}
-
 .single-habit-accent {
     width: 4px;
     flex-shrink: 0;

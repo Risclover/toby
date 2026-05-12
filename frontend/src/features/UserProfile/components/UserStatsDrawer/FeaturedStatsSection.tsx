@@ -29,15 +29,17 @@ export const FeaturedStatsSection = ({ setShowStatsDrawer, featuredStatsInfo, is
 
     const content = showSkeleton
         ? <FeaturedStatsLoadingSkeleton />
-        : featuredStatsInfo.length > 0
-            ? <div className="featured-stats-grid">
-                {featuredStatsInfo.map((stat) => (
-                    <FeaturedStat key={stat.statId} stat={stat} />
-                ))}
-            </div>
-            : !isDrawer
-                ? <FeaturedStatsEmpty setShowStatsDrawer={setShowStatsDrawer} />
-                : null;
+        : isLoading
+            ? null
+            : featuredStatsInfo.length > 0
+                ? <div className="featured-stats-grid">
+                    {featuredStatsInfo.map((stat) => (
+                        <FeaturedStat key={stat.statId} stat={stat} />
+                    ))}
+                </div>
+                : !isDrawer
+                    ? <FeaturedStatsEmpty setShowStatsDrawer={setShowStatsDrawer} />
+                    : null;
 
     return (
         <div className="featured-stats-section">

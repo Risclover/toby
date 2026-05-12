@@ -63,6 +63,19 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
         }
     }, [opened, activeTab])
 
+    useEffect(() => {
+        if (!tasks) return;
+        const allIds = new Set([
+            ...tasks.overdue.map(t => t.id),
+            ...tasks.due_today.map(t => t.id),
+            ...tasks.due_soon.map(t => t.id),
+        ]);
+        setPendingCompleteIds(prev => {
+            const remaining = new Set([...prev].filter(id => allIds.has(id)));
+            return remaining.size === prev.size ? prev : remaining;
+        });
+    }, [tasks]);
+
     if (!tasks) return null
 
     const getList = (tab: string): TaskItem[] => {
@@ -141,7 +154,6 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                     completeTask({ taskId: t.id, listId: t.tasklist_id, completed: true })
                 )
             )
-            setPendingCompleteIds(new Set())
             KittyNotification({
                 title: `Task${currentCheckedIds.size !== 1 ? "s" : ""} completed`,
                 message: `You've successfully completed ${currentCheckedIds.size} time-sensitive task${currentCheckedIds.size !== 1 ? "s" : ""}.`,

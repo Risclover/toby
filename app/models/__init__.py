@@ -19,3 +19,4 @@ from .habit_completion import HabitCompletion
 from .user_setting import UserSettings, Theme, PrivacyMode
 from .personal_note import PersonalNote
 from .personal_note_category import PersonalNoteCategory
+from .shopping_list_member import ShoppingListMember

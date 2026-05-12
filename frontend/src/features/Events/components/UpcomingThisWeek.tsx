@@ -67,7 +67,8 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
     const args = { householdId, startIso: iso(start), endIso: iso(end) };
 
     // Keep hook call unconditional; skip if householdId is falsy
-    const { data: weekEvents = [] } = useGetHouseholdEventsQuery(args, { skip: !householdId });
+    const { data: weekEvents = [], isLoading: eventsLoading } = useGetHouseholdEventsQuery(args, { skip: !householdId });
+
     const { data: allEvents = [] } = useGetAllHouseholdEventsQuery({ householdId }, { skip: !householdId });
 
     const selectedEvent =
@@ -88,7 +89,7 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
             });
     }, [weekEvents, start, end]);
 
-    if (!isReady) return (
+    if (!isReady || eventsLoading) return (
         <div className="upcoming-events-container">
             <Stack className="upcoming-events" gap="xs">
                 {Array.from({ length: 5 }).map((_, i) => <UpcomingEventSkeleton key={i} />)}

@@ -494,9 +494,7 @@ def manage_assigned_members(id):
     invalid_ids = new_member_ids - household_member_ids
     if invalid_ids:
         return jsonify(
-            {"error": "Members must belong to the household", "invalid": list(invalid_ids)},
-            400,
-        )
+            {"error": "Members must belong to the household", "invalid": list(invalid_ids)}), 400
 
     for link in tasklist.member_links[:]:
         db.session.delete(link)

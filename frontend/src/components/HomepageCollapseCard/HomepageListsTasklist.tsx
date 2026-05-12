@@ -97,7 +97,7 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
                     <>
                         <div className="featured-tasklist-title">
                             <div className="featured-tasklist-title-top">
-                                <span>{tasklist?.title}</span> <span className="featured-tasklist-title-count">({incompleteCount} / {totalCount})</span>
+                                <span>{tasklist?.title}</span> <span className="featured-tasklist-title-count">({incompleteCount === 0 ? "🏅" : `${incompleteCount} / ${totalCount}`})</span>
                                 <Tooltip label="Open tasklist" withArrow openDelay={500}>
                                     <ActionIcon
                                         // onClick={() => setShowTasklistSettings(true)}
