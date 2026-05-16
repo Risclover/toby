@@ -1,8 +1,9 @@
 import { Button, Group, NumberInput, Select, Textarea } from '@mantine/core';
 import { useEffect, useMemo, useState } from 'react';
-import { useEditShoppingItemCategoryMutation, useEditShoppingItemQuantityMutation, useGetShoppingListCategoriesQuery } from '@/store/shoppingSlice';
+import { useGetShoppingListCategoriesQuery } from '@/store/shoppingSlice';
 import { AddCategoryModal } from './AddCategoryModal';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import { useEditShoppingCategoryMutation } from '@/store';
 
 type Item = {
     id: number;
@@ -20,8 +21,7 @@ export const ItemExpanded = ({ item }: Props) => {
     const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
     const [quantity, setQuantity] = useState(item.quantity);
     const { data: categories = [] } = useGetShoppingListCategoriesQuery(item.shoppingListId);
-    const [editItemCategory] = useEditShoppingItemCategoryMutation();
-    const [editItemQuantity] = useEditShoppingItemQuantityMutation();
+    const [editItemCategory] = useEditShoppingCategoryMutation();
 
     // Local state is the *string* id that Mantine Select wants
     const [categoryId, setCategoryId] = useState<string | null>(
@@ -45,20 +45,7 @@ export const ItemExpanded = ({ item }: Props) => {
         // map selected id -> category name
         const categoryName =
             val ? categories.find((c: { id: number; name: string }) => String(c.id) === val)?.name ?? null : null;
-
-        await editItemCategory({
-            itemId: item.id,
-            listId: item.shoppingListId,
-            category: categoryName, // <-- send NAME (or null to clear)
-        }).unwrap();
     };
-
-    const handleChangeQuantity = async (val: string) => {
-        setQuantity(Number(val));
-        const data = await editItemQuantity({ itemId: item.id, listId: item.shoppingListId, quantity: quantity })
-        console.log('Q DATA:', data);
-    }
-
     return (
         <div className="shopping-item-expanded-container">
             <div className="shopping-item-expanded">
@@ -71,13 +58,6 @@ export const ItemExpanded = ({ item }: Props) => {
                             min={1}
                             defaultValue={item.quantity || 1}
                             value={item.quantity}                // ⬅️ controlled by cache, not defaultValue
-                            onChange={(v) => {
-                                const q = typeof v === "number" ? v : parseInt(v || "1", 10);
-                                if (!Number.isNaN(q) && q >= 1) {
-                                    // fire mutation; your optimistic update already updates the cache immediately
-                                    editItemQuantity({ itemId: item.id, listId: item.shoppingListId, quantity: q });
-                                }
-                            }}
                             clampBehavior="strict"
                             styles={{
                                 wrapper: { width: '80px', background: 'var(--main-background)', borderColor: 'var(--main-border)', borderRadius: '0.5rem', overflow: 'hidden' },
@@ -118,11 +98,11 @@ export const ItemExpanded = ({ item }: Props) => {
                                     setCategoryId(String(cat.id));
 
                                     // Persist it on the server (your backend expects the NAME)
-                                    editItemCategory({
-                                        itemId: item.id,
-                                        listId: item.shoppingListId,
-                                        category: cat.name,
-                                    });
+                                    // editItemCategory({
+                                    //     itemId: item.id,
+                                    //     listId: item.shoppingListId,
+                                    //     category: cat.name,
+                                    // });
                                 }}
                             />
                         )}

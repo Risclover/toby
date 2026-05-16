@@ -1,10 +1,12 @@
 import { CreateAnnouncementModalProvider, CreateReminderModalProvider, CreateTasklistModalProvider, HabitModalProvider, NoticeBoardProvider } from "@/contexts";
 import { PersonalNoteModalProvider } from "./contexts/PersonalNoteModalContext";
+import { CreateShoppingListModalProvider } from "./contexts/CreateShoppingListContext";
 
 const providers = [
     CreateAnnouncementModalProvider,
     CreateTasklistModalProvider,
     CreateReminderModalProvider,
+    CreateShoppingListModalProvider,
     NoticeBoardProvider,
     HabitModalProvider,
     PersonalNoteModalProvider

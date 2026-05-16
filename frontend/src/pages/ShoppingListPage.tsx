@@ -8,7 +8,6 @@ import { useGetHouseholdShoppingListQuery } from "@/store/householdSlice";
 import {
     useAddShoppingItemMutation,
     useEditShoppingListMutation,
-    useGetShoppingItemsQuery,
 } from "@/store/shoppingSlice";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -54,7 +53,7 @@ export const ShoppingListPage = () => {
 
     // Items
     const itemsArg = hasValidListId ? listIdNum : (skipToken as any);
-    const { data: items = [] } = useGetShoppingItemsQuery(itemsArg);
+    const items = list.items;
 
     const [addItem, { isLoading }] = useAddShoppingItemMutation();
     const loading = useStablePending(isLoading, { showAfterMs: 120, minVisibleMs: 300 });
@@ -64,6 +63,7 @@ export const ShoppingListPage = () => {
     const uncompleted = items.filter((i) => i.purchased === false);
 
     useAutoScrollOnAppend(sectionsRef, items.length, { behavior: "smooth" });
+
 
     const prevUncompleted = useRef<number | null>(null);
     useLayoutEffect(() => {

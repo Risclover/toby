@@ -29,11 +29,10 @@ export const MobileTasklists = () => {
     const navigate = useNavigate();
     const { data: user, isLoading: authLoading } = useAuthenticateQuery();
 
-    const [opened, { open, close }] = useDisclosure(false);
     const isSmall = useIsSmallScreen(768);
     // Gate the lists query until we have an ID
     const householdId = user?.householdId ?? skipToken;
-    const { openModal } = useCreateTasklistModal();
+    const { openModal, closeModal, isOpen } = useCreateTasklistModal();
     const {
         data: allLists = [],
         isFetching,
@@ -90,7 +89,7 @@ export const MobileTasklists = () => {
                         </Group>
                         <Group mx="auto">
                             <Button color="cyan" variant="outline" onClick={() => navigate("/")}>Go home</Button>
-                            <Button color="cyan" w="fit-content" onClick={open}>Add tasklist</Button>
+                            <Button color="cyan" w="fit-content" onClick={() => openModal()}>Add tasklist</Button>
                         </Group>
                     </Stack>
                 }
@@ -101,7 +100,7 @@ export const MobileTasklists = () => {
                     ))}
                 </div>
             </div>
-            {opened && <CreateTasklist householdId={householdId} open={open} opened={opened} close={close} />}
+            <CreateTasklist openModal={openModal} isOpen={isOpen} closeModal={closeModal} householdId={householdId} />
         </MobileLayout>
     )
 }

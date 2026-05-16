@@ -2,7 +2,7 @@ import { ManageCategoriesIcon } from "@/assets/icons/ManageCategoriesIcon";
 import {
     useCreateShoppingCategoryMutation,
     useDeleteShoppingCategoryMutation,
-    useEditShoppingCategoryMutation,
+    useEditCategoryMutation,
     type ShoppingCategory,
 } from "@/store/categorySlice";
 import { useGetShoppingListCategoriesQuery } from "@/store/shoppingSlice";
@@ -42,7 +42,7 @@ export const ManageCategoriesModal = ({ opened, close, open, listId }: Props) =>
     const [error, setError] = useState("");
     const [showPopover, setShowPopover] = useState(false);
     const [deleteCategory] = useDeleteShoppingCategoryMutation();
-    const [editShoppingCategory] = useEditShoppingCategoryMutation();
+    const [editShoppingCategory] = useEditCategoryMutation();
     const handleAddCategory = async () => {
         const name = category.trim();
         if (!name) return;

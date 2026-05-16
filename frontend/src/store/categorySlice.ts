@@ -127,7 +127,7 @@ export const shoppingCategorySlice = apiSlice.injectEndpoints({
             ],
         }),
 
-        editShoppingCategory: builder.mutation<
+        editCategory: builder.mutation<
             ShoppingCategory,
             { categoryId: number; listId: number; name: string }
         >({
@@ -201,5 +201,5 @@ export const {
     useGetShoppingCategoriesQuery,
     useCreateShoppingCategoryMutation,
     useDeleteShoppingCategoryMutation,
-    useEditShoppingCategoryMutation
+    useEditCategoryMutation
 } = shoppingCategorySlice;

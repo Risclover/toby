@@ -13,14 +13,11 @@ import { MobileTasklist } from "@/features/HouseholdTasklists/components/MobileT
 import { MobileTasklists } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklists";
 import { ArchivedHouseholdTasklistsPage } from "@/pages/ArchivedHouseholdTasklistsPage";
 import { AllRemindersPage } from "@/features/Reminders/components/AllReminders/AllRemindersPage";
-import { OnboardingPage } from "@/features/Auth/components/OnboardingPage";
 import { OnboardingRoute } from "./OnboardingRoute";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { GuestRoute } from "./GuestRoute";
 import UserProfilePageDemo from "@/pages/UserProfileDemo";
 import { UserProfilePage } from "@/pages/UserProfilePage";
-import { PersonalNote } from "@/features/PersonalNotes/components/PersonalNote";
-import { UserProfileNotesTab } from "@/features/UserProfile/components/UserProfileNotesTab";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();

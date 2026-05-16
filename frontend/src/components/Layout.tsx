@@ -34,7 +34,6 @@ export const Layout = () => {
             } */}
             <main className="w-full">
                 <AppRoutes />
-                {householdId && <CreateTasklist householdId={householdId} />}
             </main>
         </div>
     )

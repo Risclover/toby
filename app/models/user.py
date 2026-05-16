@@ -63,6 +63,16 @@ class User(db.Model, UserMixin):
         back_populates="archiver"
     )
 
+    completed_shopping_items = db.relationship(
+        "ShoppingItem",
+        foreign_keys="ShoppingItem.completed_by_id",
+        back_populates="completed_by"
+    )
+    created_shopping_items = db.relationship(
+        "ShoppingItem",
+        foreign_keys="ShoppingItem.creator_id",
+        back_populates="creator"
+    )
     shopping_lists = db.relationship(
         "ShoppingList",
         foreign_keys="ShoppingList.creator_id",

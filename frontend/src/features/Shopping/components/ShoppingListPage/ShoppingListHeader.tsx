@@ -1,6 +1,6 @@
 import { EditableTitle } from '@/components/EditableTitle'
 import type { ShoppingList } from '@/store/householdSlice'
-import { useEditShoppingItemCategoryMutation, useEditShoppingListMutation, useGetShoppingItemsQuery } from '@/store/shoppingSlice'
+import { useEditShoppingListMutation } from '@/store/shoppingSlice'
 import { Button, Progress, Select, Tooltip } from '@mantine/core'
 import { skipToken } from '@reduxjs/toolkit/query'
 import { useMemo, useState } from 'react'
@@ -27,13 +27,10 @@ type Props = {
 export const ShoppingListHeader = ({ list, viewMode, onChangeViewMode, sortMode, onChangeSortMode }: Props) => {
     const navigate = useNavigate();
     const { listId } = useParams();
-    const [updateShoppingList] = useEditShoppingListMutation();
-    const [editItemCategory] = useEditShoppingItemCategoryMutation();
-    const [showCategoriesModal, setShowCategoriesModal] = useState(false);
 
-    const { data: items = [] } = useGetShoppingItemsQuery(
-        Number(listId) ? listId : (skipToken as any)
-    );
+    const [updateShoppingList] = useEditShoppingListMutation();
+    const [showCategoriesModal, setShowCategoriesModal] = useState(false);
+    const items = list.items;
 
     const { percent } = useMemo(() => {
         const total = items.length;
@@ -45,7 +42,7 @@ export const ShoppingListHeader = ({ list, viewMode, onChangeViewMode, sortMode,
 
     const handleUpdateTitle = async (next: string) => {
         if (!list) return; // guard
-        await updateShoppingList({ listId: list.id, title: next }).unwrap();
+        await updateShoppingList({ listId: list.id, name: next, householdId: 1 }).unwrap();
     };
 
     const viewToLabel = (v: ViewMode) => (v === "flat" ? "Flat" : "By Category");

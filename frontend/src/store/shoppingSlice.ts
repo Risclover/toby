@@ -127,7 +127,7 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingList", id: listId }],
         }),
 
-        clearList: builder.mutation<{ message: string }, { listId: number }>({
+        clearShoppingList: builder.mutation<{ message: string }, { listId: number }>({
             query: ({ listId }) => ({ url: `/shopping-lists/${listId}/items`, method: "DELETE" }),
             invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingList", id: listId }],
         }),
@@ -309,7 +309,7 @@ export const {
     useDuplicateShoppingListMutation,
     useCheckAllItemsMutation,
     useUncheckAllItemsMutation,
-    useClearListMutation,
+    useClearShoppingListMutation,
     useManageAssignedMembersMutation,
     // items
     useAddShoppingItemMutation,

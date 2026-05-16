@@ -1,4 +1,4 @@
-import { useGetShoppingItemCategoryQuery, type ShoppingItem } from "@/store/shoppingSlice"
+import { type ShoppingItem } from "@/store/shoppingSlice"
 import { ShoppingListItem } from "../ShoppingListItem";
 
 type Props = {
@@ -6,13 +6,13 @@ type Props = {
 }
 
 export const ShoppingListCategorySection = ({ itemId }: Props) => {
-    const { data: itemCategory } = useGetShoppingItemCategoryQuery(itemId);
+    // const { data: itemCategory } = useGetShoppingCategoryQuery(itemId);
 
-    console.log('data: itemCategory:', itemCategory)
+    // console.log('data: itemCategory:', itemCategory)
     return (
         <div className="category-section">
-            {itemCategory?.name}
-            {itemCategory?.items.map((item: ShoppingItem) => <ShoppingListItem key={item.id} item={item} />)}
+            {/* {itemCategory?.name}
+            {itemCategory?.items.map((item: ShoppingItem) => <ShoppingListItem key={item.id} item={item} />)} */}
         </div>
     )
 }

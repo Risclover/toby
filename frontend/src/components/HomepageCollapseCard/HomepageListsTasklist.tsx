@@ -29,7 +29,7 @@ type TasklistItemProps = {
 
 
 export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const [taskValue, setTaskValue] = useState("");
     const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
@@ -80,7 +80,8 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
         if (taskValue.trim() === "") return;
         await addTask({ title: taskValue, householdId: user?.householdId, description: "", status: "in_progress", isImportant: false, dueDate: undefined, listId: tasklist?.id })
         setTaskValue("");
-        inputRef?.current?.focus();
+
+        if (inputRef.current) inputRef.current.focus();
     }
 
     if (!isReady) return <MobileTasklistSkeleton />;
@@ -272,7 +273,7 @@ const FeaturedTasklistItem = ({ task, tasklistId, hideCompleted, settings }: Tas
 
                         {showDetails && !isChecked ? (
                             <div className="featured-task-details" onClick={(e) => e.stopPropagation()}>
-                                <TaskExtra task={task} householdId={user?.householdId} listId={tasklistId} />
+                                <TaskExtra task={task} listId={tasklistId} />
                             </div>
                         ) : null}
                     </div>

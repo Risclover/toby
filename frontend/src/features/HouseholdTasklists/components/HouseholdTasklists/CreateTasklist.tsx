@@ -12,11 +12,15 @@ import { FormColorInput } from "@/components/FormColorInput";
 import { isTooLight } from "@/utils";
 import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
 
-type Props = { householdId: number };
+type Props = {
+    householdId: number;
+    openModal: () => void;
+    closeModal: () => void;
+    isOpen: boolean;
+};
 
-export const CreateTasklist = ({ householdId }: Props) => {
+export const CreateTasklist = ({ householdId, closeModal, isOpen }: Props) => {
     const navigate = useNavigate();
-    const { isOpen, closeModal } = useCreateTasklistModal();
     const { ref: nameRef, transitionProps } = useModalFocus();
     const { data: household } = useHousehold();
     useCloseModalOnNavigate(closeModal)
