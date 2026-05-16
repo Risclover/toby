@@ -11,6 +11,7 @@ class ActivityService:
         entity_id=None,
         entity_label=None,
         event_metadata=None,
+        audience_ids=None,   
     ):
         event = ActivityEvent(
             household_id=household_id,
@@ -20,6 +21,7 @@ class ActivityService:
             entity_id=entity_id,
             entity_label=entity_label,
             event_metadata=event_metadata,
+            audience_ids=audience_ids, 
         )
         db.session.add(event)
         return event

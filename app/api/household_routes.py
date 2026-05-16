@@ -9,6 +9,7 @@ from datetime import datetime, date, timedelta, timezone
 from app.utils.parse_datetime import parse_datetime
 from app.utils.timezone import utc_datetime_to_local
 from app.utils.activity_service import ActivityService
+from app.api.tasklist_routes import get_tasklist_audience_ids
 
 import json
 
@@ -129,6 +130,7 @@ def create_household_tasklist(household_id):
     if not all_members:
         links = [TasklistMember(tasklist_id=tasklist.id, user_id=user_id) for user_id in set(member_ids)]
         db.session.add_all(links)
+        db.session.flush()  # ensure member_links are visible before reading them
 
     ActivityService.record(
         household_id=household_id,
@@ -138,7 +140,9 @@ def create_household_tasklist(household_id):
         entity_id=tasklist.id,
         entity_label=tasklist.title,
         event_metadata={"listId": tasklist.id, "listTitle": tasklist.title},
+        audience_ids=get_tasklist_audience_ids(tasklist),
     )
+
     db.session.commit()
     t_dict = tasklist.to_dict()
     if hasattr(tasklist, "created_at") and tasklist.created_at:

@@ -6,6 +6,7 @@ class ActivityEvent(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=False)
+    audience_ids = db.Column(db.JSON, nullable=True)  # null = household-wide
     actor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     action = db.Column(db.String(50), nullable=False)
     entity_type = db.Column(db.String(50), nullable=False)

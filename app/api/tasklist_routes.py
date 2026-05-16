@@ -1,4 +1,3 @@
-# routes/tasklists.py
 from flask import Blueprint, jsonify, request
 from app.models import Tasklist, Task, User, Household, TasklistMember, FeaturedListSetting
 from app.extensions import db
@@ -14,6 +13,15 @@ tasklist_routes = Blueprint("tasklists", __name__)
 def is_household_admin(household_id):
     household = Household.query.get(household_id)
     return household and current_user.id == household.admin_id
+
+def get_tasklist_audience_ids(tasklist):
+    """None = household-wide. List = restricted to creator + assigned members."""
+    if tasklist.all_members:
+        return None
+    audience = {tasklist.creator_id}
+    for link in tasklist.member_links:
+        audience.add(link.user_id)
+    return list(audience)
 
 # TABLE OF CONTENTS
 # 1. get_tasklist: Retrieve tasklist by id
@@ -156,6 +164,7 @@ def add_task(id):
         entity_id=task.id,
         entity_label=task.title,
         event_metadata={"listId": tasklist.id, "listTitle": tasklist.title},
+        audience_ids=get_tasklist_audience_ids(tasklist),
     )
 
     db.session.commit()
@@ -182,6 +191,7 @@ def delete_task(list_id, id):
         entity_id=task.id,
         entity_label=task.title,
         event_metadata={"listId": list_id, "listTitle": tasklist.title},
+        audience_ids=get_tasklist_audience_ids(tasklist),
     )
 
     db.session.delete(task)
@@ -224,6 +234,7 @@ def delete_list(id):
         entity_type="tasklist",
         entity_id=tasklist.id,
         entity_label=tasklist.title,
+        audience_ids=get_tasklist_audience_ids(tasklist),
     )
 
     db.session.delete(tasklist)
@@ -253,6 +264,7 @@ def edit_tasklist(id):
         entity_id=tasklist.id,
         entity_label=title,
         event_metadata={"oldTitle": old_title},
+        audience_ids=get_tasklist_audience_ids(tasklist),
     )
 
     db.session.commit()
@@ -312,6 +324,7 @@ def duplicate_list(id):
             entity_id=new_list.id,
             entity_label=new_list.title,
             event_metadata={"duplicatedFrom": original_list.title},
+            audience_ids=get_tasklist_audience_ids(new_list),
         )
 
         db.session.commit()
@@ -340,6 +353,7 @@ def archive_list(id):
         entity_type="tasklist",
         entity_id=tasklist.id,
         entity_label=tasklist.title,
+        audience_ids=get_tasklist_audience_ids(tasklist),
     )
 
     db.session.commit()
@@ -363,6 +377,7 @@ def unarchive_list(id):
         entity_type="tasklist",
         entity_id=tasklist.id,
         entity_label=tasklist.title,
+        audience_ids=get_tasklist_audience_ids(tasklist),
     )
 
     db.session.add(tasklist)
@@ -405,6 +420,7 @@ def update_list_settings(id):
             entity_id=tasklist.id,
             entity_label=tasklist.title,
             event_metadata={"oldTitle": old_title},
+            audience_ids=get_tasklist_audience_ids(tasklist),
         )
 
     if "memberIds" in data:
