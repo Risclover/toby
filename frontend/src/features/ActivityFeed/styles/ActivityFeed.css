@@ -24,14 +24,14 @@
 .event-line1 {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
     overflow: hidden;
 }
 
 .event-main {
-    overflow: hidden;
-    text-overflow: ellipsis;
+    text-wrap: wrap;
+    line-height: 1.2;
     flex: 1;
     min-width: 0;
 }
@@ -68,11 +68,6 @@ css.event-chevron {
     opacity: 0.3;
 }
 
-.event-main {
-    flex: 1;
-    min-width: 0;
-}
-
 .event-time {
     white-space: nowrap;
     flex-shrink: 0;
@@ -102,4 +97,49 @@ css.event-chevron {
 
 .events-list ul {
     overflow: hidden;
+}
+
+.event-label-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.event-label {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.event-label-list li {
+    list-style-type: decimal;
+    margin-left: 15px;
+}
+
+.event-task-details {
+    /* margin-top: 4px; */
+}
+
+.event-task-toggle {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--mantine-color-blue-6);
+    font-size: 12px;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.event-task-toggle:hover {
+    color: var(--mantine-color-blue-8);
+    text-decoration: underline !important;
+}
+
+.event-task-list {
+    margin: 6px 0 0 0;
+    /* padding-left: 18px; */
+}
+
+.event-task-list-item {
+    list-style-type: decimal;
+    margin-left: 15px;
+    color: var(--mantine-color-dimmed);
 }

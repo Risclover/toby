@@ -1,10 +1,11 @@
 import { useGetActivityQuery, useGetHouseholdQuery, type ActivityEvent } from "@/store";
 import { Link } from "react-router-dom";
 import "../styles/ActivityFeed.css";
-import { Avatar, Box, Tooltip } from "@mantine/core";
+import { Avatar, Box, Button, Collapse, Text, Tooltip } from "@mantine/core";
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { ActivityFeedSkeletons } from "./ActivityFeedSkeletons";
+import { useDisclosure } from "@mantine/hooks";
 
 type Props = {
     isReady?: boolean;
@@ -21,7 +22,7 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
     const [expandedId, setExpandedId] = useState<number | null>(null);
 
     const { data: household } = useGetHouseholdQuery(householdId, { skip: !householdId });
-
+    const [expanded, { toggle }] = useDisclosure(false);
     const { data, isLoading, isSuccess, isError } = useGetActivityQuery(
         { householdId, actorId },
         { skip: !householdId }
@@ -30,9 +31,7 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
     const showSkeleton = isLoading || (!isSuccess && !data);
 
     const label = (text: string | null) => (
-        <Tooltip multiline label={text} openDelay={400} withArrow>
-            <Box component="span" className="event-label">{text}</Box>
-        </Tooltip>
+        <Box component="span" className="event-label">{text}</Box>
     );
 
     const formatTime = (isoString: string): string => {
@@ -45,8 +44,56 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
         return new Date(normalized).toLocaleDateString();
     };
 
+    const formatTaskLine2 = (event: ActivityEvent): React.ReactNode => {
+        const labels = event.entityLabels ?? [];
+        const count = event.count ?? 1;
+
+        if (count === 1) return label(event.entityLabel);
+        if (labels.length === 0) return null;
+
+        const isExpanded = expandedId === event.id;
+        const collapseId = `event-task-list-${event.id}`;
+
+        return (
+            <div className="event-task-details">
+                <Button
+                    c="blue"
+
+                    fw={400}
+                    h="auto"
+                    size="xs"
+                    p={0}
+                    variant="transparent"
+                    type="button"
+                    className="event-task-toggle"
+                    aria-expanded={isExpanded}
+                    aria-controls={collapseId}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedId(isExpanded ? null : event.id);
+                    }}
+                >
+                    {isExpanded ? "Hide tasks" : `Click to show tasks (${labels.length})`}
+                </Button>
+
+                <Collapse in={isExpanded}>
+                    <ol id={collapseId} className="event-task-list">
+                        {labels.map((taskLabel, i) => (
+                            <li key={`${event.id}-${i}`} className="event-task-list-item">
+                                <Text size="13px" lh="1.5" truncate lineClamp={1}>
+                                    {taskLabel}
+                                </Text>
+                            </li>
+                        ))}
+                    </ol>
+                </Collapse>
+            </div>
+        );
+    };
+
     const formatEvent = (event: ActivityEvent): FormattedEvent => {
-        console.log('event:', event)
+        const count = event.count ?? 1;
+
         switch (event.entityType) {
             case "task": {
                 const listTitle = event.eventMetadata?.listTitle;
@@ -54,12 +101,28 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
                 const inList = listTitle && listId
                     ? <> in <Link className="event-link" to={`/tasklists/${listId}`} target="_blank" rel="noreferrer">{listTitle}</Link></>
                     : null;
+                const line2 = formatTaskLine2(event);
                 switch (event.action) {
-                    case "created": return { line1: <>added a task{inList}</>, line2: label(event.entityLabel) };
-                    case "completed": return { line1: <>completed a task{inList}</>, line2: label(event.entityLabel) };
-                    case "uncompleted": return { line1: <>marked a task as incomplete{inList}</>, line2: label(event.entityLabel) };
-                    case "deleted": return { line1: <>deleted a task{inList}</>, line2: label(event.entityLabel) };
-                    default: return { line1: <>updated a task{inList}</>, line2: label(event.entityLabel) };
+                    case "created": return {
+                        line1: <>added {count === 1 ? "a task" : `${count} tasks`}{inList}</>,
+                        line2,
+                    };
+                    case "completed": return {
+                        line1: <>completed {count === 1 ? "a task" : `${count} tasks`}{inList}</>,
+                        line2,
+                    };
+                    case "uncompleted": return {
+                        line1: <>marked {count === 1 ? "a task" : `${count} tasks`} as incomplete{inList}</>,
+                        line2,
+                    };
+                    case "deleted": return {
+                        line1: <>deleted {count === 1 ? "a task" : `${count} tasks`}{inList}</>,
+                        line2,
+                    };
+                    default: return {
+                        line1: <>updated {count === 1 ? "a task" : `${count} tasks`}{inList}</>,
+                        line2,
+                    };
                 }
             }
             case "tasklist": {

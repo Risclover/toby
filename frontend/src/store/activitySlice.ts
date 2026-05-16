@@ -14,6 +14,8 @@ export type ActivityEvent = {
     entityType: string;
     entityId: number | null;
     entityLabel: string | null;
+    entityLabels: string[];
+    count: number;
     eventMetadata: Record<string, any> | null;
     createdAt: string;
 };
@@ -25,7 +27,7 @@ export type ActivityResponse = {
 
 export type GetActivityArgs = {
     householdId: number;
-    actorId?: number;   // ← new
+    actorId?: number;
     limit?: number;
     cursor?: string;
 };
@@ -37,13 +39,13 @@ export const activitySlice = apiSlice.injectEndpoints({
                 const params = new URLSearchParams();
                 params.set("limit", String(limit));
                 if (cursor) params.set("cursor", cursor);
-                if (actorId) params.set("actor_id", String(actorId));  // ← new
+                if (actorId) params.set("actor_id", String(actorId));
                 return `/activity/${householdId}?${params.toString()}`;
             },
             providesTags: (_result, _err, { householdId, actorId }) => [
                 {
                     type: "Activity",
-                    id: actorId ? `USER_${actorId}` : `HOUSEHOLD_${householdId}`,  // ← new
+                    id: actorId ? `USER_${actorId}` : `HOUSEHOLD_${householdId}`,
                 },
             ],
         }),

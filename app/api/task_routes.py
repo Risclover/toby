@@ -6,6 +6,7 @@ from datetime import datetime, date
 from flask_login import current_user, login_required
 from app.utils.reminder_utils import create_task_due_reminders
 from app.utils.activity_service import ActivityService
+from app.api.tasklist_routes import get_tasklist_audience_ids
 import pytz
 
 task_routes = Blueprint("tasks", __name__)
@@ -46,14 +47,19 @@ def update_task_status(id):
     else:
         return jsonify({"error": "Provide boolean 'completed' or valid 'status'"}), 400
 
+    tasklist = task.tasklist
+    action = "completed" if task.status == "completed" else "uncompleted"
+
     ActivityService.record(
-        household_id=task.tasklist.household_id,
+        household_id=tasklist.household_id,
         actor_id=current_user.id,
-        action="completed" if task.status == "completed" else "uncompleted",
+        action=action,
         entity_type="task",
         entity_id=task.id,
         entity_label=task.title,
-        event_metadata={"listId": task.list_id, "listTitle": task.tasklist.title},
+        event_metadata={"listId": task.list_id, "listTitle": tasklist.title},
+        audience_ids=get_tasklist_audience_ids(tasklist),
+        batch_key=f"task-{action}-{tasklist.id}",
     )
 
     db.session.commit()
@@ -138,18 +144,21 @@ def toggle_importance(id):
 def delete_task(id):
     task = Task.query.get_or_404(id)
 
-    # Creator or admin can delete
     if current_user.id != task.creator_id and not is_household_admin(task.tasklist.household_id):
         return jsonify({"error": "Forbidden"}), 403
 
+    tasklist = task.tasklist
+
     ActivityService.record(
-        household_id=task.tasklist.household_id,
+        household_id=tasklist.household_id,
         actor_id=current_user.id,
         action="deleted",
         entity_type="task",
         entity_id=task.id,
         entity_label=task.title,
-        event_metadata={"listId": task.list_id, "listTitle": task.tasklist.title},
+        event_metadata={"listId": task.list_id, "listTitle": tasklist.title},
+        audience_ids=get_tasklist_audience_ids(tasklist),
+        batch_key=f"task-deleted-{tasklist.id}",
     )
 
     task.delete()

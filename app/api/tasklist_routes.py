@@ -165,6 +165,7 @@ def add_task(id):
         entity_label=task.title,
         event_metadata={"listId": tasklist.id, "listTitle": tasklist.title},
         audience_ids=get_tasklist_audience_ids(tasklist),
+        batch_key=f"task-created-{tasklist.id}",
     )
 
     db.session.commit()
@@ -190,8 +191,9 @@ def delete_task(list_id, id):
         entity_type="task",
         entity_id=task.id,
         entity_label=task.title,
-        event_metadata={"listId": list_id, "listTitle": tasklist.title},
+        event_metadata={"listId": tasklist.id, "listTitle": tasklist.title},
         audience_ids=get_tasklist_audience_ids(tasklist),
+        batch_key=f"task-deleted-{tasklist.id}",
     )
 
     db.session.delete(task)

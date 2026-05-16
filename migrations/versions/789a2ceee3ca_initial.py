@@ -1,8 +1,8 @@
-"""Initial schema
+"""initial
 
-Revision ID: 012a3436efa2
+Revision ID: 789a2ceee3ca
 Revises: 
-Create Date: 2026-02-26 01:27:14.779000
+Create Date: 2026-05-16 13:39:20.311941
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '012a3436efa2'
+revision = '789a2ceee3ca'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,11 +21,11 @@ def upgrade():
     op.create_table('households',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('creator_id', sa.Integer(), nullable=False),
+    sa.Column('admin_id', sa.Integer(), nullable=False),
     sa.Column('invite_code', sa.String(length=64), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('tzid', sa.String(length=64), nullable=False),
-    sa.ForeignKeyConstraint(['creator_id'], ['users.id'], name=op.f('fk_households_creator_id_users')),
+    sa.ForeignKeyConstraint(['admin_id'], ['users.id'], name=op.f('fk_households_admin_id_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_households'))
     )
     with op.batch_alter_table('households', schema=None) as batch_op:
@@ -33,10 +33,11 @@ def upgrade():
 
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('google_id', sa.String(), nullable=True),
     sa.Column('first_name', sa.String(length=20), nullable=False),
     sa.Column('last_name', sa.String(length=20), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
-    sa.Column('hashed_password', sa.String(length=255), nullable=False),
+    sa.Column('hashed_password', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('display_name', sa.String(length=30), nullable=True),
     sa.Column('tagline', sa.String(length=100), nullable=True),
@@ -47,9 +48,31 @@ def upgrade():
     sa.Column('daily_checkin', sa.Boolean(), nullable=False),
     sa.Column('last_checkin', sa.DateTime(), nullable=True),
     sa.Column('household_id', sa.Integer(), nullable=True),
+    sa.Column('removed_from_household_id', sa.Integer(), nullable=True),
+    sa.Column('featured_stats', sa.JSON(), nullable=True),
     sa.ForeignKeyConstraint(['household_id'], ['households.id'], name=op.f('fk_users_household_id_households')),
+    sa.ForeignKeyConstraint(['removed_from_household_id'], ['households.id'], name=op.f('fk_users_removed_from_household_id_households')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_users')),
-    sa.UniqueConstraint('email', name=op.f('uq_users_email'))
+    sa.UniqueConstraint('email', name=op.f('uq_users_email')),
+    sa.UniqueConstraint('google_id', name=op.f('uq_users_google_id'))
+    )
+    op.create_table('activity_events',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('household_id', sa.Integer(), nullable=False),
+    sa.Column('actor_id', sa.Integer(), nullable=False),
+    sa.Column('action', sa.String(length=50), nullable=False),
+    sa.Column('entity_type', sa.String(length=50), nullable=False),
+    sa.Column('entity_id', sa.Integer(), nullable=True),
+    sa.Column('entity_label', sa.String(length=255), nullable=True),
+    sa.Column('entity_labels', sa.JSON(), nullable=True),
+    sa.Column('event_metadata', sa.JSON(), nullable=True),
+    sa.Column('audience_ids', sa.JSON(), nullable=True),
+    sa.Column('batch_key', sa.String(length=100), nullable=True),
+    sa.Column('count', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.ForeignKeyConstraint(['actor_id'], ['users.id'], name=op.f('fk_activity_events_actor_id_users')),
+    sa.ForeignKeyConstraint(['household_id'], ['households.id'], name=op.f('fk_activity_events_household_id_households')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_activity_events'))
     )
     op.create_table('announcements',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -77,14 +100,28 @@ def upgrade():
     op.create_table('events',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('household_id', sa.Integer(), nullable=False),
+    sa.Column('creator_id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=120), nullable=False),
     sa.Column('start_utc', sa.DateTime(timezone=True), nullable=True),
     sa.Column('end_utc', sa.DateTime(timezone=True), nullable=True),
     sa.Column('has_time', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('tzid', sa.String(length=64), nullable=False),
+    sa.ForeignKeyConstraint(['creator_id'], ['users.id'], name=op.f('fk_events_creator_id_users')),
     sa.ForeignKeyConstraint(['household_id'], ['households.id'], name=op.f('fk_events_household_id_households')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_events'))
+    )
+    op.create_table('habits',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=50), nullable=False),
+    sa.Column('description', sa.String(length=200), nullable=True),
+    sa.Column('color', sa.String(length=50), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('is_private', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_habits_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_habits'))
     )
     op.create_table('moods',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -97,43 +134,56 @@ def upgrade():
     with op.batch_alter_table('moods', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_moods_user_id'), ['user_id'], unique=True)
 
+    op.create_table('personal_note_categories',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=20), nullable=False),
+    sa.Column('color', sa.String(length=50), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_personal_note_categories_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_personal_note_categories'))
+    )
     op.create_table('reminders',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('household_id', sa.Integer(), nullable=False),
     sa.Column('created_by_id', sa.Integer(), nullable=True),
+    sa.Column('repeat_frequency', sa.Enum('DAILY', 'WEEKLY', 'MONTHLY', name='repeatfrequency'), nullable=True),
     sa.Column('message', sa.Text(), nullable=False),
     sa.Column('reminder_type', sa.Enum('CUSTOM', 'TASK_DUE', 'EVENT_STARTING', 'DAILY_CHECKIN_MISSING', name='remindertype'), nullable=False),
     sa.Column('is_automatic', sa.Boolean(), nullable=False),
     sa.Column('source_entity_id', sa.Integer(), nullable=True),
     sa.Column('source_entity_type', sa.String(length=50), nullable=True),
+    sa.Column('source_entity_metadata', sa.JSON(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('trigger_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('trigger_date', sa.Date(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('delivered_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['created_by_id'], ['users.id'], name=op.f('fk_reminders_created_by_id_users'), ondelete='SET NULL'),
     sa.ForeignKeyConstraint(['household_id'], ['households.id'], name=op.f('fk_reminders_household_id_households'), ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_reminders')),
-    sa.UniqueConstraint('household_id', 'source_entity_type', 'source_entity_id', 'trigger_at', 'reminder_type', name='uq_auto_reminder_instance')
+    sa.UniqueConstraint('household_id', 'source_entity_type', 'source_entity_id', 'trigger_date', 'reminder_type', name='uq_auto_reminder_instance')
     )
     with op.batch_alter_table('reminders', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_reminders_created_by_id'), ['created_by_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_reminders_delivered_at'), ['delivered_at'], unique=False)
         batch_op.create_index(batch_op.f('ix_reminders_household_id'), ['household_id'], unique=False)
         batch_op.create_index(batch_op.f('ix_reminders_is_active'), ['is_active'], unique=False)
-        batch_op.create_index(batch_op.f('ix_reminders_trigger_at'), ['trigger_at'], unique=False)
+        batch_op.create_index(batch_op.f('ix_reminders_trigger_date'), ['trigger_date'], unique=False)
 
     op.create_table('shopping_lists',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(length=50), nullable=False),
-    sa.Column('household_id', sa.Integer(), nullable=True),
+    sa.Column('name', sa.String(length=30), nullable=False),
+    sa.Column('household_id', sa.Integer(), nullable=False),
+    sa.Column('creator_id', sa.Integer(), nullable=False),
+    sa.Column('all_members', sa.Boolean(), nullable=False),
+    sa.Column('is_archived', sa.Boolean(), nullable=False),
+    sa.Column('archived_by', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.ForeignKeyConstraint(['archived_by'], ['users.id'], name=op.f('fk_shopping_lists_archived_by_users')),
+    sa.ForeignKeyConstraint(['creator_id'], ['users.id'], name=op.f('fk_shopping_lists_creator_id_users')),
     sa.ForeignKeyConstraint(['household_id'], ['households.id'], name=op.f('fk_shopping_lists_household_id_households')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_shopping_lists'))
     )
     with op.batch_alter_table('shopping_lists', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_shopping_lists_household_id'), ['household_id'], unique=False)
         batch_op.create_index('ix_shopping_lists_household_id_id', ['household_id', 'id'], unique=False)
 
     op.create_table('tasklists',
@@ -162,6 +212,17 @@ def upgrade():
         batch_op.create_index('ix_tasklists_creator_id', ['creator_id'], unique=False)
         batch_op.create_index('ix_tasklists_household_id', ['household_id'], unique=False)
 
+    op.create_table('user_settings',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('site_theme', sa.Enum('LIGHT', 'DARK', 'SYSTEM', name='theme'), nullable=False),
+    sa.Column('habits_on_homepage', sa.Boolean(), nullable=False),
+    sa.Column('habits_privacy_mode', sa.Enum('NORMAL', 'ALL_PRIVATE', 'PRIVATE_BY_DEFAULT', name='privacymode'), nullable=False),
+    sa.Column('notes_privacy_mode', sa.Enum('NORMAL', 'ALL_PRIVATE', 'PRIVATE_BY_DEFAULT', name='privacymode'), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_user_settings_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_user_settings')),
+    sa.UniqueConstraint('user_id', name=op.f('uq_user_settings_user_id'))
+    )
     op.create_table('announcement_seen',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('announcement_id', sa.Integer(), nullable=False),
@@ -171,6 +232,48 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_announcement_seen_user_id_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_announcement_seen')),
     sa.UniqueConstraint('announcement_id', 'user_id', name='uq_announcement_user_seen')
+    )
+    op.create_table('featured_list_settings',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('tasklist_id', sa.Integer(), nullable=True),
+    sa.Column('filter_just_me', sa.Boolean(), nullable=True),
+    sa.Column('filter_overdue', sa.Boolean(), nullable=True),
+    sa.Column('filter_due_today', sa.Boolean(), nullable=True),
+    sa.Column('filter_due_soon', sa.Boolean(), nullable=True),
+    sa.Column('important_only', sa.Boolean(), nullable=True),
+    sa.Column('max_items', sa.Integer(), nullable=False),
+    sa.Column('show_completed', sa.Boolean(), nullable=True),
+    sa.Column('sort_order', sa.Enum('DUE_DATE', 'IMPORTANCE', 'MANUAL', 'NEWEST', 'OLDEST', 'ALPHABETICAL', name='featuredtasksortorder'), nullable=False),
+    sa.Column('view', sa.Enum('DETAILED', 'COMPACT', name='featuredlistview'), nullable=False),
+    sa.Column('show_progress', sa.Boolean(), nullable=True),
+    sa.Column('show_quick_add', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['tasklist_id'], ['tasklists.id'], name=op.f('fk_featured_list_settings_tasklist_id_tasklists'), ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_featured_list_settings_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_featured_list_settings')),
+    sa.UniqueConstraint('user_id', name=op.f('uq_featured_list_settings_user_id'))
+    )
+    op.create_table('habit_completions',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('habit_id', sa.Integer(), nullable=False),
+    sa.Column('local_date', sa.Date(), nullable=False),
+    sa.ForeignKeyConstraint(['habit_id'], ['habits.id'], name=op.f('fk_habit_completions_habit_id_habits')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_habit_completions')),
+    sa.UniqueConstraint('habit_id', 'local_date', name='uq_habit_completion_per_day')
+    )
+    op.create_table('personal_notes',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=50), nullable=False),
+    sa.Column('body', sa.Text(), nullable=False),
+    sa.Column('category_id', sa.Integer(), nullable=True),
+    sa.Column('is_favorite', sa.Boolean(), nullable=True),
+    sa.Column('is_private', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.ForeignKeyConstraint(['category_id'], ['personal_note_categories.id'], name=op.f('fk_personal_notes_category_id_personal_note_categories')),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_personal_notes_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_personal_notes'))
     )
     op.create_table('reminder_assignments',
     sa.Column('reminder_id', sa.Integer(), nullable=False),
@@ -184,6 +287,7 @@ def upgrade():
     op.create_table('shopping_categories',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=50), nullable=False),
+    sa.Column('color', sa.String(length=50), nullable=False),
     sa.Column('list_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
@@ -193,6 +297,17 @@ def upgrade():
     )
     with op.batch_alter_table('shopping_categories', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_shopping_categories_list_id'), ['list_id'], unique=False)
+
+    op.create_table('shopping_list_members',
+    sa.Column('list_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.ForeignKeyConstraint(['list_id'], ['shopping_lists.id'], name=op.f('fk_shopping_list_members_list_id_shopping_lists'), ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_shopping_list_members_user_id_users'), ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('list_id', 'user_id', name=op.f('pk_shopping_list_members'))
+    )
+    with op.batch_alter_table('shopping_list_members', schema=None) as batch_op:
+        batch_op.create_index('ix_slm_user_id', ['user_id'], unique=False)
 
     op.create_table('tasklist_members',
     sa.Column('tasklist_id', sa.Integer(), nullable=False),
@@ -215,46 +330,34 @@ def upgrade():
     sa.Column('is_important', sa.Boolean(), nullable=True),
     sa.Column('due_date', sa.Date(), nullable=True),
     sa.Column('assigned_to_id', sa.Integer(), nullable=True),
+    sa.Column('completed_by_id', sa.Integer(), nullable=True),
     sa.Column('sort_index', sa.Integer(), nullable=False),
     sa.Column('notes', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('completed_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['assigned_to_id'], ['users.id'], name=op.f('fk_tasks_assigned_to_id_users')),
+    sa.ForeignKeyConstraint(['completed_by_id'], ['users.id'], name=op.f('fk_tasks_completed_by_id_users')),
     sa.ForeignKeyConstraint(['creator_id'], ['users.id'], name=op.f('fk_tasks_creator_id_users')),
     sa.ForeignKeyConstraint(['list_id'], ['tasklists.id'], name=op.f('fk_tasks_list_id_tasklists')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_tasks'))
-    )
-    op.create_table('user_settings',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('featured_tasklist_id', sa.Integer(), nullable=True),
-    sa.Column('featured_tasklist_filter_just_me', sa.Boolean(), nullable=True),
-    sa.Column('featured_tasklist_filter_overdue', sa.Boolean(), nullable=True),
-    sa.Column('featured_tasklist_filter_due_today', sa.Boolean(), nullable=True),
-    sa.Column('featured_tasklist_filter_due_soon', sa.Boolean(), nullable=True),
-    sa.Column('featured_tasklist_important_only', sa.Boolean(), nullable=True),
-    sa.Column('featured_tasklist_max_items', sa.Integer(), nullable=False),
-    sa.Column('featured_tasklist_show_completed', sa.Boolean(), nullable=True),
-    sa.Column('featured_tasklist_sort_order', sa.Enum('DUE_DATE', 'IMPORTANCE', 'MANUAL', 'NEWEST', 'OLDEST', 'ALPHABETICAL', name='featuredtasksortorder'), nullable=False),
-    sa.Column('featured_tasklist_view', sa.Enum('DETAILED', 'COMPACT', name='featuredlistview'), nullable=False),
-    sa.Column('featured_tasklist_show_progress', sa.Boolean(), nullable=True),
-    sa.Column('featured_tasklist_show_quick_add', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['featured_tasklist_id'], ['tasklists.id'], name=op.f('fk_user_settings_featured_tasklist_id_tasklists'), ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_user_settings_user_id_users')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_user_settings')),
-    sa.UniqueConstraint('user_id', name=op.f('uq_user_settings_user_id'))
     )
     op.create_table('shopping_items',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('list_id', sa.Integer(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=True),
+    sa.Column('creator_id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=200), nullable=False),
-    sa.Column('quantity', sa.Integer(), nullable=False),
-    sa.Column('purchased', sa.Boolean(), nullable=False),
+    sa.Column('quantity', sa.Integer(), nullable=True),
+    sa.Column('unit', sa.String(length=50), nullable=True),
+    sa.Column('notes', sa.Text(), nullable=True),
+    sa.Column('is_checked', sa.Boolean(), nullable=True),
+    sa.Column('completed_by_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.ForeignKeyConstraint(['category_id'], ['shopping_categories.id'], name=op.f('fk_shopping_items_category_id_shopping_categories'), ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['completed_by_id'], ['users.id'], name=op.f('fk_shopping_items_completed_by_id_users')),
+    sa.ForeignKeyConstraint(['creator_id'], ['users.id'], name=op.f('fk_shopping_items_creator_id_users')),
     sa.ForeignKeyConstraint(['list_id'], ['shopping_lists.id'], name=op.f('fk_shopping_items_list_id_shopping_lists')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_shopping_items'))
     )
@@ -272,18 +375,25 @@ def downgrade():
         batch_op.drop_index(batch_op.f('ix_shopping_items_category_id'))
 
     op.drop_table('shopping_items')
-    op.drop_table('user_settings')
     op.drop_table('tasks')
     with op.batch_alter_table('tasklist_members', schema=None) as batch_op:
         batch_op.drop_index('ix_tlm_user_id')
 
     op.drop_table('tasklist_members')
+    with op.batch_alter_table('shopping_list_members', schema=None) as batch_op:
+        batch_op.drop_index('ix_slm_user_id')
+
+    op.drop_table('shopping_list_members')
     with op.batch_alter_table('shopping_categories', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_shopping_categories_list_id'))
 
     op.drop_table('shopping_categories')
     op.drop_table('reminder_assignments')
+    op.drop_table('personal_notes')
+    op.drop_table('habit_completions')
+    op.drop_table('featured_list_settings')
     op.drop_table('announcement_seen')
+    op.drop_table('user_settings')
     with op.batch_alter_table('tasklists', schema=None) as batch_op:
         batch_op.drop_index('ix_tasklists_household_id')
         batch_op.drop_index('ix_tasklists_creator_id')
@@ -291,27 +401,28 @@ def downgrade():
     op.drop_table('tasklists')
     with op.batch_alter_table('shopping_lists', schema=None) as batch_op:
         batch_op.drop_index('ix_shopping_lists_household_id_id')
-        batch_op.drop_index(batch_op.f('ix_shopping_lists_household_id'))
 
     op.drop_table('shopping_lists')
     with op.batch_alter_table('reminders', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_reminders_trigger_at'))
+        batch_op.drop_index(batch_op.f('ix_reminders_trigger_date'))
         batch_op.drop_index(batch_op.f('ix_reminders_is_active'))
         batch_op.drop_index(batch_op.f('ix_reminders_household_id'))
-        batch_op.drop_index(batch_op.f('ix_reminders_delivered_at'))
         batch_op.drop_index(batch_op.f('ix_reminders_created_by_id'))
 
     op.drop_table('reminders')
+    op.drop_table('personal_note_categories')
     with op.batch_alter_table('moods', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_moods_user_id'))
 
     op.drop_table('moods')
+    op.drop_table('habits')
     op.drop_table('events')
     with op.batch_alter_table('checkins', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_checkins_user_id'))
 
     op.drop_table('checkins')
     op.drop_table('announcements')
+    op.drop_table('activity_events')
     op.drop_table('users')
     with op.batch_alter_table('households', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_households_invite_code'))

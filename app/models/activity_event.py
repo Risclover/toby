@@ -6,15 +6,18 @@ class ActivityEvent(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=False)
-    audience_ids = db.Column(db.JSON, nullable=True)  # null = household-wide
     actor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     action = db.Column(db.String(50), nullable=False)
     entity_type = db.Column(db.String(50), nullable=False)
     entity_id = db.Column(db.Integer, nullable=True)
     entity_label = db.Column(db.String(255), nullable=True)
+    entity_labels = db.Column(db.JSON, nullable=True)
     event_metadata = db.Column(db.JSON, nullable=True)
+    audience_ids = db.Column(db.JSON, nullable=True)
+    batch_key = db.Column(db.String(100), nullable=True)
+    count = db.Column(db.Integer, nullable=False, default=1)
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
-    
+
     # relationships
     actor = db.relationship("User", foreign_keys=[actor_id])
     household = db.relationship("Household", foreign_keys=[household_id])
@@ -32,7 +35,9 @@ class ActivityEvent(db.Model):
             "entityType": self.entity_type,
             "entityId": self.entity_id,
             "entityLabel": self.entity_label,
+            "entityLabels": self.entity_labels or [],
             "eventMetadata": self.event_metadata,
+            "count": self.count,
             "createdAt": self.created_at.isoformat() + "Z",
         }
 

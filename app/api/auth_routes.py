@@ -143,7 +143,7 @@ def sign_up():
         user.household_id = household.id
         defaults = ["Groceries", "Necessities", "Wishlist"]
         db.session.add_all([
-            ShoppingList(title=title, household_id=household.id) for title in defaults
+            ShoppingList(name=title, household_id=household.id, creator_id=user.id) for title in defaults
         ])
     db.session.commit()
     login_user(user)
@@ -239,7 +239,7 @@ def create_household():
     current_user.household_id = household.id
     defaults = ["Groceries", "Necessities", "Wishlist"]
     db.session.add_all([
-        ShoppingList(title=title, household_id=household.id) for title in defaults
+        ShoppingList(name=title, household_id=household.id, creator_id=current_user.id) for title in defaults
     ])
     db.session.commit()
     return jsonify({"user": current_user.to_dict(), "household": household.to_dict()}), 201
