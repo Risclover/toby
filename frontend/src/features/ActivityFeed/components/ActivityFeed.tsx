@@ -57,8 +57,6 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
         return (
             <div className="event-task-details">
                 <Button
-                    c="blue"
-
                     fw={400}
                     h="auto"
                     size="xs"

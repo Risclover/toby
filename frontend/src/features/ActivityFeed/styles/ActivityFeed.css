@@ -122,15 +122,15 @@ css.event-chevron {
     padding: 0;
     border: 0;
     background: transparent;
-    color: var(--mantine-color-blue-6);
+    color: var(--mantine-color-blue-7) !important;
     font-size: 12px;
     line-height: 1.4;
     cursor: pointer;
 }
 
 .event-task-toggle:hover {
-    color: var(--mantine-color-blue-8);
-    text-decoration: underline !important;
+    color: var(--mantine-color-blue-1);
+    /* text-decoration: underline !important; */
 }
 
 .event-task-list {
