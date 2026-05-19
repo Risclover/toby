@@ -17,7 +17,7 @@ class ShoppingList(db.Model):
     __tablename__ = "shopping_lists"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
+    title = db.Column(db.String(30), nullable=False)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     all_members = db.Column(db.Boolean, default=True, nullable=False)
@@ -82,7 +82,7 @@ class ShoppingList(db.Model):
                 - ALL_RESET: Copy all items, but mark them all as uncompleted.
         """
         duplicate = ShoppingList(
-            name=f"{self.name} (Copy)",
+            title=f"{self.title} (Copy)",
             creator_id=self.creator_id,
             household_id=self.household_id,
             all_members=self.all_members
@@ -137,7 +137,7 @@ class ShoppingList(db.Model):
             viewer = self.creator
         return {
             "id": self.id,
-            "name": self.name,
+            "title": self.title,
             "householdId": self.household_id,
             "creatorId": self.creator_id,
             "allMembers": self.all_members,
@@ -156,4 +156,4 @@ class ShoppingList(db.Model):
         }
 
     def __repr__(self):
-        return f"<ShoppingList {self.id} {self.name!r}>"
+        return f"<ShoppingList {self.id} {self.title!r}>"

@@ -11,7 +11,7 @@ export const ArchivedHouseholdTasklistsPage = () => {
     const titleComponent = (
         <div className='mobile-home-family-title'>
             <div className="title-announcements">
-                <Tooltip label="Go back">
+                <Tooltip withArrow label="Go back">
                     <ActionIcon onClick={() => navigate(-1)} variant="subtle" color="white">
                         <ChevronLeftRoundedIcon />
                     </ActionIcon></Tooltip>

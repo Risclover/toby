@@ -12,6 +12,15 @@ function toISO(d: Date) {
     return d.toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
+function safeTimezone(tz: string): string {
+    try {
+        Intl.DateTimeFormat(undefined, { timeZone: tz });
+        return tz;
+    } catch {
+        return "UTC";
+    }
+}
+
 function makeWindow(timezone: string) {
     const now = new Date();
 
@@ -80,13 +89,6 @@ function MemberRow({
     return (
         <div className={`flex items-center ${className}`}>
             <div className={`flex items-center`}>
-                {/* <div className="h-6 w-8 rounded-full grid place-items-center text-xs">
-                    {member.profileImg ? (
-                        <img src={member.profileImg} alt="" className="h-6 w-6 object-cover" />
-                    ) : (
-                        member.name?.slice(0, 1).toUpperCase()
-                    )}
-                </div> */}
                 <Tooltip key={member.id} label={member.firstName} withArrow>
                     <Avatar
                         src={member.profileImg || undefined}
@@ -144,7 +146,7 @@ export function HouseholdCheckinsMini({
 }) {
     const isSmall = useIsSmallScreen(375);
     const isMedium = useIsSmallScreen(425);
-    const { days, from, to } = useMemo(() => makeWindow(timezone), [timezone]);
+    const { days, from, to } = useMemo(() => makeWindow(safeTimezone(timezone)), [timezone]);
 
     return (
         <div className="household-checkins-mini-container">

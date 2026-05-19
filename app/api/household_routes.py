@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment, RepeatFrequency, User
+from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment, RepeatFrequency, User, ShoppingListMember, ShoppingList
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy import outerjoin, or_, and_
 import base64
@@ -10,6 +10,7 @@ from app.utils.parse_datetime import parse_datetime
 from app.utils.timezone import utc_datetime_to_local
 from app.utils.activity_service import ActivityService
 from app.api.tasklist_routes import get_tasklist_audience_ids
+from app.api.shopping_list_routes import get_shopping_list_audience_ids
 
 import json
 
@@ -183,6 +184,63 @@ def get_household_shopping_list(household_id, shopping_list_id):
         sl_dict["createdAt"] = utc_datetime_to_local(current_user, shopping_list.created_at).isoformat()
 
     return jsonify(sl_dict)
+
+@household_routes.route("/<int:household_id>/shopping-lists", methods=["POST"])
+@login_required
+def create_shopping_list(household_id):
+    household = Household.query.get(household_id)
+    if not household:
+        return jsonify({ "error": "Household not found" }), 404
+    
+    if current_user.household_id != household_id:
+        return jsonify({ "error": "Forbidden" }), 403
+    
+    data = request.get_json() or {}
+    title = (data.get("title") or "").strip()
+
+    if not title:
+        return jsonify({ "error": "Title is required" }), 400
+    
+    all_members = data.get("allMembers")
+    if all_members is None:
+        all_members = True
+    elif not isinstance(all_members, bool):
+        return jsonify({ "error": "allMembers must be a boolean" }), 400
+
+    member_ids = data.get("memberIds") or []
+
+    if not all_members:
+        if not isinstance(member_ids, list) or len(member_ids) == 0:
+            return jsonify({ "error": "memberIds (non-empty) required when allMembers is false" }), 400
+        valid_ids = { u.id for u in household.members or []}
+        bad = [user_id for user_id in set(member_ids) if user_id not in valid_ids]
+        if bad:
+            return jsonify({ "error": "memberIds must belong to the household", "invalid": bad }), 400
+    
+    shopping_list = ShoppingList(title=title, household_id=household_id, all_members=all_members, creator_id=current_user.id)
+    db.session.add(shopping_list)
+    db.session.flush()
+
+    if not all_members:
+        links = [ShoppingListMember(list_id=shopping_list.id, user_id=user_id) for user_id in set(member_ids)]
+        db.session.add_all(links)
+        db.session.flush()
+
+    ActivityService.record(
+        household_id=household_id,
+        actor_id=current_user.id,
+        action="created",
+        entity_type="shopping_list",
+        entity_id=shopping_list.id,
+        entity_label=shopping_list.title,
+        event_metadata={"listId": shopping_list.id, "listTitle": shopping_list.title},
+        audience_ids=get_shopping_list_audience_ids(shopping_list)
+    )
+
+    db.session.commit()
+
+    return jsonify(shopping_list.to_dict()), 201
+
 
 # --------------------
 # ANNOUNCEMENTS

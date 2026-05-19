@@ -83,7 +83,7 @@ export function HouseholdTasklistContent({ list }: HouseholdTasklistProps) {
                     <div className="mobile-tasklist-card-header-top">
                         <Text lineClamp={2} c="black" fw={500} className="tasklist-head-title">{list.title}</Text>
                         <div className="mobile-tasklist-card-header-top header-right">
-                            <Tooltip label={list.id === userSettings?.featuredTasklist.tasklistId ? "Remove as featured" : "Set as featured"}>
+                            <Tooltip withArrow label={list.id === userSettings?.featuredTasklist.tasklistId ? "Remove as featured" : "Set as featured"}>
                                 <ActionIcon
                                     size="compact-xs"
                                     onClick={toggleFeatured}

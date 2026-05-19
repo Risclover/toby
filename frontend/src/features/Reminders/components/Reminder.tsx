@@ -72,7 +72,7 @@ export const Reminder = ({ reminderId, reminder }: Props) => {
                 {!reminder.isAutomatic ? (
                     <div className="reminder-created-by" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {/* Creator */}
-                        <Tooltip label={`Created by ${reminder.createdBy?.firstName}`}>
+                        <Tooltip withArrow label={`Created by ${reminder.createdBy?.firstName}`}>
                             <Avatar size={20} src={reminder.createdBy?.profileImg} radius="xl" />
                         </Tooltip>
 
@@ -83,7 +83,7 @@ export const Reminder = ({ reminderId, reminder }: Props) => {
                             <div> {/* Negative gap for overlap effect */}
                                 <Avatar.Group spacing="sm">
                                     {reminder.assignedTo.map((assignee: User) => (
-                                        <Tooltip key={assignee.id} label={assignee.firstName}>
+                                        <Tooltip withArrow key={assignee.id} label={assignee.firstName}>
                                             <Avatar
                                                 size={24}
                                                 src={assignee.profileImg}

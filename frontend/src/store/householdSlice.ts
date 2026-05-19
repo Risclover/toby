@@ -6,15 +6,6 @@ type Tasklist = { id: number; title: string; createdAt: string; memberIds: numbe
 type TasklistTag = { type: "Tasklist"; id: number | string };
 type ShoppingCategory = { id: number; listId: number; name: string; createdAt: string; updatedAt: string };
 
-export type ShoppingList = {
-    id: number;
-    householdId: number;
-    title: string;
-    createdAt?: string;
-    items: any[];
-    categories: ShoppingCategory[];
-};
-
 // arg type for this query
 type GetHouseholdShoppingListArgs = {
     householdId: number;

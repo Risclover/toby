@@ -7,8 +7,12 @@ def get_user_timezone(user):
     Returns the pytz timezone object for a given user.
     Defaults to UTC if not set.
     """
-    tz_str = getattr(user, "timezone", "UTC")
-    return pytz.timezone(tz_str)
+    tz_str = getattr(user, "timezone", "UTC") or "UTC"
+    tz_str = tz_str.replace(" ", "_")
+    try:
+        return pytz.timezone(tz_str)
+    except pytz.exceptions.UnknownTimeZoneError:
+        return pytz.UTC
 
 
 def local_date_to_utc_datetime(user, local_date, at_time=None):

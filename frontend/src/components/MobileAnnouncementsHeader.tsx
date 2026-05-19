@@ -87,7 +87,7 @@ export const MobileAnnouncementsHeader = ({ searchValue, setSearchValue, sortOpt
                     <Combobox.Options>{options}</Combobox.Options>
                 </Combobox.Dropdown>
             </Combobox>
-            <Tooltip position="bottom" label="Filter"><ActionIcon onClick={open} variant="light" color="rgb(5, 5, 73)"><FilterAltRoundedIcon /></ActionIcon></Tooltip>
+            <Tooltip withArrow position="bottom" label="Filter"><ActionIcon onClick={open} variant="light" color="rgb(5, 5, 73)"><FilterAltRoundedIcon /></ActionIcon></Tooltip>
             <MobileAnnouncementsFilterDrawer
                 opened={opened}
                 close={close}

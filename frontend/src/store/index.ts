@@ -40,7 +40,6 @@ export * from "./activitySlice"
 export * from "./announcementSlice";
 export * from "./apiSlice";
 export * from "./authSlice";
-export * from "./categorySlice";
 export * from "./checkinSlice";
 export * from "./eventSlice";
 export * from "./hooks";

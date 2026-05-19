@@ -9,4 +9,3 @@ export { ShoppingListAddItem } from "./ShoppingListAddItem";
 export { ShoppingListBody } from "./ShoppingListBody";
 export { ShoppingListCategorySection } from "./ShoppingListCategorySection";
 export { ShoppingListCompleted } from "./ShoppingListCompleted";
-export { ShoppingListHeader } from "./ShoppingListHeader";

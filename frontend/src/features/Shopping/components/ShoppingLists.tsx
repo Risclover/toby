@@ -1,17 +1,19 @@
 import { useAuthenticateQuery } from "@/store/authSlice"
-import { useGetHouseholdShoppingListsQuery, type ShoppingList as ShoppingListType } from "@/store/householdSlice"
+import { useGetHouseholdShoppingListsQuery } from "@/store/householdSlice"
 import { skipToken } from "@reduxjs/toolkit/query"
-import { ShoppingList } from "./ShoppingList";
+import { ShoppingListCard } from "./ShoppingListCard";
 import "../styles/ShoppingLists.css"
+import { useGetShoppingListsQuery, type ShoppingList } from "@/store";
 
 export const ShoppingLists = () => {
     const { data: user, isFetching: authFetching } = useAuthenticateQuery();
     const householdId = user?.householdId;
-    const { data: lists } = useGetHouseholdShoppingListsQuery(householdId ?? skipToken)
+    const { data: lists } = useGetShoppingListsQuery(householdId ?? skipToken);
+
 
     return (
         <div className="shopping-lists-grid">
-            {lists?.map((list: ShoppingListType) => <ShoppingList list={list} />)}
+            {lists?.map((list: ShoppingList) => <ShoppingListCard list={list} />)}
         </div>
     )
 }

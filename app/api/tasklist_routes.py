@@ -15,7 +15,10 @@ def is_household_admin(household_id):
     return household and current_user.id == household.admin_id
 
 def get_tasklist_audience_ids(tasklist):
-    """None = household-wide. List = restricted to creator + assigned members."""
+    """
+    None = household-wide. 
+    List = restricted to creator + assigned members.
+    """    
     if tasklist.all_members:
         return None
     audience = {tasklist.creator_id}

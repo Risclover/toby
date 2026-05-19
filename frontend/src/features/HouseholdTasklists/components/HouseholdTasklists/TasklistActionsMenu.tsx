@@ -30,7 +30,7 @@ export const TasklistActionsMenu = ({ tasklistId, setShowDeleteConfirmation }: P
                 trapFocus={false}
                 menuItemTabIndex={0} shadow="md" width={150}
             >
-                <Tooltip label="Tasklist actions">
+                <Tooltip withArrow label="Tasklist actions">
                     <Menu.Target>
                         <ActionIcon variant="transparent" color="var(--mantine-color-gray-6)" size='xs' onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {

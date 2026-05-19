@@ -1,205 +1,174 @@
-.shopping-lists-page {
-    max-width: 80rem;
-    width: 100%;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    padding: 3rem;
-}
-
-.shopping-lists-page h1 {
-    font-size: 2.25rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-}
-
-
 .shopping-lists-grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
+    justify-content: center;
     gap: 1rem;
 }
 
-.shopping-list {
+.shopping-list-card {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+    border-radius: 0.5rem;
+    background: white;
     cursor: pointer;
-    background: var(--main-background) !important;
-    color: white !important;
-    border: 1px solid var(--main-border) !important;
-    border-radius: 8px;
-    padding: 10px;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.list-header-select {
+.shopping-list-card-header {
+    padding: 1rem;
+    font-size: var(--text-lg);
+    padding-bottom: 0;
+}
+
+.shopping-list-card-header--top:not(.header-right) {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
     gap: 0.5rem;
+    font-weight: 500;
 }
 
-.household-tasklist-page-title {
+.shopping-list-card-header--top.header-right {
     display: flex;
     align-items: center;
+    align-self: flex-start;
+    gap: 0.25rem;
+    color: var(--mantine-color-gray-5);
+}
+
+.progress-value {
+    font-size: var(--text-sm);
+    color: var(--mantine-color-gray-8);
+}
+
+.shopping-list-card-header .mantine-Progress-root {
+    background: var(--mantine-color-gray-1);
+}
+
+.shopping-list-card-body {
+    padding: 1rem;
+    padding-bottom: .5rem;
+    border-top: 1px solid var(--mantine-color-gray-2);
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+    flex-grow: 1;
+}
+
+.shopping-list-card-footer {
+    display: flex;
+    padding: .5rem 1rem;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+.shopping-list-card-data {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.shopping-list-card-data--item {
+    display: flex;
+    align-items: center;
+    font-size: var(--text-sm);
+    gap: .25rem;
+    color: var(--mantine-color-gray-6);
+}
+
+.shopping-list-card-data .mantine-Tooltip-tooltip {
+    font-size: var(--text-xs) !important;
+}
+
+.shopping-list-card-header--progress {
+    margin-bottom: .5rem;
 }
 
 .shopping-list-header {
-    padding-left: 3rem;
-    padding-right: 3rem;
-    margin-top: 1rem;
-}
-
-.shopping-item-expanded-container {
-    width: 100%;
-    background: var(--bg);
-}
-
-.shopping-item-expanded {
-    padding: 0.5rem 3rem;
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 450px;
-}
-
-.shopping-item-expanded-top {
-    display: flex;
-    gap: 1rem;
-}
-
-.completed-panel .household-tasklist-page-task {
-    text-decoration: line-through;
-}
-
-
-
-.shopping-item-expanded-input-section label {
-    font-family: 'Alan Sans', sans-serif !important;
-    font-size: var(--text-sm);
-}
-
-.shopping-item-expanded-input-section input {
-    font-family: 'Commissioner', sans-serif !important;
-}
-
-/* .task-left,
-.task-right {
-    display: flex;
+    z-index: 99;
     align-items: center;
-} */
-
-/* .task-left {
-    gap: 1rem;
-    line-height: 0;
-} */
-.task-left {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
+    justify-content: space-around;
+    padding: .5rem;
+    padding-bottom: 0;
+    flex-wrap: wrap;
+    box-shadow: var(--mantine-shadow-xs);
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    background: white;
 }
 
-.task-right button {
-    width: min-content;
-    padding: 0;
+.shopping-list-header {
+    justify-content: center;
+    gap: .5rem;
+    padding: 0.8rem 1rem !important;
+    flex-wrap: nowrap;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 99;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    flex: 0 0 auto;
 }
 
-.task-right button:first-child svg {
-    font-size: 2rem;
-}
-
-.task-right button:hover svg {
-    color: var(--accent-color);
-}
-
-.task-right {
-    gap: 1rem;
-    margin-right: 0.8rem;
-}
-
-.household-tasklist-page-task {
-    align-items: center;
+.shopping-list-header {
     justify-content: space-between;
 }
 
-
-.household-tasklist-page-title button {
-    overflow: unset;
-    padding: 0.1rem 0.5rem;
-    margin-right: .3rem;
-    color: white;
-}
-
-.household-tasklist-page-title button:last-of-type:hover svg {
-    fill: var(--accent-color-light);
-}
-
-.household-tasklist-page-title button:last-of-type svg {
-    fill: white;
-    height: 1.5rem;
-}
-
-.category-header {
-    background: var(--bg);
-    padding: 0.8rem 1rem;
-    /* border-bottom: 1px solid var(--input-border); */
-    border-radius: inherit;
-    font-size: 1rem;
-    font-family: 'Alan Sans', sans-serif;
-    line-height: 1.5;
-}
-
-.add-category-container {
+.shopping-list-header--left {
     display: flex;
+    gap: .5rem;
 }
 
-.add-category {
-    background: var(--input-background);
-    padding: 0.3rem;
-    border-radius: 0.5rem;
-    padding-left: 1rem;
-    width: 100%;
+.shopping-list-title-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 1rem;
+    min-height: 60px;
+}
+
+.shopping-list-title-bar--top {
     display: flex;
     align-items: center;
-    border: 1px solid var(--input-border);
+    justify-content: space-between;
+    gap: .5rem;
+    font-family: "Alan Sans", sans-serif;
+    font-size: var(--text-2xl);
+    font-weight: 500;
+    line-height: 1;
 }
 
-.add-category input {
-    width: 80%;
-    outline: none;
-    font-size: var(--text-sm);
-    font-family: "Commissioner", sans-serif;
+.shopping-list-title-bar--left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+    gap: .5rem;
 }
 
-.categories-table {
-    margin-top: 1.5rem;
+.shopping-list-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    font-size: var(--text-2xl) !important;
+    font-family: "Alan Sans", sans-serif !important;
+    font-weight: 500 !important;
 }
 
-.add-category-input-error {
-    border: 1px solid var(--mantine-color-red-5);
+.shopping-list-title.smaller-header {
+    font-size: var(--text-xl) !important;
 }
 
-.edit-category-input {
-    border: 1px solid transparent;
-    padding: 0.3rem;
-}
 
-.edit-category-input:focus {
-    outline: none;
-    border: none;
-    border-bottom: 1px solid var(--accent-color);
-    padding: 0;
-}
 
-.edit-category-input-name {
-    border: 1px solid transparent;
-    padding: 0.3rem;
-    border-radius: 0.5rem;
-}
-
-.no-categories-msg {
-    color: var(--sub-text);
-    font-size: var(--text-sm);
-    line-height: 1.1;
-    margin-top: 0.3rem;
+@media (max-width: 425px) {
+    .shopping-lists-grid {
+        gap: .5rem;
+    }
 }
 
 @media (width >=40rem) {
@@ -220,7 +189,7 @@
     }
 }
 
-@media (width >=84rem) {
+@media(width >=84rem) {
     .shopping-lists-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }

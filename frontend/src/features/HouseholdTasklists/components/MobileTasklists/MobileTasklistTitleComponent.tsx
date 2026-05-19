@@ -29,14 +29,14 @@ export const MobileTasklistTitleComponent = ({
         <div className="mobile-tasklist-title-bar">
             <div className="mobile-tasklist-title-bar-top">
                 <div className="title-announcements tasklist-announcements">
-                    <Tooltip label="Go back">
+                    <Tooltip withArrow label="Go back">
                         <ActionIcon onClick={() => navigate(-1)} variant="subtle" color="white">
                             <ChevronLeftRoundedIcon />
                         </ActionIcon>
                     </Tooltip>
                     <Title order={1} lineClamp={1} className={`title-announcements-title${isSmall ? " smaller-header" : ""}`}>{tasklist.title}</Title>
                 </div>
-                {(user.id === household?.adminId || user.id === tasklist.creatorId) && <Tooltip label="Tasklist settings">
+                {(user.id === household?.adminId || user.id === tasklist.creatorId) && <Tooltip withArrow label="Tasklist settings">
                     <ActionIcon
                         onClick={() => setShowTasklistSettings(true)}
                         className="tasklist-settings-btn"

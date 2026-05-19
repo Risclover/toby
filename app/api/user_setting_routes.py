@@ -63,7 +63,7 @@ def update_user_settings():
         user.last_name = data["lastName"]
 
     if "timezone" in data:
-        user.timezone = data["timezone"]
+        user.timezone = data["timezone"].strip().replace(" ", "_")
 
     # Settings: booleans
     if "habitsOnHomepage" in data:

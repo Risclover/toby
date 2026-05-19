@@ -11,6 +11,18 @@ def is_household_admin(household_id):
     household = Household.query.get(household_id)
     return household and current_user.id == household.admin_id
 
+def get_shopping_list_audience_ids(shopping_list):
+    """
+    None = household-wide
+    List = restricted to creator + assigned members
+    """
+    if shopping_list.all_members:
+        return None 
+    audience = {shopping_list.creator_id}
+    for link in shopping_list.member_links:
+        audience.add(link.user_id)
+    return list(audience)
+
 @shopping_list_routes.route("/<int:id>")
 @login_required
 def get_shopping_list(id):
@@ -27,32 +39,6 @@ def get_shopping_lists():
     shopping_lists = ShoppingList.query.filter_by(household_id=household_id).all()
     return jsonify([shopping_list.to_dict() for shopping_list in shopping_lists]), 200
 
-@shopping_list_routes.route("", methods=["POST"])
-@login_required
-def create_shopping_list():
-    data = request.get_json()
-
-    shopping_list = ShoppingList(
-        name=data["name"],
-        household_id=data.get("householdId"),
-        creator_id=current_user.id
-    )
-
-    db.session.add(shopping_list)
-
-    ActivityService.record(
-        household_id=shopping_list.household_id,
-        actor_id=current_user.id,
-        action="created",
-        entity_type="shopping_list",
-        entity_id=shopping_list.id,
-        entity_label=shopping_list.name
-    )
-
-    db.session.commit()
-    
-    return jsonify(shopping_list.to_dict()), 201
-
 @shopping_list_routes.route("/<int:id>/items", methods=["POST"])
 @login_required
 def add_item(id):
@@ -60,7 +46,7 @@ def add_item(id):
     shopping_list = ShoppingList.query.get_or_404(id)
 
     item = ShoppingItem(
-        name=data["name"],
+        title=data["title"],
         list_id=id,
         creator_id=current_user.id,
     )
@@ -75,7 +61,7 @@ def add_item(id):
         entity_type="shopping_item",
         entity_id=item.id,
         entity_label=item.name,
-        event_metadata={"listId": shopping_list.id, "listName": shopping_list.name}
+        event_metadata={"listId": shopping_list.id, "listTitle": shopping_list.title}
     )
 
     db.session.commit()
@@ -109,7 +95,7 @@ def delete_list(id):
         action="deleted",
         entity_type="shopping_list",
         entity_id=shopping_list.id,
-        entity_label=shopping_list.name
+        entity_label=shopping_list.title
     )
 
     db.session.delete(shopping_list)
@@ -126,9 +112,9 @@ def edit_shopping_list(id):
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json()
-    old_name = shopping_list.name
-    name = data.get("name", shopping_list.name)
-    shopping_list.name = name
+    old_title = shopping_list.title
+    title = data.get("title", shopping_list.title)
+    shopping_list.title = title
 
     ActivityService.record(
         household_id=shopping_list.household_id,
@@ -136,8 +122,8 @@ def edit_shopping_list(id):
         action="renamed",
         entity_type="shopping_list",
         entity_id=shopping_list.id,
-        entity_label=name,
-        event_metadata={"oldName": old_name}
+        entity_label=title,
+        event_metadata={"oldTitle": old_title}
     )
 
     db.session.commit()
@@ -162,8 +148,8 @@ def duplicate_list(id):
             action="created",
             entity_type="shopping_list",
             entity_id=new_list.id,
-            entity_label=new_list.name,
-            event_metadata={"duplicatedFrom": original_list.name}
+            entity_label=new_list.title,
+            event_metadata={"duplicatedFrom": original_list.title}
         )
         
         db.session.commit()
@@ -190,7 +176,7 @@ def archive_list(id):
         action="archived",
         entity_type="shopping_list",
         entity_id=shopping_list.id,
-        entity_label=shopping_list.name
+        entity_label=shopping_list.title
     )
 
     db.session.commit()
@@ -213,7 +199,7 @@ def unarchive_list(id):
         action="unarchived",
         entity_type="shopping_list",
         entity_id=shopping_list.id,
-        entity_label=shopping_list.name
+        entity_label=shopping_list.title
     )
 
     db.session.commit()

@@ -1,4 +1,4 @@
 export * from "./ShoppingListPage";
-export { ShoppingList } from "./ShoppingList";
+export { ShoppingListCard } from "./ShoppingListCard";
 export { ShoppingListItem } from "./ShoppingListItem";
 export { ShoppingLists } from "./ShoppingLists";

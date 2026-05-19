@@ -34,7 +34,7 @@ export type ShoppingCategory = {
 
 export type ShoppingList = {
     id: number;
-    name: string;
+    title: string;
     householdId: number;
     creatorId: number;
     allMembers: boolean;
@@ -68,16 +68,27 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             providesTags: (_res, _err, id) => [{ type: "ShoppingList", id }],
         }),
 
-        createShoppingList: builder.mutation<ShoppingList, { name: string; householdId: number }>({
-            query: (body) => ({ url: "/shopping-lists", method: "POST", body }),
+        createShoppingList: builder.mutation<ShoppingList, { title: string; householdId: number; allMembers: boolean; memberIds: number[] }>({
+            query: (arg) => {
+                const { title, householdId, allMembers } = arg;
+                return {
+                    url: `/households/${householdId}/shopping-lists`,
+                    method: "POST",
+                    body: {
+                        title,
+                        allMembers,
+                        ...(allMembers === false ? { memberIds: arg.memberIds } : {}),
+                    }
+                }
+            },
             invalidatesTags: (_r, _e, { householdId }) => [
                 { type: "ShoppingList", id: "LIST" },
                 { type: "Activity" as const, id: `HOUSEHOLD_${householdId}` },
             ],
         }),
 
-        editShoppingList: builder.mutation<ShoppingList, { listId: number; name: string; householdId: number }>({
-            query: ({ listId, name }) => ({ url: `/shopping-lists/${listId}`, method: "PATCH", body: { name } }),
+        editShoppingList: builder.mutation<ShoppingList, { listId: number; title: string; householdId: number }>({
+            query: ({ listId, title }) => ({ url: `/shopping-lists/${listId}`, method: "PATCH", body: { title } }),
             invalidatesTags: (_r, _e, { listId, householdId }) => [
                 { type: "ShoppingList", id: listId },
                 { type: "Activity" as const, id: `HOUSEHOLD_${householdId}` },

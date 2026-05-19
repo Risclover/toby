@@ -10,7 +10,7 @@ type Props = {
 }
 export const HomepageHabitsCollapseCard = ({ isReady }: Props) => {
     return (
-        <HomepageCollapseCard cardKey="habits" title="today's habits" color="var(--mantine-color-grape-6)" scrollSelector=".homepage-habits-list">
+        <HomepageCollapseCard cardKey="habits" title="Habits" color="var(--mantine-color-grape-6)" scrollSelector=".homepage-habits-list">
             <HomepageHabits isReady={isReady} />
         </HomepageCollapseCard>
     )

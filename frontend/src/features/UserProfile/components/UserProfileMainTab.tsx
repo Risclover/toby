@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Tabs } from "@mantine/core"
+import { Button, Tabs } from "@mantine/core"
 import { useGetHouseholdQuery, useGetUserQuery } from "@/store";
 import { UserSettings } from "@/features/UserSettings/components/UserSettings";
 import { HomepageActivityCollapseCard } from "@/components/HomepageCollapseCard/HomepageActivityCollapseCard";
@@ -20,7 +20,7 @@ export const UserProfileMainTab = () => {
     return (
         <Tabs.Panel value="profile" className="user-profile-tab-container">
             <div className="user-profile-tab-container--main">
-                {/* <Button onClick={() => setShowUserSettings(true)}>Settings</Button> */}
+                <Button onClick={() => setShowUserSettings(true)}>Settings</Button>
                 <UserSettings opened={showUserSettings} onClose={() => setShowUserSettings(false)} />
                 <FeaturedStatsSection
                     setShowStatsDrawer={setShowStatsDrawer}
