@@ -10,6 +10,8 @@ type Props = {
     list: ShoppingList;
 }
 
+const MAX_CATEGORIES = 10;
+
 export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
     const [categoryName, setCategoryName] = useState("");
     const [addCategory] = useCreateShoppingCategoryMutation();
@@ -17,9 +19,14 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
     const isSmall = useIsSmallScreen(425);
 
     const handleAddCategory = async () => {
-        await addCategory({ listId: list.id, name: categoryName, color: "rgb(5, 5, 73)" }).unwrap();
+        if (categories && categories.length >= MAX_CATEGORIES || categoryName.trim() === "") {
+            return;
+        }
+        await addCategory({ listId: list.id, name: categoryName }).unwrap();
         setCategoryName("");
     }
+
+    if (!categories) return null;
     return (
         <Modal.Root
             opened={opened}
@@ -42,13 +49,13 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                     <Modal.CloseButton />
                 </Modal.Header>
                 <Modal.Body>
-                    <ul className="shopping-category-list">
+                    {categories.length === 0 ? <div className="shopping-category-list--empty">No categories.</div> : <ul className="shopping-category-list">
                         {categories?.map((category) => (
                             <li key={category.id} className="shopping-category-item">
                                 {category.name}
                             </li>
                         ))}
-                    </ul>
+                    </ul>}
                 </Modal.Body>
                 <div className="add-category-container">
                     <div className="add-category-input-container">
@@ -68,11 +75,18 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                             fw={500}
                             h="auto"
                             onClick={handleAddCategory}
+                            disabled={categories.length >= MAX_CATEGORIES || categoryName.trim() === ""}
                         >
                             Add
                         </Button>
                     </div>
-                    <RemainingChars count={categoryName.length} max={25} />
+                    <div className="shopping-list-category-input-note-container">
+                        {categories.length >= MAX_CATEGORIES ?
+                            <div className="shopping-list-category-input-note--error">Max categories reached.</div> :
+                            <div className="shopping-list-category-input-note--limit">Limit 10 categories per list.</div>
+                        }
+                        <RemainingChars count={categoryName.length} max={25} />
+                    </div>
                 </div>
             </Modal.Content>
         </Modal.Root >

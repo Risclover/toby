@@ -43,6 +43,11 @@ def create_shopping_category():
         return jsonify({"error": "Category already exists"}), 409
 
     category = ShoppingCategory(name=name, list_id=list_id)
+
+    existing_count = ShoppingCategory.query.filter_by(list_id=list_id).count()
+    if existing_count >= 10:
+        return jsonify({"error": "Category limit reached. A shopping list can have a maximum of 10 categories."}), 400
+        
     db.session.add(category)
     db.session.commit()
 
