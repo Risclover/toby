@@ -1,8 +1,15 @@
+import { ShoppingListCategories } from "@/features/ShoppingListCategories/components/ShoppingListCategories";
+import type { ShoppingList } from "@/store";
 import { ActionIcon, Tooltip } from "@mantine/core";
 import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
+import { useState } from "react";
 
-export const ShoppingListHeader = () => {
+type Props = {
+    list: ShoppingList;
+}
+export const ShoppingListHeader = ({ list }: Props) => {
+    const [showCategories, setShowCategories] = useState(false);
     return (
         <div className="shopping-list-header">
             <div className="shopping-list-header--right"></div>
@@ -12,6 +19,7 @@ export const ShoppingListHeader = () => {
                         <ActionIcon
                             variant="subtle"
                             color="rgb(5, 5, 73)"
+                            onClick={() => setShowCategories(true)}
                         >
                             <CategoryRoundedIcon />
                         </ActionIcon>
@@ -23,6 +31,11 @@ export const ShoppingListHeader = () => {
                     </Tooltip>
                 </Tooltip.Group>
             </div>
+            <ShoppingListCategories
+                opened={showCategories}
+                onClose={() => setShowCategories(false)}
+                list={list}
+            />
         </div>
     )
 }

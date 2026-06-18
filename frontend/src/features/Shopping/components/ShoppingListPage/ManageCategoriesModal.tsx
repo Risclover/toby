@@ -116,7 +116,7 @@ export const ManageCategoriesModal = ({ opened, close, open, listId }: Props) =>
     return (
         <>
             {opened && (
-                <Modal opened={opened} onClose={close} size="sm" centered title="Manage Categories">
+                <Modal opened={opened} onClose={close} size="sm" radius="md" centered title="Manage Categories">
                     <div className="add-category-container">
                         <TextInput
                             value={category}

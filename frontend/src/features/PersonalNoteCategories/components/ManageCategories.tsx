@@ -37,6 +37,7 @@ export const ManageCategories = ({ opened, setShowManageCategories }: Props) => 
                 opened={opened}
                 onClose={handleClose}
                 size="xs"
+                radius="md"
                 closeOnEscape={false}
                 onKeyDownCapture={(e) => {
                     if (e.key === "Escape") {

@@ -14,7 +14,7 @@ export const ShoppingListPage = () => {
     if (!list) return null;
     return (
         <MobileLayout titleComponent={<ShoppingListTitleComponent list={list} />}>
-            <ShoppingListHeader />
+            <ShoppingListHeader list={list} />
             <ShoppingListContainer list={list} />
             <ShoppingListAddItem listId={list.id} />
         </MobileLayout>
