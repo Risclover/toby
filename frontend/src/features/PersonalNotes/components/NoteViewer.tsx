@@ -11,6 +11,7 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { common, createLowlight } from "lowlight";
 import { TaskList, TaskItem } from "@tiptap/extension-list";
 import Highlight from "@tiptap/extension-highlight";
+import HardBreak from '@tiptap/extension-hard-break'
 
 const lowlight = createLowlight(common);
 
@@ -24,6 +25,7 @@ export const NoteViewer = ({ content }: NoteViewerProps) => {
     const editor = useEditor({
         extensions: [
             StarterKit.configure({ codeBlock: false }),
+            HardBreak,
             Image,
             Underline,
             TextStyle,

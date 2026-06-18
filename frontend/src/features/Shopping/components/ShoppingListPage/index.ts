@@ -5,7 +5,7 @@ export { ItemExpanded } from "./ItemExpanded";
 export { ListItem } from "./ListItem";
 export { ManageCategoriesModal } from "./ManageCategoriesModal";
 export { ManageCategoryItem } from "./ManageCategoryItem";
-export { ShoppingListAddItem } from "./ShoppingListAddItem";
+export { ShoppingListAddItem } from "../ShoppingListAddItem";
 export { ShoppingListBody } from "./ShoppingListBody";
 export { ShoppingListCategorySection } from "./ShoppingListCategorySection";
 export { ShoppingListCompleted } from "./ShoppingListCompleted";

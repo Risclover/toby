@@ -1,8 +1,10 @@
+import { FormColorInput } from "@/components";
 import { HouseholdMemberSelection } from "@/components/HouseholdMemberSelection";
 import { useMemberSelection } from "@/hooks";
 import { useHousehold } from "@/hooks/useHousehold";
 import { useCreateShoppingListMutation } from "@/store";
-import { Button, Modal, Stack, TextInput } from "@mantine/core"
+import { isTooLight } from "@/utils";
+import { Button, Input, Modal, Stack, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
 
 type Props = {
@@ -12,12 +14,13 @@ type Props = {
 export const CreateShoppingListModal = ({ opened, onClose }: Props) => {
     const { data: household } = useHousehold();
     const form = useForm({
-        initialValues: { title: "" },
+        initialValues: { title: "", color: "#15aabf" },
         validate: {
-            title: (v) => v.trim().length === 0 ? "Name your shopping list" : null
+            title: (v) => v.trim().length === 0 ? "Name your shopping list" : null,
+            color: (v) => isTooLight(v),
         }
     })
-
+    const hasColorError = isTooLight(form.values.color);
     const {
         allMembers,
         someSelected,
@@ -37,12 +40,13 @@ export const CreateShoppingListModal = ({ opened, onClose }: Props) => {
         onClose();
     }
 
-    const handleSubmit = form.onSubmit(async ({ title }) => {
+    const handleSubmit = form.onSubmit(async ({ title, color }) => {
         await createShoppingList({
             title,
             householdId: household.id,
             allMembers,
             memberIds,
+            color
         }).unwrap();
         handleClose();
     });
@@ -65,6 +69,10 @@ export const CreateShoppingListModal = ({ opened, onClose }: Props) => {
                         required
                         {...form.getInputProps("title")}
                     />
+                    <div>
+                        <FormColorInput form={form} label="Color" required={true} />
+                        {hasColorError && <Input.Error>This color is too light. Please choose something darker.</Input.Error>}
+                    </div>
                     <HouseholdMemberSelection
                         title="Who is this list for?"
                         members={household?.members}

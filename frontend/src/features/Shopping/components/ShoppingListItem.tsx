@@ -15,5 +15,6 @@ export const ShoppingListItem = ({ item }: Props) => {
             checked={false}
         />
         {item.name}
+
     </div>
 }

@@ -22,7 +22,8 @@ export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
         handleToggleFavorite,
         images,
         text,
-        isOwner
+        isOwner,
+        category
     } = usePersonalNoteItem({ note });
     return (
         <div
@@ -65,7 +66,7 @@ export const PersonalNoteGridItem = ({ note, onNoteClick }: Props) => {
                 <div className="single-note-footer">
                     <div className="single-note-footer-left">
                         <div className="single-note-subheader">
-                            {note.category && <PersonalNoteCategoryPill category={note.category} />}
+                            {note.category && <PersonalNoteCategoryPill category={category} />}
                             {note.isPrivate && (
                                 <div className="personal-note-form-category">
                                     <FaLock size=".75rem" color="var(--mantine-color-gray-7)" /> Private

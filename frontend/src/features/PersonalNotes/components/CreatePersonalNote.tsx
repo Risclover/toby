@@ -73,7 +73,7 @@ export const CreatePersonalNote = () => {
                                 input: {
                                     border: "none",
                                     background: "transparent",
-                                    fontSize: "var(--text-2xl)",
+                                    fontSize: "var(--text-3xl)",
                                     fontWeight: 600,
                                     color: "black",
                                     marginRight: "3rem",

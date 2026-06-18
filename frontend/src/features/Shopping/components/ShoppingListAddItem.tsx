@@ -1,3 +1,4 @@
+import { useHousehold } from "@/hooks/useHousehold";
 import { useAddShoppingItemMutation } from "@/store/shoppingSlice";
 import { Button } from "@mantine/core";
 import { useRef, useState } from "react"
@@ -10,13 +11,14 @@ export const ShoppingListAddItem = ({ listId }: Props) => {
     const inputRef = useRef<HTMLInputElement>(null)
     const [inputValue, setInputValue] = useState("");
     const [addShoppingItem, { isLoading: loading }] = useAddShoppingItemMutation();
+    const { data: household } = useHousehold();
 
     const handleValue = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value);
     }
 
     const handleAddItem = async () => {
-        await addShoppingItem({ name: inputValue, listId: listId, categoryId: null });
+        await addShoppingItem({ name: inputValue, listId: listId, categoryId: null, householdId: household?.id });
         setInputValue("");
         inputRef.current?.focus();
     }

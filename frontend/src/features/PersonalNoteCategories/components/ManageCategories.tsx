@@ -3,6 +3,7 @@ import { Modal, useModalsStack } from "@mantine/core";
 import { CategoryMenu } from "./CategoryMenu";
 import { CreateNoteCategory } from "./CreateNoteCategory";
 import { MAX_CATEGORIES, useManageCategories } from "../hooks";
+import { getContrastTextColor } from "@/utils";
 
 type Props = {
     /** Modal visibility */
@@ -50,7 +51,7 @@ export const ManageCategories = ({ opened, setShowManageCategories }: Props) => 
                         <div key={category.id} className="manage-category-item">
                             <div className="category-drawer-item-details">
                                 <div style={{ background: category.color }} className="category-item-color" />
-                                <span className="category-drawer-item-name">{category.name}</span>
+                                <span className="category-drawer-item-name" style={{ color: getContrastTextColor(category.color) }}>{category.name}</span>
                             </div>
                             <div className="manage-category-menu">
                                 <CategoryMenu category={category} onEditClick={handleEditClick} />

@@ -46,7 +46,7 @@ def add_item(id):
     shopping_list = ShoppingList.query.get_or_404(id)
 
     item = ShoppingItem(
-        title=data["title"],
+        name=data["name"],
         list_id=id,
         creator_id=current_user.id,
     )
@@ -112,9 +112,13 @@ def edit_shopping_list(id):
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json()
+    color = data.get("color")
+    shopping_list.color = color
+
     old_title = shopping_list.title
     title = data.get("title", shopping_list.title)
     shopping_list.title = title
+
 
     ActivityService.record(
         household_id=shopping_list.household_id,

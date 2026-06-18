@@ -185,6 +185,7 @@ export function SimpleEditor({ initialContent = "", onChange }: SimpleEditorProp
         autocapitalize: "off",
         "aria-label": "Main content area, start typing to enter text.",
         class: "simple-editor",
+        tabindex: "0"
       },
     },
     extensions: [

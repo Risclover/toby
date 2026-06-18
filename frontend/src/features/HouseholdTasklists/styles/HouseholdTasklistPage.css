@@ -414,7 +414,6 @@ textarea.editable-title.is-editing {
 }
 
 .add-task-container {
-    background: var(--input-grey);
     position: fixed;
     width: 100%;
     bottom: 0;

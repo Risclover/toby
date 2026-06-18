@@ -1,10 +1,11 @@
 import { useNotesFilterContext } from "@/contexts";
 import { useScrollToTop } from "@/hooks";
+import type { PersonalNoteCategory } from "@/index";
 import { getLightColor, getContrastTextColor } from "@/utils";
 
 type Props = {
     /** The category to display */
-    category: { id: number; name: string; color?: string | null };
+    category: PersonalNoteCategory | undefined;
     /** Optional click handler; defaults to applying this category as a filter */
     onClick?: (e: React.MouseEvent) => void;
 };
@@ -15,6 +16,7 @@ export const PersonalNoteCategoryPill = ({ category, onClick }: Props) => {
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
+        if (!category) return;
         if (onClick) {
             onClick(e);
         } else {
@@ -23,6 +25,8 @@ export const PersonalNoteCategoryPill = ({ category, onClick }: Props) => {
 
         }
     };
+
+    if (!category) return null;
 
     return (
         <div

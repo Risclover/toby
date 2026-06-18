@@ -20,6 +20,7 @@ class ShoppingList(db.Model):
     title = db.Column(db.String(30), nullable=False)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    color = db.Column(db.String(20), default="#15aabf")
     all_members = db.Column(db.Boolean, default=True, nullable=False)
     is_archived = db.Column(db.Boolean, default=False, nullable=False)
     archived_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
@@ -140,6 +141,7 @@ class ShoppingList(db.Model):
             "title": self.title,
             "householdId": self.household_id,
             "creatorId": self.creator_id,
+            "color": self.color,
             "allMembers": self.all_members,
             "isArchived": self.is_archived,
             "archivedBy": {

@@ -37,6 +37,7 @@ export type ShoppingList = {
     title: string;
     householdId: number;
     creatorId: number;
+    color: string;
     allMembers: boolean;
     isArchived: boolean;
     archivedBy: ShoppingListArchiver | null;
@@ -68,14 +69,15 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             providesTags: (_res, _err, id) => [{ type: "ShoppingList", id }],
         }),
 
-        createShoppingList: builder.mutation<ShoppingList, { title: string; householdId: number; allMembers: boolean; memberIds: number[] }>({
+        createShoppingList: builder.mutation<ShoppingList, { title: string; householdId: number; allMembers: boolean; memberIds: number[]; color: string }>({
             query: (arg) => {
-                const { title, householdId, allMembers } = arg;
+                const { title, householdId, allMembers, color } = arg;
                 return {
                     url: `/households/${householdId}/shopping-lists`,
                     method: "POST",
                     body: {
                         title,
+                        color,
                         allMembers,
                         ...(allMembers === false ? { memberIds: arg.memberIds } : {}),
                     }

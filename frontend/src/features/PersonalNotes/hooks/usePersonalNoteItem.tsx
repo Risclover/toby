@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
-import { useAuthenticateQuery, useToggleNoteFavoriteMutation, type PersonalNote } from "@/store";
+import { useAuthenticateQuery, useToggleNoteFavoriteMutation, type PersonalNote, useGetCategoryQuery } from "@/store";
 import { parseNoteContent } from "../utils";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 type UsePersonalNoteItemProps = {
     /** The note being displayed */
@@ -9,10 +10,11 @@ type UsePersonalNoteItemProps = {
 
 /** Hook for logic from PersonalNoteGridItem and PersonalNoteListItem */
 export const usePersonalNoteItem = ({ note }: UsePersonalNoteItemProps) => {
+    const { userId } = useParams();
     const { text, images } = parseNoteContent(note.body);
     const [toggleNoteFavorite] = useToggleNoteFavoriteMutation();
     const { data: currentUser } = useAuthenticateQuery();
-    const { userId } = useParams();
+    const { data: category } = useGetCategoryQuery(note?.categoryId ?? skipToken, { skip: !note?.categoryId });
 
     const isOwner = currentUser?.id === Number(userId);
 
@@ -26,5 +28,6 @@ export const usePersonalNoteItem = ({ note }: UsePersonalNoteItemProps) => {
         images,
         handleToggleFavorite,
         isOwner,
+        category
     }
 }

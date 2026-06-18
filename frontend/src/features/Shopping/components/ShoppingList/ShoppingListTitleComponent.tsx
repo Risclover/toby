@@ -6,6 +6,7 @@ import { useAuthenticateQuery, type ShoppingList } from "@/store";
 import { useIsSmallScreen } from "@/hooks";
 import { useHousehold } from "@/hooks/useHousehold";
 import { getLightColor } from "@/utils";
+import { useShoppingList } from "../../hooks/useShoppingList";
 
 type Props = {
     list: ShoppingList;
@@ -16,7 +17,7 @@ export const ShoppingListTitleComponent = ({ list }: Props) => {
     const isSmall = useIsSmallScreen(425);
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
-
+    const { completed, uncompleted, percent, completedCount, remainingCount } = useShoppingList({ items: list.items });
     if (!list) return null;
     return (
         <div className="shopping-list-title-bar">
@@ -33,9 +34,9 @@ export const ShoppingListTitleComponent = ({ list }: Props) => {
             </div>
             <div className="progress">
                 <div className="progress-left">
-                    <Progress color={getLightColor("#050549", .5)} value={50} />
+                    <Progress color={list.color} value={percent} />
                 </div>
-                100%
+                {percent}%
             </div>
         </div>
     )

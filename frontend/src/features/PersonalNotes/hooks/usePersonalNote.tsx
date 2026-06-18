@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
-import { useAuthenticateQuery, useGetNoteQuery, useToggleNoteFavoriteMutation } from "@/store";
+import { useAuthenticateQuery, useGetCategoryQuery, useGetNoteQuery, useToggleNoteFavoriteMutation } from "@/store";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 type UsePersonalNoteProps = {
     /** ID of the displayed note */
@@ -12,6 +13,7 @@ export const usePersonalNote = ({ noteId }: UsePersonalNoteProps) => {
     const { userId } = useParams();
     const { data: currentUser } = useAuthenticateQuery();
     const { data: note, isError } = useGetNoteQuery(noteId, { skip: !currentUser || !noteId });
+    const { data: category } = useGetCategoryQuery(note?.categoryId ?? skipToken, { skip: !note?.categoryId });
 
     const isOwner = currentUser?.id === Number(userId);
 
@@ -23,6 +25,7 @@ export const usePersonalNote = ({ noteId }: UsePersonalNoteProps) => {
         handleToggleFavorite,
         note,
         isError,
-        isOwner
+        isOwner,
+        category
     }
 }

@@ -28,8 +28,8 @@
     font-weight: 500;
     color: rgb(5, 5, 73);
     background: white;
-    border-top-left-radius: 1.5rem;
-    border-top-right-radius: 1.5rem;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
     display: flex;
     overflow: hidden;
     /* font-family: "Alan Sans", sans-serif; */

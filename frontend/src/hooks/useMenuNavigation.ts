@@ -38,6 +38,12 @@ interface MenuNavigationOptions<T> {
    * @default true
    */
   autoSelectFirstItem?: boolean
+  /**
+   * Whether to intercept Tab to cycle through items.
+   * Set to false for toolbars where Tab should exit to the next focusable element.
+   * @default true
+   */
+  trapTab?: boolean
 }
 
 /**
@@ -58,6 +64,7 @@ export function useMenuNavigation<T>({
   onClose,
   orientation = "vertical",
   autoSelectFirstItem = true,
+  trapTab = true,
 }: MenuNavigationOptions<T>) {
   const [selectedIndex, setSelectedIndex] = useState<number>(
     autoSelectFirstItem ? 0 : -1
@@ -109,6 +116,7 @@ export function useMenuNavigation<T>({
         }
 
         case "Tab": {
+          if (!trapTab) return false
           event.preventDefault()
           if (event.shiftKey) {
             movePrev()
@@ -179,6 +187,7 @@ export function useMenuNavigation<T>({
     onSelect,
     onClose,
     orientation,
+    trapTab,
   ])
 
   useEffect(() => {

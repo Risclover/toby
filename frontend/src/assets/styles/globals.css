@@ -439,7 +439,7 @@ form {
     position: relative;
     margin: .75rem;
     margin-bottom: 0;
-    border-radius: .875rem;
+    border-radius: .5rem;
     overflow: hidden;
     box-shadow: var(--mantine-shadow-xs);
     background: white;

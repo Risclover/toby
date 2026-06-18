@@ -26,7 +26,8 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
         handleToggleFavorite,
         note,
         isError,
-        isOwner
+        isOwner,
+        category
     } = usePersonalNote({ noteId })
 
     if (isError) return <SingleNotePrivate />;
@@ -52,9 +53,10 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
                 <div className="personal-note-title">{note.title}</div>
                 <div className="personal-note-form-subheader">
                     {note.category && <PersonalNoteCategoryPill onClick={(e) => {
+                        if (!category) return;
                         e.stopPropagation();
-                        onCategoryClick(note.category!.id);
-                    }} category={note.category} />}
+                        onCategoryClick(category.id);
+                    }} category={category} />}
                     {note.isPrivate && (
                         <div className="personal-note-form-category">
                             <FaLock size=".75rem" color="var(--mantine-color-gray-7)" /> Private

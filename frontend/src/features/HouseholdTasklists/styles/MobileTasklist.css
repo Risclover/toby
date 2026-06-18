@@ -128,6 +128,12 @@
     flex: 1;
 }
 
+.mobile-tasklist-content .homepage-collapse-card {
+    margin: 0;
+    margin-top: .75rem;
+    border-radius: .5rem;
+}
+
 .star-path {
     transition: stroke-width 0.2s ease;
     /* Default state: no stroke */

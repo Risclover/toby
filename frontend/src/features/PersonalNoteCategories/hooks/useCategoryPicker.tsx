@@ -36,6 +36,11 @@ export const useCategoryPicker = ({
 
     const { data: categories } = useGetCategoriesQuery();
 
+    const liveSelectedCategory = useMemo(
+        () => categories?.find(c => c.id === selectedCategory?.id) ?? null,
+        [categories, selectedCategory?.id]
+    );
+
     const handleCategoryClick = (category: PersonalNoteCategory) => {
         const isDeselecting = selectedCategory?.id === category.id;
         onSelectCategory(isDeselecting ? null : category);
@@ -59,8 +64,8 @@ export const useCategoryPicker = ({
 
     const buttonContent = (
         <>
-            {!selectedCategory && <FaFolderClosed size=".825rem" color="var(--mantine-color-gray-7)" />}
-            {selectedCategory ? selectedCategory.name : "Uncategorized"}
+            {!liveSelectedCategory && <FaFolderClosed size=".825rem" color="var(--mantine-color-gray-7)" />}
+            {liveSelectedCategory ? liveSelectedCategory.name : "Uncategorized"}
         </>
     );
 
@@ -69,17 +74,17 @@ export const useCategoryPicker = ({
         fw: 500,
         variant: "light" as const,
         className: "personal-note-form-category",
-        color: selectedCategory?.color || "var(--mantine-color-gray-7)",
+        color: liveSelectedCategory?.color || "var(--mantine-color-gray-7)",
         styles: {
             label: {
-                color: selectedCategory ? getContrastTextColor(selectedCategory.color) : undefined,
+                color: liveSelectedCategory ? getContrastTextColor(liveSelectedCategory.color) : undefined,
             }
         },
         style: {
-            borderTopRightRadius: selectedCategory ? 0 : undefined,
-            borderBottomRightRadius: selectedCategory ? 0 : undefined,
+            borderTopRightRadius: liveSelectedCategory ? 0 : undefined,
+            borderBottomRightRadius: liveSelectedCategory ? 0 : undefined,
         },
-    }), [selectedCategory]);
+    }), [liveSelectedCategory]);
 
     return {
         isSmallScreen,

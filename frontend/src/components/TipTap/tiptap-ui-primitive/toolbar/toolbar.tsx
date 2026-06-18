@@ -35,6 +35,10 @@ const useToolbarNavigation = (toolbarRef: React.RefObject<HTMLDivElement | null>
     return () => observer.disconnect()
   }, [collectItems, toolbarRef])
 
+  useEffect(() => {
+    items.forEach(item => item.setAttribute("tabindex", "-1"))
+  }, [items])
+
   const { selectedIndex } = useMenuNavigation<HTMLElement>({
     containerRef: toolbarRef,
     items,
@@ -67,6 +71,14 @@ const useToolbarNavigation = (toolbarRef: React.RefObject<HTMLDivElement | null>
       items[selectedIndex].focus()
     }
   }, [selectedIndex, items])
+
+  const handleToolbarFocus = useCallback((e: React.FocusEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      items[0]?.focus()
+    }
+  }, [items])
+
+  return { handleToolbarFocus }
 }
 
 const useScrollChevron = (scrollRef: React.RefObject<HTMLDivElement | null>) => {

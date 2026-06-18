@@ -1,18 +1,12 @@
 import { useAddTaskMutation, useAuthenticateQuery, useCompleteTaskMutation, useGetTasklistQuery, type Task } from "@/store"
 import { useGetFeaturedListSettingsQuery, type FeaturedTasklistSettings } from "@/store/featuredListSettingSlice";
-import { ActionIcon, Badge, Button, Checkbox, Popover, Progress, ScrollArea, TextInput, Tooltip, Transition } from "@mantine/core";
+import { ActionIcon, Button, Checkbox, Popover, Progress, ScrollArea, TextInput, Tooltip, Transition } from "@mantine/core";
 import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent } from "react";
-import InfoOutlineRoundedIcon from '@mui/icons-material/InfoOutlineRounded';
-import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
-import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
-import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
 import { useFeaturedTasks } from "@/hooks/useFeaturedTasks";
 import { ExternalLinkIcon } from "@/assets/icons/ExternalLinkIcon";
 import { useNavigate } from "react-router-dom";
 import { useTasklistStats, useTasklistTheme } from "@/features";
 import { TaskExtra } from "@/features/HouseholdTasklists/components/HouseholdTasklistPage";
-import type { TasklistSettingsForm } from "@/features/HouseholdTasklists/hooks/useTasklistSettingsForm";
-import type { FeaturedTasklistSettingsForm } from "../FeaturedListSettings/FeaturedTasklistTab";
 import { StarIcon, StarIconOutline } from "@/assets";
 import { MobileTasklistSkeleton } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklistSkeleton";
 import { skipToken } from "@reduxjs/toolkit/query";

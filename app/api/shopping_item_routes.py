@@ -68,7 +68,7 @@ def delete_shopping_item(id):
         entity_type="shopping_item",
         entity_id=item.id,
         entity_label=item.name,
-        event_metadata={"listId": item.list_id, "listName": item.shopping_list.name},
+        event_metadata={"listId": item.list_id, "listName": item.shopping_list.title},
     )
 
     db.session.delete(item)
@@ -91,7 +91,7 @@ def toggle_shopping_item(id):
         entity_type="shopping_item",
         entity_id=item.id,
         entity_label=item.name,
-        event_metadata={"listId": item.list_id, "listName": item.shopping_list.name},
+        event_metadata={"listId": item.list_id, "listName": item.shopping_list.title},
     )
 
     db.session.commit()

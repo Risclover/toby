@@ -197,6 +197,7 @@ def create_shopping_list(household_id):
     
     data = request.get_json() or {}
     title = (data.get("title") or "").strip()
+    color = data.get("color")
 
     if not title:
         return jsonify({ "error": "Title is required" }), 400
@@ -217,7 +218,7 @@ def create_shopping_list(household_id):
         if bad:
             return jsonify({ "error": "memberIds must belong to the household", "invalid": bad }), 400
     
-    shopping_list = ShoppingList(title=title, household_id=household_id, all_members=all_members, creator_id=current_user.id)
+    shopping_list = ShoppingList(title=title, color=color, household_id=household_id, all_members=all_members, creator_id=current_user.id)
     db.session.add(shopping_list)
     db.session.flush()
 
