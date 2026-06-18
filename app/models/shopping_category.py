@@ -8,7 +8,6 @@ class ShoppingCategory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    color = db.Column(db.String(50), nullable=False)
     list_id = db.Column(db.Integer, db.ForeignKey("shopping_lists.id"), nullable=False, index=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
@@ -28,7 +27,6 @@ class ShoppingCategory(db.Model):
         base = {
             "id": self.id,
             "name": self.name,
-            "color": self.color,
             "listId": self.list_id,
             "createdAt": utc_datetime_to_local(current_user, self.created_at).isoformat() if self.created_at else None,
             "updatedAt": utc_datetime_to_local(current_user, self.updated_at).isoformat() if self.updated_at else None,

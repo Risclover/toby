@@ -26,7 +26,6 @@ export type ShoppingListArchiver = {
 export type ShoppingCategory = {
     id: number;
     name: string;
-    color: string;
     listId: number;
     createdAt: string;
     updatedAt: string;
@@ -284,7 +283,7 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             providesTags: (_res, _err, listId) => [{ type: "ShoppingCategory", id: `LIST_${listId}` }],
         }),
 
-        createShoppingCategory: builder.mutation<ShoppingCategory, { name: string; color: string; listId: number }>({
+        createShoppingCategory: builder.mutation<ShoppingCategory, { name: string; listId: number }>({
             query: (body) => ({ url: "/shopping-categories", method: "POST", body }),
             invalidatesTags: (_r, _e, { listId }) => [
                 { type: "ShoppingCategory", id: `LIST_${listId}` },
@@ -292,8 +291,8 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             ],
         }),
 
-        editShoppingCategory: builder.mutation<ShoppingCategory, { id: number; listId: number; name?: string; color?: string }>({
-            query: ({ id, name, color }) => ({ url: `/shopping-categories/${id}`, method: "PATCH", body: { name, color } }),
+        editShoppingCategory: builder.mutation<ShoppingCategory, { id: number; listId: number; name?: string; }>({
+            query: ({ id, name }) => ({ url: `/shopping-categories/${id}`, method: "PATCH", body: { name } }),
             invalidatesTags: (_r, _e, { listId }) => [
                 { type: "ShoppingCategory", id: `LIST_${listId}` },
                 { type: "ShoppingList", id: listId },

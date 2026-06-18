@@ -25,11 +25,10 @@ def get_list_categories():
 def create_shopping_category():
     data = request.get_json() or {}
     name = data.get("name")
-    color = data.get("color")
     list_id = data.get("listId")
 
-    if not name or not color or not list_id:
-        return jsonify({"error": "Name, color, and listId are required"}), 400
+    if not name or not list_id:
+        return jsonify({"error": "Name and listId are required"}), 400
 
     duplicate = (
         ShoppingCategory.query
@@ -43,7 +42,7 @@ def create_shopping_category():
     if duplicate:
         return jsonify({"error": "Category already exists"}), 409
 
-    category = ShoppingCategory(name=name, color=color, list_id=list_id)
+    category = ShoppingCategory(name=name, list_id=list_id)
     db.session.add(category)
     db.session.commit()
 
@@ -74,9 +73,6 @@ def edit_category(id):
             return jsonify({"error": "Category name already exists in this list"}), 409
 
         category.name = name.strip()
-
-    if "color" in data:
-        category.color = data["color"]
 
     db.session.commit()
     return jsonify(category.to_dict()), 200
