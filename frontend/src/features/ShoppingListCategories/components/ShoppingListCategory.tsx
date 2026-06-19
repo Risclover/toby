@@ -22,7 +22,7 @@ export const ShoppingListCategory = ({ category, isEditing, setIsEditing }: Prop
         showDeleteConfirmation,
         setShowDeleteConfirmation,
         cancelledRef
-    } = useShoppingListCategory({ category });
+    } = useShoppingListCategory({ category, isEditing, setIsEditing });
 
     return (
         <li className="shopping-category-item">

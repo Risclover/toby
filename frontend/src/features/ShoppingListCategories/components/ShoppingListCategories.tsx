@@ -22,18 +22,19 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
         isSmall,
         categoryName,
         setCategoryName,
-        isEditing,
-        setIsEditing,
+        editingCategoryId,
+        setEditingCategoryId,
         handleAddCategory,
-    } = useShoppingListCategories({ list, MAX_CATEGORIES });
+        handleCloseModal,
+    } = useShoppingListCategories({ list, MAX_CATEGORIES, onClose });
 
     if (!categories) return null;
 
     return (
         <Modal.Root
             opened={opened}
-            onClose={onClose}
-            closeOnEscape={!isEditing}
+            onClose={handleCloseModal}
+            closeOnEscape={editingCategoryId === null}
             size="sm"
             radius="md"
             centered
@@ -65,8 +66,8 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                                     <ShoppingListCategory
                                         key={category.id}
                                         category={category}
-                                        isEditing={isEditing}
-                                        setIsEditing={setIsEditing}
+                                        isEditing={editingCategoryId === category.id}
+                                        setIsEditing={(editing) => setEditingCategoryId(editing ? category.id : null)}
                                     />
                                 ))}
                         </ul>}

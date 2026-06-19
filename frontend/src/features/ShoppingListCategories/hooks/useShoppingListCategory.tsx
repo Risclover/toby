@@ -6,16 +6,19 @@ import { KittyIcons } from "@/assets";
 type Props = {
     /** Category to manage */
     category: ShoppingCategory;
+    /** Whether the category is being edited */
+    isEditing: boolean;
+    /** Function to set the editing state */
+    setIsEditing: (editing: boolean) => void;
 }
 
 /** Custom hook for managing the state and actions of ShoppingListCategory */
-export const useShoppingListCategory = ({ category }: Props) => {
+export const useShoppingListCategory = ({ category, isEditing, setIsEditing }: Props) => {
     const [editCategory] = useEditShoppingCategoryMutation();
     const [deleteCategory] = useDeleteShoppingCategoryMutation();
 
     const cancelledRef = useRef(false);
 
-    const [editing, setEditing] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [name, setName] = useState(category.name);
 
@@ -27,7 +30,7 @@ export const useShoppingListCategory = ({ category }: Props) => {
         const trimmed = name.trim();
         if (trimmed.length > 25 || trimmed === category.name || trimmed === "") {
             setName(category.name);
-            setEditing(false);
+            setIsEditing(false);
             return;
         }
 
@@ -38,7 +41,7 @@ export const useShoppingListCategory = ({ category }: Props) => {
 
         try {
             await editCategory({ id: category.id, listId: category.listId, name: trimmed }).unwrap();
-            setEditing(false);
+            setIsEditing(false);
             KittyNotification({
                 title: "Category successfully updated",
                 message: <>The category "<strong style={{ fontWeight: 500 }}>{name}</strong>" has been given a fresh name. Lookin' good!</>,
@@ -77,8 +80,6 @@ export const useShoppingListCategory = ({ category }: Props) => {
     }
 
     return {
-        editing,
-        setEditing,
         name,
         setName,
         handleEditCategory,
