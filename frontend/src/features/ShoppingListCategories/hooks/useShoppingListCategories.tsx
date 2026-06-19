@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { KittyNotification } from "@/components";
 import { useIsSmallScreen } from "@/hooks";
 import { useCreateShoppingCategoryMutation, useGetShoppingListCategoriesQuery, type ShoppingList } from "@/store";
@@ -19,6 +19,8 @@ export const useShoppingListCategories = ({ list, MAX_CATEGORIES, onClose }: Pro
     const { data: categories } = useGetShoppingListCategoriesQuery(list.id);
     const isSmall = useIsSmallScreen(425);
 
+    const inputRef = useRef<HTMLInputElement>(null);
+
     const [categoryName, setCategoryName] = useState("");
     const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
 
@@ -31,6 +33,7 @@ export const useShoppingListCategories = ({ list, MAX_CATEGORIES, onClose }: Pro
         try {
             await addCategory({ listId: list.id, name: categoryName }).unwrap();
             setCategoryName("");
+            inputRef.current?.focus();
             KittyNotification({
                 title: "Category successfully added",
                 message: <>Now we're cookin'! "<strong style={{ fontWeight: 500 }}>{categoryName}</strong>" was added to the roster.</>,
@@ -63,5 +66,6 @@ export const useShoppingListCategories = ({ list, MAX_CATEGORIES, onClose }: Pro
         setEditingCategoryId,
         handleAddCategory,
         handleCloseModal,
+        inputRef
     }
 }

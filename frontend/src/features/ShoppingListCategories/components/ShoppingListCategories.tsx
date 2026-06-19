@@ -26,6 +26,7 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
         setEditingCategoryId,
         handleAddCategory,
         handleCloseModal,
+        inputRef
     } = useShoppingListCategories({ list, MAX_CATEGORIES, onClose });
 
     if (!categories) return null;
@@ -82,6 +83,7 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                             onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
                             maxLength={25}
                             w="100%"
+                            ref={inputRef}
                         />
                         <Button
                             styles={{ root: { flexShrink: 0 } }}
