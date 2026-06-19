@@ -1,50 +1,31 @@
-import { KittyNotification, RemainingChars } from "@/components";
-import { useIsSmallScreen } from "@/hooks";
-import { KittyIcons } from "@/assets";
-import { useCreateShoppingCategoryMutation, useGetShoppingListCategoriesQuery, type ShoppingList } from "@/store";
-import { ActionIcon, Button, Modal, TextInput } from "@mantine/core"
-import { useState } from "react";
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import { IoEllipsisHorizontalSharp } from "react-icons/io5";
+import { Button, Modal, TextInput } from "@mantine/core"
+import { RemainingChars } from "@/components";
 import { ShoppingListCategory } from "./ShoppingListCategory";
+import { useShoppingListCategories } from "../hooks/useShoppingListCategories";
+import { type ShoppingList } from "@/store";
 
 type Props = {
+    /** Whether the modal is opened */
     opened: boolean;
+    /** Function to close the modal */
     onClose: () => void;
+    /** Shopping list of which to manage categories */
     list: ShoppingList;
 }
 
 const MAX_CATEGORIES = 10;
 
+/** Component to manage categories for specific shopping list */
 export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
-    const [categoryName, setCategoryName] = useState("");
-    const [addCategory] = useCreateShoppingCategoryMutation();
-    const { data: categories } = useGetShoppingListCategoriesQuery(list.id);
-    const isSmall = useIsSmallScreen(425);
-
-    const handleAddCategory = async () => {
-        if (categories && categories.length >= MAX_CATEGORIES || categoryName.trim() === "") {
-            return;
-        }
-        try {
-            await addCategory({ listId: list.id, name: categoryName }).unwrap();
-            setCategoryName("");
-            KittyNotification({
-                title: "Category successfully added",
-                message: <>Now we're cookin'! "<strong style={{ fontWeight: 500 }}>{categoryName}</strong>" was added to the roster.</>,
-                color: "green",
-                icon: KittyIcons.Cook
-            })
-        } catch (error) {
-            console.error("Error adding category:", error);
-            KittyNotification({
-                title: "Failed to add category",
-                message: <>Whoops... someone was sleeping on the job, and the category "<strong style={{ fontWeight: 500 }}>{categoryName}</strong>" couldn't be added. Try again.</>,
-                color: "red",
-                icon: KittyIcons.Sleep
-            })
-        }
-    }
+    const {
+        categories,
+        isSmall,
+        categoryName,
+        setCategoryName,
+        isEditing,
+        setIsEditing,
+        handleAddCategory,
+    } = useShoppingListCategories({ list, MAX_CATEGORIES });
 
     if (!categories) return null;
 
@@ -52,6 +33,7 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
         <Modal.Root
             opened={opened}
             onClose={onClose}
+            closeOnEscape={!isEditing}
             size="sm"
             radius="md"
             centered
@@ -77,9 +59,16 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                         </div>
                         :
                         <ul className="shopping-category-list">
-                            {[...categories].sort((a, b) => a.name.localeCompare(b.name)).map((category) => (
-                                <ShoppingListCategory key={category.id} category={category} />
-                            ))}
+                            {[...categories].sort((a, b) =>
+                                a.name.localeCompare(b.name)).map((category) =>
+                                (
+                                    <ShoppingListCategory
+                                        key={category.id}
+                                        category={category}
+                                        isEditing={isEditing}
+                                        setIsEditing={setIsEditing}
+                                    />
+                                ))}
                         </ul>}
                 </Modal.Body>
                 <div className="add-category-container">
@@ -106,9 +95,15 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                         </Button>
                     </div>
                     <div className="shopping-list-category-input-note-container">
-                        {categories.length >= MAX_CATEGORIES ?
-                            <div className="shopping-list-category-input-note--error">Max categories reached.</div> :
-                            <div className="shopping-list-category-input-note--limit">Limit 10 categories per list.</div>
+                        {categories.length >= MAX_CATEGORIES
+                            ?
+                            <div className="shopping-list-category-input-note--error">
+                                Max categories reached.
+                            </div>
+                            :
+                            <div className="shopping-list-category-input-note--limit">
+                                Limit 10 categories per list.
+                            </div>
                         }
                         <RemainingChars count={categoryName.length} max={25} />
                     </div>
