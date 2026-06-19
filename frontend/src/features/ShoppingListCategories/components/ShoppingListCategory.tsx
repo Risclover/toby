@@ -2,6 +2,8 @@ import { useDeleteShoppingCategoryMutation, useEditShoppingCategoryMutation, typ
 import { TextInput } from "@mantine/core"
 import { ShoppingListCategoryMenu } from "./ShoppingListCategoryMenu";
 import { useState } from "react";
+import { KittyNotification } from "@/components";
+import { KittyIcons } from "@/assets";
 
 type Props = {
     category: ShoppingCategory;
@@ -24,12 +26,45 @@ export const ShoppingListCategory = ({ category }: Props) => {
             setEditing(false);
             return;
         }
-        await editCategory({ id: category.id, listId: category.listId, name: trimmed }).unwrap();
-        setEditing(false);
+
+        try {
+            await editCategory({ id: category.id, listId: category.listId, name: trimmed }).unwrap();
+            setEditing(false);
+            KittyNotification({
+                title: "Category successfully updated",
+                message: <>The category "<strong style={{ fontWeight: 500 }}>{name}</strong>" has been given a fresh name. Lookin' good!</>,
+                color: "green",
+                icon: KittyIcons.Flower
+            })
+        } catch (error) {
+            console.error("Error editing category:", error);
+            KittyNotification({
+                title: "Shoot - the category didn't update!",
+                message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is feeling particularly stubborn today. Please try again.</>,
+                color: "red",
+                icon: KittyIcons.Pout
+            })
+        }
     }
 
     const handleDeleteCategory = async () => {
-        await deleteCategory({ id: category.id, listId: category.listId }).unwrap();
+        try {
+            await deleteCategory({ id: category.id, listId: category.listId }).unwrap();
+            KittyNotification({
+                title: "Shopping list category successfully deleted",
+                message: <>Poof! "<strong style={{ fontWeight: 500 }}>{name}</strong>" has been sent to the void.</>,
+                color: "green",
+                icon: KittyIcons.Astronaut
+            })
+        } catch (error) {
+            console.error("Error deleting category:", error);
+            KittyNotification({
+                title: "The category wants to stay!",
+                message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is refusing to be deleted. It's too strong for you! Try again.</>,
+                color: "red",
+                icon: KittyIcons.Ghost
+            })
+        }
     }
 
     return (

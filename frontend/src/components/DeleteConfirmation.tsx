@@ -15,7 +15,7 @@ type Props = {
 export const DeleteConfirmation = ({ modalTitle, itemName, itemType, opened, setShowDeleteConfirmation, handleDeleteItem, triggerRef, zIndex }: Props) => {
     return (
         <Modal zIndex={zIndex} centered size="sm" withCloseButton={false} closeOnClickOutside={false} closeOnEscape={false} radius="md" yOffset="13vh" opened={opened} onClose={() => setShowDeleteConfirmation(false)} title={modalTitle} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") e.stopPropagation(); return; }} onClick={(e) => e.stopPropagation()}>
-            <Text c="black" size="sm">Are you sure you want to delete {itemType === "tasks" ? "these " : !itemName ? "this " : "the "}{itemType} <span className="delete-item-name">{itemName}</span>? This action cannot be undone.</Text>
+            <Text c="black" size="sm">Are you sure you want to delete {itemType === "tasks" ? "these " : !itemName ? "this " : "the "}{itemType} <span className="delete-item-name">{itemName}</span>? Once it's gone, it's gone. This action can't be undone.</Text>
 
             <Group justify="flex-end" w="100%" gap="0.5rem" mt="md">
                 <Button

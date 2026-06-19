@@ -27,7 +27,7 @@ export const ShoppingListCategoryMenu = ({ category, onEdit, onDelete, showDelet
                 </Menu.Dropdown>
             </Menu>
             <DeleteConfirmation
-                modalTitle="Delete Category"
+                modalTitle={`Say goodbye to the category ${category.name}?`}
                 itemName={category.name}
                 itemType="category"
                 opened={showDeleteConfirmation}

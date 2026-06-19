@@ -1,5 +1,6 @@
-import { RemainingChars } from "@/components";
-import { useIsSmallScreen } from "@/index";
+import { KittyNotification, RemainingChars } from "@/components";
+import { useIsSmallScreen } from "@/hooks";
+import { KittyIcons } from "@/assets";
 import { useCreateShoppingCategoryMutation, useGetShoppingListCategoriesQuery, type ShoppingList } from "@/store";
 import { ActionIcon, Button, Modal, TextInput } from "@mantine/core"
 import { useState } from "react";
@@ -25,8 +26,24 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
         if (categories && categories.length >= MAX_CATEGORIES || categoryName.trim() === "") {
             return;
         }
-        await addCategory({ listId: list.id, name: categoryName }).unwrap();
-        setCategoryName("");
+        try {
+            await addCategory({ listId: list.id, name: categoryName }).unwrap();
+            setCategoryName("");
+            KittyNotification({
+                title: "Category successfully added",
+                message: <>Now we're cookin'! "<strong style={{ fontWeight: 500 }}>{categoryName}</strong>" was added to the roster.</>,
+                color: "green",
+                icon: KittyIcons.Cook
+            })
+        } catch (error) {
+            console.error("Error adding category:", error);
+            KittyNotification({
+                title: "Failed to add category",
+                message: <>Whoops... someone was sleeping on the job, and the category "<strong style={{ fontWeight: 500 }}>{categoryName}</strong>" couldn't be added. Try again.</>,
+                color: "red",
+                icon: KittyIcons.Sleep
+            })
+        }
     }
 
     if (!categories) return null;
