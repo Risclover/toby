@@ -81,6 +81,8 @@ export const UserStat = ({ stat, featuredStats }: Props) => {
                             p={0}
                             mb={isSmall ? 2 : 0}
                             size="auto"
+                            style={featuredStats.length >= 4 && !isFeatured ? { pointerEvents: "none" } : undefined}
+
                         >
                             {isFeatured ? (
                                 <StarIcon size={isSmall ? "1.25rem" : "1.5rem"} color="rgb(5, 5, 73)" />

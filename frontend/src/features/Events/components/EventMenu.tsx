@@ -16,7 +16,9 @@ export const EventMenu = ({
     return (
         <Menu offset={2}>
             <Menu.Target>
-                <ActionIcon size="sm" variant="subtle" color="var(--mantine-color-gray-6)"><IoEllipsisHorizontalSharp /></ActionIcon>
+                <ActionIcon size="sm" variant="subtle" color="var(--mantine-color-gray-6)">
+                    <IoEllipsisHorizontalSharp />
+                </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Item onClick={() => setIsEditing(!isEditing)} leftSection={<BorderColorRoundedIcon fontSize="small" />}>{isEditing ? "Cancel edit" : "Edit"}</Menu.Item>

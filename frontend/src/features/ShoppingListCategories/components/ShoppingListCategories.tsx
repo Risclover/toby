@@ -1,8 +1,11 @@
 import { RemainingChars } from "@/components";
 import { useIsSmallScreen } from "@/index";
 import { useCreateShoppingCategoryMutation, useGetShoppingListCategoriesQuery, type ShoppingList } from "@/store";
-import { Button, Modal, TextInput } from "@mantine/core"
+import { ActionIcon, Button, Modal, TextInput } from "@mantine/core"
 import { useState } from "react";
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import { IoEllipsisHorizontalSharp } from "react-icons/io5";
+import { ShoppingListCategory } from "./ShoppingListCategory";
 
 type Props = {
     opened: boolean;
@@ -27,6 +30,7 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
     }
 
     if (!categories) return null;
+
     return (
         <Modal.Root
             opened={opened}
@@ -49,13 +53,17 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                     <Modal.CloseButton />
                 </Modal.Header>
                 <Modal.Body>
-                    {categories.length === 0 ? <div className="shopping-category-list--empty">No categories.</div> : <ul className="shopping-category-list">
-                        {categories?.map((category) => (
-                            <li key={category.id} className="shopping-category-item">
-                                {category.name}
-                            </li>
-                        ))}
-                    </ul>}
+                    {categories.length === 0
+                        ?
+                        <div className="shopping-category-list--empty">
+                            It's a little bare in here! Add your first category below.
+                        </div>
+                        :
+                        <ul className="shopping-category-list">
+                            {[...categories].sort((a, b) => a.name.localeCompare(b.name)).map((category) => (
+                                <ShoppingListCategory key={category.id} category={category} />
+                            ))}
+                        </ul>}
                 </Modal.Body>
                 <div className="add-category-container">
                     <div className="add-category-input-container">
