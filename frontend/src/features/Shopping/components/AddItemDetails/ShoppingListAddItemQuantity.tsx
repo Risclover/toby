@@ -7,27 +7,27 @@ type Props = {
     onClose: (finalValue?: number) => void;
 }
 export const ShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: Props) => {
-    const [localValue, setLocalValue] = useState(quantity);
+    const [localValue, setLocalValue] = useState<number | "">(quantity);
 
     useEffect(() => {
         setLocalValue(quantity);
     }, [quantity]);
 
-    const handleChange = (value: number | string) => {
-        const next = Number(value);
-        setLocalValue(next);
-        onCommit(next); // push to draft on every keystroke now
+    const commitValue = () => {
+        const resolved = localValue === "" ? 0 : localValue;
+        onCommit(resolved);
+        return resolved;
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            onClose(localValue);
+            const resolved = commitValue();
+            onClose(resolved);
         }
         if (e.key === "Escape") {
             e.preventDefault();
             setLocalValue(quantity);
-            onCommit(quantity); // also revert the draft, not just local display
             onClose();
         }
     };
@@ -41,8 +41,12 @@ export const ShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: Pro
                 value={localValue}
                 max={9999}
                 clampBehavior="strict"
-                onChange={handleChange}
+                onChange={(value) => setLocalValue(value === "" ? "" : Number(value))}
                 onKeyDown={handleKeyDown}
+                onBlur={() => {
+                    const resolved = commitValue();
+                    onClose(resolved);
+                }}
                 styles={{
                     wrapper: {
                         display: "flex",
@@ -51,7 +55,7 @@ export const ShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: Pro
                     },
                     input: {
                         minWidth: 0,
-                        flex: 1,
+                        flex: 1
                     },
                     controls: {
                         borderRadius: 0,

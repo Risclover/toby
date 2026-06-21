@@ -368,6 +368,7 @@
 
 .add-item-details-container {
     display: flex;
+    flex-wrap: wrap;
     gap: .5rem;
     border-top: 1px solid var(--border);
     padding: .5rem;

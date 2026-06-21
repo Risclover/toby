@@ -18,16 +18,18 @@ export const ShoppingListAddItem = ({ list }: Props) => {
     const [showDetails, setShowDetails] = useState(false);
     const [quantity, setQuantity] = useState(0);
     const [unit, setUnit] = useState("");
+    const [category, setCategory] = useState("");
     const [addShoppingItem, { isLoading: loading }] = useAddShoppingItemMutation();
     const { data: household } = useHousehold();
 
     const handleOutsideClick = () => {
-        const hasDetails = quantity > 0;
+        const hasDetails = quantity > 0 || category.length > 0;
 
         if (inputValue.trim().length === 0 && !hasDetails) {
             setShowDetails(false);
             setQuantity(0);
             setUnit("");
+            setCategory("");
         }
     };
 
@@ -93,7 +95,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
                         disabled={inputValue.trim().length === 0}
                     >Add</Button>
                 </div>
-                {showDetails && <ShoppingListAddItemDetails quantity={quantity} setQuantity={setQuantity} unit={unit} setUnit={setUnit} />}
+                {showDetails && <ShoppingListAddItemDetails list={list} quantity={quantity} setQuantity={setQuantity} unit={unit} setUnit={setUnit} category={category} setCategory={setCategory} />}
             </div>
         </div>
     )

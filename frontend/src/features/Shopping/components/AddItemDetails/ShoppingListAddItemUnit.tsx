@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Combobox, ScrollArea, Tooltip, useCombobox } from "@mantine/core"
+import { ActionIcon, CloseIcon, Button, Combobox, Group, ScrollArea, Text, Tooltip, useCombobox } from "@mantine/core"
 import { useEffect, useRef, useState } from "react";
 import { LuTag } from "react-icons/lu";
 import { HiPlus } from "react-icons/hi";
@@ -6,6 +6,7 @@ import { useCreateShoppingItemUnitMutation, useDeleteShoppingItemUnitMutation, u
 import { KittyNotification } from "@/components";
 import { KittyIcons } from "@/assets";
 import { FaTrash } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa6";
 
 type Props = {
     unit: string;
@@ -118,19 +119,22 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                     >
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                             <span>{quantity === 1 ? item.singular : item.plural}</span>
-                            {isCustom && customUnitId !== undefined && (
-                                <ActionIcon
-                                    variant="transparent"
-                                    size="xs"
-                                >
-                                    <FaTrash
-                                        size=".75rem"
-                                        color="var(--mantine-color-gray-4)"
-                                        onClick={(e) => handleDeleteUnit(e, customUnitId, item.value)}
-                                        style={{ cursor: "pointer", flexShrink: 0 }}
-                                    />
-                                </ActionIcon>
-                            )}
+                            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                {isCustom && customUnitId !== undefined && (
+                                    <ActionIcon
+                                        variant="transparent"
+                                        size="xs"
+                                    >
+                                        <FaTrash
+                                            size=".75rem"
+                                            color="var(--mantine-color-gray-4)"
+                                            onClick={(e) => handleDeleteUnit(e, customUnitId, item.value)}
+                                            style={{ cursor: "pointer", flexShrink: 0 }}
+                                        />
+                                    </ActionIcon>
+                                )}
+                                {item.value === unit && <FaCheck color="var(--mantine-color-gray-6)" size="1rem" />}
+                            </div>
                         </div>
                     </Combobox.Option>
                 );
@@ -221,6 +225,7 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                     marginLeft: "-2px"
                 },
             }}
+            shadow="sm"
         >
             <Combobox.Target>
                 <Tooltip label="Select quantity" position="top" disabled={quantity !== 0}>
@@ -238,7 +243,20 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                         <span className="add-item-detail-icon">
                             <LuTag />
                         </span>
-                        {buttonLabel}
+                        <Text c="black" size="13px" truncate="end">
+                            {buttonLabel}
+                        </Text>
+                        {unit.length > 0 && quantity !== 0 && <ActionIcon h="auto" p={0} variant="transparent" size="compact-xs" onClick={(e) => {
+                            e.stopPropagation();
+                            onCommit("");
+                            onClose("");
+                            combobox.closeDropdown();
+                        }}
+                            ml=".25rem"
+                            style={{ flexShrink: 0 }}
+                        >
+                            <CloseIcon size=".9rem" color="var(--mantine-color-gray-6)" />
+                        </ActionIcon>}
                     </Button>
                 </Tooltip>
             </Combobox.Target>
@@ -247,6 +265,7 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                     value={search}
                     onChange={(event) => setSearch(event.currentTarget.value)}
                     placeholder="Type in unit"
+                    maxLength={15}
                 />
                 <Combobox.Options >
                     <ScrollArea.Autosize type="scroll" mah={300} viewportRef={scrollAreaRef}>
