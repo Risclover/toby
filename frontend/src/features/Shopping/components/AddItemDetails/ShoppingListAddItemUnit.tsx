@@ -1,11 +1,11 @@
-import { Button, Combobox, ScrollArea, Tooltip, useCombobox } from "@mantine/core"
+import { ActionIcon, Button, Combobox, ScrollArea, Tooltip, useCombobox } from "@mantine/core"
 import { useEffect, useRef, useState } from "react";
 import { LuTag } from "react-icons/lu";
 import { HiPlus } from "react-icons/hi";
-import { useCreateShoppingItemUnitMutation, useGetShoppingItemUnitsQuery } from "@/store";
+import { useCreateShoppingItemUnitMutation, useDeleteShoppingItemUnitMutation, useGetShoppingItemUnitsQuery } from "@/store";
 import { KittyNotification } from "@/components";
 import { KittyIcons } from "@/assets";
-
+import { FaTrash } from "react-icons/fa";
 
 type Props = {
     unit: string;
@@ -19,6 +19,7 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     const [createUnit] = useCreateShoppingItemUnitMutation();
+    const [deleteUnit] = useDeleteShoppingItemUnitMutation();
     const { data: userUnits } = useGetShoppingItemUnitsQuery();
 
     const combobox = useCombobox({
@@ -106,11 +107,34 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
 
     const options = filteredGroups.map((group) => (
         <Combobox.Group key={group.groupName} label={group.groupName}>
-            {group.items.map((item) => (
-                <Combobox.Option key={item.value} value={item.value} active={item.value === unit}>
-                    {quantity === 1 ? item.singular : item.plural}
-                </Combobox.Option>
-            ))}
+            {group.items.map((item) => {
+                const isCustom = group.groupName === "Custom";
+                const customUnitId = isCustom
+                    ? userUnits?.find((u) => u.name === item.value)?.id
+                    : undefined;
+
+                return (
+                    <Combobox.Option key={item.value} value={item.value} active={item.value === unit} style={item.value === unit ? { backgroundColor: "var(--mantine-color-gray-0)" } : undefined}
+                    >
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                            <span>{quantity === 1 ? item.singular : item.plural}</span>
+                            {isCustom && customUnitId !== undefined && (
+                                <ActionIcon
+                                    variant="transparent"
+                                    size="xs"
+                                >
+                                    <FaTrash
+                                        size=".75rem"
+                                        color="var(--mantine-color-gray-4)"
+                                        onClick={(e) => handleDeleteUnit(e, customUnitId, item.value)}
+                                        style={{ cursor: "pointer", flexShrink: 0 }}
+                                    />
+                                </ActionIcon>
+                            )}
+                        </div>
+                    </Combobox.Option>
+                );
+            })}
         </Combobox.Group>
     ));
 
@@ -148,6 +172,31 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
         }
     };
 
+    const handleDeleteUnit = async (e: React.MouseEvent, id: number, name: string) => {
+        e.stopPropagation();
+        try {
+            await deleteUnit({ id }).unwrap();
+            if (unit === name) {
+                onCommit("");
+                onClose("");
+            }
+            KittyNotification({
+                title: "Unit deleted",
+                message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has been shot off into space.</>,
+                color: "green",
+                icon: KittyIcons.Astronaut
+            })
+        } catch (error) {
+            console.error("Error deleting unit:", error);
+            KittyNotification({
+                title: "Couldn't delete unit",
+                message: <>Something went wrong deleting "<strong style={{ fontWeight: 500 }}>{name}</strong>". Try again.</>,
+                color: "red",
+                icon: KittyIcons.Ghost
+            })
+        }
+    };
+
     return (
         <Combobox
             width="250px"
@@ -165,7 +214,6 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                 },
                 footer: {
                     padding: 0,
-                    marginTop: 0
                 },
                 search: {
                     marginBottom: 0,

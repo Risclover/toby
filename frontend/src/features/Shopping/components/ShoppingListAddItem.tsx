@@ -22,7 +22,9 @@ export const ShoppingListAddItem = ({ list }: Props) => {
     const { data: household } = useHousehold();
 
     const handleOutsideClick = () => {
-        if (inputValue.trim().length === 0) {
+        const hasDetails = quantity > 0;
+
+        if (inputValue.trim().length === 0 && !hasDetails) {
             setShowDetails(false);
             setQuantity(0);
             setUnit("");
