@@ -179,7 +179,7 @@ textarea.editable-title.is-editing {
 }
 
 .add-task input,
-.add-shopping-item input {
+.add-item-input {
     width: calc(100% - 50px);
     outline: none;
     font-family: "Commissioner", sans-serif;

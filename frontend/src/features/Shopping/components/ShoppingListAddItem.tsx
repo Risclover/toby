@@ -17,6 +17,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
     const [inputValue, setInputValue] = useState("");
     const [showDetails, setShowDetails] = useState(false);
     const [quantity, setQuantity] = useState(0);
+    const [unit, setUnit] = useState("");
     const [addShoppingItem, { isLoading: loading }] = useAddShoppingItemMutation();
     const { data: household } = useHousehold();
 
@@ -79,6 +80,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
                         onFocus={handleFocus}
                         type="text"
                         placeholder="Add an item and press Enter"
+                        className="add-item-input"
                     />
                     <Button
                         color="cyan"
@@ -87,7 +89,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
                         disabled={inputValue.trim().length === 0}
                     >Add</Button>
                 </div>
-                {showDetails && <ShoppingListAddItemDetails quantity={quantity} setQuantity={setQuantity} />}
+                {showDetails && <ShoppingListAddItemDetails quantity={quantity} setQuantity={setQuantity} unit={unit} setUnit={setUnit} />}
             </div>
         </div>
     )
