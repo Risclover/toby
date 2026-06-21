@@ -388,10 +388,6 @@ form {
     align-items: center;
 }
 
-.archived-menu-icon svg {
-    font-size: 1.25rem;
-    /* color: var(--mantine-color-gray-6); */
-}
 
 .archived-menu-icon-delete svg {
     font-size: 1.25rem;

@@ -41,7 +41,7 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
             centered
             fullScreen={isSmall}
             styles={{
-                body: { flex: 1, overflowY: "auto", padding: "1rem" },
+                body: { flex: 1, overflowY: "auto", padding: "1rem", overflowX: "hidden" },
                 content: {
                     overflow: "hidden", display: "flex", flexDirection: "column"
                 },
@@ -54,6 +54,9 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                     <Modal.CloseButton />
                 </Modal.Header>
                 <Modal.Body>
+                    {categories.length > 0 && <div className="shopping-list-category-limit-note">
+                        Categories: {categories.length} of {MAX_CATEGORIES}
+                    </div>}
                     {categories.length === 0
                         ?
                         <div className="shopping-category-list--empty">
@@ -105,7 +108,7 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                             </div>
                             :
                             <div className="shopping-list-category-input-note--limit">
-                                Limit 10 categories per list.
+
                             </div>
                         }
                         <RemainingChars count={categoryName.length} max={25} />

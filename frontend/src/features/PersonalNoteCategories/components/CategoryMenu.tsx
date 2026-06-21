@@ -8,7 +8,8 @@ import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import DeleteRounded from '@mui/icons-material/Delete';
 import { IoEllipsisVerticalSharp } from "react-icons/io5";
 
-
+import { FaTrash } from "react-icons/fa";
+import { PencilIcon } from "@/assets/icons/PencilIcon";
 type Props = {
     /** Targeted category */
     category: PersonalNoteCategory,
@@ -52,7 +53,7 @@ export const CategoryMenu = ({ category, onEditClick }: Props) => {
                             onEditClick(category);
                         }}
                         leftSection={
-                            <BorderColorRoundedIcon fontSize="small" />
+                            <PencilIcon size="1rem" color="var(--mantine-color-gray-8)" />
                         }
                     >
                         Edit
@@ -60,7 +61,7 @@ export const CategoryMenu = ({ category, onEditClick }: Props) => {
                     <Menu.Item
                         color="red.9"
                         leftSection={
-                            <DeleteRounded fontSize="small" />
+                            <FaTrash fontSize="1rem" />
                         }
                         onClick={(e) => {
                             e.stopPropagation();
@@ -70,7 +71,7 @@ export const CategoryMenu = ({ category, onEditClick }: Props) => {
                         Delete
                     </Menu.Item>
                 </Menu.Dropdown>
-            </Menu>
+            </Menu >
 
             <DeleteConfirmation
                 modalTitle="Delete note"

@@ -6,14 +6,12 @@ import { KittyIcons } from "@/assets";
 type Props = {
     /** Category to manage */
     category: ShoppingCategory;
-    /** Whether the category is being edited */
-    isEditing: boolean;
     /** Function to set the editing state */
     setIsEditing: (editing: boolean) => void;
 }
 
 /** Custom hook for managing the state and actions of ShoppingListCategory */
-export const useShoppingListCategory = ({ category, isEditing, setIsEditing }: Props) => {
+export const useShoppingListCategory = ({ category, setIsEditing }: Props) => {
     const [editCategory] = useEditShoppingCategoryMutation();
     const [deleteCategory] = useDeleteShoppingCategoryMutation();
 
@@ -79,6 +77,15 @@ export const useShoppingListCategory = ({ category, isEditing, setIsEditing }: P
         }
     }
 
+    const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") handleEditCategory();
+        if (e.key === "Escape") {
+            cancelledRef.current = true;
+            setName(category.name);
+            setIsEditing(false);
+        }
+    }
+
     return {
         name,
         setName,
@@ -86,6 +93,6 @@ export const useShoppingListCategory = ({ category, isEditing, setIsEditing }: P
         handleDeleteCategory,
         showDeleteConfirmation,
         setShowDeleteConfirmation,
-        cancelledRef
+        handleNameKeyDown
     }
 }

@@ -257,11 +257,13 @@
         margin-top: 0.5rem;
     }
 
-    .add-task-container {
+    .add-task-container,
+    .add-shopping-item-container {
         padding: 0.5rem;
     }
 
-    .add-task {
+    .add-task,
+    .add-shopping-item {
         border-radius: 0.25rem;
     }
 

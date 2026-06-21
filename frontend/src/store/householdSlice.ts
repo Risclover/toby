@@ -1,7 +1,7 @@
 import { apiSlice } from "./apiSlice";
 import type { TasklistType } from "./taskSlice";
 
-export type Household = { id: number; firstName: string; adminId: number };
+export type Household = { id: number; name: string; adminId: number };
 type Tasklist = { id: number; title: string; createdAt: string; memberIds: number[] };
 type TasklistTag = { type: "Tasklist"; id: number | string };
 type ShoppingCategory = { id: number; listId: number; name: string; createdAt: string; updatedAt: string };

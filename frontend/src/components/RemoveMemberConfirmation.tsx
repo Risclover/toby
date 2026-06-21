@@ -11,8 +11,8 @@ export const RemoveMemberConfirmation = ({ opened, onClose, member, household }:
     }
 
     return (
-        <Modal closeOnClickOutside={false} centered radius="md" size="md" opened={opened} onClose={onClose} withCloseButton={false} title="Confirm member removal" onClick={(e) => e.stopPropagation()}>
-            <Text c="black" size="sm">Are you sure you want to remove <strong style={{ fontWeight: 500 }}>{member.firstName} {member.lastName}</strong> from your household? They will lose access to all household content and won't be able to rejoin without an invite.</Text>
+        <Modal closeOnClickOutside={false} centered radius="md" size="md" opened={opened} onClose={onClose} withCloseButton={false} title={`Remove ${member.firstName} from ${household.name}?`} onClick={(e) => e.stopPropagation()}>
+            <Text c="black" size="sm">Giving <strong style={{ fontWeight: 500 }}>{member.firstName} {member.lastName}</strong> the boot? They'll lose access to all household content and won't be able to rejoin without an invite. Make sure you mean it!</Text>
             <Group justify="flex-end" w="100%" gap="0.5rem" mt="1rem">
                 <Button
                     className="tasklist-settings-footer-btn"

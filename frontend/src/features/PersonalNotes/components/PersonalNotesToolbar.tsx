@@ -6,7 +6,6 @@ import { usePersonalNotesToolbar, type SortOption } from "../hooks";
 import { type NotesView } from "@/store";
 
 import { FaMagnifyingGlass, FaXmark } from "react-icons/fa6";
-import { PlusIcon } from "@/assets/icons/PlusIcon";
 
 type Props = {
     /** Current search query */
@@ -100,7 +99,7 @@ export const PersonalNotesToolbar = ({
                         fw={500}
                         onClick={() => openModal()}
                     >
-                        <PlusIcon size="1rem" color="white" /> Create note
+                        Create note
                     </Button>}
             </div>
 

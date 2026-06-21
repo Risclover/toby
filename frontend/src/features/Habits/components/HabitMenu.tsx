@@ -7,7 +7,8 @@ import { PadlockOpenIcon } from "@/assets/icons/PadlockOpenIcon";
 import { useDeleteHabitMutation, useUpdateHabitMutation, type Habit } from "@/store";
 import { useHabitModal } from "@/contexts";
 import { notifications } from "@mantine/notifications";
-
+import { FaTrash } from "react-icons/fa";
+import { PencilIcon } from "@/assets/icons/PencilIcon";
 export const HabitMenu = ({ habit, setShowDeleteConfirmation }: { habit: Habit, setShowDeleteConfirmation: (val: boolean) => void }) => {
     const [updateHabit] = useUpdateHabitMutation();
     const [deleteHabit] = useDeleteHabitMutation();
@@ -42,13 +43,13 @@ export const HabitMenu = ({ habit, setShowDeleteConfirmation }: { habit: Habit, 
                             isPrivate: habit.isPrivate,
                         });
                     }}
-                    leftSection={<BorderColorRoundedIcon fontSize="small" />}
+                    leftSection={<PencilIcon size="1rem" color="var(--mantine-color-gray-8)" />}
                 >
                     Edit
                 </Menu.Item>
                 <Menu.Item
                     color="red.9"
-                    leftSection={<DeleteRounded fontSize="small" />}
+                    leftSection={<FaTrash fontSize="1rem" />}
                     onClick={(e) => {
                         e.stopPropagation();
                         setShowDeleteConfirmation(true);

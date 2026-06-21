@@ -4,9 +4,10 @@ import DeleteRounded from '@mui/icons-material/Delete';
 
 import { MenuTrashIcon, ArchivedIcon } from "@/assets";
 import { useTasklistSettings } from "../../hooks";
-import { CopyIcon } from "@/assets/icons/CopyIcon";
-import type React from "react";
+import { FaCopy } from "react-icons/fa";
 
+import type React from "react";
+import { FaTrash } from "react-icons/fa";
 type Props = {
     tasklistId: number;
     setShowDeleteConfirmation: (val: boolean) => void;
@@ -51,7 +52,7 @@ export const TasklistActionsMenu = ({ tasklistId, setShowDeleteConfirmation }: P
                         tabIndex={0}
                         leftSection={
                             <div className="archived-menu-icon">
-                                <ArchivedIcon size="20px" color="rgb(55, 55, 72)" />
+                                <ArchivedIcon size="20px" color="var(--mantine-color-gray-8)" />
                             </div>
                         }
                         onClick={(e) => { e.stopPropagation(); handleArchiveList() }}
@@ -61,14 +62,14 @@ export const TasklistActionsMenu = ({ tasklistId, setShowDeleteConfirmation }: P
                     <Menu.Item
                         leftSection={
                             <div className="archived-menu-icon">
-                                <CopyIcon size="20px" color="rgb(55, 55, 72)" />
+                                <FaCopy fontSize="1rem" color="var(--mantine-color-gray-8)" />
                             </div>
                         }
                         onClick={(e) => { e.stopPropagation(); handleDuplicateList() }}
                     >
                         Duplicate
                     </Menu.Item>
-                    <Menu.Item color="red.9" leftSection={<DeleteRounded fontSize="small" />} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirmation(true) }}>Delete</Menu.Item>
+                    <Menu.Item color="red.9" leftSection={<FaTrash fontSize="1rem" />} onClick={(e) => { e.stopPropagation(); setShowDeleteConfirmation(true) }}>Delete</Menu.Item>
                 </Menu.Dropdown>
             </Menu>
         </div>

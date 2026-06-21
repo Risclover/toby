@@ -7,7 +7,8 @@ import { type PersonalNote } from "@/store";
 import { IoEllipsisVerticalSharp } from "react-icons/io5";
 import DeleteRounded from '@mui/icons-material/Delete';
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
-
+import { FaTrash } from "react-icons/fa";
+import { PencilIcon } from "@/assets/icons/PencilIcon";
 type Props = {
     /** Note for which this menu is for */
     note: PersonalNote;
@@ -51,13 +52,13 @@ export const PersonalNoteMenu = ({ note }: Props) => {
                                 isPrivate: note.isPrivate
                             });
                         }}
-                        leftSection={<BorderColorRoundedIcon fontSize="small" />}
+                        leftSection={<PencilIcon size="1rem" color="var(--mantine-color-gray-8)" />}
                     >
                         Edit
                     </Menu.Item>
                     <Menu.Item
                         color="red.9"
-                        leftSection={<DeleteRounded fontSize="small" />}
+                        leftSection={<FaTrash fontSize="1rem" />}
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowConfirmDelete(true);

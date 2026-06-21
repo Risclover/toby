@@ -1,6 +1,8 @@
 import { ActionIcon, Menu } from "@mantine/core";
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
-import DeleteRounded from '@mui/icons-material/Delete';
+import { FaTrash } from "react-icons/fa";
+import { PencilIcon } from "@/assets/icons/PencilIcon";
+
 import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
 import type { CalendarEvent } from "@/store";
 
@@ -21,8 +23,8 @@ export const EventMenu = ({
                 </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-                <Menu.Item onClick={() => setIsEditing(!isEditing)} leftSection={<BorderColorRoundedIcon fontSize="small" />}>{isEditing ? "Cancel edit" : "Edit"}</Menu.Item>
-                <Menu.Item onClick={onDelete} color="red.9" leftSection={<DeleteRounded fontSize="small" />}>Delete</Menu.Item>
+                <Menu.Item onClick={() => setIsEditing(!isEditing)} leftSection={<PencilIcon size="1rem" color="var(--mantine-color-gray-8)" />}>{isEditing ? "Cancel edit" : "Edit"}</Menu.Item>
+                <Menu.Item onClick={onDelete} color="red.9" leftSection={<FaTrash fontSize="1rem" />}>Delete</Menu.Item>
             </Menu.Dropdown>
         </Menu>
     )

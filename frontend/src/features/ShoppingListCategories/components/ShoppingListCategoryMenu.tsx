@@ -2,7 +2,8 @@ import { ActionIcon, Menu } from "@mantine/core"
 import { DeleteConfirmation } from "@/components";
 import type { ShoppingCategory } from "@/store";
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-
+import { FaTrash } from "react-icons/fa";
+import { PencilIcon } from "@/assets/icons/PencilIcon";
 type Props = {
     /** The category for which to display the menu */
     category: ShoppingCategory;
@@ -36,10 +37,10 @@ export const ShoppingListCategoryMenu = ({
                     </ActionIcon>
                 </Menu.Target>
                 <Menu.Dropdown>
-                    <Menu.Item onClick={onEdit}>
+                    <Menu.Item onClick={onEdit} leftSection={<PencilIcon size="1rem" color="var(--mantine-color-gray-8)" />}>
                         Edit
                     </Menu.Item>
-                    <Menu.Item onClick={() => setShowDeleteConfirmation(true)}>
+                    <Menu.Item color='red.9' onClick={() => setShowDeleteConfirmation(true)} leftSection={<FaTrash fontSize="1rem" />}>
                         Delete
                     </Menu.Item>
                 </Menu.Dropdown>

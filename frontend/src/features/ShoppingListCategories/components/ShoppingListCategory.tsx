@@ -21,9 +21,8 @@ export const ShoppingListCategory = ({ category, isEditing, setIsEditing }: Prop
         handleDeleteCategory,
         showDeleteConfirmation,
         setShowDeleteConfirmation,
-        cancelledRef
-    } = useShoppingListCategory({ category, isEditing, setIsEditing });
-
+        handleNameKeyDown
+    } = useShoppingListCategory({ category, setIsEditing });
     return (
         <li className="shopping-category-item">
             {isEditing ? (
@@ -31,25 +30,18 @@ export const ShoppingListCategory = ({ category, isEditing, setIsEditing }: Prop
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     onBlur={() => handleEditCategory()}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") handleEditCategory();
-                        if (e.key === "Escape") {
-                            cancelledRef.current = true;
-                            setName(category.name);
-                            setIsEditing(false);
-                        }
-                    }}
+                    onKeyDown={handleNameKeyDown}
                     autoFocus
                     maxLength={25}
                     variant="unstyled"
                     styles={{
                         input: {
-                            borderBottom: "1px solid var(--border)",
-                            borderRadius: 0,
-                            paddingTop: "2px",
-                            paddingBottom: "2px",
+                            // borderBottom: "1px solid var(--border)",
+                            backgroundColor: "rgb(244, 244, 248)",
+                            borderRadius: ".25rem",
+                            padding: ".5rem",
+                            margin: "-.5rem",
                             borderLeft: "none",
-                            margin: 0,
                             fontSize: "var(--text-sm)",
                             minHeight: "unset",
                             height: "unset",

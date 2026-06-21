@@ -16,7 +16,7 @@ export const ShoppingListPage = () => {
         <MobileLayout titleComponent={<ShoppingListTitleComponent list={list} />}>
             <ShoppingListHeader list={list} />
             <ShoppingListContainer list={list} />
-            <ShoppingListAddItem listId={list.id} />
+            <ShoppingListAddItem list={list} />
         </MobileLayout>
     )
 }

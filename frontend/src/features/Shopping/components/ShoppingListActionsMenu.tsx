@@ -3,7 +3,8 @@ import { CopyIcon } from "@/assets/icons/CopyIcon";
 import { ActionIcon, Menu, Tooltip } from "@mantine/core"
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import DeleteRounded from '@mui/icons-material/Delete';
-
+import { FaTrash } from "react-icons/fa";
+import { FaCopy } from "react-icons/fa";
 
 export const ShoppingListActionsMenu = () => {
     return (
@@ -40,7 +41,7 @@ export const ShoppingListActionsMenu = () => {
                     </Menu.Target>
                 </Tooltip>
                 <Menu.Dropdown>
-                    <Menu.Item tabIndex={0} leftSection={<div className="archived-menu-icon"><ArchivedIcon size="20px" color="rgb(55, 55, 72)" /></div>}
+                    <Menu.Item tabIndex={0} leftSection={<div className="archived-menu-icon"><ArchivedIcon size="20px" color="var(--mantine-color-gray-8)" /></div>}
                         onClick={(e) => {
                             e.stopPropagation();
 
@@ -50,7 +51,7 @@ export const ShoppingListActionsMenu = () => {
                     <Menu.Item
                         leftSection={
                             <div className="archived-menu-icon">
-                                <CopyIcon size="20px" color="rgb(55, 55, 72)" />
+                                <FaCopy fontSize="16px" />
                             </div>
                         }
                         onClick={(e) => {
@@ -62,7 +63,7 @@ export const ShoppingListActionsMenu = () => {
                     <Menu.Item
                         color="red.9"
                         leftSection={
-                            <DeleteRounded fontSize="small" />
+                            <FaTrash fontSize="1rem" />
                         }
                         onClick={(e) => {
                             e.stopPropagation();

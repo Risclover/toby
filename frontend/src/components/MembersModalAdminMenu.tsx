@@ -41,7 +41,7 @@ export const MembersModalAdminMenu = ({ member, household }: { member: Household
             </Menu.Target>
             <Menu.Dropdown>
                 {member.id !== household.adminId &&
-                    <Menu.Item leftSection={<AdminBadgeIcon size="22px" color="var(--mantine-color-dark-9)" />} onClick={(e) => { e.stopPropagation(); confirmAdminTransfer(); }}>
+                    <Menu.Item leftSection={<AdminBadgeIcon size="22px" color="var(--mantine-color-gray-8)" />} onClick={(e) => { e.stopPropagation(); confirmAdminTransfer(); }}>
                         Transfer admin role
                     </Menu.Item>
                 }

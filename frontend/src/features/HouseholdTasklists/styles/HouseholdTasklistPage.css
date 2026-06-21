@@ -163,7 +163,8 @@ textarea.editable-title.is-editing {
     border-bottom: 1px solid var(--border);
 }
 
-.add-task {
+.add-task,
+.add-shopping-item {
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -177,7 +178,8 @@ textarea.editable-title.is-editing {
     bottom: 0;
 }
 
-.add-task input {
+.add-task input,
+.add-shopping-item input {
     width: calc(100% - 50px);
     outline: none;
     font-family: "Commissioner", sans-serif;
@@ -413,7 +415,8 @@ textarea.editable-title.is-editing {
     margin-top: 1rem;
 }
 
-.add-task-container {
+.add-task-container,
+.add-shopping-item-container {
     position: fixed;
     width: 100%;
     bottom: 0;
