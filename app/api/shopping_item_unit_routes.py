@@ -14,7 +14,11 @@ def get_user_shopping_item_units():
 @shopping_item_unit_routes.route("", methods=["POST"])
 @login_required
 def create_unit():
-    data = request.get_json_or_404()
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "Request body is required"}), 400
+        
     name = data.get("name", "").strip()
 
     if not name:

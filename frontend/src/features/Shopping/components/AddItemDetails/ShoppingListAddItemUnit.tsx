@@ -2,6 +2,9 @@ import { Button, Combobox, ScrollArea, Tooltip, useCombobox } from "@mantine/cor
 import { useEffect, useRef, useState } from "react";
 import { LuTag } from "react-icons/lu";
 import { HiPlus } from "react-icons/hi";
+import { useCreateShoppingItemUnitMutation, useGetShoppingItemUnitsQuery } from "@/store";
+import { KittyNotification } from "@/components";
+import { KittyIcons } from "@/assets";
 
 
 type Props = {
@@ -14,6 +17,9 @@ type Props = {
 export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: Props) => {
     const [search, setSearch] = useState('');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+    const [createUnit] = useCreateShoppingItemUnitMutation();
+    const { data: userUnits } = useGetShoppingItemUnitsQuery();
 
     const combobox = useCombobox({
         onDropdownClose: () => {
@@ -68,7 +74,18 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
         },
     ];
 
-    const allUnits = units.flatMap((group) => group.items);
+    const customGroup = userUnits && userUnits.length > 0
+        ? {
+            groupName: "Custom",
+            items: [...userUnits]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((u) => ({ value: u.name, singular: u.name, plural: u.name })),
+        }
+        : null;
+
+    const allGroups = customGroup ? [...units, customGroup] : units;
+
+    const allUnits = allGroups.flatMap((group) => group.items);
     const trimmedSearch = search.trim();
 
     const exactMatch = allUnits.some((item) =>
@@ -77,7 +94,7 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
     );
     const showCreateOption = trimmedSearch.length > 0 && !exactMatch;
 
-    const filteredGroups = units
+    const filteredGroups = allGroups
         .map((group) => ({
             ...group,
             items: group.items.filter((item) =>
@@ -108,9 +125,28 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
             : unit) // custom unit, display as-typed
         : "Unit";
 
-    const handleCreateUnit = () => {
-
-    }
+    const handleCreateUnit = async (trimmedSearch: string) => {
+        try {
+            await createUnit({ name: trimmedSearch }).unwrap();
+            onCommit(trimmedSearch);
+            onClose(trimmedSearch);
+            combobox.closeDropdown();
+            KittyNotification({
+                title: "Shopping item unit created successfully",
+                message: <>Cool! Unit "<strong style={{ fontWeight: 500 }}>{trimmedSearch}</strong>" is now a thing.</>,
+                color: "green",
+                icon: KittyIcons.Computer
+            })
+        } catch (error) {
+            console.error("Error creating unit:", error);
+            KittyNotification({
+                title: "Failed to create shopping item unit",
+                message: <>Toby is having a breakdown and failed to create the unit "<strong style={{ fontWeight: 500 }}>{trimmedSearch}</strong>". Try again.</>,
+                color: "red",
+                icon: KittyIcons.Cry
+            })
+        }
+    };
 
     return (
         <Combobox
@@ -173,7 +209,7 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                     </ScrollArea.Autosize>
                     <Combobox.Footer>
                         {showCreateOption && (
-                            <Combobox.Option value={trimmedSearch} key="__custom__">
+                            <Combobox.Option value={trimmedSearch} key="__custom__" onClick={() => handleCreateUnit(trimmedSearch)}>
                                 <div className="create-unit-option">
                                     <HiPlus size="1rem" color="var(--mantine-color-gray-7)" />
                                     Create unit "{trimmedSearch}"

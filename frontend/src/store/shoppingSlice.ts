@@ -315,7 +315,7 @@ export const shoppingSlice = apiSlice.injectEndpoints({
         }),
 
         /* -------------------- Custom Units -------------------- */
-        getUserShoppingItemUnits: builder.query<ShoppingItemUnit[], void>({
+        getShoppingItemUnits: builder.query<ShoppingItemUnit[], void>({
             query: () => "/shopping-item-units",
             providesTags: ["ShoppingItemUnit"],
         }),
@@ -364,7 +364,7 @@ export const {
     useEditShoppingCategoryMutation,
     useDeleteShoppingCategoryMutation,
     // custom units
-    useGetUserShoppingItemUnitsQuery,
+    useGetShoppingItemUnitsQuery,
     useCreateShoppingItemUnitMutation,
     useDeleteShoppingItemUnitMutation,
 } = shoppingSlice;
