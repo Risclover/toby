@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_login import current_user, login_required
-from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment, Habit, UserSettings, TasklistMember, PersonalNote, PersonalNoteCategory
+from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment, Habit, UserSettings, TasklistMember, PersonalNote, PersonalNoteCategory, ShoppingItemUnit
 from sqlalchemy import or_, func, exists  # add exists
 from app.extensions import db
 from app.s3_helpers import (

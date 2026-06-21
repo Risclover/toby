@@ -1,6 +1,8 @@
-import { Button, Combobox, ScrollArea, useCombobox } from "@mantine/core"
-import { useEffect, useState } from "react";
+import { Button, Combobox, ScrollArea, Tooltip, useCombobox } from "@mantine/core"
+import { useEffect, useRef, useState } from "react";
 import { LuTag } from "react-icons/lu";
+import { HiPlus } from "react-icons/hi";
+
 
 type Props = {
     unit: string;
@@ -11,6 +13,7 @@ type Props = {
 
 export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: Props) => {
     const [search, setSearch] = useState('');
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     const combobox = useCombobox({
         onDropdownClose: () => {
@@ -19,7 +22,10 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
             setSearch('');
         },
         onDropdownOpen: () => {
-            combobox.focusSearchInput()
+            combobox.focusSearchInput();
+            requestAnimationFrame(() => {
+                scrollAreaRef.current?.scrollTo({ top: 0 });
+            });
         }
     });
 
@@ -91,9 +97,9 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
         </Combobox.Group>
     ));
 
-    useEffect(() => {
-        combobox.selectFirstOption();
-    }, [search]);
+    // useEffect(() => {
+    //     if (search.trim().length === 0) combobox.selectFirstOption();
+    // }, [search]);
 
     const currentUnitMatch = allUnits.find((i) => i.value === unit);
     const buttonLabel = quantity > 0 && unit
@@ -108,28 +114,45 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
             store={combobox}
             withinPortal={false}
             onOptionSubmit={(val) => {
-                onCommit(val);
-                onClose(val);
+                const newValue = val === unit ? "" : val;
+                onCommit(newValue);
+                onClose(newValue);
                 combobox.closeDropdown();
+            }}
+            styles={{
+                option: {
+                    fontSize: "var(--text-sm) !important"
+                },
+                footer: {
+                    padding: 0,
+                    marginTop: 0
+                },
+                search: {
+                    marginBottom: 0,
+                    marginInline: 0,
+                    marginLeft: "-2px"
+                },
             }}
         >
             <Combobox.Target>
-                <Button
-                    h="auto"
-                    p=".25rem .5rem"
-                    variant="transparent"
-                    size="13px"
-                    fw={500}
-                    color="var(--mantine-color-gray-7)"
-                    className="shopping-list-add-item-detail"
-                    onClick={() => combobox.toggleDropdown()}
-                    disabled={quantity === 0}
-                >
-                    <span className="add-item-detail-icon">
-                        <LuTag />
-                    </span>
-                    {buttonLabel}
-                </Button>
+                <Tooltip label="Select quantity" position="top" disabled={quantity !== 0}>
+                    <Button
+                        h="auto"
+                        p=".25rem .5rem"
+                        variant="transparent"
+                        size="13px"
+                        fw={500}
+                        color="var(--mantine-color-gray-7)"
+                        className="shopping-list-add-item-detail"
+                        onClick={() => combobox.toggleDropdown()}
+                        disabled={quantity === 0}
+                    >
+                        <span className="add-item-detail-icon">
+                            <LuTag />
+                        </span>
+                        {buttonLabel}
+                    </Button>
+                </Tooltip>
             </Combobox.Target>
             <Combobox.Dropdown>
                 <Combobox.Search
@@ -137,18 +160,22 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                     onChange={(event) => setSearch(event.currentTarget.value)}
                     placeholder="Type in unit"
                 />
-                <Combobox.Options>
-                    <ScrollArea.Autosize type="scroll" mah={300}>
+                <Combobox.Options >
+                    <ScrollArea.Autosize type="scroll" mah={300} viewportRef={scrollAreaRef}>
                         {options}
-                        {showCreateOption && (
-                            <Combobox.Option value={trimmedSearch} key="__custom__">
-                                Use "{trimmedSearch}"
-                            </Combobox.Option>
-                        )}
-                        {options.length === 0 && !showCreateOption && (
-                            <Combobox.Empty>No matches</Combobox.Empty>
+                        {options.length === 0 && (
+                            <Combobox.Empty>Unit not found.</Combobox.Empty>
                         )}
                     </ScrollArea.Autosize>
+                    <Combobox.Footer>
+                        {showCreateOption && (
+                            <Combobox.Option value={trimmedSearch} key="__custom__">
+                                <div className="create-unit-option">
+                                    <HiPlus size="1rem" color="var(--mantine-color-gray-7)" /> Create unit "{trimmedSearch}"
+                                </div>
+                            </Combobox.Option>
+                        )}
+                    </Combobox.Footer>
                 </Combobox.Options>
             </Combobox.Dropdown>
         </Combobox>
