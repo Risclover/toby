@@ -24,6 +24,8 @@ export const ShoppingListAddItem = ({ list }: Props) => {
     const handleOutsideClick = () => {
         if (inputValue.trim().length === 0) {
             setShowDetails(false);
+            setQuantity(0);
+            setUnit("");
         }
     };
 

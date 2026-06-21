@@ -1,4 +1,5 @@
 import { apiSlice } from "./apiSlice";
+import type { ShoppingList } from "./shoppingSlice";
 import type { TasklistType } from "./taskSlice";
 
 export type Household = { id: number; name: string; adminId: number };

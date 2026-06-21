@@ -108,6 +108,10 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
             : unit) // custom unit, display as-typed
         : "Unit";
 
+    const handleCreateUnit = () => {
+
+    }
+
     return (
         <Combobox
             width="250px"
@@ -171,7 +175,8 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                         {showCreateOption && (
                             <Combobox.Option value={trimmedSearch} key="__custom__">
                                 <div className="create-unit-option">
-                                    <HiPlus size="1rem" color="var(--mantine-color-gray-7)" /> Create unit "{trimmedSearch}"
+                                    <HiPlus size="1rem" color="var(--mantine-color-gray-7)" />
+                                    Create unit "{trimmedSearch}"
                                 </div>
                             </Combobox.Option>
                         )}

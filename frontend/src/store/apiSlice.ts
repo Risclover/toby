@@ -13,7 +13,7 @@ export const apiSlice = createApi({
     "Activity", "Household", "Tasklist", "Task", "ShoppingList", "ShoppingItem",
     "Announcement", "ShoppingCategory", "Session", "User", "Mood",
     "Checkin", "Calendar", "UserTaskStat", "Reminder", "FeaturedListSettings", "Habit", "UserSettings", "Auth", "Note", "NoteCategory",
-    "UserStats"
+    "UserStats", "ShoppingItemUnit"
   ],
   endpoints: () => ({}),
 });

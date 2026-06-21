@@ -31,6 +31,13 @@ export type ShoppingCategory = {
     updatedAt: string;
 };
 
+export type ShoppingItemUnit = {
+    id: number;
+    name: string;
+    userId: number;
+    createdAt: string;
+}
+
 export type ShoppingList = {
     id: number;
     title: string;
@@ -306,6 +313,29 @@ export const shoppingSlice = apiSlice.injectEndpoints({
                 { type: "ShoppingList", id: listId },
             ],
         }),
+
+        /* -------------------- Custom Units -------------------- */
+        getUserShoppingItemUnits: builder.query<ShoppingItemUnit[], void>({
+            query: () => "/shopping-item-units",
+            providesTags: ["ShoppingItemUnit"],
+        }),
+
+        createShoppingItemUnit: builder.mutation<ShoppingItemUnit, { name: string }>({
+            query: ({ name }) => ({
+                url: "/shopping-item-units",
+                method: "POST",
+                body: { name },
+            }),
+            invalidatesTags: ["ShoppingItemUnit"],
+        }),
+
+        deleteShoppingItemUnit: builder.mutation<void, { id: number }>({
+            query: ({ id }) => ({
+                url: `/shopping-item-units/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["ShoppingItemUnit"],
+        }),
     }),
 });
 
@@ -333,4 +363,8 @@ export const {
     useCreateShoppingCategoryMutation,
     useEditShoppingCategoryMutation,
     useDeleteShoppingCategoryMutation,
+    // custom units
+    useGetUserShoppingItemUnitsQuery,
+    useCreateShoppingItemUnitMutation,
+    useDeleteShoppingItemUnitMutation,
 } = shoppingSlice;
