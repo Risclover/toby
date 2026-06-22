@@ -7,7 +7,6 @@ import { useOutsideClick } from "@/hooks";
 import { KittyNotification } from "@/components";
 import { KittyIcons } from "@/assets";
 
-
 type Props = {
     list: ShoppingList;
 }
@@ -17,19 +16,25 @@ export const ShoppingListAddItem = ({ list }: Props) => {
     const [inputValue, setInputValue] = useState("");
     const [showDetails, setShowDetails] = useState(false);
     const [quantity, setQuantity] = useState(0);
+    const [draftQuantity, setDraftQuantity] = useState(0);
     const [unit, setUnit] = useState("");
-    const [category, setCategory] = useState("");
+    const [categoryId, setCategoryId] = useState<number | null>(null);
     const [addShoppingItem, { isLoading: loading }] = useAddShoppingItemMutation();
     const { data: household } = useHousehold();
 
     const handleOutsideClick = () => {
-        const hasDetails = quantity > 0 || category.length > 0;
+        // Flush any pending draft before evaluating whether details are set
+        const committedQuantity = draftQuantity;
+        setQuantity(committedQuantity);
+
+        const hasDetails = committedQuantity > 0 || categoryId !== null;
 
         if (inputValue.trim().length === 0 && !hasDetails) {
             setShowDetails(false);
             setQuantity(0);
+            setDraftQuantity(0);
             setUnit("");
-            setCategory("");
+            setCategoryId(null);
         }
     };
 
@@ -46,12 +51,18 @@ export const ShoppingListAddItem = ({ list }: Props) => {
             await addShoppingItem({
                 name: inputValue.trim(),
                 listId: list.id,
-                categoryId: null,
-                householdId: household?.id
+                householdId: household?.id,
+                quantity: quantity > 0 ? quantity : null,
+                unit: unit.length > 0 ? unit : null,
+                categoryId,
             }).unwrap();
 
             setInputValue("");
             inputRef.current?.focus();
+            setQuantity(0);
+            setDraftQuantity(0);
+            setUnit("");
+            setCategoryId(null);
 
             KittyNotification({
                 title: "Item added successfully!",
@@ -95,7 +106,19 @@ export const ShoppingListAddItem = ({ list }: Props) => {
                         disabled={inputValue.trim().length === 0}
                     >Add</Button>
                 </div>
-                {showDetails && <ShoppingListAddItemDetails list={list} quantity={quantity} setQuantity={setQuantity} unit={unit} setUnit={setUnit} category={category} setCategory={setCategory} />}
+                {showDetails && (
+                    <ShoppingListAddItemDetails
+                        list={list}
+                        quantity={quantity}
+                        setQuantity={setQuantity}
+                        draftQuantity={draftQuantity}
+                        setDraftQuantity={setDraftQuantity}
+                        unit={unit}
+                        setUnit={setUnit}
+                        categoryId={categoryId}
+                        setCategoryId={setCategoryId}
+                    />
+                )}
             </div>
         </div>
     )

@@ -49,6 +49,9 @@ def add_item(id):
         name=data["name"],
         list_id=id,
         creator_id=current_user.id,
+        quantity=data.get("quantity", 0),
+        unit=data.get("unit", ""),
+        category_id=data.get("categoryId", None)
     )
 
     db.session.add(item)

@@ -1,5 +1,5 @@
-import { ActionIcon, CloseIcon, Button, Combobox, Group, ScrollArea, Text, Tooltip, useCombobox } from "@mantine/core"
-import { useEffect, useRef, useState } from "react";
+import { ActionIcon, CloseIcon, Button, Combobox, ScrollArea, Text, Tooltip, useCombobox } from "@mantine/core"
+import { useRef, useState } from "react";
 import { LuTag } from "react-icons/lu";
 import { HiPlus } from "react-icons/hi";
 import { useCreateShoppingItemUnitMutation, useDeleteShoppingItemUnitMutation, useGetShoppingItemUnitsQuery } from "@/store";
@@ -7,6 +7,7 @@ import { KittyNotification } from "@/components";
 import { KittyIcons } from "@/assets";
 import { FaTrash } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa6";
+import { builtInUnitGroups, getUnitLabel } from "../../constants/shoppingUnits";
 
 type Props = {
     unit: string;
@@ -37,44 +38,8 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
         }
     });
 
-    const units = [
-        {
-            groupName: "Weights and Volumes",
-            items: [
-                { value: "gal", singular: "gal", plural: "gal" },
-                { value: "oz", singular: "oz", plural: "oz" },
-                { value: "lb", singular: "lb", plural: "lb" },
-                { value: "kg", singular: "kg", plural: "kg" },
-                { value: "g", singular: "g", plural: "g" },
-                { value: "pt", singular: "pt", plural: "pt" },
-                { value: "qt", singular: "qt", plural: "qt" },
-                { value: "l", singular: "liter", plural: "liters" },
-            ],
-        },
-        {
-            groupName: "Amounts",
-            items: [
-                { value: "dozen", singular: "dozen", plural: "dozen" },
-                { value: "pcs", singular: "piece", plural: "pieces" },
-            ],
-        },
-        {
-            groupName: "Misc.",
-            items: [
-                { value: "unit", singular: "unit", plural: "units" },
-                { value: "box", singular: "box", plural: "boxes" },
-                { value: "bag", singular: "bag", plural: "bags" },
-                { value: "carton", singular: "carton", plural: "cartons" },
-                { value: "bottle", singular: "bottle", plural: "bottles" },
-                { value: "pack", singular: "pack", plural: "packs" },
-                { value: "case", singular: "case", plural: "cases" },
-                { value: "roll", singular: "roll", plural: "rolls" },
-                { value: "tub", singular: "tub", plural: "tubs" },
-                { value: "container", singular: "container", plural: "containers" },
-                { value: "bundle", singular: "bundle", plural: "bundles" },
-            ],
-        },
-    ];
+
+    // Building the dropdown groups and options
 
     const customGroup = userUnits && userUnits.length > 0
         ? {
@@ -85,11 +50,12 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
         }
         : null;
 
-    const allGroups = customGroup ? [...units, customGroup] : units;
+    const allGroups = customGroup ? [...builtInUnitGroups, customGroup] : builtInUnitGroups;
 
     const allUnits = allGroups.flatMap((group) => group.items);
     const trimmedSearch = search.trim();
 
+    // Case-insensitive exact match check to determine whether to show the "Create unit" option
     const exactMatch = allUnits.some((item) =>
         item.singular.toLowerCase() === trimmedSearch.toLowerCase() ||
         item.plural.toLowerCase() === trimmedSearch.toLowerCase()
@@ -142,16 +108,8 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
         </Combobox.Group>
     ));
 
-    // useEffect(() => {
-    //     if (search.trim().length === 0) combobox.selectFirstOption();
-    // }, [search]);
-
-    const currentUnitMatch = allUnits.find((i) => i.value === unit);
-    const buttonLabel = quantity > 0 && unit
-        ? (currentUnitMatch
-            ? (quantity === 1 ? currentUnitMatch.singular : currentUnitMatch.plural)
-            : unit) // custom unit, display as-typed
-        : "Unit";
+    // Unit button label (handles pluralization and empty state, including quantity empty state)
+    const buttonLabel = quantity > 0 && unit.length > 0 ? getUnitLabel(unit, quantity) : "Unit";
 
     const handleCreateUnit = async (trimmedSearch: string) => {
         try {

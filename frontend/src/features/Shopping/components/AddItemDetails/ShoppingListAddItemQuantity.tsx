@@ -1,5 +1,5 @@
 import { NumberInput } from "@mantine/core"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Props = {
     quantity: number;
@@ -8,6 +8,7 @@ type Props = {
 }
 export const ShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: Props) => {
     const [localValue, setLocalValue] = useState<number | "">(quantity);
+    const isDiscardingRef = useRef(false);
 
     useEffect(() => {
         setLocalValue(quantity);
@@ -27,8 +28,10 @@ export const ShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: Pro
         }
         if (e.key === "Escape") {
             e.preventDefault();
+            e.stopPropagation(); // prevent Mantine's FocusTrap from also handling Escape
+            isDiscardingRef.current = true;
             setLocalValue(quantity);
-            onClose();
+            onClose(quantity); // pass snapshot back as explicit finalValue — signals discard
         }
     };
 
@@ -41,9 +44,17 @@ export const ShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: Pro
                 value={localValue}
                 max={9999}
                 clampBehavior="strict"
-                onChange={(value) => setLocalValue(value === "" ? "" : Number(value))}
+                onChange={(value) => {
+                    const num = value === "" ? 0 : Number(value);
+                    setLocalValue(value === "" ? "" : num);
+                    onCommit(num); // live-sync so parent's draftQuantity stays current
+                }}
                 onKeyDown={handleKeyDown}
                 onBlur={() => {
+                    if (isDiscardingRef.current) {
+                        isDiscardingRef.current = false;
+                        return;
+                    }
                     const resolved = commitValue();
                     onClose(resolved);
                 }}
