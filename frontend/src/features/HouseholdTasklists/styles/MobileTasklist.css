@@ -239,6 +239,10 @@
     gap: 0.5rem;
 }
 
+.task-details .settings-section-title:not(:first-of-type) {
+    margin-top: 1rem;
+}
+
 @media(max-width: 425px) {
     .mobile-tasklist-content {
         padding: 0;

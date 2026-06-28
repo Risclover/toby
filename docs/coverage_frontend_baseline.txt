@@ -1,0 +1,711 @@
+
+ RUN  v3.2.6 /home/sara/projects/toby/frontend
+      Coverage enabled with v8
+
+stdout | src/features/PersonalNotes/hooks/__tests__/useNotesFilter.test.tsx
+API_BASE in apiSlice: http://localhost:5000/api
+
+stdout | src/features/PersonalNotes/hooks/__tests__/useCreateNoteForm.test.tsx
+API_BASE in apiSlice: http://localhost:5000/api
+
+ ✓ src/features/PersonalNotes/hooks/__tests__/useCreateNoteForm.test.tsx (4 tests) 54ms
+ ✓ src/features/PersonalNotes/hooks/__tests__/useNotesFilter.test.tsx (31 tests) 2658ms
+   ✓ searching > returns notes when title matches query  362ms
+   ✓ searching > returns notes when body matches query  354ms
+   ✓ searching > doesn't return notes when title or body don't match query  355ms
+   ✓ searching > trims and lowercases search query  355ms
+   ✓ searching > returns notes that match query in title or body  354ms
+   ✓ searching > returns all notes when search query is empty  355ms
+   ✓ pagination > visibleCount resets to 10 when search query changes  364ms
+
+ Test Files  2 passed (2)
+      Tests  35 passed (35)
+   Start at  03:39:44
+   Duration  9.42s (transform 2.01s, setup 25ms, collect 8.94s, tests 2.71s, environment 964ms, prepare 191ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   18.43 |    70.34 |    5.65 |   18.43 |                   
+ frontend          |       0 |        0 |       0 |       0 |                   
+  ...ss.config.cjs |       0 |        0 |       0 |       0 | 1-14              
+ frontend/src      |    9.67 |    28.57 |   16.66 |    9.67 |                   
+  App.tsx          |       0 |        0 |       0 |       0 | 1-33              
+  AppProviders.tsx |     100 |      100 |     100 |     100 |                   
+  SignIn.tsx       |       0 |        0 |       0 |       0 | 1-70              
+  SignUp.tsx       |       0 |        0 |       0 |       0 | 1-64              
+  index.ts         |       0 |        0 |       0 |       0 | 1-10              
+  main.tsx         |       0 |        0 |       0 |       0 | 1-25              
+ ...end/src/assets |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...c/assets/icons |   19.16 |      100 |   10.52 |   19.16 |                   
+  ...BadgeIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  AlarmIcon.tsx    |       0 |      100 |     100 |       0 | 6-10              
+  ArchivedIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ...ircleIcon.tsx |       0 |      100 |     100 |       0 | 6-10              
+  ...nDownIcon.tsx |    8.33 |      100 |       0 |    8.33 | 8-20              
+  ...RightIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ClockIcon.tsx    |    7.14 |      100 |       0 |    7.14 | 2-17              
+  CopyIcon.tsx     |      25 |      100 |       0 |      25 | 7-10              
+  ...nStatIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ...yStatIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  EventIcon.tsx    |       0 |      100 |     100 |       0 | 6-10              
+  ...lLinkIcon.tsx |   16.66 |      100 |       0 |   16.66 | 7-12              
+  ...swordIcon.tsx |   16.66 |      100 |       0 |   16.66 | 2-7               
+  InfoIcon.tsx     |   14.28 |      100 |       0 |   14.28 | 7-13              
+  ...oriesIcon.tsx |   33.33 |      100 |       0 |   33.33 | 2-3               
+  ...TrashIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  NewsIcon.tsx     |       0 |      100 |     100 |       0 | 6-10              
+  OverdueIcon.tsx  |    3.44 |      100 |       0 |    3.44 | 7-41              
+  ...eStatIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  PadlockIcon.tsx  |      25 |      100 |       0 |      25 | 7-10              
+  ...kOpenIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  PencilIcon.tsx   |   16.66 |      100 |       0 |   16.66 | 7-12              
+  PlusIcon.tsx     |   16.66 |      100 |       0 |   16.66 | 7-12              
+  ...emberIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ...rListIcon.tsx |      10 |      100 |       0 |      10 | 2-11,14-23        
+  ...evronIcon.tsx |    9.09 |      100 |       0 |    9.09 | 8-19              
+  SettingsIcon.tsx |      25 |      100 |       0 |      25 | 2-5               
+  SoonIcon.tsx     |    4.16 |      100 |       0 |    4.16 | 7-34              
+  StarIcon.tsx     |      40 |      100 |       0 |      40 | 10-13,16-19       
+  StatsIcon.tsx    |      25 |      100 |       0 |      25 | 7-10              
+  TobyIcon.tsx     |      50 |      100 |       0 |      50 | 10-13             
+  TodayIcon.tsx    |    4.16 |      100 |       0 |    4.16 | 7-34              
+  TrashIcon.tsx    |      25 |      100 |       0 |      25 | 2-5               
+  ...hivedIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ViewIcon.tsx     |      40 |      100 |       0 |      40 | 4-7               
+  ...swordIcon.tsx |   16.66 |      100 |       0 |   16.66 | 2-7               
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...cons/UserStats |   51.08 |      100 |       0 |   51.08 |                   
+  ...endarIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ...leAltIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ...boardIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  FlameIcon.tsx    |      25 |      100 |       0 |      25 | 7-10              
+  LoopIcon.tsx     |      25 |      100 |       0 |      25 | 7-10              
+  ...endarIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  PieChartIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  PostAddIcon.tsx  |      25 |      100 |       0 |      25 | 7-10              
+  ...ChartIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ...FlameIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  TrophyIcon.tsx   |      25 |      100 |       0 |      25 | 7-10              
+  ...CheckIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ...boardIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ...boardIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  ...endarIcon.tsx |      25 |      100 |       0 |      25 | 7-10              
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ .../assets/images |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...images/kitties |     100 |      100 |     100 |     100 |                   
+  KittyIcons.tsx   |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...s/images/moods |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...ages/tasklists |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...src/components |   19.77 |        0 |       0 |   19.77 |                   
+  AddNewTask.tsx   |   15.78 |      100 |       0 |   15.78 | 8-27              
+  ...ification.tsx |   28.57 |      100 |       0 |   28.57 | 4-9               
+  ...boardGrid.tsx |   21.27 |      100 |       0 |   21.27 | 23-117            
+  ...ardHeader.tsx |      24 |      100 |       0 |      24 | 16-37             
+  ...firmation.tsx |    6.66 |      100 |       0 |    6.66 | 16-47             
+  ...rdWarning.tsx |    12.5 |      100 |       0 |    12.5 | 11-25             
+  ...ableTitle.tsx |    3.84 |      100 |       0 |    3.84 | 13-104            
+  ...gTextarea.tsx |       0 |        0 |       0 |       0 | 1-50              
+  ...olorInput.tsx |   23.52 |      100 |       0 |   23.52 | 11-24             
+  FormInput.tsx    |    14.7 |      100 |       0 |    14.7 | 21-52             
+  HomepageFAQ.tsx  |   33.33 |      100 |       0 |   33.33 | 2-3               
+  ...eFeatures.tsx |   33.33 |      100 |       0 |   33.33 | 8-9               
+  ...owItWorks.tsx |   33.33 |      100 |       0 |   33.33 | 8-9               
+  ...Selection.tsx |    4.08 |      100 |       0 |    4.08 | 17-68             
+  InfoTooltip.tsx  |      30 |      100 |       0 |      30 | 11-18             
+  ...eEditable.tsx |    7.14 |      100 |       0 |    7.14 | 4-37              
+  InviteLink.tsx   |   14.51 |      100 |       0 |   14.51 | 16-84             
+  ...ification.tsx |      10 |      100 |       0 |      10 | 11-29             
+  Layout.tsx       |   33.33 |      100 |       0 |   33.33 | 12-40             
+  ...edOutHero.tsx |   33.33 |      100 |       0 |   33.33 | 19-20             
+  ...OutNavbar.tsx |   33.33 |      100 |       0 |   33.33 | 11-12             
+  MembersModal.tsx |   33.33 |      100 |       0 |   33.33 | 29-46             
+  ...AdminMenu.tsx |   23.91 |      100 |       0 |   23.91 | 14-56             
+  ...terDrawer.tsx |    2.94 |      100 |       0 |    2.94 | 20-138            
+  ...mentsFull.tsx |   28.57 |      100 |       0 |   28.57 | 13-20             
+  ...ntsHeader.tsx |   13.51 |      100 |       0 |   13.51 | 28-100            
+  ...eCalendar.tsx |   28.57 |      100 |       0 |   28.57 | 4-9               
+  ...nReminder.tsx |   28.57 |      100 |       0 |   28.57 | 4-10              
+  ...yCheckins.tsx |   22.22 |      100 |       0 |   22.22 | 4-12              
+  ...milyTitle.tsx |    37.5 |      100 |       0 |    37.5 | 11-29             
+  ...omeHeader.tsx |   32.25 |      100 |       0 |   32.25 | 12-42             
+  ...meNavGrid.tsx |   14.81 |      100 |       0 |   14.81 | 20-46,56-81       
+  ...tActivity.tsx |   16.66 |      100 |       0 |   16.66 | 2-8               
+  ...ningChars.tsx |   14.28 |      100 |       0 |   14.28 | 2-8               
+  ...firmation.tsx |      10 |      100 |       0 |      10 | 6-37              
+  ...oneSelect.tsx |   56.52 |      100 |       0 |   56.52 | 52-53,56-91       
+  ...firmation.tsx |      10 |      100 |       0 |      10 | 8-58              
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...s/DueTaskStats |    5.93 |        0 |       0 |    5.93 |                   
+  DueSoonTab.tsx   |       0 |        0 |       0 |       0 | 1-88              
+  DueTaskStat.tsx  |      10 |      100 |       0 |      10 | 16-44,47-58       
+  DueTodayTab.tsx  |       0 |        0 |       0 |       0 | 1-148             
+  ...firmation.tsx |    6.89 |      100 |       0 |    6.89 | 10-40             
+  ...Selection.tsx |   11.82 |      100 |       0 |   11.82 | 13-118            
+  ...tiveModal.tsx |     5.3 |      100 |       0 |     5.3 | 29-288            
+  ...itiveTask.tsx |   18.36 |      100 |       0 |   18.36 | 11-25,43-71       
+  ...eTasksTab.tsx |       6 |      100 |       0 |       6 | 26-78             
+ ...edListSettings |    7.41 |      100 |       0 |    7.41 |                   
+  ...tSettings.tsx |    5.44 |      100 |       0 |    5.44 | 14-174            
+  ...sklistTab.tsx |    5.66 |      100 |       0 |    5.66 | 24-244            
+  ...ncyFilter.tsx |    5.26 |      100 |       0 |    5.26 | 10-52             
+  ...untPicker.tsx |   24.39 |      100 |       0 |   24.39 | 19-60             
+  ...gsSection.tsx |   14.28 |      100 |       0 |   14.28 | 9-15              
+ ...geCollapseCard |   14.42 |      100 |       0 |   14.42 |                   
+  ...lapseCard.tsx |      40 |      100 |       0 |      40 | 12-19             
+  ...lapseCard.tsx |   31.25 |      100 |       0 |   31.25 | 7-18              
+  ...lapseCard.tsx |   26.92 |      100 |       0 |   26.92 | 18-40             
+  ...eCardBody.tsx |      25 |      100 |       0 |      25 | 6-9               
+  ...seCardTab.tsx |      40 |      100 |       0 |      40 | 5-8               
+  ...eCardTabs.tsx |   11.11 |      100 |       0 |   11.11 | 15-41             
+  ...CardTitle.tsx |   21.42 |      100 |       0 |   21.42 | 13-25             
+  ...lapseCard.tsx |   29.41 |      100 |       0 |   29.41 | 7-21              
+  ...ageHabits.tsx |     7.1 |      100 |       0 |     7.1 | 18-204,207-229    
+  ...lapseCard.tsx |   54.54 |      100 |       0 |   54.54 | 12-17             
+  ...lapseCard.tsx |   26.31 |      100 |       0 |   26.31 | 12-46             
+  ...sTasklist.tsx |    7.89 |      100 |       0 |    7.89 | 26-162,166-281    
+  ...lapseCard.tsx |   20.48 |      100 |       0 |   20.48 | 17-22,25-85,88-93 
+ ...ponents/TipTap |       0 |        0 |       0 |       0 |                   
+  index.ts         |       0 |        0 |       0 |       0 | 1-2               
+ ...ptap-extension |       0 |      100 |     100 |       0 |                   
+  ...-extension.ts |       0 |      100 |     100 |       0 | 2-150             
+ ...p/tiptap-icons |    11.3 |      100 |     100 |    11.3 |                   
+  ...nter-icon.tsx |    9.37 |      100 |     100 |    9.37 | 6-36              
+  ...tify-icon.tsx |    9.37 |      100 |     100 |    9.37 | 6-36              
+  ...left-icon.tsx |    9.37 |      100 |     100 |    9.37 | 6-36              
+  ...ight-icon.tsx |    9.37 |      100 |     100 |    9.37 | 6-36              
+  ...left-icon.tsx |   16.66 |      100 |     100 |   16.66 | 6-22              
+  ban-icon.tsx     |      15 |      100 |     100 |      15 | 6-24              
+  ...uote-icon.tsx |    7.89 |      100 |     100 |    7.89 | 6-42              
+  bold-icon.tsx    |      15 |      100 |     100 |      15 | 6-24              
+  check-icon.tsx   |      15 |      100 |     100 |      15 | 6-24              
+  ...down-icon.tsx |      15 |      100 |     100 |      15 | 6-24              
+  close-icon.tsx   |   16.66 |      100 |     100 |   16.66 | 6-22              
+  ...lock-icon.tsx |    9.37 |      100 |     100 |    9.37 | 6-36              
+  code2-icon.tsx   |   11.53 |      100 |     100 |   11.53 | 6-30              
+  ...left-icon.tsx |      15 |      100 |     100 |      15 | 6-24              
+  ...link-icon.tsx |   13.63 |      100 |     100 |   13.63 | 6-26              
+  ...five-icon.tsx |   13.63 |      100 |     100 |   13.63 | 6-26              
+  ...four-icon.tsx |   13.63 |      100 |     100 |   13.63 | 6-26              
+  heading-icon.tsx |   16.66 |      100 |     100 |   16.66 | 6-22              
+  ...-one-icon.tsx |   13.63 |      100 |     100 |   13.63 | 6-26              
+  ...-six-icon.tsx |    12.5 |      100 |     100 |    12.5 | 6-28              
+  ...hree-icon.tsx |      10 |      100 |     100 |      10 | 6-34              
+  ...-two-icon.tsx |   13.63 |      100 |     100 |   13.63 | 6-26              
+  ...hter-icon.tsx |      15 |      100 |     100 |      15 | 6-24              
+  ...plus-icon.tsx |      15 |      100 |     100 |      15 | 6-24              
+  italic-icon.tsx  |   16.66 |      100 |     100 |   16.66 | 6-22              
+  link-icon.tsx    |   13.63 |      100 |     100 |   13.63 | 6-26              
+  list-icon.tsx    |       6 |      100 |     100 |       6 | 6-54              
+  ...ered-icon.tsx |       6 |      100 |     100 |       6 | 6-54              
+  ...todo-icon.tsx |    6.81 |      100 |     100 |    6.81 | 6-48              
+  ...star-icon.tsx |    12.5 |      100 |     100 |    12.5 | 6-28              
+  redo2-icon.tsx   |      15 |      100 |     100 |      15 | 6-24              
+  strike-icon.tsx  |   13.63 |      100 |     100 |   13.63 | 6-26              
+  ...ript-icon.tsx |    9.37 |      100 |     100 |    9.37 | 6-36              
+  sun-icon.tsx     |    5.76 |      100 |     100 |    5.76 | 6-56              
+  ...ript-icon.tsx |    9.37 |      100 |     100 |    9.37 | 6-36              
+  trash-icon.tsx   |      15 |      100 |     100 |      15 | 6-24              
+  ...line-icon.tsx |      15 |      100 |     100 |      15 | 6-24              
+  undo2-icon.tsx   |      15 |      100 |     100 |      15 | 6-24              
+ ...ntal-rule-node |      50 |      100 |       0 |      50 |                   
+  ...-extension.ts |      50 |      100 |       0 |      50 | 6-11              
+ ...ge-upload-node |     6.7 |        0 |       0 |     6.7 |                   
+  ...-extension.ts |   21.68 |      100 |       0 |   21.68 | ...20-130,136-159 
+  ...load-node.tsx |    3.43 |      100 |       0 |    3.43 | ...12-433,437-554 
+  index.tsx        |       0 |        0 |       0 |       0 | 1                 
+ ...mplates/simple |   24.56 |      100 |       0 |   24.56 |                   
+  ...le-editor.tsx |   26.02 |      100 |       0 |   26.02 | ...38-163,172-268 
+  theme-toggle.tsx |   15.62 |      100 |       0 |   15.62 | 9-44              
+ ...rimitive/badge |    30.3 |      100 |     100 |    30.3 |                   
+  badge.tsx        |   28.12 |      100 |     100 |   28.12 | 15-39             
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+ ...imitive/button |   17.14 |      100 |       0 |   17.14 |                   
+  button.tsx       |   15.94 |      100 |       0 |   15.94 | 28-42,46-96       
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+ ...e/button-group |      30 |      100 |       0 |      30 |                   
+  button-group.tsx |   28.81 |      100 |       0 |   28.81 | 20-65             
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+ ...primitive/card |   44.26 |      100 |     100 |   44.26 |                   
+  card.tsx         |   43.33 |      100 |     100 |   43.33 | ...48,53-60,66-73 
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+ .../dropdown-menu |    2.46 |      100 |       0 |    2.46 |                   
+  ...down-menu.tsx |    1.98 |      100 |       0 |    1.98 | 7-244             
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+ ...rimitive/input |      25 |      100 |       0 |      25 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  input.tsx        |   18.18 |      100 |       0 |   18.18 | 4-13              
+ ...mitive/popover |   13.33 |      100 |       0 |   13.33 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  popover.tsx      |   10.34 |      100 |       0 |   10.34 | 5-33              
+ ...tive/separator |   18.18 |      100 |       0 |   18.18 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  separator.tsx    |   14.28 |      100 |       0 |   14.28 | 7-28              
+ ...imitive/spacer |   11.11 |      100 |       0 |   11.11 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  spacer.tsx       |    5.88 |      100 |       0 |    5.88 | 6-24              
+ ...mitive/toolbar |   16.54 |      100 |       0 |   16.54 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  toolbar.tsx      |   15.94 |      100 |       0 |   15.94 | ...18-152,158-160 
+ ...mitive/tooltip |   10.63 |      100 |       0 |   10.63 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  tooltip.tsx      |      10 |      100 |       0 |      10 | ...65-200,205-232 
+ ...ckquote-button |    10.4 |      100 |       0 |    10.4 |                   
+  ...te-button.tsx |   14.28 |      100 |       0 |   14.28 | 35-40,52-119      
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  ...blockquote.ts |    7.04 |      100 |       0 |    7.04 | ...70-188,227-273 
+ ...e-block-button |   10.71 |      100 |       0 |   10.71 |                   
+  ...ck-button.tsx |   14.28 |      100 |       0 |   14.28 | 35-40,52-119      
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  ...code-block.ts |    7.58 |      100 |       0 |    7.58 | ...73-191,237-283 
+ ...ghlight-button |   25.13 |      100 |       0 |   25.13 |                   
+  ...ht-button.tsx |   12.24 |      100 |       0 |   12.24 | 38-43,78-167      
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  ...-highlight.ts |   29.38 |      100 |       0 |   29.38 | ...46-269,272-380 
+ ...hlight-popover |   13.15 |      100 |       0 |   13.15 |                   
+  ...t-popover.tsx |   12.58 |      100 |       0 |   12.58 | ...99-178,181-229 
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+ ...heading-button |   16.42 |      100 |       0 |   16.42 |                   
+  ...ng-button.tsx |   13.75 |      100 |       0 |   13.75 | 36-43,52-121      
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  use-heading.ts   |   16.66 |      100 |       0 |   16.66 | ...31-252,301-348 
+ ...-dropdown-menu |   15.62 |      100 |       0 |   15.62 |                   
+  ...down-menu.tsx |   14.81 |      100 |     100 |   14.81 | 47-123            
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  ...pdown-menu.ts |   13.33 |      100 |       0 |   13.33 | 45-50,92-132      
+ ...-upload-button |   14.68 |      100 |       0 |   14.68 |                   
+  ...ad-button.tsx |    14.1 |      100 |       0 |    14.1 | 42-47,59-127      
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  ...age-upload.ts |    13.4 |      100 |       0 |    13.4 | ...,82-98,137-197 
+ ...i/link-popover |   11.04 |      100 |       0 |   11.04 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  link-popover.tsx |    13.3 |      100 |       0 |    13.3 | ...00-205,214-307 
+  ...nk-popover.ts |    6.75 |      100 |       0 |    6.75 | ...97-231,271-297 
+ ...ui/list-button |   14.28 |      100 |       0 |   14.28 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  list-button.tsx  |   13.75 |      100 |       0 |   13.75 | 32-39,48-117      
+  use-list.ts      |   13.65 |      100 |       0 |   13.65 | ...48-266,306-353 
+ ...-dropdown-menu |    22.9 |      100 |       0 |    22.9 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  ...down-menu.tsx |   14.49 |      100 |       0 |   14.49 | 51-116            
+  ...pdown-menu.ts |   27.52 |      100 |       0 |   27.52 | ...21-126,168-220 
+ ...ui/mark-button |   25.82 |      100 |       0 |   25.82 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  mark-button.tsx  |   13.75 |      100 |       0 |   13.75 | 34-41,50-119      
+  use-mark.ts      |      34 |      100 |       0 |      34 | ...31-132,172-219 
+ ...t-align-button |   22.61 |      100 |       0 |   22.61 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  ...gn-button.tsx |   12.94 |      100 |       0 |   12.94 | 47-54,66-141      
+  ...text-align.ts |   28.57 |      100 |       0 |   28.57 | ...24-142,182-229 
+ ...do-redo-button |    21.6 |      100 |       0 |    21.6 |                   
+  index.tsx        |     100 |      100 |     100 |     100 |                   
+  ...do-button.tsx |   14.86 |      100 |       0 |   14.86 | 40-47,59-122      
+  use-undo-redo.ts |   25.58 |      100 |       0 |   25.58 | ...88-104,143-188 
+ ...d/src/contexts |   58.36 |    60.86 |   26.66 |   58.36 |                   
+  ...ntContext.tsx |   53.33 |      100 |      25 |   53.33 | 24-26,29-31,43-52 
+  ...erContext.tsx |      52 |      100 |      25 |      52 | 22-24,27-29,39-46 
+  ...stContext.tsx |   53.84 |      100 |      25 |   53.84 | 22-24,27-29,41-48 
+  ...stContext.tsx |   53.33 |      100 |      25 |   53.33 | 24-26,29-31,43-52 
+  ...alContext.tsx |   53.33 |      100 |      25 |   53.33 | 27-29,32-34,46-55 
+  ...erContext.tsx |   33.33 |      100 |       0 |   33.33 | 17-23,26-29       
+  ...rdContext.tsx |   62.76 |    46.66 |      25 |   62.76 | ...99-106,128-131 
+  ...alContext.tsx |      75 |    66.66 |      50 |      75 | 30-32,35-37       
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...d/src/features |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...s/ActivityFeed |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...eed/components |    6.45 |      100 |       0 |    6.45 |                   
+  ActivityFeed.tsx |    4.71 |      100 |       0 |    4.71 | 22-223            
+  ...Skeletons.tsx |      16 |      100 |       0 |      16 | 5-10,13-29        
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ .../Announcements |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...nts/components |   16.15 |      100 |       0 |   16.15 |                   
+  ...ementMenu.tsx |      16 |      100 |       0 |      16 | 16-66             
+  ...ouncement.tsx |   10.75 |      100 |       0 |   10.75 | 13-103            
+  ...ouncement.tsx |   14.28 |      100 |       0 |   14.28 | 16-89             
+  ...uncements.tsx |   19.14 |      100 |       0 |   19.14 | 11-61             
+  ...ntsFilter.tsx |   19.23 |      100 |       0 |   19.23 | 7-29              
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...ncements/hooks |   15.62 |      100 |       0 |   15.62 |                   
+  index.ts         |       0 |        0 |       0 |       0 |                   
+  ...ouncement.tsx |      20 |      100 |       0 |      20 | 11-30             
+  ...Indicator.tsx |   22.22 |      100 |       0 |   22.22 | 4-10              
+  ...ementMenu.tsx |   10.52 |      100 |       0 |   10.52 | 10-29             
+  ...uncements.tsx |      25 |      100 |       0 |      25 | 4-9               
+  ...ntsFilter.tsx |    12.5 |      100 |       0 |    12.5 | 11-53             
+ ...ncements/utils |   14.63 |      100 |       0 |   14.63 |                   
+  ...tTimestamp.ts |    8.82 |      100 |       0 |    8.82 | 5-14,17-40        
+  ...uncements.tsx |   33.33 |      100 |       0 |   33.33 | 6-9               
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ .../features/Auth |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...uth/components |   12.81 |      100 |       0 |   12.81 |                   
+  ...nInButton.tsx |   13.33 |      100 |       0 |   13.33 | 6-19              
+  ...nviteCode.tsx |   29.41 |      100 |       0 |   29.41 | 7-20              
+  Login.tsx        |   10.58 |      100 |       0 |   10.58 | 11-98             
+  ...rdingPage.tsx |   15.09 |      100 |       0 |   15.09 | 10-58             
+  Registration.tsx |    4.73 |      100 |       0 |    4.73 | 15-219            
+  ...onPageOne.tsx |   26.08 |      100 |       0 |   26.08 | 32-35,39-72       
+  ...onPageTwo.tsx |   23.07 |      100 |       0 |   23.07 | 25-45             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...res/Auth/hooks |   20.83 |      100 |       0 |   20.83 |                   
+  useGoogleAuth.ts |   20.83 |      100 |       0 |   20.83 | 7-29              
+ ...tures/Checkins |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...ins/components |    7.77 |      100 |       0 |    7.77 |                   
+  ...kInButton.tsx |      20 |      100 |       0 |      20 | 8-33              
+  ...ckinsMini.tsx |    4.81 |      100 |       0 |    4.81 | ...33-189,192-207 
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...eatures/Events |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...nts/components |   10.63 |      100 |       0 |   10.63 |                   
+  ...iCalendar.tsx |    7.51 |      100 |       0 |    7.51 | 12-51,54-157      
+  EventMenu.tsx    |      25 |      100 |       0 |      25 | 10-31             
+  ...kAddEvent.tsx |    10.3 |      100 |       0 |    10.3 | ...58-348,351-381 
+  ...gThisWeek.tsx |      10 |      100 |       0 |      10 | ...45-155,158-171 
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...s/Events/utils |   33.33 |      100 |       0 |   33.33 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+  week.ts          |   27.27 |      100 |       0 |   27.27 | 5-9,12-14         
+ ...its/components |   13.85 |      100 |       0 |   13.85 |                   
+  HabitMenu.tsx    |   20.68 |      100 |       0 |   20.68 | 13-63             
+  HabitModal.tsx   |    8.64 |      100 |       0 |    8.64 | 27-184            
+  ...MonthCard.tsx |    3.12 |      100 |       0 |    3.12 | 11-90             
+  HabitsEmpty.tsx  |   33.33 |      100 |       0 |   33.33 | 5-13              
+  ...tsPrivate.tsx |   28.57 |      100 |       0 |   28.57 | 4-10              
+  ...HabitView.tsx |   18.75 |      100 |       0 |   18.75 | 19-81             
+  SingleHabit.tsx  |    9.84 |      100 |       0 |    9.84 | 23-29,32-156      
+  ...eklyHabit.tsx |   19.23 |      100 |       0 |   19.23 | 16-64             
+  ...eksHabits.tsx |   38.46 |      100 |       0 |   38.46 | 10-19             
+  ...tedHabits.tsx |   27.77 |      100 |       0 |   27.77 | 8-23              
+  TodaysHabits.tsx |      25 |      100 |       0 |      25 | 10-26             
+ ...s/Habits/utils |   17.85 |      100 |       0 |   17.85 |                   
+  ...leteToast.tsx |   15.78 |      100 |       0 |   15.78 | 5-21              
+  ...leteToast.tsx |   22.22 |      100 |       0 |   22.22 | 4-10              
+ ...eholdTasklists |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...sts/components |   14.81 |      100 |       0 |   14.81 |                   
+  ...atarGroup.tsx |    6.12 |      100 |       0 |    6.12 | 17-72             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...eholdTasklists |      20 |      100 |       0 |      20 |                   
+  ...iveNotice.tsx |   16.66 |      100 |       0 |   16.66 | 6-27              
+  ...Tasklists.tsx |    16.9 |      100 |       0 |    16.9 | 15-75,78-87       
+  ...listsMenu.tsx |   23.68 |      100 |       0 |   23.68 | 18-52             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...ldTasklistPage |   14.64 |      100 |    8.33 |   14.64 |                   
+  ...klistPage.tsx |       0 |        0 |       0 |       0 |                   
+  ...geAddTask.tsx |   14.28 |      100 |       0 |   14.28 | 14-47             
+  ...Completed.tsx |   32.14 |      100 |       0 |   32.14 | 20-42             
+  ...letedTask.tsx |   22.22 |      100 |       0 |   22.22 | 15-29             
+  ...tPageList.tsx |   13.79 |      100 |       0 |   13.79 | 19-52             
+  ...tPageTask.tsx |       8 |      100 |       0 |       8 | 14-100            
+  ...firmation.tsx |   16.66 |      100 |       0 |   16.66 | 14-35             
+  TaskDetails.tsx  |    9.55 |      100 |       0 |    9.55 | 31-206            
+  TaskExtra.tsx    |   21.05 |      100 |       0 |   21.05 | 20-34,37-72       
+  TaskListDnd.tsx  |   12.05 |      100 |       0 |   12.05 | 28-189            
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...eholdTasklists |   16.92 |      100 |       0 |   16.92 |                   
+  ...eTasklist.tsx |   14.94 |      100 |       0 |   14.94 | 23-107            
+  ...dTasklist.tsx |   23.36 |      100 |       0 |   23.36 | 40-46,49-144      
+  ...klistTask.tsx |      20 |      100 |       0 |      20 | 11-22             
+  ...Tasklists.tsx |   18.75 |      100 |       0 |   18.75 | 11-65             
+  Tasklist.tsx     |    8.88 |      100 |       0 |    8.88 | 10-98             
+  ...tionsMenu.tsx |   13.11 |      100 |       0 |   13.11 | 16-77             
+  ...rdTooltip.tsx |    8.82 |      100 |       0 |    8.82 | 12-50             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...obileTasklists |   16.29 |      100 |       0 |   16.29 |                   
+  ...eTasklist.tsx |   16.17 |      100 |       0 |   16.17 | 27-173            
+  ...terDrawer.tsx |    9.27 |      100 |       0 |    9.27 | 27-199            
+  ...istHeader.tsx |   12.71 |      100 |       0 |   12.71 | 34-179            
+  ...erCompact.tsx |   36.66 |      100 |       0 |   36.66 | 23-43             
+  ...tSkeleton.tsx |   15.38 |      100 |       0 |   15.38 | 4-14              
+  ...Component.tsx |    20.4 |      100 |       0 |    20.4 | 19-60             
+  ...Tasklists.tsx |   17.82 |      100 |       0 |   17.82 | ...29-106,110-151 
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...sklistSettings |    9.32 |        0 |       0 |    9.32 |                   
+  ...aranceTab.tsx |   20.58 |      100 |       0 |   20.58 | 14-43             
+  BehaviorTab.tsx  |     3.3 |      100 |       0 |     3.3 | 14-142            
+  ...tSettings.tsx |       0 |        0 |       0 |       0 | 1-29              
+  GeneralTab.tsx   |    5.55 |      100 |       0 |    5.55 | 51-183            
+  SettingsItem.tsx |   13.04 |      100 |       0 |   13.04 | 20-42             
+  ...wSelector.tsx |     3.6 |      100 |       0 |     3.6 | 6-120,123-144     
+  ...tSettings.tsx |   18.55 |      100 |       0 |   18.55 | 27-121            
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...asklists/hooks |   11.23 |      100 |       0 |   11.23 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+  ...edMembers.tsx |   14.28 |      100 |       0 |   14.28 | 10-23             
+  ...listLogic.tsx |   11.11 |      100 |       0 |   11.11 | 11-42             
+  ...eTasklist.tsx |    7.89 |      100 |       0 |    7.89 | 9-53              
+  ...ontroller.tsx |   13.04 |      100 |       0 |   13.04 | 8-56              
+  ...skDetails.tsx |    4.81 |      100 |       0 |    4.81 | 33-232            
+  ...Filtering.tsx |   11.23 |      100 |       0 |   11.23 | 31-155            
+  useTasklist.tsx  |    8.62 |      100 |       0 |    8.62 | 14-90             
+  ...stActions.tsx |    12.5 |      100 |       0 |    12.5 | 5-29              
+  ...tSettings.tsx |    9.35 |      100 |       0 |    9.35 | 50-351            
+  ...tingsData.tsx |      35 |      100 |       0 |      35 | 9-23              
+  ...tingsForm.tsx |    6.52 |      100 |       0 |    6.52 | 22-37,40-71       
+  ...listStats.tsx |      15 |      100 |       0 |      15 | 6-26              
+  ...listTheme.tsx |      20 |      100 |       0 |      20 | 4-11              
+  ...doArchive.tsx |    12.5 |      100 |       0 |    12.5 | 7-48              
+ ...asklists/utils |   19.23 |      100 |       0 |   19.23 |                   
+  getTaskStats.ts  |      16 |      100 |       0 |      16 | 11-37             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ .../features/Mood |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...ood/components |   34.54 |      100 |       0 |   34.54 |                   
+  ChooseMood.tsx   |      50 |      100 |       0 |      50 | 5-8               
+  MemberMood.tsx   |    37.5 |      100 |       0 |    37.5 | 5-13              
+  SetMood.tsx      |   26.31 |      100 |       0 |   26.31 | 15-49             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...NoteCategories |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...ies/components |   12.93 |      100 |       0 |   12.93 |                   
+  CategoryMenu.tsx |   15.38 |      100 |       0 |   15.38 | 24-87             
+  ...eCategory.tsx |    8.97 |      100 |       0 |    8.97 | 53-135            
+  ...ategories.tsx |    10.9 |      100 |       0 |    10.9 | 22-75             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...CategoryPicker |    7.95 |      100 |       0 |    7.95 |                   
+  ...oryPicker.tsx |    6.04 |      100 |       0 |    6.04 | 31-184            
+  ...kerFooter.tsx |   15.38 |      100 |       0 |   15.38 | 20-48             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...tegories/hooks |   11.41 |      100 |       0 |   11.41 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+  ...egoryMenu.tsx |   13.63 |      100 |       0 |   13.63 | 18-62             
+  ...oryPicker.tsx |     8.1 |      100 |       0 |     8.1 | 27-105            
+  ...eCategory.tsx |    7.69 |      100 |       0 |    7.69 | 25-142            
+  ...ategories.tsx |   17.85 |      100 |       0 |   17.85 | 22-48             
+ .../PersonalNotes |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...tes/components |   13.72 |      100 |       0 |   13.72 |                   
+  ...sonalNote.tsx |    8.08 |      100 |       0 |    8.08 | 16-153            
+  ...iesBanner.tsx |   12.76 |      100 |       0 |   12.76 | 23-67             
+  NoteViewer.tsx   |   34.88 |      100 |       0 |   34.88 | 25-54             
+  NotesEmpty.tsx   |   33.33 |      100 |       0 |   33.33 | 6-14              
+  NotesPrivate.tsx |   28.57 |      100 |       0 |   28.57 | 5-11              
+  PersonalNote.tsx |   18.03 |      100 |       0 |   18.03 | 25-81             
+  ...egoryPill.tsx |   14.28 |      100 |       0 |   14.28 | 15-44             
+  ...eGridItem.tsx |   13.04 |      100 |       0 |   13.04 | 21-88             
+  ...eListItem.tsx |   11.94 |      100 |       0 |   11.94 | 20-86             
+  ...lNoteMenu.tsx |   14.49 |      100 |       0 |   14.49 | 19-81             
+  ...Skeletons.tsx |    5.76 |      100 |       0 |    5.76 | 5-33,37-58        
+  ...onalNotes.tsx |   10.34 |      100 |       0 |   10.34 | 23-161            
+  ...esToolbar.tsx |    8.97 |      100 |       0 |    8.97 | 29-108            
+  ...tePrivate.tsx |   22.72 |      100 |       0 |   22.72 | 9-30              
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...sOptionsDrawer |   12.52 |      100 |       0 |   12.52 |                   
+  ...ctionBody.tsx |    13.2 |      100 |       0 |    13.2 | 13-67             
+  ...ctionBody.tsx |    9.37 |      100 |       0 |    9.37 | 6-36              
+  ...wSelector.tsx |    2.47 |      100 |       0 |    2.47 | 34-150,156-184    
+  ...werButton.tsx |   14.28 |      100 |       0 |   14.28 | 17-29             
+  ...terDrawer.tsx |   32.55 |      100 |       0 |   32.55 | 26-59             
+  ...erSection.tsx |    12.5 |      100 |       0 |    12.5 | 10-17             
+  ...onsDrawer.tsx |   10.25 |      100 |       0 |   10.25 | 26-102            
+  ...ortDrawer.tsx |   17.64 |      100 |       0 |   17.64 | 25-69             
+  ...iewDrawer.tsx |    37.5 |      100 |       0 |    37.5 | 18-23             
+  ...ctionBody.tsx |   13.63 |      100 |       0 |   13.63 | 14-34             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...nalNotes/hooks |   45.12 |    82.05 |   31.57 |   45.12 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+  ...ctionBody.tsx |   16.66 |      100 |       0 |   16.66 | 14-31             
+  ...eNoteForm.tsx |   45.77 |    38.46 |   33.33 |   45.77 | ...59-172,179-182 
+  ...tesFilter.tsx |    92.9 |    90.76 |      75 |    92.9 | ...37-138,169-174 
+  ...sonalNote.tsx |    12.5 |      100 |       0 |    12.5 | 14-59             
+  ...lNoteItem.tsx |    17.5 |      100 |       0 |    17.5 | 15-50             
+  ...lNoteMenu.tsx |    17.5 |      100 |       0 |    17.5 | 21-62             
+  ...onsDrawer.tsx |   21.66 |      100 |       0 |   21.66 | 32-82             
+  ...esToolbar.tsx |   18.96 |      100 |       0 |   18.96 | 27-93             
+ ...nalNotes/utils |   53.84 |      100 |      50 |   53.84 |                   
+  ...atNoteDate.ts |    7.69 |      100 |       0 |    7.69 | 2-13              
+  index.ts         |     100 |      100 |     100 |     100 |                   
+  ...oteContent.ts |     100 |      100 |     100 |     100 |                   
+ ...ers/components |   18.24 |        0 |       0 |   18.24 |                   
+  ...eReminder.tsx |   22.47 |      100 |       0 |   22.47 | 50-209            
+  ...dReminder.tsx |   14.28 |      100 |       0 |   14.28 | 20-103            
+  ...Reminders.tsx |      50 |      100 |       0 |      50 | 43-66,69-83       
+  Reminder.tsx     |       0 |        0 |       0 |       0 | 1-107             
+  Reminders.tsx    |       0 |        0 |       0 |       0 | 1-73              
+ ...s/AllReminders |   33.12 |      100 |       0 |   33.12 |                   
+  ...ersHeader.tsx |      20 |      100 |       0 |      20 | 2-7               
+  ...ndersPage.tsx |   38.88 |      100 |       0 |   38.88 | 15-17,21-43       
+  ...indersTab.tsx |      20 |      100 |       0 |      20 | 2-7               
+  ...ndersTabs.tsx |   26.08 |      100 |       0 |   26.08 | 8-26              
+  ...indersTab.tsx |   13.51 |      100 |       0 |   13.51 | 7-45              
+  ...indersTab.tsx |   47.36 |      100 |       0 |   47.36 | 31-67             
+ ...eminders/hooks |       0 |        0 |       0 |       0 |                   
+  ...eReminder.tsx |       0 |        0 |       0 |       0 |                   
+ ...eminders/utils |   32.91 |      100 |       0 |   32.91 |                   
+  ...minderTime.ts |   34.78 |      100 |       0 |   34.78 | 30-31,34-108      
+  ...eReminders.ts |      20 |      100 |       0 |      20 | 6-13              
+ ...tures/Shopping |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...ing/components |   15.44 |      100 |       0 |   15.44 |                   
+  ...ListModal.tsx |   11.53 |      100 |       0 |   11.53 | 15-90             
+  ...tionsMenu.tsx |   11.94 |      100 |       0 |   11.94 | 10-78             
+  ...stAddItem.tsx |    7.96 |      100 |       0 |    7.96 | 14-133            
+  ...gListCard.tsx |   20.33 |      100 |       0 |   20.33 | 19-72             
+  ...istHeader.tsx |      20 |      100 |       0 |      20 | 13-42             
+  ...gListItem.tsx |   16.66 |      100 |       0 |   16.66 | 10-20             
+  ...pingLists.tsx |   46.66 |      100 |       0 |   46.66 | 9-19              
+  ...Component.tsx |      20 |      100 |       0 |      20 | 10-31             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...AddItemDetails |     6.1 |        0 |       0 |     6.1 |                   
+  ...ilPopover.tsx |    4.54 |      100 |       0 |    4.54 | 22-66             
+  ...mCategory.tsx |    6.41 |      100 |       0 |    6.41 | 14-97             
+  ...temDetail.tsx |       0 |        0 |       0 |       0 | 1-17              
+  ...emDetails.tsx |   15.21 |      100 |       0 |   15.21 | 23-64             
+  ...mQuantity.tsx |    4.41 |      100 |       0 |    4.41 | 10-79             
+  ...dItemUnit.tsx |    5.16 |      100 |       0 |    5.16 | 20-249            
+ ...s/ShoppingList |   13.54 |      100 |       0 |   13.54 |                   
+  ...Container.tsx |    5.76 |      100 |       0 |    5.76 | 10-68             
+  ...gListItem.tsx |   10.71 |      100 |       0 |   10.71 | 13-84             
+  ...etailPill.tsx |      20 |      100 |       0 |      20 | 9-19              
+  ...Component.tsx |   27.02 |      100 |       0 |   27.02 | 16-43             
+ ...oppingListPage |   12.62 |      100 |       0 |   12.62 |                   
+  ...goryModal.tsx |    7.54 |      100 |       0 |    7.54 | 14-27,30-78       
+  ...ryPopover.tsx |   17.24 |      100 |       0 |   17.24 | 11-36             
+  ...firmation.tsx |   18.75 |      100 |       0 |   18.75 | 11-25             
+  ItemExpanded.tsx |    7.95 |      100 |       0 |    7.95 | 21-121            
+  ListItem.tsx     |   14.28 |      100 |       0 |   14.28 | 17-83             
+  ...riesModal.tsx |    7.09 |      100 |       0 |    7.09 | 24-33,37-176      
+  ...egoryItem.tsx |    6.34 |      100 |       0 |    6.34 | 22-27,31-98       
+  ...gListBody.tsx |   22.22 |      100 |     100 |   22.22 | 6-13              
+  ...rySection.tsx |   42.85 |      100 |       0 |   42.85 | 12-18             
+  ...Completed.tsx |   22.22 |      100 |       0 |   22.22 | 15-39             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...ping/constants |   89.36 |      100 |       0 |   89.36 |                   
+  shoppingUnits.ts |   89.36 |      100 |       0 |   89.36 | 56-62             
+ ...Shopping/hooks |    6.25 |      100 |       0 |    6.25 |                   
+  ...ppingList.tsx |    6.25 |      100 |       0 |    6.25 | 8-25              
+ ...ies/components |    9.89 |      100 |       0 |    9.89 |                   
+  ...ategories.tsx |    7.44 |      100 |       0 |    7.44 | 20-120            
+  ...tCategory.tsx |    10.2 |      100 |       0 |    10.2 | 17-64             
+  ...egoryMenu.tsx |   15.38 |      100 |       0 |   15.38 | 22-58             
+ ...tegories/hooks |    8.27 |      100 |       0 |    8.27 |                   
+  ...ategories.tsx |   11.32 |      100 |       0 |   11.32 | 18-71             
+  ...tCategory.tsx |    6.25 |      100 |       0 |    6.25 | 15-98             
+ ...es/UserProfile |     100 |      100 |     100 |     100 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...ile/components |   27.55 |        0 |       0 |   27.55 |                   
+  ...HabitsTab.tsx |   24.24 |      100 |       0 |   24.24 | 19-71             
+  ...ileHeader.tsx |   28.57 |      100 |       0 |   28.57 | 8-26              
+  ...rSkeleton.tsx |   23.07 |      100 |       0 |   23.07 | 5-16              
+  ...leMainTab.tsx |   25.64 |      100 |       0 |   25.64 | 12-43             
+  ...bSkeleton.tsx |       0 |        0 |       0 |       0 | 1-13              
+  ...leNavGrid.tsx |   46.15 |      100 |       0 |   46.15 | 8-15              
+  ...eNotesTab.tsx |   25.45 |      100 |       0 |   25.45 | 15-24,27-66       
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...serStatsDrawer |    13.1 |      100 |       0 |    13.1 |                   
+  FeaturedStat.tsx |      20 |      100 |       0 |      20 | 16-29             
+  ...tatsEmpty.tsx |    12.5 |      100 |       0 |    12.5 | 14-64             
+  ...gSkeleton.tsx |   23.52 |      100 |       0 |   23.52 | 6-11,14-22        
+  ...tsSection.tsx |      14 |      100 |       0 |      14 | 28-78             
+  UserStat.tsx     |    9.85 |      100 |       0 |    9.85 | 24-100            
+  ...atsDrawer.tsx |    9.43 |      100 |       0 |    9.43 | 15-66             
+  ...tsSection.tsx |   16.66 |      100 |       0 |   16.66 | 21-31             
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...rProfile/hooks |    3.25 |      100 |       0 |    3.25 |                   
+  useUserStats.ts  |    3.25 |      100 |       0 |    3.25 | 8-134             
+ ...ngs/components |    8.64 |      100 |       0 |    8.64 |                   
+  UserSettings.tsx |    8.64 |      100 |       0 |    8.64 | 67-403            
+ ...tend/src/hooks |    10.1 |    33.33 |    2.94 |    10.1 |                   
+  index.ts         |     100 |      100 |     100 |     100 |                   
+  ...lOnAppend.tsx |    6.89 |      100 |       0 |    6.89 | 13-47             
+  ...nNavigate.tsx |    37.5 |      100 |       0 |    37.5 | 5-9               
+  ...pseScroll.tsx |   16.66 |      100 |       0 |   16.66 | 4-15              
+  ...omposedRef.ts |   13.33 |      100 |       0 |   13.33 | 13-19,22-45       
+  ...Visibility.ts |   10.52 |      100 |       0 |   10.52 | 26-69             
+  ...edLoading.tsx |   15.38 |      100 |       0 |   15.38 | 4-16              
+  useDragMode.tsx  |    12.5 |      100 |       0 |    12.5 | 8-35              
+  ...lementRect.ts |   17.47 |      100 |       0 |   17.47 | ...50-156,162-166 
+  ...uredTasks.tsx |    6.12 |      100 |       0 |    6.12 | 8-11,14-134       
+  useHousehold.tsx |      50 |      100 |       0 |      50 | 5-7               
+  ...niteScroll.ts |       0 |        0 |       0 |       0 | 1-26              
+  ...Breakpoint.ts |   10.52 |      100 |       0 |   10.52 | 12-35             
+  useIsMobile.tsx  |    9.09 |      100 |       0 |    9.09 | 18-47             
+  ...allScreen.tsx |      20 |      100 |       0 |      20 | 4-11              
+  ...Selection.tsx |    4.34 |      100 |       0 |    4.34 | 9-66              
+  ...Navigation.ts |    1.57 |      100 |       0 |    1.57 | 59-203            
+  ...odalFocus.tsx |      25 |      100 |       0 |      25 | 4-11              
+  ...tsideClick.ts |     5.4 |      100 |       0 |     5.4 | 5-55              
+  ...lProgress.tsx |       0 |        0 |       0 |       0 | 1-27              
+  ...rollToTop.tsx |      25 |      100 |       0 |      25 | 6-15              
+  useScrolling.ts  |       0 |      100 |     100 |       0 | 2-75              
+  ...ingsModal.tsx |    4.41 |      100 |       0 |    4.41 | 29-104            
+  ...lePending.tsx |    7.69 |      100 |       0 |    7.69 | 5-30              
+  ...edCallback.ts |   39.13 |      100 |       0 |   39.13 | 26-46             
+  ...ptapEditor.ts |    5.88 |      100 |       0 |    5.88 | 5-10,16-69        
+  useUnmount.ts    |      25 |      100 |       0 |      25 | 10-19             
+  useWindowSize.ts |    6.66 |      100 |       0 |    6.66 | 42-93             
+ ...end/src/layout |   44.61 |      100 |       0 |   44.61 |                   
+  MobileLayout.tsx |   15.38 |      100 |       0 |   15.38 | 10-21             
+  MobileTabBar.tsx |      25 |      100 |       0 |      25 | 2-5               
+  Sidebar.tsx      |   47.27 |      100 |       0 |   47.27 | 80-145            
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ frontend/src/lib  |   13.46 |        0 |       0 |   13.46 |                   
+  tiptap-utils.ts  |   13.63 |        0 |       0 |   13.63 | ...19-620,623-641 
+  utils.ts         |       0 |        0 |       0 |       0 | 1-6               
+ ...tend/src/pages |   17.94 |        0 |       0 |   17.94 |                   
+  ...listsPage.tsx |   29.16 |      100 |       0 |   29.16 | 9-29              
+  Dashboard.tsx    |   23.52 |      100 |       0 |   23.52 | 24-90             
+  ...tHomepage.tsx |       0 |        0 |       0 |       0 | 1-10              
+  ...uncements.tsx |    27.9 |      100 |       0 |    27.9 | 13-15,19-50       
+  MobileHome.tsx   |   26.76 |      100 |       0 |   26.76 | 21-87             
+  ...gListPage.tsx |   44.44 |      100 |       0 |   44.44 | 11-22             
+  ...ListsPage.tsx |    42.1 |      100 |       0 |    42.1 | 10-23             
+  UserPage.tsx     |   21.42 |      100 |       0 |   21.42 | 15-67             
+  ...ofileDemo.tsx |   11.85 |      100 |       0 |   11.85 | ...90-711,770-772 
+  ...ofilePage.tsx |   43.75 |      100 |       0 |   43.75 | 16-37             
+  index.ts         |       0 |        0 |       0 |       0 | 1-8               
+ ...end/src/routes |   45.83 |      100 |       0 |   45.83 |                   
+  AppRoutes.tsx    |   48.83 |      100 |       0 |   48.83 | 23-46             
+  GuestRoute.tsx   |    37.5 |      100 |       0 |    37.5 | 5-9               
+  ...dingRoute.tsx |      40 |      100 |       0 |      40 | 6-11              
+  ...ctedRoute.tsx |      40 |      100 |       0 |      40 | 6-11              
+  index.ts         |     100 |      100 |     100 |     100 |                   
+ ...tend/src/store |   42.99 |    96.15 |    9.09 |   42.99 |                   
+  activitySlice.ts |   47.61 |      100 |   33.33 |   47.61 | 39-44,46-50       
+  ...ementSlice.ts |   45.18 |      100 |    5.26 |   45.18 | ...78-181,183-185 
+  apiSlice.ts      |     100 |       50 |     100 |     100 | 3                 
+  authSlice.ts     |   54.47 |      100 |   14.28 |   54.47 | ...30-134,140-143 
+  categorySlice.ts |   20.35 |      100 |    9.09 |   20.35 | ...35-138,141-192 
+  checkinSlice.ts  |   60.71 |      100 |      20 |   60.71 | 17-21,27-29,31-33 
+  eventSlice.ts    |   42.52 |      100 |    7.14 |   42.52 | ...30-137,139-141 
+  ...ttingSlice.ts |   40.27 |      100 |   16.66 |   40.27 | ...3,59-62,66-113 
+  habitSlice.ts    |   53.08 |      100 |    7.14 |   53.08 | ...02-105,107-109 
+  hooks.ts         |     100 |      100 |       0 |     100 |                   
+  ...eholdSlice.ts |   57.81 |      100 |    7.69 |   57.81 | ...88,93-96,98-99 
+  index.ts         |     100 |      100 |     100 |     100 |                   
+  moodSlice.ts     |   59.52 |      100 |   16.66 |   59.52 | ...29,31-39,45-47 
+  ...egorySlice.ts |   63.23 |      100 |   21.42 |   63.23 | ...68,73-75,77-80 
+  noteSlice.ts     |   58.44 |      100 |    6.66 |   58.44 | ...02-104,106-108 
+  reminderSlice.ts |   54.12 |      100 |    5.55 |   54.12 | ...72-177,182-185 
+  shoppingSlice.ts |      45 |      100 |    2.08 |      45 | ...25-328,334-336 
+  taskSlice.ts     |   21.46 |      100 |     2.5 |   21.46 | ...41-643,646-654 
+  ...tingsSlice.ts |   79.41 |      100 |      50 |   79.41 | 42-45,51-53       
+  userSlice.ts     |    46.2 |      100 |       4 |    46.2 | ...94-197,199-209 
+ frontend/src/test |       0 |        0 |       0 |       0 |                   
+  TestWrapper.tsx  |       0 |        0 |       0 |       0 | 1-17              
+  setup.ts         |       0 |        0 |       0 |       0 | 1-6               
+ ...src/test-utils |     100 |      100 |     100 |     100 |                   
+  factories.ts     |     100 |      100 |     100 |     100 |                   
+  ...WithStore.tsx |     100 |      100 |     100 |     100 |                   
+ ...d/src/test/msw |       0 |        0 |       0 |       0 |                   
+  handlers.ts      |       0 |        0 |       0 |       0 | 1-74              
+  server.ts        |       0 |        0 |       0 |       0 | 1-3               
+ ...tend/src/utils |    5.92 |       50 |    7.69 |    5.92 |                   
+  ...tTextColor.ts |   11.11 |      100 |       0 |   11.11 | 2-10              
+  getLightColor.ts |   14.28 |      100 |       0 |   14.28 | 2-9,12-15         
+  ...ardStorage.ts |    9.85 |      100 |       0 |    9.85 | ...41,44-47,51-87 
+  index.ts         |     100 |      100 |     100 |     100 |                   
+  isTooLight.ts    |    8.33 |      100 |       0 |    8.33 | 3-21              
+  lightenColor.ts  |       0 |      100 |     100 |       0 | 4-168             
+  needsDarkText.ts |       0 |        0 |       0 |       0 | 1-17              
+-------------------|---------|----------|---------|---------|-------------------

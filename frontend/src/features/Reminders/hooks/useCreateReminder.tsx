@@ -3,11 +3,3 @@ type CreateReminderFormValues = {
     triggerDate: Date;
 
 }
-
-export const useCreateReminder = () => {
-    const initialValues: CreateReminderFormValues = {
-        body:
-            triggerDate:
-
-    }
-}

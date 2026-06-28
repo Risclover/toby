@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { HiMiniArrowsUpDown } from "react-icons/hi2";
 import { DetailPopover } from "./DetailPopover";
 import { ShoppingListAddItemQuantity } from "./ShoppingListAddItemQuantity";
 import { ShoppingListAddItemUnit } from "./ShoppingListAddItemUnit";
 import { ShoppingListAddItemCategory } from "./ShoppingListAddItemCategory";
 import type { ShoppingList } from "@/store";
+import { useState } from "react";
 
 type Props = {
     list: ShoppingList;
@@ -12,14 +12,14 @@ type Props = {
     setQuantity: (q: number) => void;
     draftQuantity: number;
     setDraftQuantity: (q: number) => void;
+    qtyOpened: boolean;
+    setQtyOpened: (open: boolean) => void;
     unit: string;
     setUnit: (u: string) => void;
     categoryId: number | null;
     setCategoryId: (id: number | null) => void;
 }
-export const ShoppingListAddItemDetails = ({ list, quantity, setQuantity, draftQuantity, setDraftQuantity, unit, setUnit, categoryId, setCategoryId }: Props) => {
-    const [qtyOpened, setQtyOpened] = useState(false);
-    // Snapshot of quantity at the moment the popover opens — used to revert on Escape
+export const ShoppingListAddItemDetails = ({ list, quantity, setQuantity, draftQuantity, setDraftQuantity, qtyOpened, setQtyOpened, unit, setUnit, categoryId, setCategoryId }: Props) => {
     const [qtySnapshot, setQtySnapshot] = useState(quantity);
 
     const handleQtyOpenChange = (isOpen: boolean, explicitValue?: number) => {
@@ -27,8 +27,6 @@ export const ShoppingListAddItemDetails = ({ list, quantity, setQuantity, draftQ
             setQtySnapshot(quantity);
             setDraftQuantity(quantity);
         } else {
-            // explicitValue is always provided (Enter, blur, or Escape passing snapshot back)
-            // undefined fallback to draftQuantity covers Mantine's onChange on outside-container click
             setQuantity(explicitValue ?? draftQuantity);
         }
         setQtyOpened(isOpen);

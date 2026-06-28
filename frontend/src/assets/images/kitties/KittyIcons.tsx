@@ -33,6 +33,13 @@ import KittyThinking from "./kitty-thinking.png";
 import KittyWave from "./kitty-wave.png";
 import KittyWorkout from "./kitty-workout.png";
 import KittyWrite from "./kitty-write.png";
+import NewKittyMad from "./new-kitty-mad.png";
+import NewKittyHug from "./new-kitty-hug.png";
+import NewKittyBetterHug from "./new-kitty-hug-better.png";
+import NewKittyLaugh from "./new-kitty-laugh.png";
+import NewKittyBubbles from "./new-kitty-bubbles.png";
+import NewKittyMusic from "./new-kitty-music.png";
+import NewKittyPencil from "./new-kitty-pencil.png";
 
 export const KittyIcons = {
     Astronaut: KittyAstronaut,
@@ -70,4 +77,11 @@ export const KittyIcons = {
     Wave: KittyWave,
     Workout: KittyWorkout,
     Write: KittyWrite,
+    Mad: NewKittyMad,
+    Hug: NewKittyHug,
+    BetterHug: NewKittyBetterHug,
+    NewLaugh: NewKittyLaugh,
+    Pencil: NewKittyPencil,
+    NewBubbles: NewKittyBubbles,
+    NewMusic: NewKittyMusic,
 }

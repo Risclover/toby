@@ -45,9 +45,10 @@ export const ShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: Pro
                 max={9999}
                 clampBehavior="strict"
                 onChange={(value) => {
-                    const num = value === "" ? 0 : Number(value);
-                    setLocalValue(value === "" ? "" : num);
-                    onCommit(num); // live-sync so parent's draftQuantity stays current
+                    setLocalValue(value === "" ? "" : Number(value));
+                    if (value !== "") {
+                        onCommit(Number(value));
+                    }
                 }}
                 onKeyDown={handleKeyDown}
                 onBlur={() => {

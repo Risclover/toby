@@ -87,11 +87,12 @@ def create_app(config_class=None) -> Flask:
     # Blueprints, CLI commands, middlewares, error handlers
     # --------------------------------------------------------------------- #
     register_blueprints(app)
-    register_middlewares(app)
+    register_middlewares(app, db)
     register_error_handlers(app)
     app.cli.add_command(seed_commands)
     with app.app_context():
         init_scheduler(app)
+    
 
     # --------------------------------------------------------------------- #
     # Single-Page App fallback

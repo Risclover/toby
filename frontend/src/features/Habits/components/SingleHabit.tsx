@@ -44,7 +44,7 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
                     title: "Habit marked incomplete",
                     message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has returned. Go show it who's boss!</>,
                     color: "green",
-                    icon: KittyIcons.Frustrated
+                    icon: KittyIcons.Pencil
                 })
                 setChecked(false);
             } else {
@@ -53,7 +53,7 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
                     title: "Habit completed",
                     message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is done for the day. Keep it up, champ!</>,
                     color: "green",
-                    icon: KittyIcons.Celebrate
+                    icon: KittyIcons.NewBubbles
                 })
 
             }

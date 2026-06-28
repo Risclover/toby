@@ -17,15 +17,17 @@ export const ShoppingListAddItem = ({ list }: Props) => {
     const [showDetails, setShowDetails] = useState(false);
     const [quantity, setQuantity] = useState(0);
     const [draftQuantity, setDraftQuantity] = useState(0);
+    const [qtyOpened, setQtyOpened] = useState(false);
     const [unit, setUnit] = useState("");
     const [categoryId, setCategoryId] = useState<number | null>(null);
     const [addShoppingItem, { isLoading: loading }] = useAddShoppingItemMutation();
     const { data: household } = useHousehold();
 
     const handleOutsideClick = () => {
-        // Flush any pending draft before evaluating whether details are set
-        const committedQuantity = draftQuantity;
-        setQuantity(committedQuantity);
+        // Only flush draftQuantity if the popover is still open — if it's already closed,
+        // it handled its own commit/discard and quantity is already correct
+        const committedQuantity = qtyOpened ? draftQuantity : quantity;
+        if (qtyOpened) setQuantity(committedQuantity);
 
         const hasDetails = committedQuantity > 0 || categoryId !== null;
 
@@ -33,6 +35,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
             setShowDetails(false);
             setQuantity(0);
             setDraftQuantity(0);
+            setQtyOpened(false);
             setUnit("");
             setCategoryId(null);
         }
@@ -61,6 +64,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
             inputRef.current?.focus();
             setQuantity(0);
             setDraftQuantity(0);
+            setQtyOpened(false);
             setUnit("");
             setCategoryId(null);
 
@@ -98,13 +102,16 @@ export const ShoppingListAddItem = ({ list }: Props) => {
                         type="text"
                         placeholder="Add an item and press Enter"
                         className="add-item-input"
+                        maxLength={100}
                     />
                     <Button
                         color="cyan"
                         loading={loading}
                         onClick={handleAddItem}
                         disabled={inputValue.trim().length === 0}
-                    >Add</Button>
+                    >
+                        Add
+                    </Button>
                 </div>
                 {showDetails && (
                     <ShoppingListAddItemDetails
@@ -113,6 +120,8 @@ export const ShoppingListAddItem = ({ list }: Props) => {
                         setQuantity={setQuantity}
                         draftQuantity={draftQuantity}
                         setDraftQuantity={setDraftQuantity}
+                        qtyOpened={qtyOpened}
+                        setQtyOpened={setQtyOpened}
                         unit={unit}
                         setUnit={setUnit}
                         categoryId={categoryId}

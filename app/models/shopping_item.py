@@ -14,7 +14,7 @@ class ShoppingItem(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     
     # Fields
-    name = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=True)
     unit = db.Column(db.String(50), nullable=True)
     notes = db.Column(db.Text)
