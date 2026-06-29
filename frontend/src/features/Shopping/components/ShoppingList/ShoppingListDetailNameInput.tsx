@@ -1,4 +1,4 @@
-import { TextInput, ActionIcon } from "@mantine/core"
+import { TextInput, ActionIcon, CloseIcon } from "@mantine/core"
 import { IconX } from "@tabler/icons-react"
 
 type Props = {
@@ -19,11 +19,11 @@ export const ShoppingListDetailNameInput = ({ name, onCommit }: Props) => {
                         <ActionIcon
                             type="button"
                             variant="subtle"
-                            color="gray"
-                            size="sm"
+                            color="var(--mantine-color-gray-6)"
+                            size="xs"
                             onClick={() => onCommit("")}
                         >
-                            <IconX size={14} />
+                            <CloseIcon size=".9rem" color="var(--mantine-color-gray-6)" />
                         </ActionIcon>
                     )
                 }

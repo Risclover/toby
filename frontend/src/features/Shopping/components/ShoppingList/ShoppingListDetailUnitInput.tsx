@@ -96,7 +96,8 @@ export const ShoppingListDetailUnitInput = ({ unit, quantity, onCommit }: Props)
                     rightSection={
                         unit.length > 0 ? (
                             <ActionIcon
-                                variant="transparent"
+                                variant="subtle"
+                                color="var(--mantine-color-gray-6)"
                                 size="xs"
                                 onClick={(e) => {
                                     e.stopPropagation();

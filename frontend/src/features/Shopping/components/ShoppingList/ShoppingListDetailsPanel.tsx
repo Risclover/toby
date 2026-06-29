@@ -1,13 +1,12 @@
-import { Drawer, Button, Stack, Textarea } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { ShoppingListAddItemQuantity } from "../AddItemDetails/ShoppingListAddItemQuantity";
+import { Drawer, Button, Stack, Textarea, Group } from "@mantine/core";
 import type { ShoppingItem, ShoppingList } from "@/store";
-import { useEditShoppingItemMutation } from "@/store";
-import { KittyNotification } from "@/components";
-import { KittyIcons } from "@/assets";
+import type { DraftState } from "../../types/shoppingListDetailsPanel.types";
+import { ShoppingListAddItemQuantity } from "../AddItemDetails/ShoppingListAddItemQuantity";
 import { ShoppingListDetailCategoryInput } from "./ShoppingListDetailCategoryInput";
 import { ShoppingListDetailUnitInput } from "./ShoppingListDetailUnitInput";
 import { ShoppingListDetailNameInput } from "./ShoppingListDetailNameInput";
+import { ShoppingListDetailField } from "./ShoppingListDetailField";
+import { useShoppingListDetailsPanel } from "../../hooks/useShoppingListDetailsPanel";
 
 type Props = {
     item: ShoppingItem;
@@ -17,51 +16,15 @@ type Props = {
 }
 
 export const ShoppingListDetailsPanel = ({ item, list, opened, close }: Props) => {
-    const [draftName, setDraftName] = useState(item.name);
-    const [draftQuantity, setDraftQuantity] = useState(item.quantity ?? 0);
-    const [draftUnit, setDraftUnit] = useState(item.unit ?? "");
-    const [draftCategoryId, setDraftCategoryId] = useState<number | null>(item.categoryId ?? null);
-    const [draftNotes, setDraftNotes] = useState(item.notes ?? "");
-
-    const [updateItem, { isLoading }] = useEditShoppingItemMutation();
-
-    useEffect(() => {
-        if (opened) {
-            setDraftName(item.name);
-            setDraftQuantity(item.quantity ?? 0);
-            setDraftUnit(item.unit ?? "");
-            setDraftCategoryId(item.categoryId ?? null);
-            setDraftNotes(item.notes ?? "");
-        }
-    }, [opened]);
-
-    const handleSave = async () => {
-        try {
-            await updateItem({
-                itemId: item.id,
-                listId: list.id,
-                name: draftName.trim(),
-                quantity: draftQuantity > 0 ? draftQuantity : null,
-                unit: draftUnit.length > 0 ? draftUnit : null,
-                categoryId: draftCategoryId,
-                notes: draftNotes.trim().length > 0 ? draftNotes.trim() : null,
-            }).unwrap();
-            close();
-            KittyNotification({
-                title: "Item updated",
-                message: <>Changes to "<strong style={{ fontWeight: 500 }}>{item.name}</strong>" were saved.</>,
-                icon: KittyIcons.Celebrate,
-                color: "green",
-            });
-        } catch {
-            KittyNotification({
-                title: "Couldn't save changes",
-                message: <>Toby fumbled and failed to update "<strong style={{ fontWeight: 500 }}>{item.name}</strong>". Try again.</>,
-                icon: KittyIcons.Cry,
-                color: "red",
-            });
-        }
-    };
+    const {
+        draft,
+        setDraft,
+        dirty,
+        resolvedQuantity,
+        isLoading,
+        handleCancel,
+        handleSave,
+    } = useShoppingListDetailsPanel({ item, list, opened, close });
 
     return (
         <Drawer
@@ -71,70 +34,76 @@ export const ShoppingListDetailsPanel = ({ item, list, opened, close }: Props) =
             onClose={close}
             title="Item Details"
             size={620}
-            styles={{
-                body: {
-                    height: "calc(100% - 60px)"
-                }
-            }}
+            styles={{ body: { height: "calc(100% - 60px)" } }}
         >
             <Stack justify="space-between" h="100%">
                 <Stack gap="lg">
-                    <div className="details-panel-section">
-                        <div className="task-details-label">Name</div>
+                    <ShoppingListDetailField label="Name">
                         <ShoppingListDetailNameInput
-                            name={draftName}
-                            onCommit={setDraftName}
+                            name={draft.name}
+                            onCommit={(name) => setDraft((prev: DraftState) => ({ ...prev, name }))}
                         />
-                    </div>
-                    <div className="details-panel-section">
-                        <div className="task-details-label">Quantity</div>
+                    </ShoppingListDetailField>
+                    <ShoppingListDetailField label="Quantity">
                         <ShoppingListAddItemQuantity
-                            quantity={draftQuantity}
-                            onCommit={setDraftQuantity}
-                            onClose={(val) => setDraftQuantity(val ?? 0)}
+                            quantity={resolvedQuantity}
+                            onCommit={(quantity) => setDraft((prev: DraftState) => ({ ...prev, quantity }))}
+                            onClose={(val) => setDraft((prev: DraftState) => ({ ...prev, quantity: val ?? "" }))}
                         />
-                    </div>
-                    <div className="details-panel-section">
-                        <div className="task-details-label">Unit</div>
+                    </ShoppingListDetailField>
+                    <ShoppingListDetailField label="Unit">
                         <ShoppingListDetailUnitInput
-                            unit={draftUnit}
-                            quantity={draftQuantity}
-                            onCommit={setDraftUnit}
+                            unit={draft.unit}
+                            quantity={resolvedQuantity}
+                            onCommit={(unit) => setDraft((prev: DraftState) => ({ ...prev, unit }))}
                         />
-                    </div>
-                    <div className="details-panel-section">
-                        <div className="task-details-label">Category</div>
+                    </ShoppingListDetailField>
+                    <ShoppingListDetailField label="Category">
                         <ShoppingListDetailCategoryInput
                             list={list}
-                            categoryId={draftCategoryId}
-                            onCommit={setDraftCategoryId}
+                            categoryId={draft.categoryId}
+                            onCommit={(categoryId) => setDraft((prev: DraftState) => ({ ...prev, categoryId }))}
                         />
-                    </div>
-                    <div className="details-panel-section">
-                        <div className="task-details-label">Notes</div>
+                    </ShoppingListDetailField>
+                    <ShoppingListDetailField label="Notes">
                         <Textarea
-                            value={draftNotes}
-                            onChange={(e) => setDraftNotes(e.currentTarget.value)}
+                            value={draft.notes}
+                            onChange={(e) => {
+                                const notes = e.currentTarget.value;
+                                setDraft((prev: DraftState) => ({ ...prev, notes }));
+                            }}
                             placeholder="Add a note"
                             autosize
                             minRows={2}
                             maxRows={5}
                             maxLength={150}
                         />
-                    </div>
-
+                    </ShoppingListDetailField>
                 </Stack>
-                <Button
-                    mt="sm"
-                    color="rgb(5, 5, 73)"
-                    loading={isLoading}
-                    onClick={handleSave}
-                    disabled={draftName.trim().length === 0}
-                    size="md"
-                    fw={500}
-                >
-                    Save
-                </Button>
+                <Group mt="sm" grow gap="xs">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        color="rgb(5, 5, 73)"
+                        disabled={!dirty}
+                        onClick={handleCancel}
+                        size="sm"
+                        fw={500}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="button"
+                        color="rgb(5, 5, 73)"
+                        loading={isLoading}
+                        onClick={handleSave}
+                        disabled={!dirty || draft.name.trim().length === 0}
+                        size="sm"
+                        fw={500}
+                    >
+                        Save
+                    </Button>
+                </Group>
             </Stack>
         </Drawer>
     );

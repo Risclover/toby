@@ -43,7 +43,8 @@ export const ShoppingListDetailCategoryInput = ({ list, categoryId, onCommit }: 
                     rightSection={
                         selectedCategory ? (
                             <ActionIcon
-                                variant="transparent"
+                                variant="subtle"
+                                color="var(--mantine-color-gray-6)"
                                 size="xs"
                                 onClick={(e) => {
                                     e.stopPropagation();
