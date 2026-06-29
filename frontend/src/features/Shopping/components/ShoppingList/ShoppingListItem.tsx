@@ -60,12 +60,12 @@ export const ShoppingListItem = ({ list, item }: Props) => {
     if (!item) return null;
     return (
         <>
-            <div onClick={handleOpenDetails}>
+            <div onClick={handleOpenDetails} className="shopping-list-item">
                 <div className="shopping-list-item--top">
                     <div className="shopping-list-item--top-left">
                         <Checkbox
                             radius="xl"
-                            color="var(--tasklist-color)"
+                            color={list.color}
                             checked={checked}
                             onChange={onChange}
                             size="sm"
@@ -84,10 +84,12 @@ export const ShoppingListItem = ({ list, item }: Props) => {
                 </div>
                 <div className="shopping-list-item--bottom">
                     <div className="invisible-wall"></div>
-                    {item?.notes && <div className="shopping-list-item-notes">
-                        <TextSnippetIcon />
-                        <Text size="xs" maw={400} truncate>{item?.notes}</Text>
-                    </div>}
+                    {item?.notes && !item.isChecked &&
+                        <div className="shopping-list-item-notes">
+                            <TextSnippetIcon />
+                            <Text size="xs" maw={400} truncate>{item?.notes}</Text>
+                        </div>
+                    }
                 </div>
             </div>
             <ShoppingListDetailsPanel

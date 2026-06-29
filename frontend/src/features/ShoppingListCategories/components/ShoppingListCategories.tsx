@@ -41,7 +41,7 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
             centered
             fullScreen={isSmall}
             styles={{
-                body: { flex: 1, overflowY: "auto", padding: "1rem", overflowX: "hidden" },
+                body: { flex: 1, overflowY: "auto", padding: "1rem", overflowX: "hidden", paddingTop: 0 },
                 content: {
                     overflow: "hidden", display: "flex", flexDirection: "column"
                 },
@@ -50,13 +50,13 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
             <Modal.Overlay />
             <Modal.Content>
                 <Modal.Header>
-                    <Modal.Title>Manage list categories</Modal.Title>
+                    <Modal.Title>Categories</Modal.Title>
                     <Modal.CloseButton />
                 </Modal.Header>
                 <Modal.Body>
-                    {categories.length > 0 && <div className="shopping-list-category-limit-note">
+                    {/* {categories.length > 0 && <div className="shopping-list-category-limit-note">
                         Categories: {categories.length} of {MAX_CATEGORIES}
-                    </div>}
+                    </div>} */}
                     {categories.length === 0
                         ?
                         <div className="shopping-category-list--empty">
@@ -92,6 +92,8 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                             styles={{ root: { flexShrink: 0 } }}
                             color="rgb(5, 5, 73)"
                             size="sm"
+                            // radius={0}
+                            p="0 1.25rem"
                             fw={500}
                             h="auto"
                             onClick={handleAddCategory}

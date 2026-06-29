@@ -14,7 +14,7 @@ export const ShoppingListDetailCategoryInput = ({ list, categoryId, onCommit }: 
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
 
-    const { categories } = useShoppingListCategories(list.id);
+    const { categories } = useShoppingListCategories(list?.id);
     const selectedCategory = categories.find((c) => c.id === categoryId);
 
     const handleSubmit = (val: string) => {

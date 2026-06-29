@@ -1,68 +1,63 @@
 import { AnimatePresence, motion } from "framer-motion";
-import type { ShoppingList } from "@/store"
+import type { ShoppingList } from "@/store";
 import { ShoppingListItem } from "./ShoppingListItem";
+import { ShoppingListCompleted } from "./ShoppingListCompleted";
+import { ShoppingListCategorySection } from "./ShoppingListCategorySection";
+import { useShoppingListGroups } from "../../hooks/useShoppingListGroups";
 
 type Props = {
     list: ShoppingList;
-}
+};
 
 export const ShoppingListContainer = ({ list }: Props) => {
-    const unchecked = list.items.filter(item => !item.isChecked);
-    const checked = list.items.filter(item => item.isChecked);
+    const { categoryGroups, uncategorized, checked } = useShoppingListGroups(list);
 
     return (
         <div className="shopping-list-container">
-            <ul className="shopping-list">
-                <AnimatePresence>
-                    {unchecked.map((item) =>
-                        item.id < 0 ? (
-                            <li key={item.id} className="shopping-list-item">
-                                <ShoppingListItem list={list} item={item} />
-                            </li>
-                        ) : (
-                            <motion.li
-                                key={item.id}
-                                className="shopping-list-item"
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.35 }}
-                            >
-                                <ShoppingListItem list={list} item={item} />
-                            </motion.li>
-                        )
-                    )}
-                </AnimatePresence>
-            </ul>
+            {categoryGroups.map(({ category, items }) => (
+                <ShoppingListCategorySection
+                    key={category.id}
+                    list={list}
+                    categoryId={category.id}
+                    categoryName={category.name}
+                    items={items}
+                />
+            ))}
 
-            <AnimatePresence>
-                {checked.length > 0 && (
-                    <motion.div
-                        className="shopping-list-completed"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1 }}
-                    >
-                        <div className="shopping-list-completed-heading">Completed</div>
-
-                        <ul className="shopping-list">
-                            <AnimatePresence>
-                                {checked.map((item) => (
+            {uncategorized.length > 0 && (
+                categoryGroups.length > 0 ? (
+                    <ShoppingListCategorySection
+                        key="uncategorized"
+                        list={list}
+                        categoryId={0}
+                        categoryName="Uncategorized"
+                        items={uncategorized}
+                    />
+                ) : (
+                    <ul className="shopping-list">
+                        <AnimatePresence>
+                            {uncategorized.map((item) =>
+                                item.id < 0 ? (
+                                    <li key={item.id} className="shopping-list-li-item">
+                                        <ShoppingListItem list={list} item={item} />
+                                    </li>
+                                ) : (
                                     <motion.li
                                         key={item.id}
-                                        className="shopping-list-item completed"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
                                         transition={{ duration: 0.35 }}
+                                        className="shopping-list-li-item"
                                     >
                                         <ShoppingListItem list={list} item={item} />
                                     </motion.li>
-                                ))}
-                            </AnimatePresence>
-                        </ul>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                                )
+                            )}
+                        </AnimatePresence>
+                    </ul>
+                )
+            )}
+
+            <ShoppingListCompleted list={list} completed={checked} />
         </div>
     );
-}
+};

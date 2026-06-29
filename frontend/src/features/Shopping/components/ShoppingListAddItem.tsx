@@ -66,7 +66,6 @@ export const ShoppingListAddItem = ({ list }: Props) => {
             setDraftQuantity(0);
             setQtyOpened(false);
             setUnit("");
-            setCategoryId(null);
 
             KittyNotification({
                 title: "Item added successfully!",
@@ -105,7 +104,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
                         maxLength={100}
                     />
                     <Button
-                        color="cyan"
+                        color={list.color}
                         loading={loading}
                         onClick={handleAddItem}
                         disabled={inputValue.trim().length === 0}

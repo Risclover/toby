@@ -38,7 +38,7 @@ export const ShoppingListCategory = ({ category, isEditing, setIsEditing }: Prop
                         input: {
                             // borderBottom: "1px solid var(--border)",
                             backgroundColor: "rgb(244, 244, 248)",
-                            borderRadius: ".25rem",
+                            borderRadius: 0,
                             padding: ".5rem",
                             margin: "-.5rem",
                             borderLeft: "none",
