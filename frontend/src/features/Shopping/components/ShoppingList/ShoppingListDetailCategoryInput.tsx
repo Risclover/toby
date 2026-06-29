@@ -1,7 +1,8 @@
-import { ActionIcon, CloseIcon, Combobox, Group, InputBase, Text, useCombobox } from "@mantine/core";
+import { ActionIcon, CloseIcon, Combobox, Group, InputBase, ScrollArea, Text, useCombobox } from "@mantine/core";
 import type { ShoppingList } from "@/store";
 import { FaCheck } from "react-icons/fa6";
 import { useShoppingListCategories } from "../../hooks/useShoppingListCategories";
+import { useRef } from "react";
 
 type Props = {
     list: ShoppingList;
@@ -10,8 +11,14 @@ type Props = {
 }
 
 export const ShoppingListDetailCategoryInput = ({ list, categoryId, onCommit }: Props) => {
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
+        onDropdownOpen: () => {
+            requestAnimationFrame(() => {
+                scrollAreaRef.current?.scrollTo({ top: 0 });
+            });
+        }
     });
 
     const { categories } = useShoppingListCategories(list?.id);
@@ -33,6 +40,9 @@ export const ShoppingListDetailCategoryInput = ({ list, categoryId, onCommit }: 
                     fontSize: "var(--text-sm) !important",
                     padding: ".75rem 1rem"
                 },
+                options: {
+                    maxHeight: "300px"
+                }
             }}
         >
             <Combobox.Target>
@@ -68,19 +78,21 @@ export const ShoppingListDetailCategoryInput = ({ list, categoryId, onCommit }: 
             </Combobox.Target>
             <Combobox.Dropdown>
                 <Combobox.Options>
-                    {categories.length === 0
-                        ? <Combobox.Empty>No categories yet.</Combobox.Empty>
-                        : categories.map((cat) => (
-                            <Combobox.Option key={cat.id} value={String(cat.id)} active={cat.id === categoryId}>
-                                <Group justify="space-between" w="100%" maw="100%">
-                                    <Text c="black" size="14px" truncate="end" style={{ flex: 1, minWidth: 0 }}>
-                                        {cat.name}
-                                    </Text>
-                                    {cat.id === categoryId && <FaCheck color="var(--mantine-color-gray-6)" size="1rem" />}
-                                </Group>
-                            </Combobox.Option>
-                        ))
-                    }
+                    <ScrollArea.Autosize type="scroll" mah={250} viewportRef={scrollAreaRef}>
+                        {categories.length === 0
+                            ? <Combobox.Empty>No categories yet.</Combobox.Empty>
+                            : categories.map((cat) => (
+                                <Combobox.Option key={cat.id} value={String(cat.id)} active={cat.id === categoryId}>
+                                    <Group justify="space-between" w="100%" maw="100%">
+                                        <Text c="black" size="14px" truncate="end" style={{ flex: 1, minWidth: 0 }}>
+                                            {cat.name}
+                                        </Text>
+                                        {cat.id === categoryId && <FaCheck color="var(--mantine-color-gray-6)" size="1rem" />}
+                                    </Group>
+                                </Combobox.Option>
+                            ))
+                        }
+                    </ScrollArea.Autosize>
                 </Combobox.Options>
             </Combobox.Dropdown>
         </Combobox>

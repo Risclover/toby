@@ -41,18 +41,6 @@ export const ShoppingListItem = ({ list, item }: Props) => {
         }
     };
 
-    // useEffect(() => {
-    //     // Only apply defaults if tasklist is loaded
-    //     if (list?.viewMode) {
-    //         // You might want a check here: "Only set this on FIRST load, not every re-render"
-    //         // But since useEffect runs on dependency change, and tasklist.defaultFilters 
-    //         // usually doesn't change often, this is generally safe.
-    //         // If you want strict "on mount only" behavior, you need a Ref to track "hasInitialized".
-
-    //         setViewMode(tasklist.viewMode);
-    //     }
-    // }, [tasklist?.viewMode]);
-
     const handleOpenDetails = () => {
         setShowDetailsPanel(true);
     }
@@ -87,7 +75,7 @@ export const ShoppingListItem = ({ list, item }: Props) => {
                     {item?.notes && !item.isChecked &&
                         <div className="shopping-list-item-notes">
                             <TextSnippetIcon />
-                            <Text size="xs" maw={400} truncate>{item?.notes}</Text>
+                            <Text size="xs" maw="100%" truncate>{item?.notes}</Text>
                         </div>
                     }
                 </div>

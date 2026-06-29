@@ -48,7 +48,7 @@ export const ShoppingListCard = ({ list }: Props) => {
                 </div>
                 <div className="shopping-list-card-header--progress progress">
                     <div className="progress-left">
-                        <Progress color="rgb(5, 5, 73)" value={percent} />
+                        <Progress color={list.color} value={percent} />
                     </div>
                     {percent}%
                 </div>

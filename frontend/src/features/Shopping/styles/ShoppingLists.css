@@ -404,22 +404,27 @@
 
 .shopping-list-item--top {
     display: flex;
-    align-items: center;
     justify-content: space-between;
     width: 100%;
+    gap: .5rem;
 }
 
 
 .shopping-list-item--top-left,
 .shopping-list-item--top-right {
-    flex-shrink: 0;
     display: flex;
-    align-items: center;
 }
 
 .shopping-list-item--top-left {
     font-size: var(--text-sm);
     gap: .5rem;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.shopping-list-item--top-right {
+    flex-shrink: 0;
 }
 
 .shopping-list-item--bottom {
@@ -428,6 +433,7 @@
     gap: .5rem;
     font-size: var(--text-xs);
     color: var(--mantine-color-gray-7);
+    min-width: 0;
 }
 
 .shopping-list-item-notes {
@@ -436,7 +442,8 @@
     gap: .25rem;
     text-overflow: ellipsis;
     max-width: 100%;
-
+    min-width: 0;
+    overflow: hidden;
 }
 
 .shopping-list-item-notes svg {

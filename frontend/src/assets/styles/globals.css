@@ -484,6 +484,15 @@ form {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.homepage-collapse-card-title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
 }
 
 .homepage-collapse-card-tabs {

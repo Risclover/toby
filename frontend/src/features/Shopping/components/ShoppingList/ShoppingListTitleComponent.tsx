@@ -24,7 +24,7 @@ export const ShoppingListTitleComponent = ({ list }: Props) => {
             <div className="shopping-list-title-bar--top">
                 <div className="shopping-list-title-bar--left">
                     <Tooltip withArrow label="Go back">
-                        <ActionIcon onClick={() => navigate(-1)} variant="subtle" color="white"><ChevronLeftRoundedIcon /></ActionIcon>
+                        <ActionIcon onClick={() => navigate("/shopping")} variant="subtle" color="white"><ChevronLeftRoundedIcon /></ActionIcon>
                     </Tooltip>
                     <Title order={1} lineClamp={1} className={`shopping-list-title${isSmall ? " smaller-header" : ""}`}>{list.title}</Title>
                 </div>

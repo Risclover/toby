@@ -12,7 +12,7 @@ export const ShoppingListCompleted = ({ list, completed }: Props) => {
             <div className="panel-body">
                 {completed.map((item) => {
                     return (
-                        <ShoppingListCompletedItem list={list} item={item} />
+                        <ShoppingListCompletedItem key={item.id} list={list} item={item} />
                     )
                 })}
             </div>

@@ -55,8 +55,8 @@ export const ShoppingListAddItem = ({ list }: Props) => {
                 name: inputValue.trim(),
                 listId: list.id,
                 householdId: household?.id,
-                quantity: quantity > 0 ? quantity : null,
-                unit: unit.length > 0 ? unit : null,
+                quantity: quantity > 0 ? quantity : "",
+                unit: unit.length > 0 ? unit : "",
                 categoryId,
             }).unwrap();
 

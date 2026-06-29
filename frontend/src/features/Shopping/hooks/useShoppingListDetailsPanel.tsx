@@ -16,6 +16,7 @@ export const useShoppingListDetailsPanel = ({ item, list, opened, close }: UseSh
     const [draft, setDraft] = useState<DraftState>(() => buildDraft(item));
     const [original, setOriginal] = useState<DraftState>(() => buildDraft(item));
     const [updateItem, { isLoading }] = useEditShoppingItemMutation();
+    const [showDiscardWarning, setShowDiscardWarning] = useState(false);
 
     useEffect(() => {
         if (opened) {
@@ -37,26 +38,39 @@ export const useShoppingListDetailsPanel = ({ item, list, opened, close }: UseSh
                 listId: list.id,
                 name: draft.name.trim(),
                 quantity: draft.quantity !== "" && draft.quantity > 0 ? draft.quantity : null,
-                unit: draft.unit.length > 0 ? draft.unit : null,
+                unit: draft.unit && draft.unit.length > 0 ? draft.unit : null,
                 categoryId: draft.categoryId,
-                notes: draft.notes.trim().length > 0 ? draft.notes.trim() : null,
+                notes: draft.notes && draft.notes.trim().length > 0 ? draft.notes.trim() : null,
             }).unwrap();
             close();
             KittyNotification({
                 title: "Item updated",
-                message: <>Changes to "<strong style={{ fontWeight: 500 }}>{item.name}</strong>" were saved.</>,
+                message: <>Changes to "<strong style={{ fontWeight: 500 }}>{draft.name}</strong>" were saved.</>,
                 icon: KittyIcons.Celebrate,
                 color: "green",
             });
         } catch {
             KittyNotification({
                 title: "Couldn't save changes",
-                message: <>Toby fumbled and failed to update "<strong style={{ fontWeight: 500 }}>{item.name}</strong>". Try again.</>,
+                message: <>Toby fumbled and failed to update "<strong style={{ fontWeight: 500 }}>{draft.name}</strong>". Try again.</>,
                 icon: KittyIcons.Cry,
                 color: "red",
             });
         }
     };
+
+    const handleClose = () => {
+        if (draft !== original) {
+            setShowDiscardWarning(true);
+        } else {
+            close();
+        }
+    }
+
+    const onConfirmDiscard = () => {
+        close();
+        setShowDiscardWarning(false);
+    }
 
     return {
         draft,
@@ -66,5 +80,9 @@ export const useShoppingListDetailsPanel = ({ item, list, opened, close }: UseSh
         isLoading,
         handleCancel,
         handleSave,
+        showDiscardWarning,
+        setShowDiscardWarning,
+        handleClose,
+        onConfirmDiscard
     };
 };

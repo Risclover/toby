@@ -7,10 +7,10 @@ export type ShoppingItem = {
     categoryId: number | null;
     category: string | null;
     name: string;
-    quantity: number | null;
-    unit: string | null;
+    quantity: number | "";
+    unit: string | "";
     isChecked: boolean;
-    notes: string | null;
+    notes: string | "";
     completedById: number | null;
     createdAt: string;
     updatedAt: string;
@@ -162,13 +162,13 @@ export const shoppingSlice = apiSlice.injectEndpoints({
 
         /* -------------------- Items -------------------- */
 
-        addShoppingItem: builder.mutation<ShoppingItem, { listId: number; name: string; categoryId?: number | null; quantity?: number | null; unit?: string | null; householdId: number }>({
+        addShoppingItem: builder.mutation<ShoppingItem, { listId: number; name: string; categoryId?: number | null; quantity?: number | ""; unit?: string | ""; householdId: number }>({
             query: ({ listId, name, categoryId = null, quantity = null, unit = null }) => ({
                 url: `/shopping-lists/${listId}/items`,
                 method: "POST",
                 body: { name, categoryId, quantity, unit },
             }),
-            async onQueryStarted({ listId, name, categoryId = null, quantity = null, unit = null }, { dispatch, queryFulfilled }) {
+            async onQueryStarted({ listId, name, categoryId = null, quantity = "", unit = "" }, { dispatch, queryFulfilled }) {
                 const tempId = Math.floor(Math.random() * -1e9);
                 const patch = dispatch(
                     shoppingSlice.util.updateQueryData("getShoppingList", listId, (draft) => {
@@ -181,7 +181,7 @@ export const shoppingSlice = apiSlice.injectEndpoints({
                             isChecked: false,
                             categoryId,
                             category: null,
-                            notes: null,
+                            notes: "",
                             completedById: null,
                             creatorId: 0,
                             createdAt: new Date().toISOString(),
