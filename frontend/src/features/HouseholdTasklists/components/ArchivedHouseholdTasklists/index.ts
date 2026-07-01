@@ -1,2 +1,2 @@
 export { ArchivedHouseholdTasklists } from "./ArchivedHouseholdTasklists";
-export { ArchiveNotice } from "./ArchiveNotice";
+export { ArchiveNotice } from "../../../../components/ArchiveNotice";

@@ -102,6 +102,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
                         placeholder="Add an item and press Enter"
                         className="add-item-input"
                         maxLength={100}
+                        disabled={list.isArchived}
                     />
                     <Button
                         color={list.color}

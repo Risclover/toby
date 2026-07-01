@@ -1,11 +1,11 @@
-import { useNavigate } from "react-router-dom";
-import { MobileLayout } from "@/layout/MobileLayout"
-import { MobileTasklistHeader } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklistHeader";
-import { ArchivedHouseholdTasklists } from "@/features/HouseholdTasklists/components/ArchivedHouseholdTasklists/ArchivedHouseholdTasklists";
+import { MobileLayout } from "@/layout"
+import { ArchivedHouseholdTasklists } from "..";
 import { ActionIcon, Tooltip } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import { ArchivedShoppingLists } from "@/features/Shopping/components/ArchivedShoppingLists/ArchivedShoppingLists";
 
-export const ArchivedHouseholdTasklistsPage = () => {
+export const ArchivedShoppingListsPage = () => {
     const navigate = useNavigate();
 
     const titleComponent = (
@@ -15,7 +15,7 @@ export const ArchivedHouseholdTasklistsPage = () => {
                     <ActionIcon onClick={() => navigate(-1)} variant="subtle" color="white">
                         <ChevronLeftRoundedIcon />
                     </ActionIcon></Tooltip>
-                <h1>Archived Tasklists</h1>
+                <h1>Archived Shopping Lists</h1>
             </div>
         </div>
     );
@@ -23,7 +23,7 @@ export const ArchivedHouseholdTasklistsPage = () => {
     return (
         <MobileLayout titleComponent={titleComponent}>
             <div className="shopping-list-header"></div>
-            <ArchivedHouseholdTasklists />
+            <ArchivedShoppingLists />
         </MobileLayout>
-    );
+    )
 }

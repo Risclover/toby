@@ -1,0 +1,59 @@
+.archived-shopping-lists-container {
+    padding: 1rem;
+}
+
+.archived-shopping-lists-item {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    margin-bottom: .5rem;
+    padding: 0.5rem 1rem;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+    background: white;
+    border-radius: 0.5rem;
+    /* font-weight: 400; */
+    cursor: pointer;
+}
+
+.archived-shopping-lists-item:hover {
+    background: #f2f4fc;
+}
+
+.archived-shopping-lists-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: "Commissioner", sans-serif;
+    font-weight: 500;
+}
+
+.archived-shopping-lists-item-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.archived-shopping-lists-item-bottom {
+    font-size: var(--text-xs);
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.archived-shopping-lists-item-bottom span {
+    font-weight: 500;
+    font-family: "Alan Sans", sans-serif;
+}
+
+.archived-shopping-lists-item-data {
+    margin-right: 1rem;
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+@media (max-width: 425px) {
+    .archived-shopping-lists-container {
+        padding: .5rem;
+    }
+}

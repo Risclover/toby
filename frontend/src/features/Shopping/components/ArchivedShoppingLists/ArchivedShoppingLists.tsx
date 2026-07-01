@@ -2,31 +2,27 @@ import type React from "react";
 import dayjs from "dayjs";
 import { Avatar, Center, Loader, Skeleton, Tooltip } from "@mantine/core";
 
-import { useAuthenticateQuery, useGetTasklistsQuery } from "@/store";
-import { ArchivedHouseholdTasklistsMenu } from "./ArchivedHouseholdTasklistsMenu";
+import { useAuthenticateQuery, useGetShoppingListsQuery, useGetTasklistsQuery } from "@/store";
+import { ArchivedShoppingListsMenu } from "./ArchivedShoppingListsMenu";
 import { useStablePending } from "@/hooks";
 import { useHousehold } from "@/hooks/useHousehold";
-import { Tasklist } from "../HouseholdTasklists";
 import { useNavigate } from "react-router-dom";
 import { DeleteConfirmation } from "@/components";
 import { useState } from "react";
+import "../../styles/ArchivedShoppingLists.css"
 
-export const ArchivedHouseholdTasklists = () => {
+export const ArchivedShoppingLists = () => {
     const navigate = useNavigate();
     const { data: user, isSuccess: userLoaded } = useAuthenticateQuery();
-    const { data: archivedLists, isFetching, isLoading, isSuccess: dataLoaded } = useGetTasklistsQuery(
+    const { data: archivedLists, isFetching, isLoading, isSuccess: dataLoaded } = useGetShoppingListsQuery(
         { householdId: Number(user?.householdId), isArchived: true },
         { skip: !user?.householdId }
     );
     const { data: household } = useHousehold();
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-    // Use isFetching instead of isLoading to catch re-renders
     const isActuallyLoading = !userLoaded || isFetching;
     const loading = useStablePending(isActuallyLoading, { showAfterMs: 0, minVisibleMs: 500 });
-
-    // 1. THE GATE: If we aren't 100% finished with both Auth AND Data, 
-    // stay in the loading branch.
 
     const handleAvatarKeyDown = (e: React.KeyboardEvent<HTMLDivElement>, userId: number | undefined) => {
         if (e.key === "Enter" || e.key === " ") goToUserProfile(userId);
@@ -37,16 +33,16 @@ export const ArchivedHouseholdTasklists = () => {
     }
 
     const archivedItems = archivedLists?.map(list => (
-        <div className="archived-household-tasklists-item" onClick={() => navigate(`/tasklists/${list.id}`)}>
-            <div className="archived-household-tasklists-item-top">
-                <div className="archived-household-tasklists-item-title">{list.title}</div>
+        <div className="archived-shopping-lists-item" onClick={() => navigate(`/shopping/${list.id}`)}>
+            <div className="archived-shopping-lists-item-top">
+                <div className="archived-shopping-lists-item-title">{list.title}</div>
                 {(user.id === household?.adminId || user.id === list.creatorId) && <div className="archived-table-btns">
-                    <ArchivedHouseholdTasklistsMenu list={list} tasklistId={list.id} />
+                    <ArchivedShoppingListsMenu list={list} tasklistId={list.id} />
                 </div>}
             </div>
-            <div className="archived-household-tasklists-item-bottom">
-                <div className="archived-household-tasklists-item-data"><span>Archived on:</span> {dayjs(list.archivedDate).format("MMM DD, YYYY")}</div>
-                <div className="archived-household-tasklists-item-data">
+            <div className="archived-shopping-lists-item-bottom">
+                <div className="archived-shopping-lists-item-data"><span>Archived on:</span> {dayjs(list.archivedDate).format("MMM DD, YYYY")}</div>
+                <div className="archived-shopping-lists-item-data">
                     <span>Archived by:</span>
                     <Tooltip events={{ hover: true, focus: true, touch: true }} withArrow label={list.archivedBy?.firstName}>
                         <Avatar
@@ -68,15 +64,15 @@ export const ArchivedHouseholdTasklists = () => {
 
 
     return (
-        <div className="archived-household-tasklists-container">
-            {loading || !dataLoaded ? Array.from({ length: 12 }).map((_, i) => <ArchivedTasklistsSkeleton />) : archivedLists?.length === 0 ? <Center h="50vh">You haven't archived any tasklists.</Center> : archivedItems}
+        <div className="archived-shopping-lists-container">
+            {loading || !dataLoaded ? Array.from({ length: 12 }).map((_, i) => <ArchivedShoppingListsSkeleton />) : archivedLists?.length === 0 ? <Center h="50vh">You haven't archived any shopping lists.</Center> : archivedItems}
         </div>
     )
 }
 
-const ArchivedTasklistsSkeleton = () => {
+const ArchivedShoppingListsSkeleton = () => {
     return (
-        <div className="archived-household-tasklists-item">
+        <div className="archived-shopping-lists-item">
             <Skeleton h={12} w={305} mt={4} maw="100%" />
             <div className="archived-skeleton-bottom">
                 <Skeleton h={8} w={150} mt={10} mb={6} />

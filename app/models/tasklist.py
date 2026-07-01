@@ -75,6 +75,7 @@ class Tasklist(db.Model):
     # List status
     is_archived = db.Column(db.Boolean, default=False, nullable=False)
     archived_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    archived_date = db.Column(db.DateTime, nullable=True)
 
     # Layout
     show_completed = db.Column(db.Boolean, default=False)
@@ -211,6 +212,7 @@ class Tasklist(db.Model):
                 "firstName": self.archiver.first_name,
                 "lastName": self.archiver.last_name
             } if self.is_archived and self.archiver else None,
+            "archivedDate": self.archived_date.isoformat() if self.archived_date else None,
             "defaultSortOrder": self.default_sort_order,
             "defaultFilters": self.default_filters,
             "creatorId": self.creator_id,

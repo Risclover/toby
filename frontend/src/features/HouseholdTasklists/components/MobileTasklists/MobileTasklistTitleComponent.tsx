@@ -25,6 +25,11 @@ export const MobileTasklistTitleComponent = ({
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
 
+    const handleSettingsClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        if (tasklist.isArchived) return;
+        setShowTasklistSettings(true);
+    }
     return (
         <div className="mobile-tasklist-title-bar">
             <div className="mobile-tasklist-title-bar-top">
@@ -36,18 +41,20 @@ export const MobileTasklistTitleComponent = ({
                     </Tooltip>
                     <Title order={1} lineClamp={1} className={`title-announcements-title${isSmall ? " smaller-header" : ""}`}>{tasklist.title}</Title>
                 </div>
-                {(user.id === household?.adminId || user.id === tasklist.creatorId) && <Tooltip withArrow label="Tasklist settings">
-                    <ActionIcon
-                        onClick={() => setShowTasklistSettings(true)}
-                        className="tasklist-settings-btn"
-                        size="md"
-                        variant="transparent"
-                        radius="xl"
-                        color="white"
-                    >
-                        <SettingsRoundedIcon />
-                    </ActionIcon>
-                </Tooltip>}
+                {(user.id === household?.adminId || user.id === tasklist.creatorId) &&
+                    <Tooltip withArrow label={`Tasklist settings${tasklist.isArchived ? " (disabled while archived)" : ""}`}>
+                        <ActionIcon
+                            onClick={handleSettingsClick}
+                            className={`tasklist-settings-btn${tasklist.isArchived ? " list-archived" : ""}`}
+                            size="md"
+                            variant="transparent"
+                            radius="xl"
+                            color="white"
+                        >
+                            <SettingsRoundedIcon />
+                        </ActionIcon>
+                    </Tooltip>
+                }
             </div>
             <div className="progress">
                 <div className="progress-left">

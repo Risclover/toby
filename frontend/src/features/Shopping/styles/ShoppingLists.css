@@ -489,6 +489,15 @@
     font-size: var(--text-sm);
 }
 
+
+.shopping-list-item--archived {
+    cursor: not-allowed !important;
+}
+
+.shopping-list-settings-btn.list-archived {
+    cursor: not-allowed;
+}
+
 @media (max-width: 425px) {
     .shopping-lists-grid {
         gap: .5rem;
@@ -502,10 +511,6 @@
 
     .shopping-list {
         border-radius: 0;
-    }
-
-    .shopping-list {
-        border-bottom: 1px solid var(--mantine-color-gray-3);
     }
 
     .shopping-list-container .homepage-collapse-card {

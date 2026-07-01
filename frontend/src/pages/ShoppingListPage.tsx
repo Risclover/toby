@@ -1,4 +1,4 @@
-import { ShoppingListAddItem } from "@/features";
+import { ArchiveNotice, ShoppingListAddItem } from "@/features";
 import { ShoppingListContainer } from "@/features/Shopping/components/ShoppingList/ShoppingListContainer";
 import { ShoppingListHeader } from "@/features/Shopping/components/ShoppingListHeader";
 import { ShoppingListTitleComponent } from "@/features/Shopping/components/ShoppingList/ShoppingListTitleComponent";
@@ -15,6 +15,7 @@ export const ShoppingListPage = () => {
     return (
         <MobileLayout titleComponent={<ShoppingListTitleComponent list={list} />}>
             <ShoppingListHeader list={list} />
+            {list.isArchived && <ArchiveNotice listId={list.id} itemType="shoppinglist" />}
             <ShoppingListContainer list={list} />
             <ShoppingListAddItem list={list} />
         </MobileLayout>

@@ -350,6 +350,7 @@ def archive_list(id):
 
     tasklist.is_archived = True
     tasklist.archived_by = current_user.id
+    tasklist.archived_date = datetime.utcnow()
 
     ActivityService.record(
         household_id=tasklist.household_id,

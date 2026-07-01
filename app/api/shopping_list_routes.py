@@ -4,6 +4,7 @@ from app.models.shopping_list_member import ShoppingListMember
 from app.extensions import db
 from flask_login import current_user, login_required
 from app.utils.activity_service import ActivityService
+from datetime import datetime
 
 shopping_list_routes = Blueprint("shopping-lists", __name__)
 
@@ -33,10 +34,12 @@ def get_shopping_list(id):
 @login_required
 def get_shopping_lists():
     household_id = request.args.get("householdId", type=int)
+    is_archived = request.args.get("is_archived", "false").lower() == "true"
+
     if not household_id:
         return jsonify({"error": "householdId is required"}), 400
 
-    shopping_lists = ShoppingList.query.filter_by(household_id=household_id).all()
+    shopping_lists = ShoppingList.query.filter_by(household_id=household_id, is_archived=is_archived).all()
     return jsonify([shopping_list.to_dict() for shopping_list in shopping_lists]), 200
 
 @shopping_list_routes.route("/<int:id>/items", methods=["POST"])
@@ -176,6 +179,7 @@ def archive_list(id):
     
     shopping_list.is_archived = True
     shopping_list.archived_by = current_user.id
+    shopping_list.archived_date = datetime.utcnow()
 
     ActivityService.record(
         household_id=shopping_list.household_id,

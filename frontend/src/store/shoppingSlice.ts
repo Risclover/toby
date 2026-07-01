@@ -47,6 +47,7 @@ export type ShoppingList = {
     allMembers: boolean;
     isArchived: boolean;
     archivedBy: ShoppingListArchiver | null;
+    archivedDate: string | null;
     categories: ShoppingCategory[];
     items: ShoppingItem[];
     memberIds: number[];
@@ -56,20 +57,39 @@ export type ShoppingList = {
     updatedAt: string;
 };
 
+type GetShoppingListsArgs = {
+    householdId: number;
+    isArchived: boolean;
+};
+
+type ShoppingListTag = { type: "ShoppingList"; id: number | string };
+
 export const shoppingSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
 
         /* -------------------- Lists -------------------- */
 
-        getShoppingLists: builder.query<ShoppingList[], number>({
-            query: (householdId) => ({ url: "/shopping-lists", method: "GET", params: { householdId } }),
-            providesTags: (result) =>
-                result
-                    ? [
-                        ...result.map(({ id }) => ({ type: "ShoppingList" as const, id })),
-                        { type: "ShoppingList" as const, id: "LIST" },
-                    ]
-                    : [{ type: "ShoppingList" as const, id: "LIST" }],
+        getShoppingLists: builder.query<ShoppingList[], GetShoppingListsArgs>({
+            query: ({ householdId, isArchived }) => ({
+                url: "/shopping-lists",
+                method: "GET",
+                params: { householdId, is_archived: isArchived },
+            }),
+            providesTags: (result, _error, { householdId, isArchived }): ShoppingListTag[] => {
+                const status = isArchived ? "ARCHIVED" : "ACTIVE";
+                const tags: ShoppingListTag[] = [
+                    { type: "ShoppingList", id: "LIST" },
+                    { type: "ShoppingList", id: `HOUSEHOLD_${householdId}` },
+                    { type: "ShoppingList", id: `HOUSEHOLD_${householdId}_${status}` },
+                ];
+                if (result) {
+                    return [
+                        ...tags,
+                        ...result.map((l) => ({ type: "ShoppingList" as const, id: l.id })),
+                    ];
+                }
+                return tags;
+            },
         }),
 
         getShoppingList: builder.query<ShoppingList, number>({
@@ -118,6 +138,8 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             query: ({ listId }) => ({ url: `/shopping-lists/${listId}/archive`, method: "PATCH" }),
             invalidatesTags: (_r, _e, { listId, householdId }) => [
                 { type: "ShoppingList", id: listId },
+                { type: "ShoppingList", id: `HOUSEHOLD_${householdId}_ACTIVE` },
+                { type: "ShoppingList", id: `HOUSEHOLD_${householdId}_ARCHIVED` },
                 { type: "Activity" as const, id: `HOUSEHOLD_${householdId}` },
             ],
         }),
@@ -126,6 +148,8 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             query: ({ listId }) => ({ url: `/shopping-lists/${listId}/unarchive`, method: "PATCH" }),
             invalidatesTags: (_r, _e, { listId, householdId }) => [
                 { type: "ShoppingList", id: listId },
+                { type: "ShoppingList", id: `HOUSEHOLD_${householdId}_ACTIVE` },
+                { type: "ShoppingList", id: `HOUSEHOLD_${householdId}_ARCHIVED` },
                 { type: "Activity" as const, id: `HOUSEHOLD_${householdId}` },
             ],
         }),

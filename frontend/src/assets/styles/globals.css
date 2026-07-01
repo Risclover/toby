@@ -861,6 +861,12 @@ form {
     border-top-right-radius: 0;
 }
 
+.restore-list-btn {
+    color: var(--mantine-color-blue-7);
+    font-weight: 500;
+    cursor: pointer;
+}
+
 @media (max-width: 425px) {
     .time-sensitive-task .empty-space {
         width: 30px;

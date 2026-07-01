@@ -4,6 +4,7 @@ import { ShoppingListItem } from "./ShoppingListItem";
 import { ShoppingListCompleted } from "./ShoppingListCompleted";
 import { ShoppingListCategorySection } from "./ShoppingListCategorySection";
 import { useShoppingListGroups } from "../../hooks/useShoppingListGroups";
+import { ArchiveNotice } from "@/components/ArchiveNotice";
 
 type Props = {
     list: ShoppingList;

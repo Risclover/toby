@@ -6,3 +6,4 @@ export { MobileHome } from "./MobileHome";
 export { ShoppingListPage } from "./ShoppingListPage";
 export { ShoppingListsPage } from "./ShoppingListsPage";
 export { UserPage } from "./UserPage";
+export { ArchivedShoppingListsPage } from "./ArchivedShoppingListsPage";

@@ -18,6 +18,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { GuestRoute } from "./GuestRoute";
 import UserProfilePageDemo from "@/pages/UserProfileDemo";
 import { UserProfilePage } from "@/pages/UserProfilePage";
+import { ArchivedShoppingListsPage } from "@/pages";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
@@ -29,6 +30,7 @@ export const AppRoutes = () => {
             <Route path="/signup" element={<GuestRoute><Registration createHousehold={true} /></GuestRoute>} />
             <Route path="/users/:userId" element={<UserPage />} />
             <Route path="/tasklists/archived" element={<ProtectedRoute><ArchivedHouseholdTasklistsPage /></ProtectedRoute>} />
+            <Route path="/shopping/archived" element={<ProtectedRoute><ArchivedShoppingListsPage /></ProtectedRoute>} />
             <Route path="/tasklists" element={<ProtectedRoute><MobileTasklists /></ProtectedRoute>} />
             <Route path="/tasklists/:tasklistId" element={<ProtectedRoute><MobileTasklist /></ProtectedRoute>} />
             <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />

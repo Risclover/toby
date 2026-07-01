@@ -5,7 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { ShoppingListItemDetailPill } from "./ShoppingListItemDetailPill";
 import { getUnitLabel } from "../../constants/shoppingUnits";
-import { ShoppingListDetailsPanel } from "./ShoppingListDetailsPanel";
+import { ShoppingListDetailsPanel } from "../ShoppingListDetailsPanel/ShoppingListDetailsPanel";
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
 type Props = {
@@ -42,13 +42,14 @@ export const ShoppingListItem = ({ list, item }: Props) => {
     };
 
     const handleOpenDetails = () => {
-        setShowDetailsPanel(true);
+        if (!list.isArchived)
+            setShowDetailsPanel(true);
     }
 
     if (!item) return null;
     return (
         <>
-            <div onClick={handleOpenDetails} className="shopping-list-item">
+            <div onClick={handleOpenDetails} className={`shopping-list-item${list.isArchived ? " shopping-list-item--archived" : ""}`}>
                 <div className="shopping-list-item--top">
                     <div className="shopping-list-item--top-left">
                         <Checkbox

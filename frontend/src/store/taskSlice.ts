@@ -34,6 +34,7 @@ export interface TasklistType {
         firstName: string;
         lastName: string;
     } | null;
+    archivedDate: string | null;
     defaultSortOrder: string;
     defaultFilters: {
         importance: "all" | "important";

@@ -12,7 +12,7 @@ import { HouseholdTasklistPageList } from "../HouseholdTasklistPage/HouseholdTas
 import { HouseholdTasklistPageCompleted } from "../HouseholdTasklistPage/HouseholdTasklistPageCompleted";
 import { HouseholdTasklistPageAddTask } from "../HouseholdTasklistPage/HouseholdTasklistPageAddTask";
 import { TasklistSettings } from "../TasklistSettings/TasklistSettings";
-import { ArchiveNotice } from "../ArchivedHouseholdTasklists/ArchiveNotice";
+import { ArchiveNotice } from "../../../../components/ArchiveNotice";
 import { MobileTasklistTitleComponent } from "./MobileTasklistTitleComponent";
 
 import "../../styles/MobileTasklist.css"
@@ -74,7 +74,7 @@ export const MobileTasklist = () => {
                 tasklist={tasklist}
             />
 
-            {tasklist.isArchived && <ArchiveNotice tasklistId={listId} />}
+            {tasklist.isArchived && <ArchiveNotice listId={listId} itemType="tasklist" />}
 
             <div className="mobile-tasklist-content">
                 {data.isEmpty && (

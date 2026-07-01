@@ -24,6 +24,7 @@ class ShoppingList(db.Model):
     all_members = db.Column(db.Boolean, default=True, nullable=False)
     is_archived = db.Column(db.Boolean, default=False, nullable=False)
     archived_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    archived_date = db.Column(db.DateTime, nullable=True)
     default_sort = db.Column(db.String(10), nullable=False, default="created")
     group_by_category = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -152,6 +153,7 @@ class ShoppingList(db.Model):
                 "firstName": self.archiver.first_name,
                 "lastName": self.archiver.last_name
             } if self.is_archived and self.archiver else None,
+            "archivedDate": self.archived_date.isoformat() + "Z" if self.archived_date else None,
             "categories": [category.to_dict() for category in self.categories],
             "defaultSort": self.default_sort,
             "groupByCategory": self.group_by_category,

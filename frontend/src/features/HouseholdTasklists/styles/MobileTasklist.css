@@ -248,6 +248,10 @@
     border-top-right-radius: 0;
 }
 
+.tasklist-settings-btn.list-archived {
+    cursor: not-allowed;
+}
+
 @media(max-width: 425px) {
     .mobile-tasklist-content {
         padding: 0;

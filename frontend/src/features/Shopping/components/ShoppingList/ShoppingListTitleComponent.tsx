@@ -17,8 +17,14 @@ export const ShoppingListTitleComponent = ({ list }: Props) => {
     const isSmall = useIsSmallScreen(425);
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
-    const { completed, uncompleted, percent, completedCount, remainingCount } = useShoppingList({ items: list.items });
-    if (!list) return null;
+    const { percent } = useShoppingList({ items: list.items });
+
+    const handleSettingsClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        if (list.isArchived) return;
+        // setShowTasklistSettings(true);
+    }
+
     return (
         <div className="shopping-list-title-bar">
             <div className="shopping-list-title-bar--top">
@@ -28,9 +34,13 @@ export const ShoppingListTitleComponent = ({ list }: Props) => {
                     </Tooltip>
                     <Title order={1} lineClamp={1} className={`shopping-list-title${isSmall ? " smaller-header" : ""}`}>{list.title}</Title>
                 </div>
-                {(user.id === household?.adminId || user.id === list.creatorId) && <Tooltip withArrow label="List settings">
-                    <ActionIcon className="shopping-list-settings-btn" size="md" variant="transparent" radius="xl" color="white">
-                        <SettingsRoundedIcon /></ActionIcon></Tooltip>}
+                {(user.id === household?.adminId || user.id === list.creatorId) &&
+                    <Tooltip withArrow label={`List settings${list.isArchived ? " (disabled while archived)" : ""}`}>
+                        <ActionIcon className={`shopping-list-settings-btn${list.isArchived ? " list-archived" : ""}`} size="md" variant="transparent" radius="xl" color="white">
+                            <SettingsRoundedIcon />
+                        </ActionIcon>
+                    </Tooltip>
+                }
             </div>
             <div className="progress">
                 <div className="progress-left">

@@ -5,8 +5,24 @@ import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import DeleteRounded from '@mui/icons-material/Delete';
 import { FaTrash } from "react-icons/fa";
 import { FaCopy } from "react-icons/fa";
+import { useArchiveShoppingListMutation, type ShoppingList } from "@/store";
+import { useHousehold } from "@/hooks/useHousehold";
 
-export const ShoppingListActionsMenu = () => {
+type Props = {
+    list: ShoppingList;
+}
+export const ShoppingListActionsMenu = ({ list }: Props) => {
+    const { data: household } = useHousehold();
+    const [archiveList] = useArchiveShoppingListMutation();
+
+    const handleArchiveList = async () => {
+        try {
+            await archiveList({ listId: list.id, householdId: household?.id }).unwrap();
+        } catch (err) {
+            console.error("Failed to archive shopping list:", err);
+        }
+    }
+
     return (
         <div className="menu-wrapper"
             onKeyDown={(e) => {
@@ -44,7 +60,7 @@ export const ShoppingListActionsMenu = () => {
                     <Menu.Item tabIndex={0} leftSection={<div className="archived-menu-icon"><ArchivedIcon size="20px" color="var(--mantine-color-gray-8)" /></div>}
                         onClick={(e) => {
                             e.stopPropagation();
-
+                            handleArchiveList();
                         }}>
                         Archive
                     </Menu.Item>

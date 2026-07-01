@@ -43,7 +43,7 @@ export const ShoppingListCard = ({ list }: Props) => {
                                 <StarIconOutline size="20px" color="var(--mantine-color-gray-6)" />
                             </ActionIcon>
                         </Tooltip>
-                        <ShoppingListActionsMenu />
+                        <ShoppingListActionsMenu list={list} />
                     </div>
                 </div>
                 <div className="shopping-list-card-header--progress progress">
