@@ -11,10 +11,15 @@ type Props = {
 
 export const ShoppingListContainer = ({ list }: Props) => {
     const { categoryGroups, uncategorized, checked } = useShoppingListGroups(list);
+    const groupedByCategory = list.groupByCategory && categoryGroups.length > 0;
+
+    const sortedItems = list.defaultSort === "alpha"
+        ? [...uncategorized, ...categoryGroups.flatMap(group => group.items)].sort((a, b) => a.name.localeCompare(b.name))
+        : [...uncategorized, ...categoryGroups.flatMap(group => group.items)];
 
     return (
         <div className="shopping-list-container">
-            {categoryGroups.map(({ category, items }) => (
+            {groupedByCategory && categoryGroups.map(({ category, items }) => (
                 <ShoppingListCategorySection
                     key={category.id}
                     list={list}
@@ -24,8 +29,8 @@ export const ShoppingListContainer = ({ list }: Props) => {
                 />
             ))}
 
-            {uncategorized.length > 0 && (
-                categoryGroups.length > 0 ? (
+            {(uncategorized.length > 0) && (
+                groupedByCategory && categoryGroups.length > 0 ? (
                     <ShoppingListCategorySection
                         key="uncategorized"
                         list={list}
@@ -34,9 +39,9 @@ export const ShoppingListContainer = ({ list }: Props) => {
                         items={uncategorized}
                     />
                 ) : (
-                    <ul className="shopping-list">
+                    <ul className={`shopping-list${categoryGroups.length === 0 && checked.length > 0 ? " shopping-list--no-bottom-border" : ""}`}>
                         <AnimatePresence>
-                            {uncategorized.map((item) =>
+                            {sortedItems.map((item) =>
                                 item.id < 0 ? (
                                     <li key={item.id} className="shopping-list-li-item">
                                         <ShoppingListItem list={list} item={item} />
@@ -57,7 +62,12 @@ export const ShoppingListContainer = ({ list }: Props) => {
                 )
             )}
 
-            <ShoppingListCompleted list={list} completed={checked} />
+            {checked.length > 0 &&
+                <ShoppingListCompleted
+                    list={list}
+                    completed={checked}
+                    noTopMargin={!groupedByCategory || categoryGroups.length === 0 && uncategorized.length > 0}
+                />}
         </div>
     );
 };

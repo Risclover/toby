@@ -5,12 +5,17 @@ import { ShoppingListCompletedItem } from "./ShoppingListCompletedItem";
 type Props = {
     list: ShoppingList;
     completed: ShoppingItem[];
+    noTopMargin?: boolean;
 }
-export const ShoppingListCompleted = ({ list, completed }: Props) => {
+export const ShoppingListCompleted = ({ list, completed, noTopMargin }: Props) => {
+    const sortedItems = list.defaultSort === "alpha"
+        ? [...completed].sort((a, b) => a.name.localeCompare(b.name))
+        : completed;
+
     return (
-        <HomepageCollapseCard title="completed" color={list.color} cardKey={`shopping-list-completed-${list.id}`}>
+        <HomepageCollapseCard title="completed" color={list.color} cardKey={`shopping-list-completed-${list.id}`} noTopMargin={noTopMargin}>
             <div className="panel-body">
-                {completed.map((item) => {
+                {sortedItems.map((item) => {
                     return (
                         <ShoppingListCompletedItem key={item.id} list={list} item={item} />
                     )

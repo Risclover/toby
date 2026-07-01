@@ -12,6 +12,7 @@ import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { useReorderTasksMutation, useUpdateTasklistMutation, type Task, type TasklistType } from "@/store/taskSlice";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useHousehold } from "@/hooks/useHousehold";
+import { useIsScrolledToTop } from "@/hooks";
 
 interface Props {
     // Lift state up! Pass these down from the Page component
@@ -31,6 +32,8 @@ interface Props {
 }
 
 export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFilters, showReorderMode, setShowReorderMode, tasks, filteredTasks, listId, currentSort, tasklist }: Props) => {
+    const isAtTop = useIsScrolledToTop();
+
     const combobox = useCombobox();
     const [opened, { open, close }] = useDisclosure(false);
     const { data: user } = useAuthenticateQuery();
@@ -87,7 +90,8 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
 
 
     return (
-        <div className="mobile-tasklist-header">
+        <div className={`mobile-tasklist-header${isAtTop ? "" : " header--stuck"}`}>
+
             {/* <TextInput
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.currentTarget.value)}

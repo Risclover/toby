@@ -11,6 +11,10 @@ type Props = {
 };
 
 export const ShoppingListCategorySection = ({ list, categoryId, categoryName, items }: Props) => {
+    const sortedItems = list.defaultSort === "alpha"
+        ? [...items].sort((a, b) => a.name.localeCompare(b.name))
+        : items;
+
     return (
         <HomepageCollapseCard
             title={categoryName}
@@ -19,7 +23,7 @@ export const ShoppingListCategorySection = ({ list, categoryId, categoryName, it
         >
             <ul className="shopping-list">
                 <AnimatePresence>
-                    {items.map((item) =>
+                    {sortedItems.map((item) =>
                         item.id < 0 ? (
                             <li key={item.id} className="shopping-list-li-item">
                                 <ShoppingListItem list={list} item={item} />

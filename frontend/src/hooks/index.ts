@@ -9,3 +9,4 @@ export { useStablePending } from "./useStablePending";
 export { useCollapseScroll } from "./useCollapseScroll";
 export { useModalFocus } from "./useModalFocus";
 export { useCloseModalOnNavigate } from "./useCloseModalOnNavigate";
+export { useIsScrolledToTop } from "./useIsScrolledToTop"

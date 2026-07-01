@@ -1,18 +1,23 @@
 import { ShoppingListCategories } from "@/features/ShoppingListCategories/components/ShoppingListCategories";
+import { useIsScrolledToTop } from "@/hooks";
 import type { ShoppingList } from "@/store";
 import { ActionIcon, Tooltip } from "@mantine/core";
-import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
-import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
 import { useState } from "react";
 import { BiSolidCategory } from "react-icons/bi";
+import { ShoppingListOptionsDrawer } from "./ShoppingList/ShoppingListOptionsDrawer";
+import { IoOptions } from "react-icons/io5";
 
 type Props = {
     list: ShoppingList;
 }
 export const ShoppingListHeader = ({ list }: Props) => {
     const [showCategories, setShowCategories] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
+
+    const isAtTop = useIsScrolledToTop();
+
     return (
-        <div className="shopping-list-header">
+        <div className={`shopping-list-header${isAtTop ? "" : " header--stuck"}`}>
             <div className="shopping-list-header--right"></div>
             <div className="shopping-list-header--left">
                 <Tooltip.Group openDelay={500} closeDelay={100}>
@@ -25,9 +30,9 @@ export const ShoppingListHeader = ({ list }: Props) => {
                             <BiSolidCategory size="24px" />
                         </ActionIcon>
                     </Tooltip>
-                    <Tooltip withArrow label="Filter list">
-                        <ActionIcon variant="subtle" color="rgb(5, 5, 73)">
-                            <FilterAltRoundedIcon />
+                    <Tooltip withArrow label="List options">
+                        <ActionIcon variant="subtle" color="rgb(5, 5, 73)" onClick={() => setShowOptions(true)}>
+                            <IoOptions size="2rem" />
                         </ActionIcon>
                     </Tooltip>
                 </Tooltip.Group>
@@ -37,6 +42,7 @@ export const ShoppingListHeader = ({ list }: Props) => {
                 onClose={() => setShowCategories(false)}
                 list={list}
             />
+            <ShoppingListOptionsDrawer opened={showOptions} onClose={() => setShowOptions(false)} list={list} />
         </div>
     )
 }

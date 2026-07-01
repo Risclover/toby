@@ -270,3 +270,24 @@ def manage_assigned_members(id):
     
     db.session.commit()
     return jsonify(shopping_list.to_dict()), 200
+
+@shopping_list_routes.route("/<int:id>/options", methods=["PATCH"])
+@login_required
+def update_list_options(id):
+    shopping_list = ShoppingList.query.get_or_404(id)
+
+    if current_user.id != shopping_list.creator_id and not is_household_admin(shopping_list.household_id):
+        return jsonify({"error": "Forbidden"}), 403
+
+    data = request.get_json() or {}
+
+    if "defaultSort" in data:
+        if data["defaultSort"] not in ("created", "alpha"):
+            return jsonify({"error": "Invalid sort value"}), 400
+        shopping_list.default_sort = data["defaultSort"]
+
+    if "groupByCategory" in data:
+        shopping_list.group_by_category = bool(data["groupByCategory"])
+
+    db.session.commit()
+    return jsonify(shopping_list.to_dict()), 200

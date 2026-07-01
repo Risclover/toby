@@ -50,6 +50,8 @@ export type ShoppingList = {
     categories: ShoppingCategory[];
     items: ShoppingItem[];
     memberIds: number[];
+    defaultSort: "created" | "alpha";
+    groupByCategory: boolean;
     createdAt: string;
     updatedAt: string;
 };
@@ -157,6 +159,27 @@ export const shoppingSlice = apiSlice.injectEndpoints({
                 method: "PATCH",
                 body: { members },
             }),
+            invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingList", id: listId }],
+        }),
+
+        updateListOptions: builder.mutation<ShoppingList, { listId: number; defaultSort?: "created" | "alpha"; groupByCategory?: boolean }>({
+            query: ({ listId, ...body }) => ({
+                url: `/shopping-lists/${listId}/options`,
+                method: "PATCH",
+                body,
+            }),
+            async onQueryStarted({ listId, ...fields }, { dispatch, queryFulfilled }) {
+                const patch = dispatch(
+                    shoppingSlice.util.updateQueryData("getShoppingList", listId, (draft) => {
+                        Object.assign(draft, fields);
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patch.undo();
+                }
+            },
             invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingList", id: listId }],
         }),
 
@@ -353,6 +376,7 @@ export const {
     useUncheckAllItemsMutation,
     useClearShoppingListMutation,
     useManageAssignedMembersMutation,
+    useUpdateListOptionsMutation,
     // items
     useAddShoppingItemMutation,
     useEditShoppingItemMutation,

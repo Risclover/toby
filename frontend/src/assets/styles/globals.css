@@ -852,6 +852,14 @@ form {
     background: white;
 }
 
+.homepage-collapse-card.no-top-margin {
+    margin-top: .75rem !important;
+}
+
+.header--stuck {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
 
 @media (max-width: 425px) {
     .time-sensitive-task .empty-space {
