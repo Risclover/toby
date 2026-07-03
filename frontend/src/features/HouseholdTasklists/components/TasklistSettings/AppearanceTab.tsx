@@ -2,7 +2,7 @@ import { ColorInput, Input, Space, Tabs } from "@mantine/core";
 import type { TasklistSettingsForm } from "./GeneralTab";
 import ColorizeRoundedIcon from "@mui/icons-material/ColorizeRounded";
 import { TaskViewSelector } from "./TaskViewSelector";
-import { SettingsItem } from "./SettingsItem";
+import { SettingsItem } from "../../../../components/SettingsItem";
 import { isTooLight } from "@/utils";
 import { FormColorInput } from "@/components/FormColorInput";
 

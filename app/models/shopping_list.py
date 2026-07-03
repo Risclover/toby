@@ -1,6 +1,8 @@
 from copy import deepcopy
 from enum import Enum
 
+import re
+
 from app.extensions import db
 from flask_login import current_user
 from sqlalchemy import inspect
@@ -36,6 +38,7 @@ class ShoppingList(db.Model):
         foreign_keys=[creator_id],
         back_populates="shopping_lists"
     )
+    
     items = db.relationship(
         "ShoppingItem",
         back_populates="shopping_list",
@@ -76,20 +79,32 @@ class ShoppingList(db.Model):
         return [link.user_id for link in self.member_links]
 
     def duplicate(self, mode: DuplicateMode = DuplicateMode.ALL_PRESERVE):
-        """
-        Create a copy of this list based on the selected mode.
+        base_title = re.sub(r' \(Copy(?: \d+)?\)$', '', self.title)
+        
+        # Find existing copies
+        pattern = f"{base_title} (Copy"
+        existing = ShoppingList.query.filter(
+            ShoppingList.household_id == self.household_id,
+            ShoppingList.title.like(f"{pattern}%")
+        ).all()
 
-        Args:
-            mode (DuplicateMode):
-                - ONLY_UNCOMPLETE: Copy only uncompleted items.
-                - ALL_PRESERVE: Copy all items, keeping their completion status.
-                - ALL_RESET: Copy all items, but mark them all as uncompleted.
-        """
+        existing_titles = {l.title for l in existing}
+
+        if f"{base_title} (Copy)" not in existing_titles:
+            new_title = f"{base_title} (Copy)"
+        else:
+            count = 2
+            while f"{base_title} (Copy {count})" in existing_titles:
+                count += 1
+            new_title = f"{base_title} (Copy {count})"
+
         duplicate = ShoppingList(
-            title=f"{self.title} (Copy)",
+            title=new_title,
             creator_id=self.creator_id,
             household_id=self.household_id,
-            all_members=self.all_members
+            all_members=self.all_members,
+            default_sort=self.default_sort,
+            group_by_category=self.group_by_category,
         )
 
         db.session.add(duplicate)
@@ -107,7 +122,6 @@ class ShoppingList(db.Model):
         for category in self.categories:
             new_category = ShoppingCategory(
                 name=category.name,
-                color=category.color,
                 list_id=duplicate.id,
             )
             db.session.add(new_category)
@@ -149,7 +163,7 @@ class ShoppingList(db.Model):
             "isArchived": self.is_archived,
             "archivedBy": {
                 "id": self.archiver.id,
-                "profileImg": self.archiver.profile_img, # Ensure this matches your User col name
+                "profileImg": self.archiver.profile_img, 
                 "firstName": self.archiver.first_name,
                 "lastName": self.archiver.last_name
             } if self.is_archived and self.archiver else None,

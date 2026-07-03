@@ -2,7 +2,7 @@ import type { User } from "@/store/authSlice";
 import type { TasklistSettingsForm } from "./GeneralTab";
 import { Avatar, Button, Group, Select, Stack, Switch, Tabs, Text, Tooltip } from "@mantine/core";
 import { TIME_OPTIONS } from "./TasklistSettings";
-import { SettingsItem } from "./SettingsItem";
+import { SettingsItem } from "../../../../components/SettingsItem";
 
 type BehaviorTabProps = {
     form: TasklistSettingsForm;

@@ -10,9 +10,11 @@ import { useShoppingList } from "../../hooks/useShoppingList";
 
 type Props = {
     list: ShoppingList;
+    showSettings: boolean;
+    setShowSettings: (val: boolean) => void;
 }
 
-export const ShoppingListTitleComponent = ({ list }: Props) => {
+export const ShoppingListTitleComponent = ({ list, showSettings, setShowSettings }: Props) => {
     const navigate = useNavigate();
     const isSmall = useIsSmallScreen(425);
     const { data: user } = useAuthenticateQuery();
@@ -22,7 +24,7 @@ export const ShoppingListTitleComponent = ({ list }: Props) => {
     const handleSettingsClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         if (list.isArchived) return;
-        // setShowTasklistSettings(true);
+        setShowSettings(true);
     }
 
     return (
@@ -38,7 +40,7 @@ export const ShoppingListTitleComponent = ({ list }: Props) => {
                 </div>
                 {(user.id === household?.adminId || user.id === list.creatorId) &&
                     <Tooltip withArrow label={`List settings${list.isArchived ? " (disabled while archived)" : ""}`}>
-                        <ActionIcon className={`shopping-list-settings-btn${list.isArchived ? " list-archived" : ""}`} size="md" variant="transparent" radius="xl" color="white">
+                        <ActionIcon className={`shopping-list-settings-btn${list.isArchived ? " list-archived" : ""}`} size="md" variant="transparent" radius="xl" color="white" onClick={handleSettingsClick}>
                             <SettingsRoundedIcon />
                         </ActionIcon>
                     </Tooltip>

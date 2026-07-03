@@ -562,10 +562,6 @@ textarea.editable-title.is-editing {
     width: 100%;
 }
 
-.asterisk {
-    color: var(--mantine-color-red-8)
-}
-
 .menu-wrapper {
     display: flex;
 }

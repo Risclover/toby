@@ -117,27 +117,44 @@ def edit_shopping_list(id):
     if current_user.id != shopping_list.creator_id and not is_household_admin(shopping_list.household_id):
         return jsonify({"error": "Forbidden"}), 403
 
-    data = request.get_json()
-    color = data.get("color")
-    shopping_list.color = color
+    data = request.get_json() or {}
 
     old_title = shopping_list.title
     title = data.get("title", shopping_list.title)
     shopping_list.title = title
 
+    if "color" in data:
+        shopping_list.color = data["color"]
 
-    ActivityService.record(
-        household_id=shopping_list.household_id,
-        actor_id=current_user.id,
-        action="renamed",
-        entity_type="shopping_list",
-        entity_id=shopping_list.id,
-        entity_label=title,
-        event_metadata={"oldTitle": old_title}
-    )
+    if "memberIds" in data:
+        new_member_ids = set(data["memberIds"])
+        household_member_ids = {u.id for u in shopping_list.household.members}
+        invalid_ids = new_member_ids - household_member_ids
+        if invalid_ids:
+            return jsonify({"error": "Members must belong to the household", "invalid": list(invalid_ids)}), 400
+
+        for link in shopping_list.member_links[:]:
+            db.session.delete(link)
+
+        if new_member_ids == household_member_ids:
+            shopping_list.all_members = True
+        else:
+            shopping_list.all_members = False
+            for user_id in new_member_ids:
+                db.session.add(ShoppingListMember(list_id=shopping_list.id, user_id=user_id))
+
+    if title != old_title:
+        ActivityService.record(
+            household_id=shopping_list.household_id,
+            actor_id=current_user.id,
+            action="renamed",
+            entity_type="shopping_list",
+            entity_id=shopping_list.id,
+            entity_label=title,
+            event_metadata={"oldTitle": old_title}
+        )
 
     db.session.commit()
-    
     return jsonify(shopping_list.to_dict()), 200
 
 @shopping_list_routes.route("/<int:id>/duplicate", methods=["POST"])
@@ -167,7 +184,9 @@ def duplicate_list(id):
     
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Failed to duplicate list"}), 500
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": "Failed to duplicate list", "detail": str(e)}), 500
 
 @shopping_list_routes.route("/<int:id>/archive", methods=["PATCH"])
 @login_required

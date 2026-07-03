@@ -1,0 +1,64 @@
+.shopping-list-settings-tablist {
+    font-family: "Alan Sans", sans-serif;
+}
+
+.shopping-list-settings-panel {
+    padding: 1rem 0.5rem;
+    font-size: var(--text-sm);
+}
+
+.shopping-list-settings-section:hover {
+    background-color: #f4f4f8;
+}
+
+.shopping-list-settings-section .mantine-Input-wrapper,
+.shopping-list-settings-section input {
+    max-width: 390px !important;
+    width: 100%;
+    font-size: var(--text-sm);
+}
+
+.shopping-list-settings-save-btn {
+    font-family: "Commissioner", sans-serif;
+    height: 31px !important;
+    padding: 0 1.25rem !important;
+    margin-bottom: 5px;
+}
+
+.shopping-list-settings-modal-footer {
+    width: 100%;
+    padding: .5rem;
+    background: white;
+    z-index: 999;
+    bottom: 0;
+    left: 0;
+    border-top: 1px solid var(--mantine-color-gray-3);
+    position: fixed;
+}
+
+.shopping-list-settings-footer-btn {
+    height: auto !important;
+    padding: .5rem 1rem !important;
+    font-family: "Commissioner", sans-serif;
+}
+
+.shopping-list-settings-right {
+    max-width: 50%;
+    width: 100%;
+}
+
+@media (max-width: 575px) {
+    .shopping-list-settings-panel {
+        padding: .5rem 0;
+    }
+
+    .shopping-list-settings-section .mantine-Input-wrapper,
+    .shopping-list-settings-section input {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .shopping-list-settings-right {
+        max-width: 100% !important;
+    }
+}

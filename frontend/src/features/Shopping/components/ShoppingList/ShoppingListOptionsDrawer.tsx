@@ -1,11 +1,14 @@
-import { useUpdateListOptionsMutation, type ShoppingList } from "@/store";
-import { CheckIcon, Drawer, Radio, Switch } from "@mantine/core"
-import { useEffect, useState } from "react";
+import type { ShoppingList } from "@/store";
+import { CheckIcon, Drawer, Radio, Switch } from "@mantine/core";
 
 type Props = {
     opened: boolean;
     onClose: () => void;
     list: ShoppingList;
+    groupByCategory: boolean;
+    setGroupByCategory: (val: boolean) => void;
+    sort: "created" | "alpha" | null;
+    setSort: (val: "created" | "alpha" | null) => void;
 }
 
 type SortOption = "created" | "alpha";
@@ -15,24 +18,7 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
     { value: "alpha", label: "A → Z" },
 ];
 
-export const ShoppingListOptionsDrawer = ({ opened, onClose, list }: Props) => {
-    const [updateListOptions] = useUpdateListOptionsMutation();
-
-    const [groupByCategory, setGroupByCategory] = useState(list.groupByCategory);
-    const [sort, setSort] = useState(list.defaultSort);
-
-    const handleUpdateListOptions = async () => {
-        await updateListOptions({
-            listId: list.id,
-            defaultSort: sort,
-            groupByCategory: groupByCategory
-        }).unwrap();
-    }
-
-    useEffect(() => {
-        handleUpdateListOptions();
-    }, [groupByCategory, sort]);
-
+export const ShoppingListOptionsDrawer = ({ opened, onClose, list, groupByCategory, setGroupByCategory, sort, setSort }: Props) => {
     return (
         <Drawer
             opened={opened}
@@ -47,11 +33,8 @@ export const ShoppingListOptionsDrawer = ({ opened, onClose, list }: Props) => {
                     onChange={(e) => setGroupByCategory(e.currentTarget.checked)}
                     checked={groupByCategory}
                     onClick={(e) => e.stopPropagation()}
-                    onMouseUp={handleUpdateListOptions}
                     styles={{
-                        root: {
-                            width: "100%",
-                        },
+                        root: { width: "100%" },
                         body: {
                             display: "flex",
                             justifyContent: "space-between",
@@ -78,7 +61,6 @@ export const ShoppingListOptionsDrawer = ({ opened, onClose, list }: Props) => {
                         key={option.value}
                         className="sort-option"
                         onClick={() => setSort(option.value)}
-                    // onClick={() => onSortChange(option.value)}
                     >
                         <Radio
                             color={list.color}
@@ -87,7 +69,6 @@ export const ShoppingListOptionsDrawer = ({ opened, onClose, list }: Props) => {
                             value={option.value}
                             checked={sort === option.value}
                             onChange={(e) => setSort(e.currentTarget.value as SortOption)}
-                            onMouseUp={handleUpdateListOptions}
                             name="sort-options"
                             size="sm"
                             labelPosition="left"
@@ -113,5 +94,5 @@ export const ShoppingListOptionsDrawer = ({ opened, onClose, list }: Props) => {
                 ))}
             </div>
         </Drawer>
-    )
-}
+    );
+};

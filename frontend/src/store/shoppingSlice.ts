@@ -117,10 +117,15 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             ],
         }),
 
-        editShoppingList: builder.mutation<ShoppingList, { listId: number; title: string; householdId: number }>({
-            query: ({ listId, title }) => ({ url: `/shopping-lists/${listId}`, method: "PATCH", body: { title } }),
+        editShoppingList: builder.mutation<ShoppingList, { listId: number; title: string; color: string; householdId: number; allMembers: boolean; memberIds: number[] }>({
+            query: ({ listId, title, color, allMembers, memberIds }) => ({
+                url: `/shopping-lists/${listId}`,
+                method: "PATCH",
+                body: { title, color, allMembers, memberIds },
+            }),
             invalidatesTags: (_r, _e, { listId, householdId }) => [
                 { type: "ShoppingList", id: listId },
+                { type: "ShoppingList", id: `HOUSEHOLD_${householdId}_ACTIVE` },
                 { type: "Activity" as const, id: `HOUSEHOLD_${householdId}` },
             ],
         }),

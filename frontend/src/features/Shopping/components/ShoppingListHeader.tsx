@@ -9,8 +9,13 @@ import { IoOptions } from "react-icons/io5";
 
 type Props = {
     list: ShoppingList;
+    groupByCategory: boolean;
+    setGroupByCategory: (val: boolean) => void;
+    sort: "created" | "alpha" | null;
+    setSort: (val: "created" | "alpha" | null) => void;
 }
-export const ShoppingListHeader = ({ list }: Props) => {
+
+export const ShoppingListHeader = ({ list, groupByCategory, setGroupByCategory, sort, setSort }: Props) => {
     const [showCategories, setShowCategories] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
 
@@ -42,7 +47,15 @@ export const ShoppingListHeader = ({ list }: Props) => {
                 onClose={() => setShowCategories(false)}
                 list={list}
             />
-            <ShoppingListOptionsDrawer opened={showOptions} onClose={() => setShowOptions(false)} list={list} />
+            <ShoppingListOptionsDrawer
+                opened={showOptions}
+                onClose={() => setShowOptions(false)}
+                list={list}
+                groupByCategory={groupByCategory}
+                setGroupByCategory={setGroupByCategory}
+                sort={sort}
+                setSort={setSort}
+            />
         </div>
-    )
-}
+    );
+};

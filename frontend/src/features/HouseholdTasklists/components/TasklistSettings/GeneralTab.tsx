@@ -1,7 +1,7 @@
 import type { User } from "@/store/authSlice";
 import { Button, Checkbox, Flex, Input, MultiSelect, Space, Switch, Tabs, TextInput } from "@mantine/core";
 import type { UseFormReturnType } from "@mantine/form";
-import { SettingsItem } from "./SettingsItem";
+import { SettingsItem } from "../../../../components/SettingsItem";
 import { type TasklistType } from "@/store/taskSlice";
 import { DeleteConfirmation } from "@/components";
 import { useTasklistSettings } from "../../hooks";
