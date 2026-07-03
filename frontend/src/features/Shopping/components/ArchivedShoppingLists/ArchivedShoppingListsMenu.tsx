@@ -3,8 +3,8 @@ import { ActionIcon, Menu } from "@mantine/core"
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import DeleteRounded from '@mui/icons-material/Delete';
 
-import { ViewIcon, UnarchivedIcon, MenuTrashIcon } from "@/assets";
-import { DeleteConfirmation } from "@/components";
+import { ViewIcon, UnarchivedIcon, MenuTrashIcon, KittyIcons } from "@/assets";
+import { DeleteConfirmation, KittyNotification } from "@/components";
 import { useState } from "react";
 import { useDeleteShoppingListMutation, useUnarchiveShoppingListMutation, type ShoppingList, type TasklistType } from "@/store";
 import { useHousehold } from "@/hooks/useHousehold";
@@ -24,6 +24,12 @@ export const ArchivedShoppingListsMenu = ({ list, tasklistId }: Props) => {
     const handleUnarchiveList = async () => {
         try {
             await unarchiveShoppingList({ listId: list.id, householdId: household?.id }).unwrap();
+            KittyNotification({
+                title: "Shopping list restored",
+                message: <>Nice! You successfully brought "<strong style={{ fontWeight: 500 }}>{list.title}</strong>" back from the archives.</>,
+                color: "green",
+                icon: KittyIcons.Box
+            })
         } catch (err) {
             console.error("Failed to unarchive shopping list:", err);
         }
@@ -32,8 +38,20 @@ export const ArchivedShoppingListsMenu = ({ list, tasklistId }: Props) => {
     const handleDeleteList = async () => {
         try {
             await deleteList({ listId: list.id, householdId: household?.id }).unwrap();
+            KittyNotification({
+                title: "Successfully deleted shopping list",
+                message: <>The shopping list "<strong style={{ fontWeight: 500 }}>{list.title}</strong>" is gone for good!</>,
+                color: "green",
+                icon: KittyIcons.Bubbles
+            })
         } catch (err) {
             console.error("Failed to delete shopping list:", err);
+            KittyNotification({
+                title: "Couldn't delete shopping list",
+                message: <>Something went wrong, and <strong style={{ fontWeight: 500 }}>{list.title}</strong> couldn't be deleted.</>,
+                color: "red",
+                icon: KittyIcons.Confused
+            })
         }
     }
 

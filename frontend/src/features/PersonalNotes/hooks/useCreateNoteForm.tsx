@@ -121,7 +121,7 @@ export const useCreateNoteForm = ({ setShowDiscardWarning, closeModal }: UseCrea
                     title: "Note updated",
                     message: <>Looking good! Your changes to "<strong style={{ fontWeight: 500 }}>{values.title}</strong>" have been saved.</>,
                     color: "green",
-                    icon: KittyIcons.Write,
+                    icon: KittyIcons.Pencil,
                 });
             } else {
                 await createPersonalNote({
@@ -131,7 +131,7 @@ export const useCreateNoteForm = ({ setShowDiscardWarning, closeModal }: UseCrea
                 KittyNotification({
                     title: "Note created successfully",
                     message: <>You successfully posted a new note: "<strong style={{ fontWeight: 500 }}>{values.title}</strong>".</>,
-                    icon: KittyIcons.Computer,
+                    icon: KittyIcons.Laptop,
                     color: "green",
                 });
             }
@@ -141,7 +141,7 @@ export const useCreateNoteForm = ({ setShowDiscardWarning, closeModal }: UseCrea
             KittyNotification({
                 title: "Whoops - something went wrong",
                 message: <>I didn't feel like {isEditing ? "editing" : "creating"} your note "<strong style={{ fontWeight: 500 }}>{values.title}</strong>". You'll have to try again.</>,
-                icon: KittyIcons.Grumpy,
+                icon: KittyIcons.Tired,
                 color: "red",
             });
             console.error("Failed to create or edit note:", error);

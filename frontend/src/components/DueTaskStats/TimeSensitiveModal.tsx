@@ -124,7 +124,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
             KittyNotification({
                 title: `Task${currentCheckedIds.size !== 1 ? "s" : ""} deleted`,
                 message: `You've successfully irradicated ${currentCheckedIds.size} time-sensitive task${currentCheckedIds.size !== 1 ? "s" : ""}.`,
-                icon: KittyIcons.Dance,
+                icon: KittyIcons.Party,
                 color: "green"
             })
         } catch (error) {
@@ -132,7 +132,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
             KittyNotification({
                 title: "Oh no! Your tasks are being stubborn.",
                 message: "That's weird - your tasks weren't deleted for some reason. Try again.",
-                icon: KittyIcons.Grumpy,
+                icon: KittyIcons.Tired,
                 color: "red"
             })
         }
@@ -165,7 +165,7 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
             KittyNotification({
                 title: "oh no! Your tasks are being stubborn.",
                 message: "That's weird - your tasks weren't deleted for some reason. Try again.",
-                icon: KittyIcons.Grumpy,
+                icon: KittyIcons.Angry,
                 color: "red"
             })
         }

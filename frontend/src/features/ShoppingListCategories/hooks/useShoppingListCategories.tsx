@@ -38,7 +38,7 @@ export const useShoppingListCategories = ({ list, MAX_CATEGORIES, onClose }: Pro
                 title: "Category successfully added",
                 message: <>Now we're cookin'! "<strong style={{ fontWeight: 500 }}>{categoryName}</strong>" was added to the roster.</>,
                 color: "green",
-                icon: KittyIcons.Cook
+                icon: KittyIcons.Pencil
             })
         } catch (error) {
             console.error("Error adding category:", error);
@@ -46,7 +46,7 @@ export const useShoppingListCategories = ({ list, MAX_CATEGORIES, onClose }: Pro
                 title: "Failed to add category",
                 message: <>Whoops... someone was sleeping on the job, and the category "<strong style={{ fontWeight: 500 }}>{categoryName}</strong>" couldn't be added. Try again.</>,
                 color: "red",
-                icon: KittyIcons.Sleep
+                icon: KittyIcons.Tired
             })
         }
     }

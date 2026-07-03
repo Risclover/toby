@@ -37,7 +37,7 @@ export const useCategoryMenu = ({ category }: UseCategoryMenuProps) => {
                         " successfully deleted.
                     </>
                 ),
-                icon: KittyIcons.Hero,
+                icon: KittyIcons.Music,
                 color: "green"
             })
 
@@ -47,7 +47,7 @@ export const useCategoryMenu = ({ category }: UseCategoryMenuProps) => {
             KittyNotification({
                 title: "Ugh, that didn't work!",
                 message: <>Something went wrong. Try again.</>,
-                icon: KittyIcons.Rain,
+                icon: KittyIcons.Rainy,
                 color: "red"
             })
             console.error("Failed to delete category:", error);

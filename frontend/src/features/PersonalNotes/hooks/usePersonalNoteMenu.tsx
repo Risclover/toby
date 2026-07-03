@@ -45,7 +45,7 @@ export const usePersonalNoteMenu = ({ note }: UsePersonalNoteMenuProps) => {
                 title: "Shoot, I messed up!",
                 message: <>Couldn't delete "<strong style={{ fontWeight: 500 }}>{note.title}</strong>". Try again.</>,
                 color: "red",
-                icon: KittyIcons.Grumpy,
+                icon: KittyIcons.Confused,
             });
             console.error("Failed to delete note:", error);
         }

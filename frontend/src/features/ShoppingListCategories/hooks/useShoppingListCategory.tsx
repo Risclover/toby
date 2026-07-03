@@ -44,7 +44,7 @@ export const useShoppingListCategory = ({ category, setIsEditing }: Props) => {
                 title: "Category successfully updated",
                 message: <>The category "<strong style={{ fontWeight: 500 }}>{name}</strong>" has been given a fresh name. Lookin' good!</>,
                 color: "green",
-                icon: KittyIcons.Flower
+                icon: KittyIcons.Cowboy
             })
         } catch (error) {
             console.error("Error editing category:", error);
@@ -52,7 +52,7 @@ export const useShoppingListCategory = ({ category, setIsEditing }: Props) => {
                 title: "Shoot - the category didn't update!",
                 message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is feeling particularly stubborn today. Please try again.</>,
                 color: "red",
-                icon: KittyIcons.Pout
+                icon: KittyIcons.Tired
             })
         }
     }
@@ -64,7 +64,7 @@ export const useShoppingListCategory = ({ category, setIsEditing }: Props) => {
                 title: "Category successfully deleted",
                 message: <>Poof! "<strong style={{ fontWeight: 500 }}>{name}</strong>" has been sent to the void.</>,
                 color: "green",
-                icon: KittyIcons.Astronaut
+                icon: KittyIcons.Space
             })
         } catch (error) {
             console.error("Error deleting category:", error);
@@ -72,7 +72,7 @@ export const useShoppingListCategory = ({ category, setIsEditing }: Props) => {
                 title: "The category wants to stay!",
                 message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is refusing to be deleted. It's too strong for you! Try again.</>,
                 color: "red",
-                icon: KittyIcons.Ghost
+                icon: KittyIcons.Workout
             })
         }
     }

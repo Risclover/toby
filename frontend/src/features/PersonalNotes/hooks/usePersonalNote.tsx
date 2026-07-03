@@ -34,7 +34,7 @@ export const usePersonalNote = ({ noteId }: UsePersonalNoteProps) => {
                     title: "Note unfavorited successfully",
                     message: <>Hey, did you hear the latest gossip? The note "<strong style={{ fontWeight: 500 }}>{note?.title}</strong>" was unfavorited. Ouch!</>,
                     color: "green",
-                    icon: KittyIcons.Phonecall
+                    icon: KittyIcons.Cellphone
                 })
             }
 
@@ -44,7 +44,7 @@ export const usePersonalNote = ({ noteId }: UsePersonalNoteProps) => {
                 title: "Nooo - it didn't work!",
                 message: <>There was an error favoriting the note "<strong style={{ fontWeight: 500 }}>{note?.title}</strong>". You should give it another shot!</>,
                 color: "red",
-                icon: KittyIcons.Cry
+                icon: KittyIcons.Crying
             })
         }
     }

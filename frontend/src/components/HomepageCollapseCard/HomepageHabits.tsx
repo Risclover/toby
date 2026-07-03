@@ -78,7 +78,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
             title: "Habit marked incomplete",
             message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has returned. Go show it who's boss!</>,
             color: "green",
-            icon: KittyIcons.Frustrated
+            icon: KittyIcons.Crying
         })
     };
 
@@ -115,7 +115,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
                     title: "Habit marked incomplete",
                     message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has returned. Go show it who's boss!</>,
                     color: "green",
-                    icon: KittyIcons.Frustrated
+                    icon: KittyIcons.Crying
                 })
                 setChecked(false);
             } else {
@@ -124,7 +124,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
                     title: "Habit completed",
                     message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" is done for the day. Keep it up, champ!</>,
                     color: "green",
-                    icon: KittyIcons.Celebrate
+                    icon: KittyIcons.Love
                 })
 
             }
@@ -133,7 +133,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
                 title: "Whoops - something went wrong",
                 message: <>Couldn't change the status of "<strong style={{ fontWeight: 500 }}>{name}</strong>". Refresh and try again.</>,
                 color: "red",
-                icon: KittyIcons.Cry
+                icon: KittyIcons.Tired
             })
         }
     };

@@ -88,7 +88,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
                     title: "Habit updated",
                     message: <>Looking good! Your changes to "<strong style={{ fontWeight: 500 }}>{form.values.name}</strong>" have been saved.</>,
                     color: "green",
-                    icon: KittyIcons.Write
+                    icon: KittyIcons.Pencil
                 })
             } else {
                 await createHabit(form.values).unwrap();
@@ -108,7 +108,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
                 title: "Oopsies, something went wrong.",
                 message: "You might want to try that again.",
                 color: "red",
-                icon: KittyIcons.Rain
+                icon: KittyIcons.Rainy
             })
         }
     };

@@ -7,6 +7,8 @@ import { FaTrash } from "react-icons/fa";
 import { FaCopy } from "react-icons/fa";
 import { useArchiveShoppingListMutation, type ShoppingList } from "@/store";
 import { useHousehold } from "@/hooks/useHousehold";
+import { KittyNotification } from "@/components";
+import { KittyIcons } from "@/assets";
 
 type Props = {
     list: ShoppingList;
@@ -18,6 +20,12 @@ export const ShoppingListActionsMenu = ({ list }: Props) => {
     const handleArchiveList = async () => {
         try {
             await archiveList({ listId: list.id, householdId: household?.id }).unwrap();
+            KittyNotification({
+                title: "Successfully archived shopping list",
+                message: <>The shopping list "<strong style={{ fontWeight: 500 }}>{list.title}</strong>" was tucked away into storage.</>,
+                color: "green",
+                icon: KittyIcons.Bubbles
+            })
         } catch (err) {
             console.error("Failed to archive shopping list:", err);
         }

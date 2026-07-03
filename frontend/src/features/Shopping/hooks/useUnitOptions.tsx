@@ -54,14 +54,14 @@ export const useUnitOptions = (
                 title: "Shopping item unit created successfully",
                 message: <>Cool! Unit "<strong style={{ fontWeight: 500 }}>{trimmedSearch}</strong>" is now a thing.</>,
                 color: "green",
-                icon: KittyIcons.Computer
+                icon: KittyIcons.Laptop
             });
         } catch {
             KittyNotification({
                 title: "Failed to create shopping item unit",
                 message: <>Toby is having a breakdown and failed to create the unit "<strong style={{ fontWeight: 500 }}>{trimmedSearch}</strong>". Try again.</>,
                 color: "red",
-                icon: KittyIcons.Cry
+                icon: KittyIcons.Crying
             });
         }
     };
@@ -75,14 +75,14 @@ export const useUnitOptions = (
                 title: "Unit deleted",
                 message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has been shot off into space.</>,
                 color: "green",
-                icon: KittyIcons.Astronaut
+                icon: KittyIcons.Space
             });
         } catch {
             KittyNotification({
                 title: "Couldn't delete unit",
                 message: <>Something went wrong deleting "<strong style={{ fontWeight: 500 }}>{name}</strong>". Try again.</>,
                 color: "red",
-                icon: KittyIcons.Ghost
+                icon: KittyIcons.Evil
             });
         }
     };

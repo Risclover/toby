@@ -20,7 +20,7 @@ export const TransferAdminRoleConfirmation = ({ opened, onClose, member, househo
             KittyNotification({
                 title: "Whoops - something went wrong",
                 message: "Admin role couldn't be transferred. Please try again.",
-                icon: KittyIcons.Frustrated,
+                icon: KittyIcons.Rainy,
                 color: "red"
             })
 

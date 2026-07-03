@@ -217,7 +217,7 @@ export function SimpleEditor({ initialContent = "", onChange }: SimpleEditorProp
             title: "Upload failed",
             message: error.message,
             color: "red",
-            icon: KittyIcons.Grumpy,
+            icon: KittyIcons.Tired,
           });
         },
       }),

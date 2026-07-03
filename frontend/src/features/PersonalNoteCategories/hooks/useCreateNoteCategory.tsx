@@ -77,7 +77,7 @@ export const useCreateNoteCategory = ({ close, category, onCategoryCreated }: Us
                     </strong>
                     " a new look!
                 </>,
-            icon: KittyIcons.Dance,
+            icon: KittyIcons.Party,
             color: "green"
         });
     }
@@ -98,7 +98,7 @@ export const useCreateNoteCategory = ({ close, category, onCategoryCreated }: Us
                     </strong>
                     " has been created!
                 </>,
-            icon: KittyIcons.Dance,
+            icon: KittyIcons.Party,
             color: "green"
         });
 

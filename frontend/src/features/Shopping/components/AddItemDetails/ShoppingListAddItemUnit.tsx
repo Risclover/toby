@@ -121,7 +121,7 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                 title: "Shopping item unit created successfully",
                 message: <>Cool! Unit "<strong style={{ fontWeight: 500 }}>{trimmedSearch}</strong>" is now a thing.</>,
                 color: "green",
-                icon: KittyIcons.Computer
+                icon: KittyIcons.Laptop
             })
         } catch (error) {
             console.error("Error creating unit:", error);
@@ -129,7 +129,7 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                 title: "Failed to create shopping item unit",
                 message: <>Toby is having a breakdown and failed to create the unit "<strong style={{ fontWeight: 500 }}>{trimmedSearch}</strong>". Try again.</>,
                 color: "red",
-                icon: KittyIcons.Cry
+                icon: KittyIcons.Crying
             })
         }
     };
@@ -146,7 +146,7 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                 title: "Unit deleted",
                 message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has been shot off into space.</>,
                 color: "green",
-                icon: KittyIcons.Astronaut
+                icon: KittyIcons.Space
             })
         } catch (error) {
             console.error("Error deleting unit:", error);
@@ -154,7 +154,7 @@ export const ShoppingListAddItemUnit = ({ unit, quantity, onCommit, onClose }: P
                 title: "Couldn't delete unit",
                 message: <>Something went wrong deleting "<strong style={{ fontWeight: 500 }}>{name}</strong>". Try again.</>,
                 color: "red",
-                icon: KittyIcons.Ghost
+                icon: KittyIcons.Thinking
             })
         }
     };

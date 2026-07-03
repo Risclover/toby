@@ -46,14 +46,14 @@ export const useShoppingListDetailsPanel = ({ item, list, opened, close }: UseSh
             KittyNotification({
                 title: "Item updated",
                 message: <>Changes to "<strong style={{ fontWeight: 500 }}>{draft.name}</strong>" were saved.</>,
-                icon: KittyIcons.Celebrate,
+                icon: KittyIcons.Party,
                 color: "green",
             });
         } catch {
             KittyNotification({
                 title: "Couldn't save changes",
                 message: <>Toby fumbled and failed to update "<strong style={{ fontWeight: 500 }}>{draft.name}</strong>". Try again.</>,
-                icon: KittyIcons.Cry,
+                icon: KittyIcons.Crying,
                 color: "red",
             });
         }

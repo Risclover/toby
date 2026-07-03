@@ -70,7 +70,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
             KittyNotification({
                 title: "Item added successfully!",
                 message: <>A new item, "<strong style={{ fontWeight: 500 }}>{inputValue.trim()}</strong>", was added to "<strong style={{ fontWeight: 500 }}>{list.title}</strong>".</>,
-                icon: KittyIcons.Celebrate,
+                icon: KittyIcons.Party,
                 color: "green"
             })
         } catch (error) {
@@ -78,7 +78,7 @@ export const ShoppingListAddItem = ({ list }: Props) => {
             KittyNotification({
                 title: "Couldn't add item",
                 message: <>Toby was distracted and failed to add "<strong style={{ fontWeight: 500 }}>{inputValue.trim()}</strong>" to "<strong style={{ fontWeight: 500 }}>{list.title}</strong>". Try again.</>,
-                icon: KittyIcons.Selfie,
+                icon: KittyIcons.Reading,
                 color: "red"
             })
         }

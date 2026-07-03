@@ -35,7 +35,7 @@ export const usePersonalNoteItem = ({ note }: UsePersonalNoteItemProps) => {
                 title: "Note unfavorited successfully",
                 message: <>Hey, did you hear the latest gossip? The note "<strong style={{ fontWeight: 500 }}>{note?.title}</strong>" was unfavorited. Ouch!</>,
                 color: "green",
-                icon: KittyIcons.Phonecall
+                icon: KittyIcons.Cellphone
             })
         }
     }
