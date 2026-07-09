@@ -29,6 +29,7 @@ class ShoppingList(db.Model):
     archived_date = db.Column(db.DateTime, nullable=True)
     default_sort = db.Column(db.String(10), nullable=False, default="created")
     group_by_category = db.Column(db.Boolean, nullable=False, default=True)
+    is_featured = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
@@ -38,7 +39,7 @@ class ShoppingList(db.Model):
         foreign_keys=[creator_id],
         back_populates="shopping_lists"
     )
-    
+
     items = db.relationship(
         "ShoppingItem",
         back_populates="shopping_list",

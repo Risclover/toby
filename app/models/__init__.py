@@ -21,3 +21,4 @@ from .personal_note import PersonalNote
 from .personal_note_category import PersonalNoteCategory
 from .shopping_list_member import ShoppingListMember
 from .shopping_item_unit import ShoppingItemUnit
+from .featured_shopping_list_setting import FeaturedShoppingListSetting

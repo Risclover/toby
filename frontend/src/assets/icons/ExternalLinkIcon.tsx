@@ -1,6 +1,6 @@
 type Props = {
     size: string;
-    color: string;
+    color: string | undefined;
 }
 
 export const ExternalLinkIcon = ({ size, color }: Props) => {

@@ -2,7 +2,7 @@ import { apiSlice } from "./apiSlice";
 
 export type ShoppingItem = {
     id: number;
-    listId: number;
+    listId: number | undefined;
     creatorId: number;
     categoryId: number | null;
     category: string | null;
@@ -214,7 +214,7 @@ export const shoppingSlice = apiSlice.injectEndpoints({
 
         /* -------------------- Items -------------------- */
 
-        addShoppingItem: builder.mutation<ShoppingItem, { listId: number; name: string; categoryId?: number | null; quantity?: number | ""; unit?: string | ""; householdId: number }>({
+        addShoppingItem: builder.mutation<ShoppingItem, { listId: number | undefined; name: string; categoryId?: number | null; quantity?: number | ""; unit?: string | ""; householdId: number }>({
             query: ({ listId, name, categoryId = null, quantity = null, unit = null }) => ({
                 url: `/shopping-lists/${listId}/items`,
                 method: "POST",

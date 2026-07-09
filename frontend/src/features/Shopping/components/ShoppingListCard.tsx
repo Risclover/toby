@@ -6,10 +6,11 @@ import { ShoppingListActionsMenu } from "./ShoppingListActionsMenu";
 import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 import { MemberAvatarGroup } from "@/features/HouseholdTasklists";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useHousehold } from "@/hooks/useHousehold";
 import { useShoppingList } from "../hooks/useShoppingList";
 import { ShoppingListItem } from "./ShoppingListItem";
+import { useFeatureShoppingListMutation } from "@/store/featuredShoppingListSettingSlice";
 
 type Props = {
     list: ShoppingList;
@@ -19,10 +20,16 @@ export const ShoppingListCard = ({ list }: Props) => {
     const { data: household } = useHousehold();
     const navigate = useNavigate();
 
+    const [featureList] = useFeatureShoppingListMutation();
+
     const navigateToShoppingList = () => {
         navigate(`/shopping/${list.id}`)
     }
 
+    const handleFeatureToggle = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        await featureList({ listId: list.id, householdId: household.id }).unwrap();
+    }
 
     const householdMembers = household?.members;
 
@@ -39,7 +46,7 @@ export const ShoppingListCard = ({ list }: Props) => {
                     <Text lh={1.2} lineClamp={2} c="black" fw={500} className="shopping-list-head-title">{list.title}</Text>
                     <div className="shopping-list-card-header--top header-right">
                         <Tooltip withArrow label="Featured">
-                            <ActionIcon variant="transparent" size="compact-xs" color="rgb(5, 5, 73)">
+                            <ActionIcon onClick={handleFeatureToggle} variant="transparent" size="compact-xs" color="rgb(5, 5, 73)">
                                 <StarIconOutline size="20px" color="var(--mantine-color-gray-6)" />
                             </ActionIcon>
                         </Tooltip>

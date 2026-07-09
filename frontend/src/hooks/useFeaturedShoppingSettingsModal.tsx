@@ -25,7 +25,7 @@ export type UseSettingsModalReturn<TValues extends Record<string, any>> = {
     handleResetToDefaults: () => void;
 }
 
-export function useSettingsModal<TValues extends Record<string, any>>({
+export function useFeaturedShoppingSettingsModal<TValues extends Record<string, any>>({
     entityId,
     initialValues,
     defaultValues,

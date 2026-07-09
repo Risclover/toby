@@ -9,9 +9,10 @@ type Props = {
     children: ReactNode;
     onTabChange?: (value: string | null) => void;
     tabIndicator?: (tab: string) => ReactNode;
+    setActiveTab?: (val: string) => void;
 }
 
-export const HomepageCollapseCardTabs = ({ tabs, tabColor, defaultTab, featuredListSettings, children, onTabChange, tabIndicator }: Props) => {
+export const HomepageCollapseCardTabs = ({ tabs, tabColor, defaultTab, featuredListSettings, children, onTabChange, tabIndicator, setActiveTab }: Props) => {
     return (
         <div className="homepage-collapse-card-tabs-container">
             <Tabs

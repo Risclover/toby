@@ -114,6 +114,8 @@ class User(db.Model, UserMixin):
 
     featured_list_settings = db.relationship('FeaturedListSetting', back_populates='user', uselist=False)
 
+    featured_shopping_list_settings = db.relationship("FeaturedShoppingListSetting", back_populates="user", uselist=False)
+
     habits = db.relationship(
         "Habit",                                           
         back_populates="user",

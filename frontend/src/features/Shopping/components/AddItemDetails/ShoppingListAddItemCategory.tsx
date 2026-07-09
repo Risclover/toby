@@ -1,43 +1,34 @@
-import { ActionIcon, Button, CloseIcon, Combobox, Group, Text, useCombobox } from "@mantine/core"
+import { ActionIcon, Button, CloseIcon, Combobox, Group, Text } from "@mantine/core"
 import type { ShoppingList } from "@/store";
 import { LuFolder } from "react-icons/lu";
 import { FaCheck } from "react-icons/fa6";
-import { useShoppingListCategories } from "../../hooks/useShoppingListCategories";
+import { useShoppingListAddItemCategory } from "../../hooks/useShoppingListAddItemCategory";
 
 type Props = {
+    /** List in question */
     list: ShoppingList;
+    /** Id of category added */
     categoryId: number | null;
+    /** onCommit handler */
     onCommit: (id: number | null) => void;
+    /** Close handler */
     onClose: (finalValue?: number | null) => void;
 }
 
+/** Category item detail option */
 export const ShoppingListAddItemCategory = ({ list, categoryId, onCommit, onClose }: Props) => {
-    const combobox = useCombobox({
-        onDropdownClose: () => combobox.resetSelectedOption()
-    });
-
-    const { categories } = useShoppingListCategories(list.id);
-    const selectedCategory = categories.find((c) => c.id === categoryId);
-
-    const handleSubmitCombobox = (val: string) => {
-        const selectedId = Number(val);
-        const newId = selectedId === categoryId ? null : selectedId;
-        onCommit(newId);
-        onClose(newId);
-        combobox.closeDropdown();
-    };
-
-    const handleClickClose = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        onCommit(null);
-        onClose(null);
-        combobox.closeDropdown();
-    };
+    const {
+        categoryCombobox,
+        categories,
+        handleSubmitCombobox,
+        handleClickClose,
+        selectedCategory
+    } = useShoppingListAddItemCategory({ list, categoryId, onCommit, onClose });
 
     return (
         <Combobox
             width={250}
-            store={combobox}
+            store={categoryCombobox}
             withinPortal={false}
             onOptionSubmit={handleSubmitCombobox}
             shadow="sm"
@@ -57,7 +48,7 @@ export const ShoppingListAddItemCategory = ({ list, categoryId, onCommit, onClos
                     fw={500}
                     color="var(--mantine-color-gray-7)"
                     className="shopping-list-add-item-detail"
-                    onClick={() => combobox.toggleDropdown()}
+                    onClick={() => categoryCombobox.toggleDropdown()}
                     maw={250}
                 >
                     <span className="add-item-detail-icon">

@@ -7,11 +7,17 @@ import { FeaturedListSettings } from "../FeaturedListSettings/FeaturedListSettin
 import { useAuthenticateQuery } from "@/store";
 import { ActionIcon, Tooltip } from "@mantine/core";
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import { HomepageListsShoppingList } from "./HomepageListsShoppingList/HomepageListsShoppingList";
 
 export const HomepageListsCollapseCard = ({ isReady }: { isReady: boolean }) => {
     const { data: user } = useAuthenticateQuery();
     const tabs = ["tasks", "shopping"]
     const [showFeaturedListSettings, setShowFeaturedListSettings] = useState(false);
+    const [activeTab, setActiveTab] = useState<string | null>("tasks");
+
+    const handleGearClick = () => {
+        setShowFeaturedListSettings(true);
+    }
 
     const featuredListSettings = <Tooltip label="Featured list settings" openDelay={500} withArrow>
         <ActionIcon
@@ -19,7 +25,7 @@ export const HomepageListsCollapseCard = ({ isReady }: { isReady: boolean }) => 
             size="sm"
             variant="subtle"
             color="cyan.6"
-            onClick={() => setShowFeaturedListSettings(true)}
+            onClick={handleGearClick}
         >
             <SettingsRoundedIcon fontSize="small" />
         </ActionIcon>
@@ -32,15 +38,23 @@ export const HomepageListsCollapseCard = ({ isReady }: { isReady: boolean }) => 
                 tabColor="var(--mantine-color-cyan-6)"
                 defaultTab="tasks"
                 featuredListSettings={featuredListSettings}
+                setActiveTab={setActiveTab}
+                onTabChange={(value) => {
+                    if (value === "shopping") {
+                        setActiveTab("shopping");
+                    } else {
+                        setActiveTab("tasks")
+                    }
+                }}
             >
                 <HomepageCollapseCardTab value="tasks">
                     <HomepageListsTasklist isReady={isReady} />
                 </HomepageCollapseCardTab>
                 <HomepageCollapseCardTab value="shopping">
-                    Shopping
+                    <HomepageListsShoppingList isReady={isReady} />
                 </HomepageCollapseCardTab>
             </HomepageCollapseCardTabs>
-            {showFeaturedListSettings && <FeaturedListSettings key={`${user?.tasklistId}`} opened={showFeaturedListSettings} setShowFeaturedListSettings={setShowFeaturedListSettings} />}
+            {showFeaturedListSettings && <FeaturedListSettings activeTab={activeTab} setActiveTab={setActiveTab} key={`${user?.tasklistId}`} opened={showFeaturedListSettings} setShowFeaturedListSettings={setShowFeaturedListSettings} />}
         </HomepageCollapseCard>
     )
 }

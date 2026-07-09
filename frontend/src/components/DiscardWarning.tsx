@@ -7,7 +7,7 @@ type Props = {
     handleClose: () => void;
     setShowDiscardWarning: (val: boolean) => void;
     discardNote?: boolean;
-    shoppingList?: ShoppingList
+    shoppingList?: ShoppingList | null;
 }
 
 export const DiscardWarning = ({ opened, setShowDiscardWarning, handleClose, discardNote, shoppingList }: Props) => {

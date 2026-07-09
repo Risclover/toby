@@ -44,7 +44,12 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
         return new Date(normalized).toLocaleDateString();
     };
 
-    const formatTaskLine2 = (event: ActivityEvent): React.ReactNode => {
+    // Was formatTaskLine2 — nothing in here was actually task-specific, it
+    // just consumed entityLabels + count off the event and rendered a
+    // singular label or an expandable "click to show N" list. Generalized
+    // with a `nounPlural` param so shopping_item events can reuse it too
+    // instead of duplicating the same collapse/expand logic.
+    const formatGroupedLine2 = (event: ActivityEvent, nounPlural: string): React.ReactNode => {
         const labels = event.entityLabels ?? [];
         const count = event.count ?? 1;
 
@@ -71,15 +76,15 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
                         setExpandedId(isExpanded ? null : event.id);
                     }}
                 >
-                    {isExpanded ? "Hide tasks" : `Click to show tasks (${labels.length})`}
+                    {isExpanded ? `Hide ${nounPlural}` : `Click to show ${nounPlural} (${labels.length})`}
                 </Button>
 
                 <Collapse in={isExpanded}>
                     <ol id={collapseId} className="event-task-list">
-                        {labels.map((taskLabel, i) => (
+                        {labels.map((itemLabel, i) => (
                             <li key={`${event.id}-${i}`} className="event-task-list-item">
                                 <Text size="13px" lh="1.5" truncate lineClamp={1}>
-                                    {taskLabel}
+                                    {itemLabel}
                                 </Text>
                             </li>
                         ))}
@@ -99,7 +104,7 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
                 const inList = listTitle && listId
                     ? <> in <Link className="event-link" to={`/tasklists/${listId}`} target="_blank" rel="noreferrer">{listTitle}</Link></>
                     : null;
-                const line2 = formatTaskLine2(event);
+                const line2 = formatGroupedLine2(event, "tasks");
                 switch (event.action) {
                     case "created": return {
                         line1: <>added {count === 1 ? "a task" : `${count} tasks`}{inList}</>,
@@ -165,12 +170,34 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
                 const inList = listTitle && listId
                     ? <> in <Link className="event-link" to={`/shopping/${listId}`} target="_blank" rel="noreferrer">{listTitle}</Link></>
                     : null;
+                const line2 = formatGroupedLine2(event, "items");
                 switch (event.action) {
-                    case "created": return { line1: <>added an item{inList}</>, line2: label(event.entityLabel) };
-                    case "purchased": return { line1: <>checked off an item{inList}</>, line2: label(event.entityLabel) };
-                    case "unpurchased": return { line1: <>unchecked:</>, line2: label(event.entityLabel) };
-                    case "deleted": return { line1: <>removed from the shopping list:</>, line2: label(event.entityLabel) };
-                    default: return { line1: <>updated:</>, line2: label(event.entityLabel) };
+                    case "created": return {
+                        line1: count === 1 ? <>added an item{inList}</> : <>added {count} items{inList}</>,
+                        line2,
+                    };
+                    case "purchased": return {
+                        line1: count === 1 ? <>checked off an item{inList}</> : <>checked off {count} items{inList}</>,
+                        line2,
+                    };
+                    case "unpurchased": return {
+                        // Singular phrasing kept as-is ("unchecked:" reads naturally
+                        // with the item name directly below it via line2). Plural
+                        // needs its own sentence since "unchecked: [expandable]"
+                        // doesn't read the same way "unchecked: Milk" does.
+                        line1: count === 1 ? <>unchecked:</> : <>marked {count} items as unchecked{inList}</>,
+                        line2,
+                    };
+                    case "deleted": return {
+                        line1: count === 1
+                            ? <>removed from the shopping list:</>
+                            : <>removed {count} items from the shopping list{inList}</>,
+                        line2,
+                    };
+                    default: return {
+                        line1: count === 1 ? <>updated:</> : <>updated {count} items{inList}</>,
+                        line2,
+                    };
                 }
             }
             case "announcement":
