@@ -12,18 +12,6 @@ def is_household_admin(household_id):
     household = Household.query.get(household_id)
     return household and current_user.id == household.admin_id
 
-def get_shopping_list_audience_ids(shopping_list):
-    """
-    None = household-wide
-    List = restricted to creator + assigned members
-    """
-    if shopping_list.all_members:
-        return None 
-    audience = {shopping_list.creator_id}
-    for link in shopping_list.member_links:
-        audience.add(link.user_id)
-    return list(audience)
-
 @shopping_list_routes.route("/<int:id>")
 @login_required
 def get_shopping_list(id):
@@ -67,7 +55,9 @@ def add_item(id):
         entity_type="shopping_item",
         entity_id=item.id,
         entity_label=item.name,
-        event_metadata={"listId": shopping_list.id, "listTitle": shopping_list.title}
+        event_metadata={"listId": shopping_list.id, "listTitle": shopping_list.title},
+        audience_ids=shopping_list.assignee_ids(),
+        batch_key=f"shopping-item-created-{shopping_list.id}",
     )
 
     db.session.commit()
@@ -101,7 +91,8 @@ def delete_list(id):
         action="deleted",
         entity_type="shopping_list",
         entity_id=shopping_list.id,
-        entity_label=shopping_list.title
+        entity_label=shopping_list.title,
+        audience_ids=shopping_list.assignee_ids(),
     )
 
     db.session.delete(shopping_list)
@@ -151,7 +142,8 @@ def edit_shopping_list(id):
             entity_type="shopping_list",
             entity_id=shopping_list.id,
             entity_label=title,
-            event_metadata={"oldTitle": old_title}
+            event_metadata={"oldTitle": old_title},
+            audience_ids=shopping_list.assignee_ids(),
         )
 
     db.session.commit()
@@ -176,7 +168,8 @@ def duplicate_list(id):
             entity_type="shopping_list",
             entity_id=new_list.id,
             entity_label=new_list.title,
-            event_metadata={"duplicatedFrom": original_list.title}
+            event_metadata={"duplicatedFrom": original_list.title},
+            audience_ids=new_list.assignee_ids(),
         )
         
         db.session.commit()
@@ -206,7 +199,8 @@ def archive_list(id):
         action="archived",
         entity_type="shopping_list",
         entity_id=shopping_list.id,
-        entity_label=shopping_list.title
+        entity_label=shopping_list.title,
+        audience_ids=shopping_list.assignee_ids(),
     )
 
     db.session.commit()
@@ -229,7 +223,8 @@ def unarchive_list(id):
         action="unarchived",
         entity_type="shopping_list",
         entity_id=shopping_list.id,
-        entity_label=shopping_list.title
+        entity_label=shopping_list.title,
+        audience_ids=shopping_list.assignee_ids(),
     )
 
     db.session.commit()

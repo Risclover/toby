@@ -26,22 +26,6 @@ def get_tasklist_audience_ids(tasklist):
         audience.add(link.user_id)
     return list(audience)
 
-# TABLE OF CONTENTS
-# 1. get_tasklist: Retrieve tasklist by id
-# 2. get_tasklists: Get all of a scope's tasklists (user's or household's)
-# 3. create_tasklist: Create task list
-# 4. add_task: Add task to task list
-# 7. delete_task: Remove task from list
-# 8. clear_list: Clear list by removing all tasks
-# 9. delete_list: Delete tasklist
-# 10. reorder_tasks: Reorder tasklist (drag and drop)
-# 11. duplicate_list: Duplicate tasklist
-# 12. archive_list: Archive tasklist 
-# 13. update_list_settings: Update tasklist settings
-# 14. complete_all_tasks: Mark all tasks in a tasklist as "completed"
-# 15. incomplete_all_tasks: Mark all tasks in a tasklist as "in_progress" (incompleted)
-# 16. manage_assigned_members: Manage a tasklist's assigned members
-
 @tasklist_routes.route("/<int:id>", methods=["GET"])
 def get_tasklist(id):
     tasklist = Tasklist.query.get_or_404(id)
@@ -477,6 +461,16 @@ def complete_all_tasks(id):
     for task in tasklist.tasks:
         task.status = "completed"
 
+    ActivityService.record(
+        household_id=tasklist.household_id,
+        actor_id=current_user.id,
+        action="completed",
+        entity_type="tasklist",
+        entity_id=tasklist.id,
+        entity_label=tasklist.title,
+        audience_ids=get_tasklist_audience_ids(tasklist),
+    )
+
     db.session.commit()
     return jsonify(tasklist.to_dict()), 200
 
@@ -491,6 +485,16 @@ def incomplete_all_tasks(id):
 
     for task in tasklist.tasks:
         task.status = "in_progress"
+
+    ActivityService.record(
+        household_id=tasklist.household_id,
+        actor_id=current_user.id,
+        action="uncompleted",
+        entity_type="tasklist",
+        entity_id=tasklist.id,
+        entity_label=tasklist.title,
+        audience_ids=get_tasklist_audience_ids(tasklist),
+    )
 
     db.session.commit()
     return jsonify(tasklist.to_dict()), 200

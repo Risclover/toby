@@ -3,14 +3,13 @@ from flask_login import login_required, current_user
 from app.extensions import db
 from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment, RepeatFrequency, User, ShoppingListMember, ShoppingList
 from sqlalchemy.orm import aliased, joinedload
-from sqlalchemy import outerjoin, or_, and_
+from sqlalchemy import or_
 import base64
 from datetime import datetime, date, timedelta, timezone
 from app.utils.parse_datetime import parse_datetime
-from app.utils.timezone import utc_datetime_to_local
+from app.utils.timezone import utc_datetime_to_local, get_user_timezone
 from app.utils.activity_service import ActivityService
 from app.api.tasklist_routes import get_tasklist_audience_ids
-from app.api.shopping_list_routes import get_shopping_list_audience_ids
 
 import json
 
@@ -103,7 +102,7 @@ def create_household_tasklist(household_id):
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json() or {}
-    color = data.get("color" or "")
+    color = data.get("color", "")
     title = (data.get("title") or "").strip()
     if not title:
         return jsonify({"error": "Title is required"}), 400
@@ -155,13 +154,37 @@ def create_household_tasklist(household_id):
 # SHOPPING LISTS
 # --------------------
 @household_routes.route("/<int:id>/shopping")
+@login_required
 def get_household_shopping_lists(id):
     household = Household.query.get(id)
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    shopping_lists = []
+    # Was previously unauthenticated with no membership/visibility check at
+    # all — unlike get_household_tasklists just above, which requires login,
+    # checks household membership, and filters per-list for restricted
+    # (non-all_members) lists. Mirroring that same pattern here.
+    if current_user.household_id != id:
+        return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
+
+    is_admin = current_user.id == household.admin_id
+
+    visible_lists = []
     for sl in household.shopping_lists:
+        if is_admin or sl.creator_id == current_user.id or sl.all_members:
+            visible_lists.append(sl)
+            continue
+
+        is_assigned = ShoppingListMember.query.filter_by(
+            list_id=sl.id,
+            user_id=current_user.id
+        ).first() is not None
+
+        if is_assigned:
+            visible_lists.append(sl)
+
+    shopping_lists = []
+    for sl in visible_lists:
         sl_dict = sl.to_dict()
         if hasattr(sl, "created_at") and sl.created_at:
             sl_dict["createdAt"] = utc_datetime_to_local(current_user, sl.created_at).isoformat()
@@ -170,14 +193,27 @@ def get_household_shopping_lists(id):
     return jsonify(shopping_lists), 200
 
 @household_routes.route("/<int:household_id>/shopping/<int:shopping_list_id>")
+@login_required
 def get_household_shopping_list(household_id, shopping_list_id):
     household = Household.query.get(household_id)
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
+    if current_user.household_id != household_id:
+        return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
+
     shopping_list = next((sl for sl in household.shopping_lists if sl.id == shopping_list_id), None)
     if not shopping_list:
         return jsonify({"error": "Shopping list not found in this household"}), 404
+
+    is_admin = current_user.id == household.admin_id
+    if not is_admin and shopping_list.creator_id != current_user.id and not shopping_list.all_members:
+        is_assigned = ShoppingListMember.query.filter_by(
+            list_id=shopping_list.id,
+            user_id=current_user.id
+        ).first() is not None
+        if not is_assigned:
+            return jsonify({"error": "Forbidden"}), 403
 
     sl_dict = shopping_list.to_dict()
     if hasattr(shopping_list, "created_at") and shopping_list.created_at:
@@ -235,7 +271,7 @@ def create_shopping_list(household_id):
         entity_id=shopping_list.id,
         entity_label=shopping_list.title,
         event_metadata={"listId": shopping_list.id, "listTitle": shopping_list.title},
-        audience_ids=get_shopping_list_audience_ids(shopping_list)
+        audience_ids=shopping_list.assignee_ids()
     )
 
     db.session.commit()

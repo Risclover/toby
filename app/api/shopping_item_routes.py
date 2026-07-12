@@ -5,6 +5,7 @@ from app.models import ShoppingItem, ShoppingCategory
 from app.extensions import db
 from app.utils.activity_service import ActivityService
 
+
 shopping_item_routes = Blueprint("shopping-items", __name__)
 
 
@@ -60,15 +61,18 @@ def update_shopping_item(id):
 @login_required
 def delete_shopping_item(id):
     item = ShoppingItem.query.get_or_404(id)
+    shopping_list = item.shopping_list
 
     ActivityService.record(
-        household_id=item.shopping_list.household_id,
+        household_id=shopping_list.household_id,
         actor_id=current_user.id,
         action="deleted",
         entity_type="shopping_item",
         entity_id=item.id,
         entity_label=item.name,
-        event_metadata={"listId": item.list_id, "listName": item.shopping_list.title},
+        event_metadata={"listId": item.list_id, "listTitle": shopping_list.title},
+        audience_ids=shopping_list.assignee_ids(),
+        batch_key=f"shopping-item-deleted-{item.list_id}",
     )
 
     db.session.delete(item)
@@ -80,18 +84,23 @@ def delete_shopping_item(id):
 @login_required
 def toggle_shopping_item(id):
     item = ShoppingItem.query.get_or_404(id)
+    shopping_list = item.shopping_list
 
     item.is_checked = not item.is_checked
     item.completed_by_id = current_user.id if item.is_checked else None
 
+    action = "purchased" if item.is_checked else "unpurchased"
+
     ActivityService.record(
-        household_id=item.shopping_list.household_id,
+        household_id=shopping_list.household_id,
         actor_id=current_user.id,
-        action="purchased" if item.is_checked else "unpurchased",
+        action=action,
         entity_type="shopping_item",
         entity_id=item.id,
         entity_label=item.name,
-        event_metadata={"listId": item.list_id, "listName": item.shopping_list.title},
+        event_metadata={"listId": item.list_id, "listTitle": shopping_list.title},
+        audience_ids=shopping_list.assignee_ids(),
+        batch_key=f"shopping-item-{action}-{item.list_id}",
     )
 
     db.session.commit()

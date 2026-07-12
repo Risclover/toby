@@ -167,14 +167,20 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             ],
         }),
 
-        checkAllItems: builder.mutation<ShoppingList, { listId: number }>({
+        checkAllItems: builder.mutation<ShoppingList, { listId: number; householdId: number }>({
             query: ({ listId }) => ({ url: `/shopping-lists/${listId}/check-all`, method: "PATCH" }),
-            invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingList", id: listId }],
+            invalidatesTags: (_r, _e, { listId, householdId }) => [
+                { type: "ShoppingList", id: listId },
+                { type: "Activity" as const, id: `HOUSEHOLD_${householdId}` },
+            ],
         }),
 
-        uncheckAllItems: builder.mutation<ShoppingList, { listId: number }>({
+        uncheckAllItems: builder.mutation<ShoppingList, { listId: number; householdId: number }>({
             query: ({ listId }) => ({ url: `/shopping-lists/${listId}/uncheck-all`, method: "PATCH" }),
-            invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingList", id: listId }],
+            invalidatesTags: (_r, _e, { listId, householdId }) => [
+                { type: "ShoppingList", id: listId },
+                { type: "Activity" as const, id: `HOUSEHOLD_${householdId}` },
+            ],
         }),
 
         clearShoppingList: builder.mutation<{ message: string }, { listId: number }>({
