@@ -1,6 +1,8 @@
 import { useEffect, useState, type ChangeEvent, type MouseEvent } from "react";
-import { Checkbox, Transition } from "@mantine/core";
+import { Checkbox, Text, Transition } from "@mantine/core";
 import { useAuthenticateQuery, useToggleShoppingItemMutation, type ShoppingItem } from "@/store";
+import { ShoppingListItemDetailPill } from "@/features/Shopping/components/ShoppingList/ShoppingListItemDetailPill";
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
 export type FeaturedShoppingItemProps = {
     item: ShoppingItem;
@@ -12,6 +14,7 @@ export type FeaturedShoppingItemProps = {
     // same visible list, so nothing should fade/unmount).
     fadesOutOnCheck: boolean;
     color: string;
+    view: string;
 }
 
 // Small delay before an item leaves its current spot, so the user actually
@@ -19,7 +22,7 @@ export type FeaturedShoppingItemProps = {
 // same pattern already used for tasklist items (setTimeout + Transition).
 const DISAPPEAR_DELAY_MS = 300;
 
-export const FeaturedShoppingItem = ({ item, listId, fadesOutOnCheck, color }: FeaturedShoppingItemProps) => {
+export const FeaturedShoppingItem = ({ item, listId, fadesOutOnCheck, color, view }: FeaturedShoppingItemProps) => {
     const { data: user } = useAuthenticateQuery();
     const [toggleItem] = useToggleShoppingItemMutation();
 
@@ -93,21 +96,33 @@ export const FeaturedShoppingItem = ({ item, listId, fadesOutOnCheck, color }: F
                     onClick={onRowClick}
                     style={{ ...styles, cursor: "pointer" }}
                 >
-                    <div
-                        onClick={(e) => e.stopPropagation()}
-                        style={{ display: "flex", alignItems: "center" }}
-                    >
-                        <Checkbox
-                            size="16px"
-                            radius="xl"
-                            label={item.name}
-                            checked={isChecked}
-                            onChange={onCheckboxChange}
-                            style={{ textDecoration: isChecked ? "line-through" : "none", color: isChecked ? "gray" : "inherit" }}
-                            styles={{ label: { fontSize: "14px", cursor: "pointer" }, input: { cursor: "pointer" } }}
-                            color={color}
-                        />
+                    <div className="featured-shopping-item--top" onClick={(e) => e.stopPropagation()}>
+                        <div
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ display: "flex", justifyContent: "space-between", width: "100%", gap: "0.5rem" }}
+                        >
+                            <Checkbox
+                                size="16px"
+                                radius="xl"
+                                label={item.name}
+                                checked={isChecked}
+                                onChange={onCheckboxChange}
+                                style={{ textDecoration: isChecked ? "line-through" : "none", color: isChecked ? "gray" : "inherit" }}
+                                styles={{ root: { alignSelf: "center" }, label: { fontSize: "14px", cursor: "pointer" }, input: { cursor: "pointer" } }}
+                                color={color}
+                            />
+                            {!isChecked && <ShoppingListItemDetailPill item={item} />}
+                        </div>
                     </div>
+                    {view === "detailed" && <div className="shopping-list-item--bottom">
+                        <div className="invisible-wall"></div>
+                        {item?.notes && !item.isChecked &&
+                            <div className="shopping-list-item-notes">
+                                <TextSnippetIcon style={{ color: color }} />
+                                <Text size="xs" maw="100%" truncate>{item?.notes}</Text>
+                            </div>
+                        }
+                    </div>}
                 </li>
             )}
         </Transition>

@@ -92,7 +92,8 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings, acti
         sortOrder: shoppingSettings?.featuredList.sortOrder ?? "created",
         showProgress: shoppingSettings?.featuredList.showProgress ?? false,
         showQuickAdd: shoppingSettings?.featuredList.showQuickAdd ?? false,
-        categoryGroups: shoppingSettings?.featuredList.categoryGroups ?? false
+        categoryGroups: shoppingSettings?.featuredList.categoryGroups ?? false,
+        view: shoppingSettings?.featuredList.view ?? "compact"
     }), [shoppingSettings])
 
     const defaultShoppingValues: FeaturedShoppingListSettings = {
@@ -102,7 +103,8 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings, acti
         categoryGroups: false,
         sortOrder: "created",
         showProgress: false,
-        showQuickAdd: false
+        showQuickAdd: false,
+        view: "compact"
     }
 
     // Each tab keeps its own form + submit/reset handling via useSettingsModal.

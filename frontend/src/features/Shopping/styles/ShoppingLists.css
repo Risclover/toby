@@ -386,9 +386,10 @@
 }
 
 .shopping-list-item-detail-pill {
+    flex-shrink: 0;
     border-radius: .75rem;
     width: fit-content;
-    font-size: var(--text-xs);
+    font-size: 13px;
     font-weight: 500;
     color: var(--mantine-color-gray-6);
 }

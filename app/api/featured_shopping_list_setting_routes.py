@@ -38,7 +38,8 @@ def update_featured_shopping_list_settings():
             "sortOrder": "sort_order",
             "categoryGroups": "category_groups",
             "showProgress": "show_progress",
-            "showQuickAdd": "show_quick_add"
+            "showQuickAdd": "show_quick_add",
+            "view": "view"
         }
 
         for json_key, model_attr in field_mapping.items():

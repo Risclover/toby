@@ -2,6 +2,7 @@ import { apiSlice } from "./apiSlice";
 import { householdSlice } from "./householdSlice";
 
 export type FeaturedShoppingListSortOrder = "alpha" | "created";
+export type FeaturedShoppingListView = "detailed" | "compact";
 
 export interface FeaturedShoppingListSettings {
     listId: number | null | undefined;
@@ -11,6 +12,7 @@ export interface FeaturedShoppingListSettings {
     categoryGroups: boolean;
     showProgress: boolean;
     showQuickAdd: boolean;
+    view: FeaturedShoppingListView;
 }
 
 export interface FeaturedShoppingListSettingsResponse {

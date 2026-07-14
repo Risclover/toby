@@ -3,7 +3,7 @@ import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
 import { StarIcon } from "@/assets/icons/StarIcon";
 import type { FeaturedListView } from "@/store/featuredListSettingSlice";
 
-function MiniLine({ width, height, opacity = 1, marginTop, color = 'currentColor' }: { width: string | number; height: string | number; opacity?: number; marginTop?: string | number; color?: string; }) {
+export function MiniLine({ width, height, opacity = 1, marginTop, color = 'currentColor' }: { width: string | number; height: string | number; opacity?: number; marginTop?: string | number; color?: string; }) {
     return (
         <Box
             style={{
@@ -18,7 +18,7 @@ function MiniLine({ width, height, opacity = 1, marginTop, color = 'currentColor
     );
 }
 
-function MiniCircle({ size }: { size: string | number }) {
+export function MiniCircle({ size }: { size: string | number }) {
     return (
         <Box
             style={{

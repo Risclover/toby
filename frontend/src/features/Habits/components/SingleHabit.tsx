@@ -44,7 +44,7 @@ export const SingleHabit = ({ habit, id, name, description, color, isPrivate }: 
                     title: "Habit marked incomplete",
                     message: <>"<strong style={{ fontWeight: 500 }}>{name}</strong>" has returned. Go show it who's boss!</>,
                     color: "green",
-                    icon: KittyIcons.Workout
+                    icon: KittyIcons.OldWorkout
                 })
                 setChecked(false);
             } else {

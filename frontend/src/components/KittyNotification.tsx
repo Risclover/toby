@@ -10,7 +10,7 @@ type Props = {
 export const KittyNotification = ({ title, message, icon, color }: Props) => {
     let notifColor;
     if (color === "green") {
-        notifColor = "rgb(154, 221, 166)"
+        notifColor = "rgb(180, 230, 189)"
     } else if (color === "red") {
         notifColor = "rgb(234, 118, 118)"
     } else {

@@ -21,6 +21,7 @@ import Surprised from "./Surprised_Toby.png";
 import Thinking from "./Thinking_Toby.png";
 import Tired from "./Tired_Toby.png";
 import Workout from "./Workout_Toby.png";
+import OldWorkout from "./kitty-workout.png"
 
 export const KittyIcons = {
     Confused: Confused,
@@ -45,5 +46,6 @@ export const KittyIcons = {
     Surprised: Surprised,
     Thinking: Thinking,
     Tired: Tired,
-    Workout: Workout
+    Workout: Workout,
+    OldWorkout: OldWorkout
 }

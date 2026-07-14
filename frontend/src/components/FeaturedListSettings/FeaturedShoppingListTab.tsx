@@ -1,12 +1,13 @@
 import { useCreateShoppingListModal } from "@/contexts/CreateShoppingListContext";
 import { useIsSmallScreen } from "@/hooks";
-import { useAuthenticateQuery, useGetShoppingListsQuery } from "@/store";
-import { useGetFeaturedShoppingListSettingsQuery, type FeaturedShoppingListSettings } from "@/store/featuredShoppingListSettingSlice";
-import { Loader, Select, Switch, Tabs, UnstyledButton } from "@mantine/core";
+import { useAuthenticateQuery, useGetShoppingListsQuery, type FeaturedListView } from "@/store";
+import { useGetFeaturedShoppingListSettingsQuery, type FeaturedShoppingListSettings, type FeaturedShoppingListView } from "@/store/featuredShoppingListSettingSlice";
+import { Divider, Input, Loader, Select, Space, Switch, Tabs, UnstyledButton } from "@mantine/core";
 import type { UseFormReturnType } from "@mantine/form";
 import { SettingsSection } from "./SettingsSection";
 import { SettingsItem } from "../SettingsItem";
 import { MaxTaskCountPicker } from "./MaxTaskCountPicker";
+import { ShoppingViewSelector } from "@/features/Shopping/components/ShoppingListSettings/ShoppingViewSelector";
 
 
 
@@ -94,7 +95,7 @@ export const FeaturedShoppingListTab = ({ form, handleClose }: Props) => {
                         {...form.getInputProps('showProgress', { type: 'checkbox' })}
                     />
                 </SettingsItem>
-                <SettingsItem layout="row" label="Show quick-add bar" description="Display item input field at the bottom" divider={true}>
+                <SettingsItem layout="row" label="Show quick-add bar" description="Display item input field at the bottom" divider={false}>
                     <Switch
                         color={featuredList?.color}
                         size="md"
@@ -102,6 +103,19 @@ export const FeaturedShoppingListTab = ({ form, handleClose }: Props) => {
                         {...form.getInputProps('showQuickAdd', { type: 'checkbox' })}
                     />
                 </SettingsItem>
+                <div className="tasklist-settings-section view-tasklist-section">
+                    <div className="input-label-description">
+                        <Input.Label>View</Input.Label>
+                        <Input.Description>Choose preferred view style</Input.Description>
+                    </div>
+                    <Space h="xs" />
+                    <ShoppingViewSelector
+                        activeItemDisplay={form.values.view}
+                        setActiveItemDisplay={(val: FeaturedShoppingListView | ((prevValue: FeaturedShoppingListView) => FeaturedShoppingListView)) => form.setFieldValue('view', val)}
+                        list={featuredList}
+                    />
+                </div>
+                <Divider my="lg" />
             </SettingsSection>
             <SettingsSection title="ordering & limits">
                 <SettingsItem layout="column" label="Sort order" description="Set the item order" divider={false}>

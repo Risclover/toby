@@ -27,6 +27,7 @@ export const HomepageListsShoppingList = ({ isReady }: { isReady: boolean }) => 
 
     const showProgress = userSettings?.featuredList.showProgress ?? false;
     const showQuickAdd = userSettings?.featuredList.showQuickAdd ?? false;
+    const view = userSettings?.featuredList.view ?? "compact";
 
     if (!isReady) return null; // swap in a shopping-specific skeleton if you have one
 
@@ -53,19 +54,19 @@ export const HomepageListsShoppingList = ({ isReady }: { isReady: boolean }) => 
                         categoryGroupsEnabled ? (
                             <div className="homepage-lists-shopping">
                                 {truncated.categoryGroups.map(group => (
-                                    <FeaturedShoppingCategorySection key={group.category.id} title={group.category.name} items={group.items} listId={list.id} fadesOutOnCheck={fadesOutOnCheck} color={list.color} />
+                                    <FeaturedShoppingCategorySection key={group.category.id} title={group.category.name} items={group.items} listId={list.id} fadesOutOnCheck={fadesOutOnCheck} color={list.color} view={view} />
                                 ))}
                                 {truncated.uncategorized.length > 0 && (
-                                    <FeaturedShoppingCategorySection title="Uncategorized" items={truncated.uncategorized} listId={list.id} fadesOutOnCheck={fadesOutOnCheck} color={list.color} />
+                                    <FeaturedShoppingCategorySection title="Uncategorized" items={truncated.uncategorized} listId={list.id} fadesOutOnCheck={fadesOutOnCheck} color={list.color} view={view} />
                                 )}
                                 {visibleCheckedItems.length > 0 && (
-                                    <FeaturedShoppingCategorySection title="Completed" items={visibleCheckedItems} listId={list.id} fadesOutOnCheck={fadesOutOnCheck} color={list.color} />
+                                    <FeaturedShoppingCategorySection title="Completed" items={visibleCheckedItems} listId={list.id} fadesOutOnCheck={fadesOutOnCheck} color={list.color} view={view} />
                                 )}
                             </div>
                         ) : (
                             <ul className="homepage-lists-shopping">
                                 {displayedItems.map((item: ShoppingItem) => (
-                                    <FeaturedShoppingItem key={item.id} item={item} listId={list.id} fadesOutOnCheck={fadesOutOnCheck} color={list.color} />
+                                    <FeaturedShoppingItem key={item.id} item={item} listId={list.id} fadesOutOnCheck={fadesOutOnCheck} color={list.color} view={view} />
                                 ))}
                             </ul>
                         )

@@ -5,6 +5,10 @@ class FeaturedListSortOrder(str, Enum):
     ALPHA = "alpha"
     CREATED = "created"
 
+class FeaturedListView(str, Enum):
+    COMPACT = "compact"
+    DETAILED = "detailed"
+
 class FeaturedShoppingListSetting(db.Model):
     __tablename__ = "featured_shopping_list_settings"
 
@@ -19,6 +23,7 @@ class FeaturedShoppingListSetting(db.Model):
     category_groups = db.Column(db.Boolean, default=True, nullable=False)
     show_progress = db.Column(db.Boolean, default=False)
     show_quick_add = db.Column(db.Boolean, default=False)
+    view = db.Column(db.String(20), default=FeaturedListView.COMPACT, nullable=False)
 
     # Relationships
     user = db.relationship("User", back_populates="featured_shopping_list_settings", uselist=False)
@@ -35,6 +40,7 @@ class FeaturedShoppingListSetting(db.Model):
                 "sortOrder": self.sort_order,
                 "categoryGroups": self.category_groups,
                 "showProgress": self.show_progress,
-                "showQuickAdd": self.show_quick_add
+                "showQuickAdd": self.show_quick_add,
+                "view": self.view
             }
         }
