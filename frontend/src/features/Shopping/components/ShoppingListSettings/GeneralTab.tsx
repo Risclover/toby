@@ -1,12 +1,12 @@
 // ShoppingListSettingsGeneralTab.tsx
-import { Button, Checkbox, Flex, Group, Input, MultiSelect, Space, Tabs, Text, TextInput, type MultiSelectProps } from "@mantine/core";
-import { SettingsItem } from "@/components/SettingsItem";
+import { Button, Checkbox, Flex, Group, Input, MultiSelect, Space, Tabs, TextInput } from "@mantine/core";
 import { DeleteConfirmation } from "@/components";
 import { FormColorInput } from "@/components/FormColorInput";
+import { SettingsItem } from "@/components/SettingsItem";
 import { useIsSmallScreen } from "@/hooks";
+import type { useShoppingListSettings } from "../../hooks/useShoppingListSettings";
 import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
 import RadioButtonUncheckedRoundedIcon from "@mui/icons-material/RadioButtonUncheckedRounded";
-import type { useShoppingListSettings } from "../../hooks/useShoppingListSettings";
 
 type Props = ReturnType<typeof useShoppingListSettings>;
 

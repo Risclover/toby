@@ -1,14 +1,9 @@
 // ShoppingListSettingsBehaviorTab.tsx
-import { Button, Group, Select, Stack, Switch, Tabs, Text } from "@mantine/core";
+import { Select, Switch, Tabs } from "@mantine/core";
 import { SettingsItem } from "@/components/SettingsItem";
 import type { useShoppingListSettings } from "../../hooks/useShoppingListSettings";
 
 type Props = Pick<ReturnType<typeof useShoppingListSettings>, "form" | "list">;
-
-const SORT_OPTIONS: { value: "created" | "alpha"; label: string }[] = [
-    { value: "created", label: "By created date" },
-    { value: "alpha", label: "A → Z" },
-];
 
 export const ShoppingListSettingsBehaviorTab = ({ form, list }: Props) => {
     return (

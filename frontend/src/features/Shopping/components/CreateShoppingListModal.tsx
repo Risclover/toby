@@ -1,18 +1,18 @@
-import { FormColorInput } from "@/components";
-import { HouseholdMemberSelection } from "@/components/HouseholdMemberSelection";
-import { useMemberSelection } from "@/hooks";
-import { useHousehold } from "@/hooks/useHousehold";
-import { useCreateShoppingListMutation } from "@/store";
-import { isTooLight } from "@/utils";
 import { Button, Input, Modal, Stack, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form";
+import { FormColorInput, HouseholdMemberSelection } from "@/components";
+import { useMemberSelection, useHousehold } from "@/hooks";
+import { useCreateShoppingListMutation } from "@/store";
+import { isTooLight } from "@/utils";
 
 type Props = {
     opened: boolean;
     onClose: () => void;
 }
+
 export const CreateShoppingListModal = ({ opened, onClose }: Props) => {
     const { data: household } = useHousehold();
+
     const form = useForm({
         initialValues: { title: "", color: "#15aabf" },
         validate: {
@@ -20,7 +20,9 @@ export const CreateShoppingListModal = ({ opened, onClose }: Props) => {
             color: (v) => isTooLight(v),
         }
     })
+
     const hasColorError = isTooLight(form.values.color);
+
     const {
         allMembers,
         someSelected,

@@ -1,12 +1,10 @@
-import { ActionIcon, Combobox, Progress, Title, Tooltip } from "@mantine/core"
 import { useNavigate } from "react-router-dom"
+import { ActionIcon, Progress, Title, Tooltip } from "@mantine/core"
+import { useShoppingList } from "../../hooks/useShoppingList";
+import { useIsSmallScreen, useHousehold } from "@/hooks";
+import { useAuthenticateQuery, type ShoppingList } from "@/store";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import { useAuthenticateQuery, type ShoppingList } from "@/store";
-import { useIsSmallScreen } from "@/hooks";
-import { useHousehold } from "@/hooks/useHousehold";
-import { getLightColor } from "@/utils";
-import { useShoppingList } from "../../hooks/useShoppingList";
 
 type Props = {
     list: ShoppingList;
@@ -14,7 +12,7 @@ type Props = {
     setShowSettings: (val: boolean) => void;
 }
 
-export const ShoppingListTitleComponent = ({ list, showSettings, setShowSettings }: Props) => {
+export const ShoppingListTitleComponent = ({ list, setShowSettings }: Props) => {
     const navigate = useNavigate();
     const isSmall = useIsSmallScreen(425);
     const { data: user } = useAuthenticateQuery();

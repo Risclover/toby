@@ -1,9 +1,8 @@
-import { ArchivedIcon } from "@/assets";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ActionIcon, Button, Group, Menu, Tooltip } from "@mantine/core";
-import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import { FaTrash, FaCopy } from "react-icons/fa";
-import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
-import RadioButtonUncheckedRoundedIcon from "@mui/icons-material/RadioButtonUncheckedRounded";
+import { notifications } from "@mantine/notifications";
+import { KittyNotification, DeleteConfirmation } from "@/components";
 import {
     useArchiveShoppingListMutation,
     useCheckAllItemsMutation,
@@ -12,12 +11,12 @@ import {
     useDeleteShoppingListMutation,
     type ShoppingList,
 } from "@/store";
-import { useHousehold } from "@/hooks/useHousehold";
-import { KittyNotification, DeleteConfirmation } from "@/components";
-import { KittyIcons } from "@/assets";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { notifications } from "@mantine/notifications";
+import { useHousehold } from "@/hooks";
+import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import RadioButtonUncheckedRoundedIcon from "@mui/icons-material/RadioButtonUncheckedRounded";
+import { FaTrash, FaCopy } from "react-icons/fa";
+import { KittyIcons, ArchivedIcon } from "@/assets";
 
 type Props = {
     list: ShoppingList;
@@ -35,7 +34,7 @@ export const ShoppingListActionsMenu = ({ list }: Props) => {
 
     const handleCheckAll = async () => {
         try {
-            await checkAll({ listId: list.id }).unwrap();
+            await checkAll({ listId: list.id, householdId: household.id }).unwrap();
             notifications.show({
                 color: list.color,
                 position: "bottom-center",
@@ -62,7 +61,7 @@ export const ShoppingListActionsMenu = ({ list }: Props) => {
 
     const handleUncheckAll = async () => {
         try {
-            await uncheckAll({ listId: list.id }).unwrap();
+            await uncheckAll({ listId: list.id, householdId: household.id }).unwrap();
             notifications.show({
                 color: list.color,
                 position: "bottom-center",

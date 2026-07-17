@@ -1,11 +1,11 @@
-import { ArchivedIcon } from "@/assets";
-import { PlusIcon } from "@/assets/icons/PlusIcon";
-import { ActionIcon, Group, Tooltip } from "@mantine/core"
 import { useNavigate } from "react-router-dom"
+import { ActionIcon, Group, Tooltip } from "@mantine/core"
+import { ArchivedIcon, PlusIcon } from "@/assets";
 
 type Props = {
     openModal: () => void;
 }
+
 export const ShoppingListsTitleComponent = ({ openModal }: Props) => {
     const navigate = useNavigate();
     return (

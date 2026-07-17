@@ -1,10 +1,8 @@
 import { useHousehold } from "@/hooks/useHousehold";
 import { useToggleShoppingItemMutation, type ShoppingItem, type ShoppingList } from "@/store"
 import { Checkbox, Text } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { ShoppingListItemDetailPill } from "./ShoppingListItemDetailPill";
-import { getUnitLabel } from "../../constants/shoppingUnits";
 import { ShoppingListDetailsPanel } from "../ShoppingListDetailsPanel/ShoppingListDetailsPanel";
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 

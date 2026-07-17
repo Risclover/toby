@@ -1,5 +1,4 @@
 import { TextInput, ActionIcon, CloseIcon } from "@mantine/core"
-import { IconX } from "@tabler/icons-react"
 
 type Props = {
     name: string;

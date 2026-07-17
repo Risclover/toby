@@ -1,12 +1,12 @@
 // ShoppingListSettings.tsx
 import { Button, Group, Modal, Tabs } from "@mantine/core";
-import { useIsSmallScreen } from "@/hooks";
 import { DiscardWarning } from "@/components";
-import { isTooLight } from "@/utils";
-import { useShoppingListSettings, type ShoppingListFormValues } from "../../hooks/useShoppingListSettings";
 import { ShoppingListSettingsGeneralTab } from "./GeneralTab";
 import { ShoppingListSettingsBehaviorTab } from "./BehaviorTab";
+import { useIsSmallScreen } from "@/hooks";
+import { useShoppingListSettings, type ShoppingListFormValues } from "../../hooks/useShoppingListSettings";
 import type { ShoppingList } from "@/store";
+import { isTooLight } from "@/utils";
 
 type Props = {
     opened: boolean;

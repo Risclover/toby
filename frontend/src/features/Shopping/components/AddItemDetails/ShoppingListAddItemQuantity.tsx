@@ -1,39 +1,32 @@
-import { NumberInput } from "@mantine/core"
-import { useState, useEffect, useRef } from "react";
+import { NumberInput } from "@mantine/core";
+import { useShoppingListAddItemQuantity } from "../../hooks/useShoppingListAddItemQuantity";
 
+/** Props for ShoppingListAddItemQuantity. */
 type Props = {
+    /** Quantity value to initialize/reset the local input from. */
     quantity: number;
+    /** Called with the resolved number whenever the value changes or is committed. */
     onCommit: (q: number) => void;
+    /** Called when the popover should close; passed the resolved value, or the snapshot on discard. */
     onClose: (finalValue?: number) => void;
-}
+};
+
+/**
+ * Numeric stepper for setting an item's quantity. Enter commits and closes;
+ * Escape discards back to `quantity` and closes; blurring commits whatever
+ * is currently typed.
+ */
 export const ShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: Props) => {
-    const [localValue, setLocalValue] = useState<number | "">(quantity);
-    const isDiscardingRef = useRef(false);
-
-    useEffect(() => {
-        setLocalValue(quantity);
-    }, [quantity]);
-
-    const commitValue = () => {
-        const resolved = localValue === "" ? 0 : localValue;
-        onCommit(resolved);
-        return resolved;
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            const resolved = commitValue();
-            onClose(resolved);
-        }
-        if (e.key === "Escape") {
-            e.preventDefault();
-            e.stopPropagation(); // prevent Mantine's FocusTrap from also handling Escape
-            isDiscardingRef.current = true;
-            setLocalValue(quantity);
-            onClose(quantity); // pass snapshot back as explicit finalValue — signals discard
-        }
-    };
+    const {
+        localValue,
+        handleChange,
+        handleKeyDown,
+        handleBlur
+    } = useShoppingListAddItemQuantity({
+        quantity,
+        onCommit,
+        onClose
+    });
 
     return (
         <div className="shopping-list-add-item-detail--popover">
@@ -44,37 +37,15 @@ export const ShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: Pro
                 value={localValue}
                 max={9999}
                 clampBehavior="strict"
-                onChange={(value) => {
-                    setLocalValue(value === "" ? "" : Number(value));
-                    if (value !== "") {
-                        onCommit(Number(value));
-                    }
-                }}
+                onChange={handleChange}
                 onKeyDown={handleKeyDown}
-                onBlur={() => {
-                    if (isDiscardingRef.current) {
-                        isDiscardingRef.current = false;
-                        return;
-                    }
-                    const resolved = commitValue();
-                    onClose(resolved);
-                }}
-                styles={{
-                    wrapper: {
-                        display: "flex",
-                        overflow: "hidden",
-                        width: "100px",
-                    },
-                    input: {
-                        minWidth: 0,
-                        flex: 1
-                    },
-                    controls: {
-                        borderRadius: 0,
-                        flexShrink: 0,
-                    },
+                onBlur={handleBlur}
+                classNames={{
+                    wrapper: "shopping-list-add-item-quantity-wrapper",
+                    input: "shopping-list-add-item-quantity-input",
+                    controls: "shopping-list-add-item-quantity-controls",
                 }}
             />
         </div>
-    )
-}
+    );
+};

@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { MobileLayout } from "@/layout/MobileLayout"
-import { MobileTasklistHeader } from "@/features/HouseholdTasklists/components/MobileTasklists/MobileTasklistHeader";
-import { ArchivedHouseholdTasklists } from "@/features/HouseholdTasklists/components/ArchivedHouseholdTasklists/ArchivedHouseholdTasklists";
 import { ActionIcon, Tooltip } from "@mantine/core";
+import { MobileLayout } from "@/layout/MobileLayout"
+import { ArchivedHouseholdTasklists } from "@/features/HouseholdTasklists/components/ArchivedHouseholdTasklists/ArchivedHouseholdTasklists";
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 
 export const ArchivedHouseholdTasklistsPage = () => {

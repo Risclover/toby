@@ -1,9 +1,9 @@
-import { ActionIcon, CloseIcon, Combobox, InputBase, ScrollArea, Text, useCombobox } from "@mantine/core";
 import { useRef } from "react";
-import { FaTrash, FaCheck } from "react-icons/fa6";
-import { HiPlus } from "react-icons/hi";
+import { ActionIcon, CloseIcon, Combobox, InputBase, ScrollArea, Text, useCombobox } from "@mantine/core";
 import { getUnitLabel } from "../../constants/shoppingUnits";
 import { useUnitOptions } from "../../hooks/useUnitOptions";
+import { FaTrash, FaCheck } from "react-icons/fa6";
+import { HiPlus } from "react-icons/hi";
 
 type Props = {
     unit: string;

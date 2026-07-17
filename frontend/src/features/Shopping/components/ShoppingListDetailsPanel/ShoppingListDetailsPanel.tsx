@@ -1,13 +1,13 @@
 import { Drawer, Button, Stack, Textarea, Group } from "@mantine/core";
-import type { ShoppingItem, ShoppingList } from "@/store";
-import type { DraftState } from "../../types/shoppingListDetailsPanel.types";
+import { DiscardWarning } from "@/components";
 import { ShoppingListAddItemQuantity } from "../AddItemDetails/ShoppingListAddItemQuantity";
 import { ShoppingListDetailCategoryInput } from "./ShoppingListDetailCategoryInput";
 import { ShoppingListDetailUnitInput } from "./ShoppingListDetailUnitInput";
 import { ShoppingListDetailNameInput } from "./ShoppingListDetailNameInput";
 import { ShoppingListDetailField } from "./ShoppingListDetailField";
 import { useShoppingListDetailsPanel } from "../../hooks/useShoppingListDetailsPanel";
-import { DiscardWarning } from "@/components";
+import type { DraftState } from "../../types/shoppingListDetailsPanel.types";
+import type { ShoppingItem, ShoppingList } from "@/store";
 
 type Props = {
     item: ShoppingItem;

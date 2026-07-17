@@ -1,12 +1,11 @@
-import { useNavigate } from "react-router-dom";
 import { ActionIcon, Menu } from "@mantine/core"
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import DeleteRounded from '@mui/icons-material/Delete';
 
-import { ViewIcon, UnarchivedIcon, MenuTrashIcon, KittyIcons } from "@/assets";
+import { UnarchivedIcon, KittyIcons } from "@/assets";
 import { DeleteConfirmation, KittyNotification } from "@/components";
 import { useState } from "react";
-import { useDeleteShoppingListMutation, useUnarchiveShoppingListMutation, type ShoppingList, type TasklistType } from "@/store";
+import { useDeleteShoppingListMutation, useUnarchiveShoppingListMutation, type ShoppingList } from "@/store";
 import { useHousehold } from "@/hooks/useHousehold";
 
 type Props = {
@@ -14,8 +13,7 @@ type Props = {
     list: ShoppingList;
 }
 
-export const ArchivedShoppingListsMenu = ({ list, tasklistId }: Props) => {
-    const navigate = useNavigate();
+export const ArchivedShoppingListsMenu = ({ list }: Props) => {
     const [unarchiveShoppingList] = useUnarchiveShoppingListMutation()
     const [deleteList] = useDeleteShoppingListMutation()
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);

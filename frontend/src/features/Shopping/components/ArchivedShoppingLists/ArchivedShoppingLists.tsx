@@ -1,25 +1,21 @@
 import type React from "react";
-import dayjs from "dayjs";
-import { Avatar, Center, Loader, Skeleton, Tooltip } from "@mantine/core";
-
-import { useAuthenticateQuery, useGetShoppingListsQuery, useGetTasklistsQuery } from "@/store";
-import { ArchivedShoppingListsMenu } from "./ArchivedShoppingListsMenu";
-import { useStablePending } from "@/hooks";
-import { useHousehold } from "@/hooks/useHousehold";
 import { useNavigate } from "react-router-dom";
-import { DeleteConfirmation } from "@/components";
-import { useState } from "react";
+import dayjs from "dayjs";
+import { Avatar, Center, Skeleton, Tooltip } from "@mantine/core";
+
+import { ArchivedShoppingListsMenu } from "./ArchivedShoppingListsMenu";
+import { useStablePending, useHousehold } from "@/hooks";
+import { useAuthenticateQuery, useGetShoppingListsQuery } from "@/store";
 import "../../styles/ArchivedShoppingLists.css"
 
 export const ArchivedShoppingLists = () => {
     const navigate = useNavigate();
     const { data: user, isSuccess: userLoaded } = useAuthenticateQuery();
-    const { data: archivedLists, isFetching, isLoading, isSuccess: dataLoaded } = useGetShoppingListsQuery(
+    const { data: archivedLists, isFetching, isSuccess: dataLoaded } = useGetShoppingListsQuery(
         { householdId: Number(user?.householdId), isArchived: true },
         { skip: !user?.householdId }
     );
     const { data: household } = useHousehold();
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     const isActuallyLoading = !userLoaded || isFetching;
     const loading = useStablePending(isActuallyLoading, { showAfterMs: 0, minVisibleMs: 500 });

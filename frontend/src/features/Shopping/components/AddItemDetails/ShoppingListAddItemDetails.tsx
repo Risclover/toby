@@ -1,64 +1,59 @@
-import { HiMiniArrowsUpDown } from "react-icons/hi2";
 import { DetailPopover } from "./DetailPopover";
 import { ShoppingListAddItemQuantity } from "./ShoppingListAddItemQuantity";
 import { ShoppingListAddItemUnit } from "./ShoppingListAddItemUnit";
 import { ShoppingListAddItemCategory } from "./ShoppingListAddItemCategory";
+import { useShoppingListAddItemDetails } from "../../hooks/useShoppingListAddItemDetails";
 import type { ShoppingList } from "@/store";
-import { useState } from "react";
+import type { ShoppingItemDetails, ShoppingItemDetailsHandlers } from "../../types";
+import { HiMiniArrowsUpDown } from "react-icons/hi2";
 
+/** Props for ShoppingListAddItemDetails. */
 type Props = {
+    /** The shopping list the new item will belong to (needed for category options). */
     list: ShoppingList;
-    quantity: number;
-    setQuantity: (q: number) => void;
-    draftQuantity: number;
-    setDraftQuantity: (q: number) => void;
-    qtyOpened: boolean;
-    setQtyOpened: (open: boolean) => void;
-    unit: string;
-    setUnit: (u: string) => void;
-    categoryId: number | null;
-    setCategoryId: (id: number | null) => void;
-}
-export const ShoppingListAddItemDetails = ({ list, quantity, setQuantity, draftQuantity, setDraftQuantity, qtyOpened, setQtyOpened, unit, setUnit, categoryId, setCategoryId }: Props) => {
-    const [qtySnapshot, setQtySnapshot] = useState(quantity);
+    /** Current quantity/unit/category values for the item being added. */
+    details: ShoppingItemDetails;
+    /** Setters for each field in `details`. */
+    onDetailsChange: ShoppingItemDetailsHandlers;
+};
 
-    const handleQtyOpenChange = (isOpen: boolean, explicitValue?: number) => {
-        if (isOpen) {
-            setQtySnapshot(quantity);
-            setDraftQuantity(quantity);
-        } else {
-            setQuantity(explicitValue ?? draftQuantity);
-        }
-        setQtyOpened(isOpen);
-    };
+/**
+ * Row of quantity, unit, and category pickers shown under the add-item
+ * input once the user focuses it.
+ */
+export const ShoppingListAddItemDetails = ({ list, details, onDetailsChange }: Props) => {
+    const { qtySnapshot, handleQtyOpenChange, handleQtyClose, handleUnitClose, handleCategoryClose } =
+        useShoppingListAddItemDetails(details, onDetailsChange);
 
     return (
         <div className="add-item-details-container">
             <DetailPopover
-                name={quantity > 0 ? quantity.toString() : "Qty."}
+                name={details.quantity > 0 ? details.quantity.toString() : "Qty."}
                 icon={<HiMiniArrowsUpDown />}
-                dropdown={<ShoppingListAddItemQuantity
-                    quantity={qtySnapshot}
-                    onCommit={setDraftQuantity}
-                    onClose={(finalValue) => handleQtyOpenChange(false, finalValue)}
-                />}
-                opened={qtyOpened}
+                dropdown={
+                    <ShoppingListAddItemQuantity
+                        quantity={qtySnapshot}
+                        onCommit={onDetailsChange.setDraftQuantity}
+                        onClose={handleQtyClose}
+                    />
+                }
+                opened={details.qtyOpened}
                 onChange={handleQtyOpenChange}
-                onCommit={setDraftQuantity}
-                onClose={(finalValue) => handleQtyOpenChange(false, finalValue)}
+                onCommit={onDetailsChange.setDraftQuantity}
+                onClose={handleQtyClose}
             />
             <ShoppingListAddItemUnit
-                unit={unit}
-                quantity={quantity}
-                onCommit={setUnit}
-                onClose={(finalValue) => setUnit(finalValue ?? "")}
+                unit={details.unit}
+                quantity={details.quantity}
+                onCommit={onDetailsChange.setUnit}
+                onClose={handleUnitClose}
             />
             <ShoppingListAddItemCategory
                 list={list}
-                categoryId={categoryId}
-                onCommit={setCategoryId}
-                onClose={(finalValue) => setCategoryId(finalValue ?? null)}
+                categoryId={details.categoryId}
+                onCommit={onDetailsChange.setCategoryId}
+                onClose={handleCategoryClose}
             />
         </div>
-    )
-}
+    );
+};

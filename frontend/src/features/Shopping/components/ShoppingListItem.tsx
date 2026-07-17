@@ -1,6 +1,5 @@
-import type { ShoppingItem } from "@/store/shoppingSlice";
 import { Checkbox } from "@mantine/core";
-
+import type { ShoppingItem } from "@/store";
 
 type Props = {
     item: ShoppingItem;

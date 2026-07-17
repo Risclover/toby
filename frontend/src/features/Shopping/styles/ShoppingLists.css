@@ -378,6 +378,23 @@
     font-size: var(--text-sm);
 }
 
+.shopping-list-add-item-quantity-wrapper {
+    display: flex;
+    overflow: hidden;
+    width: 100px;
+}
+
+.shopping-list-add-item-quantity-input {
+    min-width: 0;
+    flex: 1;
+}
+
+.shopping-list-add-item-quantity-controls {
+    border-radius: 0;
+    flex-shrink: 0;
+}
+
+
 .create-unit-option {
     display: flex;
     gap: .25rem;

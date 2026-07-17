@@ -1,10 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
-import type { ShoppingList } from "@/store";
 import { ShoppingListItem } from "./ShoppingListItem";
 import { ShoppingListCompleted } from "./ShoppingListCompleted";
 import { ShoppingListCategorySection } from "./ShoppingListCategorySection";
 import { useShoppingListGroups } from "../../hooks/useShoppingListGroups";
-import { ArchiveNotice } from "@/components/ArchiveNotice";
+import type { ShoppingList } from "@/store";
 
 type Props = {
     list: ShoppingList;

@@ -29,3 +29,4 @@ export { RemainingChars } from "./RemainingChars";
 export { FormColorInput } from "./FormColorInput";
 export { DiscardWarning } from "./DiscardWarning";
 export { SettingsItem } from "./SettingsItem";
+export { HouseholdMemberSelection } from "./HouseholdMemberSelection";

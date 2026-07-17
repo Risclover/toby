@@ -1,10 +1,7 @@
-import { StarIcon } from "@/assets";
-import { useIsSmallScreen } from "@/hooks";
-import type { FeaturedListView, ShoppingList } from "@/store";
-import type { FeaturedShoppingListView } from "@/store/featuredShoppingListSettingSlice";
-import { Box, Checkbox, Flex, Group, rem, Stack, Text } from "@mantine/core";
-import { list } from "postcss";
 import type React from "react";
+import { Box, Checkbox, Flex, Group, rem, Stack, Text } from "@mantine/core";
+import { useIsSmallScreen } from "@/hooks";
+import type { ShoppingList, FeaturedShoppingListView } from "@/store";
 
 type MiniLineProps = {
     width: string | number;

@@ -1,8 +1,8 @@
+import { useRef } from "react";
 import { ActionIcon, CloseIcon, Combobox, Group, InputBase, ScrollArea, Text, useCombobox } from "@mantine/core";
+import { useShoppingListCategories } from "../../hooks/useShoppingListCategories";
 import type { ShoppingList } from "@/store";
 import { FaCheck } from "react-icons/fa6";
-import { useShoppingListCategories } from "../../hooks/useShoppingListCategories";
-import { useRef } from "react";
 
 type Props = {
     list: ShoppingList;
