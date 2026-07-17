@@ -1,17 +1,18 @@
-import type { ShoppingItem, ShoppingList } from "@/store";
+import { AnimatePresence, motion } from "framer-motion";
 import { HomepageCollapseCard } from "@/components/HomepageCollapseCard/HomepageCollapseCard";
 import { ShoppingListItem } from "./ShoppingListItem";
-import { AnimatePresence, motion } from "framer-motion";
+import type { ShoppingItem, ShoppingList } from "@/store";
 
 type Props = {
     list: ShoppingList;
     categoryId: number;
     categoryName: string;
     items: ShoppingItem[];
+    sort: "created" | "alpha";
 };
 
-export const ShoppingListCategorySection = ({ list, categoryId, categoryName, items }: Props) => {
-    const sortedItems = list.defaultSort === "alpha"
+export const ShoppingListCategorySection = ({ list, categoryId, categoryName, items, sort }: Props) => {
+    const sortedItems = sort === "alpha"
         ? [...items].sort((a, b) => a.name.localeCompare(b.name))
         : items;
 

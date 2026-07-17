@@ -122,7 +122,7 @@ export const FeaturedShoppingItem = ({ item, listId, fadesOutOnCheck, color, vie
                                 <Text size="xs" maw="100%" truncate>{item?.notes}</Text>
                             </div>
                         }
-                    </div>}p
+                    </div>}
                 </li>
             )}
         </Transition>

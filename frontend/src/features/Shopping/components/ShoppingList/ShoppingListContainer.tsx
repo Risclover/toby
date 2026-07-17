@@ -28,6 +28,7 @@ export const ShoppingListContainer = ({ list, groupByCategory, sort }: Props) =>
                     categoryId={category.id}
                     categoryName={category.name}
                     items={items}
+                    sort={sort}
                 />
             ))}
 
@@ -39,6 +40,7 @@ export const ShoppingListContainer = ({ list, groupByCategory, sort }: Props) =>
                         categoryId={0}
                         categoryName="Uncategorized"
                         items={uncategorized}
+                        sort={sort}
                     />
                 ) : (
                     <ul className={`shopping-list${!isGrouped && checked.length > 0 ? " shopping-list--no-bottom-border" : ""}`}>
