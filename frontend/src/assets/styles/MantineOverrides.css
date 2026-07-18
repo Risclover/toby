@@ -84,6 +84,11 @@
     cursor: pointer !important;
 }
 
+.mantine-Notification-description,
+.mantine-Notification-title {
+    font-family: var(--font-family-sora);
+}
+
 /* .mantine-TextInput-input {
     background: var(--input-background) !important;
 }

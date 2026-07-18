@@ -22,7 +22,7 @@ type ItemNotificationMessageProps = {
 /** Success message body shown after an item is added, with the item and list names bolded. */
 const ItemAddedMessage = ({ itemName, listTitle }: ItemNotificationMessageProps) => (
     <>
-        A new item, "<Text span fw={500}>{itemName}</Text>", was added to "<Text span fw={500}>{listTitle}</Text>".
+        A new item, "<Text span fw={500} c="black" size="sm">{itemName}</Text>", was added to "<Text span fw={500} c="black" size="sm">{listTitle}</Text>".
     </>
 );
 

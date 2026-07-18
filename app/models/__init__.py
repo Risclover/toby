@@ -8,7 +8,7 @@ from .tasklist import Tasklist
 from .task import Task 
 from .tasklist_member import TasklistMember
 from .announcement import Announcement, AnnouncementSeen
-from .event import Event
+from .event import Event, assign_user_color
 from .checkin import Checkin
 from .mood import Mood
 from .reminder import Reminder, ReminderType, ReminderAssignment, RepeatFrequency
@@ -22,3 +22,4 @@ from .personal_note_category import PersonalNoteCategory
 from .shopping_list_member import ShoppingListMember
 from .shopping_item_unit import ShoppingItemUnit
 from .featured_shopping_list_setting import FeaturedShoppingListSetting
+from .event_attendee import EventAttendee

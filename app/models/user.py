@@ -29,6 +29,7 @@ class User(db.Model, UserMixin):
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
     removed_from_household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=True)
     featured_stats = db.Column(db.JSON, nullable=True)
+    color = db.Column(db.String(20), nullable=False, default="blue")
 
     # Relationships
     completed_tasks = db.relationship("Task", foreign_keys="Task.completed_by_id", back_populates="completed_by")
@@ -167,6 +168,7 @@ class User(db.Model, UserMixin):
             "timezone": self.timezone,
             "householdId": self.household_id,
             "removedFromHouseholdId": self.removed_from_household_id,
+            "color": self.color,
             "reminders": [
                 assignment.reminder.to_dict_for_user(assignment)
                 for assignment in self.reminder_assignments

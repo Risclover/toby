@@ -1,9 +1,41 @@
-from app.extensions import db 
-from datetime import datetime, timezone 
+from datetime import datetime, timezone
+from app.extensions import db
+from app.models import User
+ 
+PRESET_USER_COLORS = [
+    "blue", "red", "green", "grape", "orange",
+    "teal", "pink", "indigo", "cyan", "lime",
+]
 
+DEFAULT_ACCENT_COLOR = "gray"
+ 
+ 
+def assign_user_color(household_id: int) -> str:
+    """Returns an unused color from PRESET_USER_COLORS for this household.
+ 
+    Looks at colors CURRENTLY in use, not a count/index -- that matters
+    because a count-based "next in line" approach breaks once anyone has ever
+    left the household: the count no longer reflects which colors are
+    actually taken, so a new member could collide with an existing one.
+    Querying actual current colors is correct regardless of past joins/leaves.
+ 
+    Call this wherever you currently create a User row.
+    """
+    used = {u.color for u in User.query.filter_by(household_id=household_id).all()}
+ 
+    for color in PRESET_USER_COLORS:
+        if color not in used:
+            return color
+ 
+    raise ValueError(
+        f"No unused preset color left for household {household_id} "
+        f"({len(used)} members, {len(PRESET_USER_COLORS)} colors available)"
+    )
+ 
+ 
 class Event(db.Model):
     __tablename__ = "events"
-
+ 
     id = db.Column(db.Integer, primary_key=True)
     household_id = db.Column(db.Integer, db.ForeignKey("households.id"), nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
@@ -17,17 +49,33 @@ class Event(db.Model):
         nullable=False,
     )
     tzid = db.Column(db.String(64), nullable=False)  # e.g. "America/Los_Angeles"
-    household = db.relationship('Household', backref=db.backref('events', lazy='dynamic'))
+
+    rrule = db.Column(db.String(255), nullable=True)
+ 
+    household = db.relationship("Household", backref=db.backref("events", lazy="dynamic"))
     event_creator = db.relationship("User", foreign_keys=[creator_id])
 
+    attendee_links = db.relationship(
+        "EventAttendee",
+        backref="event",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+ 
+    @property
+    def attendees(self):
+        """List of User objects assigned to this event."""
+        return [link.user for link in self.attendee_links]
+ 
     def to_dict(self):
         def to_utc_z(dt):
             if dt is None:
-                return None                           # <-- handle nulls safely
+                return None
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=timezone.utc)
             return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-
+ 
+        attendees = self.attendees
         return {
             "id": self.id,
             "householdId": self.household_id,
@@ -36,13 +84,19 @@ class Event(db.Model):
             "startUtc": to_utc_z(self.start_utc),
             "endUtc": to_utc_z(self.end_utc),
             "tzid": self.tzid,
-            "hasTime": bool(self.has_time),           # <-- include it
+            "hasTime": bool(self.has_time),
+            "rrule": self.rrule,
             "createdAt": to_utc_z(self.created_at),
+            "attendees": [
+                {"id": u.id, "name": getattr(u, "name", None), "color": u.color}
+                for u in attendees
+            ],
+            "attendeeIds": [u.id for u in attendees],
             "household": {
                 "id": self.household.id,
                 "adminId": self.household.admin_id,
-            }
+            },
         }
-
+ 
     def __repr__(self):
         return f"Event {self.id}: {self.title}"

@@ -25,6 +25,7 @@ export const ShoppingListAddItemCategory = ({ list, categoryId, onCommit, onClos
         selectedCategory
     } = useShoppingListAddItemCategory({ list, categoryId, onCommit, onClose });
 
+    if (categories.length === 0) return null;
     return (
         <Combobox
             width={250}

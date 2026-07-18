@@ -1,13 +1,13 @@
 from flask import Blueprint, current_app, jsonify, request
 from flask_login import current_user, login_required
 from app.models import User, Checkin, Task, Tasklist, Reminder, ReminderAssignment, Habit, UserSettings, TasklistMember, PersonalNote, PersonalNoteCategory, ShoppingItemUnit
-from sqlalchemy import or_, func, exists  # add exists
+from sqlalchemy import or_, func, exists 
 from app.extensions import db
 from app.s3_helpers import (
     upload_file_to_s3, allowed_file, get_unique_filename)
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo 
-from pytz import all_timezones  # for validating IANA timezones
+from pytz import all_timezones
 from app.utils.activity_service import ActivityService
 from app.utils.stats import compute_user_stats
 
@@ -510,3 +510,28 @@ def update_featured_stats(user_id):
     current_user.featured_stats = stat_ids
     db.session.commit()
     return {"featuredStats": current_user.featured_stats}, 200
+
+
+
+@user_routes.route("/me/color", methods=["PUT"])
+@login_required
+def update_user_color():
+    if not current_user.household_id:
+        return jsonify({"error": "You must be in a household to set a color"}), 400
+ 
+    data = request.get_json() or {}
+    color = (data.get("color") or "").strip()
+ 
+    if color not in PRESET_USER_COLORS:
+        return jsonify({"error": f"color must be one of {PRESET_USER_COLORS}"}), 400
+ 
+    # Enforce uniqueness at the application level too, so the error is a
+    # clean 409 instead of a raw IntegrityError bubbling up from the
+    # uq_user_household_color constraint.
+    taken = User.query.filter_by(household_id=current_user.household_id, color=color).first()
+    if taken and taken.id != current_user.id:
+        return jsonify({"error": "That color is already taken in your household"}), 409
+ 
+    current_user.color = color
+    db.session.commit()
+    return jsonify(current_user.to_dict()), 200

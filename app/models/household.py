@@ -11,7 +11,8 @@ class Household(db.Model):
     invite_code = db.Column(db.String(64), unique=True, nullable=True, index=True)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     tzid = db.Column(db.String(64), nullable=False, default="America/Los_Angeles")
-
+    accent_color = db.Column(db.String(20), nullable=False, default="gray")
+    
     announcements = db.relationship(
         "Announcement",
         back_populates="household",

@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
 from app.utils.activity_service import ActivityService
 
-from app.models import User, Household, ShoppingList
+from app.models import User, Household, ShoppingList, assign_user_color
 from app.extensions import db
 from app.forms import LoginForm
 from app.helpers import validation_errors_to_error_messages
@@ -12,6 +12,17 @@ from uuid import uuid4
 import requests
 
 auth_routes = Blueprint('auth', __name__)
+
+
+def _assign_household_color(user: User, household_id: int):
+    """Call whenever a user's household_id is being set -- first join, or
+    switching to a different household after leaving one. Always assigns a
+    FRESH color scoped to the new household, even if the user already had a
+    color from a previous household: that old value could easily collide
+    with someone already using it in the new household, since uniqueness is
+    scoped per-household, not globally."""
+    user.color = assign_user_color(household_id)
+
 
 @auth_routes.route('')
 def authenticate():
@@ -61,6 +72,7 @@ def google_login():
         household = Household.query.filter_by(invite_code=invite_code).first()
         if household:
             user.household_id = household.id
+            _assign_household_color(user, household.id)
 
     db.session.commit()
     login_user(user)
@@ -141,6 +153,7 @@ def sign_up():
         db.session.add(household)
         db.session.flush()  # flush to get household.id
         user.household_id = household.id
+        _assign_household_color(user, household.id)
         defaults = ["Groceries", "Necessities", "Wishlist"]
         db.session.add_all([
             ShoppingList(title=title, household_id=household.id, creator_id=user.id) for title in defaults
@@ -177,7 +190,8 @@ def join_household(invite_code):
         last_name=last_name,
         email=email,
         password=password,
-        household_id=household.id
+        household_id=household.id,
+        color=assign_user_color(household.id),
     )
     db.session.add(user)
     db.session.commit()
@@ -190,11 +204,11 @@ def join_household(invite_code):
 
 @auth_routes.route("/join/<string:invite_code>", methods=["GET"])
 def validate_invite(invite_code):
-    household = Household.query.filter_by(invite_code=invite_code).first() 
+    household = Household.query.filter_by(invite_code=invite_code).first()
 
     if not household:
         return jsonify({"error": "Invalid invite code"}), 404
-        
+
     return jsonify({
         "householdId": household.id,
         "householdName": household.name,
@@ -237,6 +251,7 @@ def create_household():
     db.session.add(household)
     db.session.flush()
     current_user.household_id = household.id
+    _assign_household_color(current_user, household.id)
     defaults = ["Groceries", "Necessities", "Wishlist"]
     db.session.add_all([
         ShoppingList(title=title, household_id=household.id, creator_id=current_user.id) for title in defaults
@@ -253,5 +268,6 @@ def join_existing_household(invite_code):
         return jsonify({"error": "Invalid invite code"}), 400
 
     current_user.household_id = household.id
+    _assign_household_color(current_user, household.id)
     db.session.commit()
     return jsonify({"user": current_user.to_dict(), "household": household.to_dict()}), 200
