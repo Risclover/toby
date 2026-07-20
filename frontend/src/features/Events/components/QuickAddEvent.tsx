@@ -1,6 +1,6 @@
 // QuickAddEvent.tsx
 import { useEffect, useMemo, useState } from "react";
-import { Modal, Button, TextInput, Group, Stack, Text } from "@mantine/core";
+import { Modal, Button, TextInput, Group, Stack, Text, useModalsStack } from "@mantine/core";
 import { DatePickerInput, TimeInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useCreateEventMutation, useDeleteEventMutation, useGetHouseholdEventsQuery, useUpdateEventMutation, type CalendarEvent } from "@/store/eventSlice";
@@ -12,6 +12,9 @@ import { RemainingChars } from "@/components/RemainingChars";
 import { ClockIcon } from "@/assets/icons/ClockIcon";
 import { useModalFocus } from "@/hooks/useModalFocus";
 import { useAuthenticateQuery } from "@/store";
+import { EventFormRepeat } from "./CalendarPage/EventFormRepeat";
+import { EventFormRepeatCustom } from "./CalendarPage/EventFormRepeatCustom";
+import type { CustomRecurrenceRule } from "../utils/recurrence";
 
 function startEndIsoForLocalDay(ymd: string) {
     const [y, m, d] = ymd.split("-").map(Number);
@@ -54,13 +57,16 @@ const DATE_PRESETS = [
     { value: dayjs().add(1, "month").format("YYYY-MM-DD HH:mm:ss"), label: "Next month" },
 ];
 
+type ModalId = 'recurrence' | 'event-form';
+
 export function QuickAddEvent({
     householdId,
     opened,
     initialDate,
     onClose,
     edit,
-    event
+    event,
+    stack
 }: {
     householdId: number;
     opened: boolean;
@@ -68,6 +74,7 @@ export function QuickAddEvent({
     onClose: () => void;
     edit: boolean;
     event?: CalendarEvent;
+    stack: ReturnType<typeof useModalsStack<ModalId>>;
 }) {
     const isSmallScreen = useIsSmallScreen(425);
     const [createEvent, { isLoading: creating }] = useCreateEventMutation();
@@ -75,6 +82,7 @@ export function QuickAddEvent({
     const [deleteEvent] = useDeleteEventMutation();
     const { ref: nameRef, transitionProps } = useModalFocus(!edit);
     const isSaving = creating || updating;
+    const [customRule, setCustomRule] = useState<CustomRecurrenceRule | null>(null);
 
     // Store the full editing event in state so it stays stable even if the date changes
     const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
@@ -117,14 +125,15 @@ export function QuickAddEvent({
         });
     }, [dayEvents]);
 
-    // Seed form when modal opens or external event changes
+    const isOpen = stack?.state['event-form'];
+
     useEffect(() => {
-        if (!opened) return;
+        if (!isOpen) return;
         if (event?.id) {
             setTitle(event.title);
             setDateStr(ymdFromIso(event.startUtc ?? undefined));
             setTimeStr(event.hasTime === false ? "" : hmFromIso(event.startUtc));
-            setEditingEvent(event); // <- was null, now seeds the event so the row highlights
+            setEditingEvent(event);
         } else {
             setTitle("");
             setDateStr(dayjs(initialDate).format("YYYY-MM-DD"));
@@ -133,7 +142,7 @@ export function QuickAddEvent({
         }
         setTitleError("");
         setDateError("");
-    }, [opened, event?.id]);
+    }, [isOpen, event?.id]);
 
     // Populate form when a row edit is triggered
     useEffect(() => {
@@ -160,7 +169,7 @@ export function QuickAddEvent({
     };
 
     const handleClose = () => {
-        onClose();
+        stack.closeAll();
         setTitleError("");
     };
 
@@ -252,98 +261,105 @@ export function QuickAddEvent({
     const modalTitle = isEditingRow || (edit && event) ? "Edit event" : "Add event";
 
     return (
-        <Modal transitionProps={transitionProps} opened={opened} onClose={handleClose} radius="md" title={modalTitle} centered keepMounted={false}>
-            <TextInput
-                ref={nameRef}
-                label="Title"
-                placeholder="ex: Dentist"
-                value={title}
-                onChange={(e) => setTitle(e.currentTarget.value)}
-                required
-                withErrorStyles
-                maxLength={100}
-            />
-            <RemainingChars count={title.length} max={100} />
-            {isSmallScreen ? <Stack gap="0.5rem"><DatePickerInput
-                dropdownType={isSmallScreen ? "modal" : "popover"}
-                placeholder="Select date"
-                label="Date"
-                value={dateStr}
-                onChange={(v) => setDateStr(v ? dayjs(v).format("YYYY-MM-DD") : "")}
-                required
-                leftSection={<CalendarMonthRoundedIcon />}
-                leftSectionWidth="40px"
-                clearable
-                color="rgb(5, 5, 73)"
-                styles={DATE_PICKER_STYLES}
-                presets={DATE_PRESETS}
-                valueFormatter={({ date, format }: any) =>
-                    date ? dayjs(date).format(format) : ""
-                }
-                firstDayOfWeek={0}
-            />
-                <TimeInput
-                    leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                    label="Time"
-                    value={timeStr}
-                    onChange={(e) => setTimeStr(e.currentTarget.value)}
-                /></Stack> : <Group grow>
-                <DatePickerInput
-                    dropdownType={isSmallScreen ? "modal" : "popover"}
-                    placeholder="Select date"
-                    label="Date"
-                    value={dateStr}
-                    onChange={(v) => setDateStr(v ? dayjs(v).format("YYYY-MM-DD") : "")}
-                    required
-                    leftSection={<CalendarMonthRoundedIcon />}
-                    leftSectionWidth="40px"
-                    clearable
-                    color="rgb(5, 5, 73)"
-                    styles={DATE_PICKER_STYLES}
-                    presets={DATE_PRESETS}
-                    valueFormatter={({ date, format }: any) =>
-                        date ? dayjs(date).format(format) : ""
-                    }
-                    firstDayOfWeek={0}
-                />
-                <TimeInput
-                    leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                    label="Time"
-                    value={timeStr}
-                    onChange={(e) => setTimeStr(e.currentTarget.value)}
-                />
-            </Group>}
-            <Stack mt="lg" gap="xs">
-                <div className="todays-events-container">
-                    <div className="todays-events">
-                        {sorted.length === 0 ? (
-                            <div className="no-events">
-                                <Text c="dimmed" size="sm">No events for this date.</Text>
+        <>
+            <Modal.Stack>
+                <Modal {...stack?.register('event-form')} transitionProps={transitionProps} onClose={handleClose} radius="md" title={modalTitle} centered keepMounted={false}>
+                    <TextInput
+                        ref={nameRef}
+                        label="Title"
+                        placeholder="ex: Dentist"
+                        value={title}
+                        onChange={(e) => setTitle(e.currentTarget.value)}
+                        required
+                        withErrorStyles
+                        maxLength={100}
+                    />
+                    <RemainingChars count={title.length} max={100} />
+                    {isSmallScreen ? <Stack gap="0.5rem"><DatePickerInput
+                        dropdownType={isSmallScreen ? "modal" : "popover"}
+                        placeholder="Select date"
+                        label="Date"
+                        value={dateStr}
+                        onChange={(v) => setDateStr(v ? dayjs(v).format("YYYY-MM-DD") : "")}
+                        required
+                        leftSection={<CalendarMonthRoundedIcon />}
+                        leftSectionWidth="40px"
+                        clearable
+                        color="rgb(5, 5, 73)"
+                        styles={DATE_PICKER_STYLES}
+                        presets={DATE_PRESETS}
+                        valueFormatter={({ date, format }: any) =>
+                            date ? dayjs(date).format(format) : ""
+                        }
+                        firstDayOfWeek={0}
+                    />
+                        <TimeInput
+                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
+                            label="Time"
+                            value={timeStr}
+                            onChange={(e) => setTimeStr(e.currentTarget.value)}
+                        /></Stack> : <Group grow>
+                        <DatePickerInput
+                            dropdownType={isSmallScreen ? "modal" : "popover"}
+                            placeholder="Select date"
+                            label="Date"
+                            value={dateStr}
+                            onChange={(v) => setDateStr(v ? dayjs(v).format("YYYY-MM-DD") : "")}
+                            required
+                            leftSection={<CalendarMonthRoundedIcon />}
+                            leftSectionWidth="40px"
+                            color="rgb(5, 5, 73)"
+                            styles={DATE_PICKER_STYLES}
+                            presets={DATE_PRESETS}
+                            valueFormatter={({ date, format }: any) =>
+                                date ? dayjs(date).format(format) : ""
+                            }
+                            firstDayOfWeek={0}
+                        />
+                        <TimeInput
+                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
+                            label="Time"
+                            value={timeStr}
+                            onChange={(e) => setTimeStr(e.currentTarget.value)}
+                        />
+                    </Group>}
+                    <EventFormRepeat dateValue={dateStr} stack={stack} customRule={customRule} />
+                    <Stack mt="lg" gap="xs">
+                        <div className="todays-events-container">
+                            <div className="todays-events">
+                                {sorted.length === 0 ? (
+                                    <div className="no-events">
+                                        <Text c="dimmed" size="sm">No events for this date.</Text>
+                                    </div>
+                                ) : loading ? (
+                                    <Text size="sm">Loading...</Text>
+                                ) : (
+                                    sorted.map((e) => (
+                                        <EventRow
+                                            key={e.id}
+                                            e={e}
+                                            isEditing={editingEvent?.id === e.id}
+                                            onEdit={setEditingEvent}
+                                            onCancelEdit={resetToAddState}
+                                            onDelete={handleDeleteEvent}
+                                        />
+                                    ))
+                                )}
                             </div>
-                        ) : loading ? (
-                            <Text size="sm">Loading...</Text>
-                        ) : (
-                            sorted.map((e) => (
-                                <EventRow
-                                    key={e.id}
-                                    e={e}
-                                    isEditing={editingEvent?.id === e.id}
-                                    onEdit={setEditingEvent}
-                                    onCancelEdit={resetToAddState}
-                                    onDelete={handleDeleteEvent}
-                                />
-                            ))
-                        )}
-                    </div>
-                </div>
-            </Stack>
-            <Group justify="flex-end" mt="lg">
-                <Button h="auto" p=".5rem 1rem" size="sm" fw={500} color="rgb(5, 5, 73)" variant="outline" onClick={isEditingRow ? resetToAddState : handleClose}>Cancel</Button>
-                <Button h="auto" p=".5rem 1rem" size="sm" fw={500} color="rgb(5, 5, 73)" loading={isSaving} onClick={handleSave} data-test="quickadd-submit" disabled={title.trim().length === 0 || dateStr.trim().length === 0}>
-                    {isEditingRow ? "Update" : "Save"}
-                </Button>
-            </Group>
-        </Modal>
+                        </div>
+                    </Stack>
+                    <Group justify="flex-end" mt="lg">
+                        <Button h="auto" p=".5rem 1rem" size="sm" fw={500} color="rgb(5, 5, 73)" variant="outline" onClick={isEditingRow ? resetToAddState : handleClose}>Cancel</Button>
+                        <Button h="auto" p=".5rem 1rem" size="sm" fw={500} color="rgb(5, 5, 73)" loading={isSaving} onClick={handleSave} data-test="quickadd-submit" disabled={title.trim().length === 0 || dateStr.trim().length === 0}>
+                            {isEditingRow ? "Update" : "Save"}
+                        </Button>
+                    </Group>
+                </Modal>
+            </Modal.Stack>
+            <Modal.Stack>
+                <EventFormRepeatCustom stack={stack} dateStr={dateStr} onApply={setCustomRule} />
+            </Modal.Stack>
+        </>
     );
 }
 

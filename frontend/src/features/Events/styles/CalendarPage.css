@@ -1,0 +1,64 @@
+.full-page-calendar-container {
+    width: 100%;
+    background: white;
+    height: 100%;
+    padding: 1rem;
+    border-radius: .5rem;
+    max-width: 768px;
+    margin: 0 auto;
+    /* border: 1px solid red; */
+}
+
+.event-form-repeat-custom--section {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: var(--text-sm);
+    padding: .5rem 0;
+}
+
+.event-form-repeat-custom--vertical-section {
+    display: flex;
+    flex-direction: column;
+    font-size: var(--text-sm);
+    padding: .5rem 0;
+}
+
+.day-chip {
+    transition: box-shadow 150ms ease;
+}
+
+.day-chip:hover {
+    box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+}
+
+.day-chip[data-checked="true"] {
+    background: var(--mantine-color-blue-9) !important;
+}
+
+.day-chip:active {
+    box-shadow: none;
+}
+
+.radio-root {
+    border: none !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    font-size: var(--text-sm);
+    max-width: 250px;
+}
+
+
+.radio-root-label {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.radio-label {
+    font-size: var(--text-sm);
+    font-family: var(--font-family-sora);
+}

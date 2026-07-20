@@ -19,6 +19,7 @@ import { GuestRoute } from "./GuestRoute";
 import UserProfilePageDemo from "@/pages/UserProfileDemo";
 import { UserProfilePage } from "@/pages/UserProfilePage";
 import { ArchivedShoppingListsPage } from "@/pages";
+import { CalendarPage } from "@/pages/CalendarPage";
 
 export const AppRoutes = () => {
     const isMobile = useIsMobile();
@@ -43,6 +44,7 @@ export const AppRoutes = () => {
             <Route path="/demo" element={<UserProfilePageDemo />} />
             <Route path="/profile/:userId" element={<UserProfilePage defaultTab="profile" />} />
             <Route path="/profile/:userId/notes/:noteId" element={<UserProfilePage defaultTab="notes" />} />
+            <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
         </Routes>
     )
 }

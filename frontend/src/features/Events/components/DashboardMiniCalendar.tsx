@@ -1,5 +1,5 @@
 import React, { useMemo, useState, type SetStateAction } from "react";
-import { Flex, Group, Stack, Text } from "@mantine/core";
+import { Flex, Group, Stack, Text, useModalsStack } from "@mantine/core";
 import dayjs from "dayjs";
 import { useGetAllHouseholdEventsQuery } from "@/store/eventSlice";
 import { QuickAddEvent } from "./QuickAddEvent";
@@ -60,7 +60,7 @@ export function DashboardMiniCalendar({
     setShowAddEvent: React.Dispatch<SetStateAction<boolean>>;
 }) {
     const numberOfDays = 7;
-
+    const stack = useModalsStack(['recurrence', 'event-form'])
     // start of the visible 7-day strip — anchored to Sunday
     const [startDate, setStartDate] = useState<Date>(() => startOfWeekSunday(new Date()));
     // date to seed QuickAddEvent
@@ -140,7 +140,7 @@ export function DashboardMiniCalendar({
                         title: has ? "Has events" : undefined,
                         onClick: () => {
                             setSelectedDate(dateFromYmd(ymd));
-                            setShowAddEvent(true);
+                            stack.open('event-form');
                         },
                     };
                 }}
@@ -151,6 +151,7 @@ export function DashboardMiniCalendar({
                 initialDate={selectedDate}
                 onClose={() => setShowAddEvent(false)}
                 edit={false}
+                stack={stack}
             />
         </div>
     );

@@ -43,6 +43,7 @@ class Event(db.Model):
     start_utc = db.Column(db.DateTime(timezone=True), nullable=True)
     end_utc = db.Column(db.DateTime(timezone=True), nullable=True)
     has_time = db.Column(db.Boolean, nullable=False, default=False)
+    
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
