@@ -20,6 +20,7 @@ class UserSettings(db.Model):
     habits_on_homepage = db.Column(db.Boolean, default=False, nullable=False)
     habits_privacy_mode = db.Column(db.Enum(PrivacyMode), default=PrivacyMode.NORMAL, nullable=False)
     notes_privacy_mode = db.Column(db.Enum(PrivacyMode), default=PrivacyMode.NORMAL, nullable=False)
+    events_privacy_mode = db.Column(db.Enum(PrivacyMode), default=PrivacyMode.NORMAL, nullable=False)
 
     user = db.relationship("User", back_populates="user_settings", uselist=False)
 
@@ -31,4 +32,5 @@ class UserSettings(db.Model):
             "siteTheme": self.site_theme.value if self.site_theme else None,
             "habitsPrivacyMode": self.habits_privacy_mode.value,
             "notesPrivacyMode": self.notes_privacy_mode.value,
+            "eventsPrivacyMode": self.events_privacy_mode.value
         }

@@ -35,6 +35,7 @@ type UpdateUserSettingsPayload = {
     habitsOnHomepage: boolean;
     habitsPrivacyMode: PrivacyMode;
     notesPrivacyMode: PrivacyMode;
+    eventsPrivacyMode: PrivacyMode;
 };
 
 type Props = {
@@ -81,14 +82,15 @@ export const UserSettings = ({ opened, onClose }: Props) => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const defaultValues = ({
+    const defaultValues: UpdateUserSettingsPayload = ({
         firstName: "",
         lastName: "",
         timezone: "America/Los Angeles",
         siteTheme: "system",
         habitsOnHomepage: false,
         habitsPrivacyMode: "normal",
-        notesPrivacyMode: "normal"
+        notesPrivacyMode: "normal",
+        eventsPrivacyMode: "normal"
 
     })
 
@@ -100,6 +102,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
         habitsOnHomepage: data?.settings.habitsOnHomepage,
         habitsPrivacyMode: data?.settings.habitsPrivacyMode,
         notesPrivacyMode: data?.settings.notesPrivacyMode,
+        eventsPrivacyMode: data?.settings.eventsPrivacyMode
     })
 
     const form = useForm<UpdateUserSettingsPayload>({
@@ -111,6 +114,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
             habitsOnHomepage: false,
             habitsPrivacyMode: "normal",
             notesPrivacyMode: "normal",
+            eventsPrivacyMode: "normal",
         },
     });
 
@@ -316,13 +320,39 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                             layout="column"
                             label={
                                 <Group justify="start" gap={0}>
+                                    Events privacy
+                                    <InfoTooltip
+                                        tooltipLabel={
+                                            <div>
+                                                <div><span style={{ fontWeight: 600 }}>Public</span>: Events are public by default.</div>
+                                                <div><span style={{ fontWeight: 600 }}>Private by default</span>: New events are automatically marked as private in the creation form.</div>
+                                                <div><span style={{ fontWeight: 600 }}>All private</span>: All events are always hidden from other household members.</div>
+                                            </div>
+                                        }
+                                        tooltipWidth={400}
+                                    />
+                                </Group>
+                            }
+                            description="Controls who can see your events"
+                            divider={false}
+                        >
+                            <Select
+                                allowDeselect={false}
+                                data={PRIVACY_OPTIONS}
+                                {...form.getInputProps("eventsPrivacyMode")}
+                            />
+                        </SettingsItem>
+                        <SettingsItem
+                            layout="column"
+                            label={
+                                <Group justify="start" gap={0}>
                                     Habits privacy
                                     <InfoTooltip
                                         tooltipLabel={
                                             <div>
                                                 <div><span style={{ fontWeight: 600 }}>Public</span>: Habits are public by default.</div>
                                                 <div><span style={{ fontWeight: 600 }}>Private by default</span>: New habits are automatically marked as private in the creation form.</div>
-                                                <div><span style={{ fontWeight: 600 }}>All private</span>: All habits are always hidden from other members.</div>
+                                                <div><span style={{ fontWeight: 600 }}>All private</span>: All habits are always hidden from other household members.</div>
                                             </div>
                                         }
                                         tooltipWidth={400}
@@ -348,7 +378,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                                             <div>
                                                 <div><span style={{ fontWeight: 600 }}>Public</span>: Notes are public by default.</div>
                                                 <div><span style={{ fontWeight: 600 }}>Private by default</span>: New notes are automatically marked as private in the creation form.</div>
-                                                <div><span style={{ fontWeight: 600 }}>All private</span>: All notes are always hidden from other members.</div>
+                                                <div><span style={{ fontWeight: 600 }}>All private</span>: All notes are always hidden from other household members.</div>
                                             </div>
                                         }
                                         tooltipWidth={400}

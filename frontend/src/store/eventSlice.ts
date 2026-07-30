@@ -8,8 +8,6 @@ export type EventAttendee = {
     color: string;
 };
 
-export type EventVisibility = 'public' | 'private';
-
 export type CalendarEvent = {
     id: number;
     householdId: number;
@@ -20,7 +18,7 @@ export type CalendarEvent = {
     tzid: string;
     hasTime: boolean;
     rrule: string | null;
-    visibility: EventVisibility;
+    visibility: string;
     allMembers: boolean;
     createdAt: string;
     attendees: EventAttendee[];
@@ -40,7 +38,7 @@ type TimedEventInput = {
     startUtc: string; // ISO
     endUtc: string;
     rrule?: string;
-    visibility?: EventVisibility;
+    visibility?: string;
     allMembers?: boolean;
     attendeeIds?: number[];
 };
@@ -49,7 +47,7 @@ type DateOnlyEventInput = {
     tzid?: string;
     date: string;
     rrule?: string;
-    visibility?: EventVisibility;
+    visibility?: string;
     allMembers?: boolean;
     attendeeIds?: number[];
 };
@@ -70,7 +68,7 @@ type UpdateEventPayload = UpdateEventBase &
         endUtc: string;
         date: string;
         rrule: string;
-        visibility: EventVisibility;
+        visibility: string;
         allMembers: boolean;
         attendeeIds: number[];
     }>;

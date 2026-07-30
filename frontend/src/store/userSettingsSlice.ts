@@ -10,6 +10,7 @@ export interface UserSettings {
     siteTheme: Theme;
     habitsPrivacyMode: PrivacyMode;
     notesPrivacyMode: PrivacyMode;
+    eventsPrivacyMode: PrivacyMode;
 }
 
 export interface UserSettingsResponse {

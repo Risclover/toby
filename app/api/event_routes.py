@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, timezone, date
 from typing import Optional, Tuple
 from flask import Blueprint, request, jsonify, abort
-from sqlalchemy import or_
+from sqlalchemy import or_, exists
 from sqlalchemy.orm import joinedload
 from app.extensions import db
-from app.models import Household, Event, EventAttendee, User, VALID_VISIBILITIES, DEFAULT_VISIBILITY
+from app.models import Household, Event, EventAttendee, User, VALID_VISIBILITIES, DEFAULT_VISIBILITY, UserSettings
 from zoneinfo import ZoneInfo
 from flask_login import current_user, login_required
 from app.utils.timezone import utc_datetime_to_local, ensure_utc
@@ -209,6 +209,20 @@ def get_household_events(hid: int):
         joinedload(Event.attendee_links).joinedload(EventAttendee.user)
     ).filter(Event.household_id == hid)
 
+    # Creator's "all private" setting is an absolute override: hidden from
+    # every other household member, including the admin. Applied before the
+    # admin-bypass check below so it can't be skipped.
+    all_private_creator = exists().where(
+        UserSettings.user_id == Event.creator_id,
+        UserSettings.events_privacy_mode == 'all_private',
+    )
+    q = q.filter(
+        or_(
+            ~all_private_creator,
+            Event.creator_id == current_user.id,
+        )
+    )
+
     if current_user.id != household.admin_id:
         q = q.filter(
             or_(
@@ -249,6 +263,32 @@ def get_household_events(hid: int):
 
     events = q.order_by(Event.start_utc.asc()).all()
     return jsonify([event_to_local_dict(e, current_user) for e in events]), 200
+
+
+def get_visible_events(household_id, viewer_id, query=None):
+    """Filter events to those visible to the viewer on the household homepage.
+ 
+    An event is hidden if its creator's `event_privacy` setting is
+    "all_private", unless the viewer is that creator (users always see
+    their own events, regardless of their privacy setting).
+ 
+    Args:
+        household_id: ID of the household whose events are being queried.
+        viewer_id: ID of the user viewing the homepage.
+        query: Optional base query to filter further (defaults to Event.query).
+ 
+    Returns:
+        SQLAlchemy query filtered for visibility.
+    """
+    base_query = query if query is not None else Event.query
+ 
+    return base_query.join(User, Event.creator_id == User.id).filter(
+        Event.household_id == household_id,
+        or_(
+            User.event_privacy != ALL_PRIVATE,
+            Event.creator_id == viewer_id,
+        ),
+    )
 
 
 @event_routes.post('/households/<int:hid>/events')

@@ -88,6 +88,12 @@ def update_user_settings():
         except ValueError:
             return jsonify({"error": "Invalid notesPrivacyMode"}), 400
 
+    if "eventsPrivacyMode" in data:
+        try:
+            user_settings.events_privacy_mode = PrivacyMode(data["eventsPrivacyMode"])
+        except ValueError:
+            return jsonify({"error": "Invalid eventsPrivacyMode"}), 400
+
     db.session.commit()
 
     return jsonify({

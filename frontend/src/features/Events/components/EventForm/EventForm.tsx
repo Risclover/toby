@@ -12,7 +12,7 @@ import { EventMenu } from "../EventMenu";
 import { RemainingChars } from "@/components/RemainingChars";
 import { ClockIcon } from "@/assets/icons/ClockIcon";
 import { useModalFocus } from "@/hooks/useModalFocus";
-import { useAuthenticateQuery } from "@/store";
+import { useAuthenticateQuery, useGetUserSettingsQuery } from "@/store";
 import { EventFormRepeat } from "./Recurrence/EventFormRepeat";
 import { EventFormRepeatCustom } from "./Recurrence/EventFormRepeatCustom";
 import { buildRRule, matchingPresetKind, type CustomRecurrenceRule, type PresetKind } from "../../utils/recurrence";
@@ -91,6 +91,7 @@ export function EventForm({
     const [customRule, setCustomRule] = useState<CustomRecurrenceRule | null>(null);
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
+    const { data: userSettings } = useGetUserSettingsQuery(user.id);
 
     const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
     const isEditingRow = editingEvent !== null;
@@ -187,7 +188,7 @@ export function EventForm({
             allDay: true,
             startTime: '',
             endTime: '',
-            visibility: 'public' as const,
+            visibility: userSettings?.settings.eventsPrivacyMode === "private_by_default" ? "private" : 'public' as const,
             assignedUserIds: [user.id],
             allMembers: false,
         };

@@ -1,6 +1,6 @@
 import { DashboardMiniCalendar, UpcomingThisWeek } from "@/features"
 import { HomepageCollapseCard } from "./HomepageCollapseCard"
-import { useAuthenticateQuery, useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery } from "@/store"
+import { useAuthenticateQuery, useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery, useGetUserSettingsQuery } from "@/store"
 import { useState } from "react";
 import { AgendaView } from "@mantine/schedule";
 import dayjs from "dayjs";
@@ -13,6 +13,7 @@ export const HomepageEventsCollapseCard = ({ isReady }: { isReady: boolean }) =>
     const [showAddEvent, setShowAddEvent] = useState(false);
     const { data: household } = useHousehold();
     const { data: events } = useGetAllHouseholdEventsQuery({ householdId: household?.id });
+
     const transformedEvents = events?.map(event => apiEventToScheduleEvent(event));
 
     return (

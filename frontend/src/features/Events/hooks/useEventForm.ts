@@ -10,7 +10,7 @@ export interface EventFormValues {
     allDay: boolean;
     startTime: string; // "HH:mm" | ""
     endTime: string;   // "HH:mm" | ""
-    visibility: EventVisibility;
+    visibility: string;
     allMembers: boolean;
     assignedUserIds: number[];
 }
