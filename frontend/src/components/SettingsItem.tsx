@@ -29,7 +29,7 @@ export const SettingsItem = ({ layout, label, labelRequired, error, errorBool, d
                     {children}
                 </div>
                 {collapse &&
-                    <Collapse className="urgency-collapse" in={showUrgencyFilters} transitionDuration={100} transitionTimingFunction="ease-in-out">
+                    <Collapse className="urgency-collapse" expanded={showUrgencyFilters} transitionDuration={100} transitionTimingFunction="ease-in-out">
                         {showUrgencyFilters && form &&
                             <FeaturedTasklistTabUrgencyFilter form={form} />
                         }

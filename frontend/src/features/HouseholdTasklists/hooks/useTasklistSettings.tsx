@@ -119,11 +119,10 @@ export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, taskl
     })) ?? [], [household]);
 
     const usersData = useMemo(() => {
-        if (isSmallScreen) return null;
         return Object.fromEntries(
             household?.members.map((member: User) => [String(member.id), { profileImg: member.profileImg }]) ?? [],
         )
-    }, [household, isSmallScreen]);
+    }, [household]);
 
     // Members valid for the default-filter assignee picker (scoped to list membership)
     const allowedMembers = useMemo(() => {
@@ -162,7 +161,7 @@ export const useTasklistSettings = ({ setShowTasklistSettings = () => { }, taskl
     }
 
     const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) =>
-        !isSmallScreen && usersData ? (
+        usersData ? (
             <Group gap="sm">
                 <Avatar src={usersData[option.value]?.profileImg} size="sm" radius="xl" />
                 <Text size="sm">{option.label}</Text>

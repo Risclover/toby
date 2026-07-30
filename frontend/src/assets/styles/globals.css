@@ -918,6 +918,21 @@ form {
     cursor: pointer;
 }
 
+.upcoming-events-container {
+    background: white;
+    padding: 0rem;
+}
+
+.upcoming-events-container .mantine-AgendaView-agendaViewBody {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.upcoming-events-container .mantine-AgendaView-agendaViewEventTitle {
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
 @media (max-width: 425px) {
     .time-sensitive-task .empty-space {
         width: 30px;

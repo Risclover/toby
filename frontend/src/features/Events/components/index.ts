@@ -1,3 +1,3 @@
 export { DashboardMiniCalendar } from "./DashboardMiniCalendar";
-export { QuickAddEvent } from "./QuickAddEvent";
+export { EventForm as QuickAddEvent } from "./EventForm/EventForm";
 export { UpcomingThisWeek } from "./UpcomingThisWeek";

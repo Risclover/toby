@@ -79,7 +79,7 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
                     {isExpanded ? `Hide ${nounPlural}` : `Click to show ${nounPlural} (${labels.length})`}
                 </Button>
 
-                <Collapse in={isExpanded}>
+                <Collapse expanded={isExpanded}>
                     <ol id={collapseId} className="event-task-list">
                         {labels.map((itemLabel, i) => (
                             <li key={`${event.id}-${i}`} className="event-task-list-item">
@@ -227,7 +227,7 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
                                 <div className="event-text">
                                     <div className="event-line1">
                                         <span className="event-main">
-                                            <Link className="event-link" to={`/profile/${event.actor.id}`} style={{ color: event.actor.id === household.adminId ? "var(--mantine-color-violet-7)" : "var(--mantine-color-blue-7)" }}>{event.actor.displayName}</Link>{" "}
+                                            <Link className="event-link" to={`/profile/${event.actor.id}`} style={{ color: event.actor.id === household?.adminId ? "var(--mantine-color-violet-7)" : "var(--mantine-color-blue-7)" }}>{event.actor.displayName}</Link>{" "}
                                             {line1}
                                         </span>
                                         <span className="event-time">{formatTime(event.createdAt)}</span>

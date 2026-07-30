@@ -133,7 +133,6 @@ export const useShoppingListSettings = ({ list, onClose }: Props) => {
     );
 
     const usersData = useMemo(() => {
-        if (isSmallScreen) return null;
         return Object.fromEntries(
             household?.members.map((m: User) => [String(m.id), { profileImg: m.profileImg }]) ?? []
         );
@@ -151,7 +150,7 @@ export const useShoppingListSettings = ({ list, onClose }: Props) => {
     };
 
     const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) =>
-        !isSmallScreen && usersData ? (
+        usersData ? (
             <Group gap="sm">
                 <Avatar src={usersData[option.value]?.profileImg} size="sm" radius="xl" />
                 <Text size="sm">{option.label}</Text>

@@ -24,7 +24,7 @@ export const EventMenu = ({
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Item onClick={() => setIsEditing(!isEditing)} leftSection={<PencilIcon size="1rem" color="var(--mantine-color-gray-8)" />}>{isEditing ? "Cancel edit" : "Edit"}</Menu.Item>
-                <Menu.Item onClick={onDelete} color="red.9" leftSection={<FaTrash fontSize="1rem" />}>Delete</Menu.Item>
+                <Menu.Item onClick={onDelete} color="red" leftSection={<FaTrash fontSize="1rem" />}>Delete</Menu.Item>
             </Menu.Dropdown>
         </Menu>
     )

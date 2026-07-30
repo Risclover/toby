@@ -42,7 +42,7 @@ export function HouseholdMemberSelection({
 
             />
             {/* Remove the !allMembers short-circuit inside here */}
-            <Collapse in={!allMembers} transitionDuration={180}>
+            <Collapse expanded={!allMembers} transitionDuration={180}>
                 <div className="gap-4 mt-2">
                     <Stack gap="xs" ml="lg">
                         {members?.map((m) => (

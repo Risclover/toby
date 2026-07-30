@@ -18,7 +18,7 @@ export type CustomRecurrenceRule =
     | ({ freq: "MONTHLY"; mode: "day-of-month" | "nth-weekday" } & RecurrenceBase)
     | ({ freq: "YEARLY" } & RecurrenceBase);
 
-const WEEKDAY_ORDER = [
+export const WEEKDAY_ORDER = [
     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
 ];
 const WEEKDAYS_ONLY = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -35,9 +35,8 @@ const ORDINAL_WORDS = ["first", "second", "third", "fourth", "fifth"];
 
 export function nthWeekdaySuffix(date: dayjs.Dayjs): string {
     const weekday = date.format("dddd");
-    const occurrenceIndex = Math.floor((date.date() - 1) / 7); // 0-based
-    const isLastOccurrence = date.date() + 7 > date.daysInMonth();
-    const ordinalWord = isLastOccurrence ? "last" : ORDINAL_WORDS[occurrenceIndex] ?? `${occurrenceIndex + 1}th`;
+    const { index, isLast } = weekdayOccurrenceInMonth(date);
+    const ordinalWord = isLast ? "last" : ORDINAL_WORDS[index - 1] ?? `${index}th`;
     return `the ${ordinalWord} ${weekday}`;
 }
 
@@ -121,4 +120,101 @@ export function matchingPresetKind(rule: CustomRecurrenceRule, date: dayjs.Dayjs
         case "YEARLY":
             return "annually";
     }
+}
+
+/** ---------- RRULE serialization ---------- */
+
+const DAY_TO_ICS: Record<string, string> = {
+    Sunday: "SU", Monday: "MO", Tuesday: "TU", Wednesday: "WE",
+    Thursday: "TH", Friday: "FR", Saturday: "SA",
+};
+
+/** 1-based occurrence of this weekday within its month (2nd Tuesday = 2),
+ * and whether it's the LAST occurrence of that weekday in the month.
+ * Shared by nthWeekdaySuffix (word form, for display) and the numeric
+ * BYDAY ordinal RRULE needs ("3TU", "-1SA", ...). */
+function weekdayOccurrenceInMonth(date: dayjs.Dayjs): { index: number; isLast: boolean } {
+    const index = Math.floor((date.date() - 1) / 7) + 1;
+    const isLast = date.date() + 7 > date.daysInMonth();
+    return { index, isLast };
+}
+
+function bydayOrdinalCode(date: dayjs.Dayjs): string {
+    const { index, isLast } = weekdayOccurrenceInMonth(date);
+    return `${isLast ? -1 : index}${DAY_TO_ICS[date.format("dddd")]}`;
+}
+
+/** "2026-10-18" -> "20261018" (RFC5545 DATE value -- no time, floating,
+ * used when the event itself has no time of day). */
+function toIcsUntilDate(dateStr: string): string {
+    return dateStr.replace(/-/g, "");
+}
+
+/** "2026-10-18" -> "20261018T235959Z" -- last instant of that day, in the
+ * browser's own local zone, expressed in UTC. QuickAddEvent always derives
+ * tzid from Intl.DateTimeFormat().resolvedOptions().timeZone (the
+ * browser's own zone), so "local" here already matches the event's tzid --
+ * no separate zone conversion needed. RFC5545 requires UNTIL to be a UTC
+ * DATE-TIME when DTSTART has a time component. */
+function toIcsUntilUtc(dateStr: string): string {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    const nextLocalMidnight = new Date(y, (m ?? 1) - 1, (d ?? 1) + 1, 0, 0, 0, 0);
+    const lastInstant = new Date(nextLocalMidnight.getTime() - 1000);
+    return lastInstant.toISOString().slice(0, 19).replace(/[-:]/g, "") + "Z";
+}
+
+function customRuleToRRuleString(rule: CustomRecurrenceRule, date: dayjs.Dayjs, hasTime: boolean): string {
+    const parts = [`FREQ=${rule.freq}`];
+    if (rule.interval > 1) parts.push(`INTERVAL=${rule.interval}`);
+
+    if (rule.freq === "WEEKLY") {
+        parts.push(`BYDAY=${rule.byDay.map((d) => DAY_TO_ICS[d]).join(",")}`);
+    } else if (rule.freq === "MONTHLY") {
+        parts.push(
+            rule.mode === "day-of-month" ? `BYMONTHDAY=${date.date()}` : `BYDAY=${bydayOrdinalCode(date)}`
+        );
+    }
+
+    if (rule.end.type === "after") {
+        parts.push(`COUNT=${rule.end.occurrences}`);
+    } else if (rule.end.type === "on") {
+        parts.push(`UNTIL=${hasTime ? toIcsUntilUtc(rule.end.date) : toIcsUntilDate(rule.end.date)}`);
+    }
+
+    return parts.join(";");
+}
+
+function presetToRRuleString(kind: PresetKind, date: dayjs.Dayjs): string | null {
+    switch (kind) {
+        case "none":
+            return null;
+        case "daily":
+            return "FREQ=DAILY";
+        case "weekly":
+            return `FREQ=WEEKLY;BYDAY=${DAY_TO_ICS[date.format("dddd")]}`;
+        case "monthly":
+            return `FREQ=MONTHLY;BYDAY=${bydayOrdinalCode(date)}`;
+        case "annually":
+            return "FREQ=YEARLY";
+        case "weekday":
+            return "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR";
+    }
+}
+
+/**
+ * Builds the actual RRULE string to send to the backend, from whatever is
+ * currently selected in EventFormRepeat. Presets never have an end
+ * condition -- only custom rules can produce COUNT/UNTIL. Returns null for
+ * "Does not repeat" or an unconfigured custom selection.
+ */
+export function buildRRule(
+    kind: PresetKind | "custom",
+    customRule: CustomRecurrenceRule | null,
+    date: dayjs.Dayjs,
+    hasTime: boolean
+): string | null {
+    if (kind === "custom") {
+        return customRule ? customRuleToRRuleString(customRule, date, hasTime) : null;
+    }
+    return presetToRRuleString(kind, date);
 }

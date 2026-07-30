@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta, timezone, date
 from typing import Optional, Tuple
 from flask import Blueprint, request, jsonify, abort
+from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 from app.extensions import db
-from app.models import Household, Event, EventAttendee, User
+from app.models import Household, Event, EventAttendee, User, VALID_VISIBILITIES, DEFAULT_VISIBILITY
 from zoneinfo import ZoneInfo
-from app.utils.timezone import utc_datetime_to_local
 from flask_login import current_user, login_required
+from app.utils.timezone import utc_datetime_to_local, ensure_utc
 
 try:
     from dateutil.rrule import rrulestr
@@ -27,6 +28,21 @@ def parse_iso8601(value: str) -> datetime:
     except Exception:
         abort(400, description='Invalid ISO datetime format')
 
+def ensure_utc(dt: datetime) -> datetime:
+    """Guarantees an aware, UTC-tagged datetime. Every *_utc column in this
+    app is always meant to represent a UTC instant -- but SQLAlchemy/the DB
+    round-trip can hand back a naive datetime (no tzinfo), and
+    datetime.astimezone() on a naive value silently assumes it's already in
+    the SERVER PROCESS's own system timezone, not UTC. That's exactly what
+    produced all-day events showing e.g. 07:00 instead of midnight: when the
+    server's system tz happened to match the event's own tzid,
+    .astimezone(event_tz) became a no-op instead of a real conversion.
+    Call this before any .astimezone() on a *_utc value to make sure it's
+    unambiguous no matter what tzinfo state it came back with."""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
 
 def compute_allday_utc_bounds(local_date: date, tzid: str) -> Tuple[datetime, datetime]:
     """Given a calendar date and a timezone, returns the (start_utc, end_utc)
@@ -43,11 +59,25 @@ def compute_allday_utc_bounds(local_date: date, tzid: str) -> Tuple[datetime, da
     return local_start.astimezone(ZoneInfo("UTC")), local_end.astimezone(ZoneInfo("UTC"))
 
 
+def get_household_or_403(hid: int) -> Household:
+    """404s if the household doesn't exist, 403s if the current user isn't a
+    member of it. Every route that takes a household id in the URL needs
+    this -- without it, any logged-in user could pass an arbitrary household
+    id and read or write events that aren't theirs. Matches the same
+    membership check household_routes.py already uses elsewhere
+    (current_user.household_id != household_id)."""
+    household = Household.query.get_or_404(hid)
+    if current_user.household_id != hid:
+        abort(403, description="You are not a member of this household")
+    return household
+
+
 def get_event_or_404(hid: int, event_id: int) -> Event:
     """Looks up an event scoped to a household, 404ing if either the
-    household or the event (within that household) doesn't exist. Shared by
-    every route that operates on a single existing event."""
-    Household.query.get_or_404(hid)
+    household or the event (within that household) doesn't exist, and 403ing
+    if the current user isn't a member of that household. Shared by every
+    route that operates on a single existing event."""
+    get_household_or_403(hid)
     return Event.query.filter_by(id=event_id, household_id=hid).first_or_404()
 
 
@@ -75,6 +105,18 @@ def validate_rrule(rrule_str: str) -> str:
     except Exception:
         abort(400, description='Invalid recurrence rule')
     return rrule_str
+
+
+def validate_visibility(value: Optional[str]) -> str:
+    """Validates a visibility value, defaulting to DEFAULT_VISIBILITY when
+    omitted/None. Aborts with 400 for anything other than the two allowed
+    values -- same "small fixed set, validated at the route layer" approach
+    as validate_rrule above."""
+    if value is None:
+        return DEFAULT_VISIBILITY
+    if value not in VALID_VISIBILITIES:
+        abort(400, description=f"visibility must be one of {sorted(VALID_VISIBILITIES)}")
+    return value
 
 
 def get_household_member_ids(hid: int) -> set:
@@ -136,8 +178,8 @@ def event_to_local_dict(event, user):
         d["endUtc"] = utc_datetime_to_local(user, event.end_utc).isoformat() if event.end_utc else None
     else:
         event_tz = ZoneInfo(event.tzid or "UTC")
-        d["startUtc"] = event.start_utc.astimezone(event_tz).isoformat() if event.start_utc else None
-        d["endUtc"] = event.end_utc.astimezone(event_tz).isoformat() if event.end_utc else None
+        d["startUtc"] = ensure_utc(event.start_utc).astimezone(event_tz).isoformat() if event.start_utc else None
+        d["endUtc"] = ensure_utc(event.end_utc).astimezone(event_tz).isoformat() if event.end_utc else None
 
     d["createdAt"] = utc_datetime_to_local(user, event.created_at).isoformat() if event.created_at else None
 
@@ -156,7 +198,7 @@ def event_to_local_dict(event, user):
 @event_routes.get('/households/<int:hid>/events')
 @login_required
 def get_household_events(hid: int):
-    Household.query.get_or_404(hid)
+    household = get_household_or_403(hid)
 
     start_s = request.args.get('start')
     end_s = request.args.get('end')
@@ -166,6 +208,16 @@ def get_household_events(hid: int):
     q = Event.query.options(
         joinedload(Event.attendee_links).joinedload(EventAttendee.user)
     ).filter(Event.household_id == hid)
+
+    if current_user.id != household.admin_id:
+        q = q.filter(
+            or_(
+                Event.visibility == 'public',
+                Event.creator_id == current_user.id,
+                Event.all_members == True,  # noqa: E712 -- SQLAlchemy needs `== True`, not `is True`
+                Event.attendee_links.any(EventAttendee.user_id == current_user.id),
+            )
+        )
 
     if fetch_all:
         q = q.filter(Event.start_utc.isnot(None), Event.end_utc.isnot(None))
@@ -187,7 +239,13 @@ def get_household_events(hid: int):
             requested_ids = {int(x) for x in attendee_ids.split(',') if x.strip()}
         except ValueError:
             abort(400, description='attendeeIds must be a comma-separated list of integers')
-        q = q.join(Event.attendee_links).filter(EventAttendee.user_id.in_(requested_ids))
+
+        q = q.filter(
+            or_(
+                Event.all_members == True,  # noqa: E712
+                Event.attendee_links.any(EventAttendee.user_id.in_(requested_ids)),
+            )
+        )
 
     events = q.order_by(Event.start_utc.asc()).all()
     return jsonify([event_to_local_dict(e, current_user) for e in events]), 200
@@ -196,7 +254,7 @@ def get_household_events(hid: int):
 @event_routes.post('/households/<int:hid>/events')
 @login_required
 def create_event_for_household(hid: int):
-    Household.query.get_or_404(hid)
+    get_household_or_403(hid)
     data = request.get_json(silent=True) or {}
 
     title = (data.get('title') or '').strip()
@@ -205,6 +263,8 @@ def create_event_for_household(hid: int):
     date_s = data.get('date')
     tzid = data.get('tzid') or 'UTC'
     rrule = validate_rrule(data.get('rrule'))
+    visibility = validate_visibility(data.get('visibility'))
+    all_members = bool(data.get('allMembers', False))
     requested_attendee_ids = data.get('attendeeIds') or []
 
     if not title:
@@ -242,12 +302,15 @@ def create_event_for_household(hid: int):
         tzid=tzid,
         has_time=has_time,
         rrule=rrule,
+        visibility=visibility,
+        all_members=all_members,
     )
     db.session.add(ev)
     db.session.flush()  # need ev.id before attaching attendees
 
-    attendee_ids = resolve_attendee_ids(hid, requested_attendee_ids, fallback_id=current_user.id)
-    set_event_attendees(ev, attendee_ids)
+    if not all_members:
+        attendee_ids = resolve_attendee_ids(hid, requested_attendee_ids, fallback_id=current_user.id)
+        set_event_attendees(ev, attendee_ids)
 
     db.session.commit()
     return jsonify(event_to_local_dict(ev, current_user)), 201
@@ -280,12 +343,23 @@ def update_event(hid: int, event_id: int):
     if "rrule" in data:
         event.rrule = validate_rrule(data.get("rrule"))
 
+    if "visibility" in data:
+
+        incoming_visibility = data.get("visibility")
+        if incoming_visibility not in VALID_VISIBILITIES:
+            abort(400, description=f"visibility must be one of {sorted(VALID_VISIBILITIES)}")
+        event.visibility = incoming_visibility
+
+    if "allMembers" in data:
+        event.all_members = bool(data.get("allMembers"))
+
     if "attendeeIds" in data:
-        # fallback_id is the EVENT's creator, not current_user -- an admin
-        # editing someone else's event should still fall back to the actual
-        # creator, not themselves, if the submitted list is empty.
-        attendee_ids = resolve_attendee_ids(hid, data.get("attendeeIds") or [], fallback_id=event.creator_id)
-        set_event_attendees(event, attendee_ids)
+
+        effective_all_members = data.get("allMembers", event.all_members)
+        if not effective_all_members:
+
+            attendee_ids = resolve_attendee_ids(hid, data.get("attendeeIds") or [], fallback_id=event.creator_id)
+            set_event_attendees(event, attendee_ids)
 
     tzid_in = data.get('tzid')
     schedule_keys = {'startUtc', 'endUtc', 'date'}
@@ -362,13 +436,21 @@ def unassign_self(hid: int, event_id: int):
     membership and creator/admin permissions are independent by design."""
     event = get_event_or_404(hid, event_id)
 
+    if event.all_members:
+
+        member_ids = get_household_member_ids(hid)
+        remaining_ids = member_ids - {current_user.id}
+        if not remaining_ids:
+            abort(400, description="Can't unassign -- at least one person must remain assigned to this event")
+        event.all_members = False
+        set_event_attendees(event, list(remaining_ids))
+        db.session.commit()
+        return jsonify(event_to_local_dict(event, current_user)), 200
+
     link = EventAttendee.query.filter_by(event_id=event.id, user_id=current_user.id).first()
     if link is None:
         abort(400, description="You are not assigned to this event")
 
-    # An event must always have at least one attendee -- if you're the last
-    # one, block the unassign rather than silently re-adding you back (which
-    # would just be a confusing no-op with no explanation).
     remaining_count = EventAttendee.query.filter_by(event_id=event.id).count()
     if remaining_count <= 1:
         abort(400, description="Can't unassign -- at least one person must remain assigned to this event")

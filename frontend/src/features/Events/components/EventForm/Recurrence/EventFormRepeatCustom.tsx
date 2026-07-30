@@ -1,14 +1,16 @@
 import { Button, Chip, Group, Modal, NumberInput, Radio, Select, Tooltip, useModalsStack } from "@mantine/core"
 import { DateInput, type DateTimeStringValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
-import { nthWeekdaySuffix, type CustomRecurrenceRule, type RecurrenceEnd } from "../../utils/recurrence";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { nthWeekdaySuffix, WEEKDAY_ORDER, type CustomRecurrenceRule, type RecurrenceEnd } from "../../../utils/recurrence";
+import { WeekdayChip } from "./WeekdayChip";
 
 type ModalId = 'recurrence' | 'event-form';
 type EndsMode = 'never' | 'on' | 'after';
+type Freq = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 
 type Props = {
-    stack: ReturnType<typeof useModalsStack<ModalId>>
+    stack: ReturnType<typeof useModalsStack<ModalId>> | undefined;
     dateStr: DateTimeStringValue;
     // Called when the modal closes, with whatever rule is currently
     // configured -- replaces setCustomOption. Hands up a structured rule
@@ -24,27 +26,44 @@ const FREQ_UNITS = [
     { value: 'YEARLY', label: 'year' },
 ];
 
+const DEFAULT_INTERVAL = 1;
+const DEFAULT_OCCURRENCES = 5;
+const DEFAULT_FREQ: Freq = 'WEEKLY';
+const DEFAULT_MONTHLY_MODE = 'nth-weekday' as const;
+const DEFAULT_ENDS_MODE: EndsMode = 'never';
+const MIN_NUM_INPUT_VALUE = 1;
+const MAX_NUM_INPUT_VALUE = 9999;
+const CHIP_TOOLTIP_DELAY_MS = 500;
+
 function pluralize(word: string, count: number): string {
     return count > 1 ? `${word}s` : word;
 }
 
-const weekdayChips = [
-    { value: "Sunday", label: "S", tooltip: "Sunday" },
-    { value: "Monday", label: "M", tooltip: "Monday" },
-    { value: "Tuesday", label: "T", tooltip: "Tuesday" },
-    { value: "Wednesday", label: "W", tooltip: "Wednesday" },
-    { value: "Thursday", label: "T", tooltip: "Thursday" },
-    { value: "Friday", label: "F", tooltip: "Friday" },
-    { value: "Saturday", label: "S", tooltip: "Saturday" },
-];
+const weekdayChips = WEEKDAY_ORDER.map((day) => ({
+    value: day,
+    label: day.charAt(0),
+    tooltip: day,
+}));
+
+// Everything the form needs to fully restore itself to a prior point in
+// time (either "freshly opened" or "last saved").
+type Snapshot = {
+    interval: number | string;
+    freq: Freq;
+    selectedDays: string[];
+    monthlyMode: 'day-of-month' | 'nth-weekday';
+    endsMode: EndsMode;
+    endsOnDate: string | null;
+    endsAfterOccurrences: number | string;
+};
 
 export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
-    const [interval, setInterval] = useState<number | string>(1);
-    const [endsMode, setEndsMode] = useState<EndsMode>('never');
+    const [interval, setInterval] = useState<number | string>(DEFAULT_INTERVAL);
+    const [endsMode, setEndsMode] = useState<EndsMode>(DEFAULT_ENDS_MODE);
     const [endsOnDate, setEndsOnDate] = useState<string | null>(() =>
         dayjs(dateStr).add(1, "week").format("YYYY-MM-DD")
-    ); const [endsAfterOccurrences, setEndsAfterOccurrences] = useState<number | string>(5);
-    const [freq, setFreq] = useState<string>('WEEKLY');
+    ); const [endsAfterOccurrences, setEndsAfterOccurrences] = useState<number | string>(DEFAULT_OCCURRENCES);
+    const [freq, setFreq] = useState<Freq>(DEFAULT_FREQ);
     const today = dayjs(dateStr);
     const dayOfWeek = today.format("dddd");
 
@@ -60,7 +79,7 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
     };
 
     // Semantic key, not a label -- see monthlyData below for why.
-    const [monthlyMode, setMonthlyMode] = useState<'day-of-month' | 'nth-weekday'>('nth-weekday');
+    const [monthlyMode, setMonthlyMode] = useState<'day-of-month' | 'nth-weekday'>(DEFAULT_MONTHLY_MODE);
 
     const data = useMemo(
         () => FREQ_UNITS.map((u) => ({
@@ -88,7 +107,7 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
     };
 
     const buildRule = (): CustomRecurrenceRule => {
-        const intervalNum = typeof interval === 'number' ? interval : 1;
+        const intervalNum = typeof interval === 'number' ? interval : DEFAULT_INTERVAL;
         const end = buildEnd();
         switch (freq) {
             case 'DAILY':
@@ -103,25 +122,71 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
         }
     };
 
+    const getSnapshot = (): Snapshot => ({
+        interval,
+        freq,
+        selectedDays,
+        monthlyMode,
+        endsMode,
+        endsOnDate,
+        endsAfterOccurrences,
+    });
+
+    const restoreSnapshot = (snapshot: Snapshot) => {
+        setInterval(snapshot.interval);
+        setFreq(snapshot.freq);
+        setSelectedDays(snapshot.selectedDays);
+        setMonthlyMode(snapshot.monthlyMode);
+        setEndsMode(snapshot.endsMode);
+        setEndsOnDate(snapshot.endsOnDate);
+        setEndsAfterOccurrences(snapshot.endsAfterOccurrences);
+    };
+
+    // What Cancel reverts to: the last-saved configuration, or the
+    // untouched defaults if nothing's been saved yet. Only moves forward
+    // on Save -- never mutated by in-progress edits, so Cancel always
+    // discards exactly what was changed since the last Save (or open).
+    const lastSavedSnapshotRef = useRef<Snapshot>(getSnapshot());
+
     const handleSave = () => {
         onApply(buildRule());
+        lastSavedSnapshotRef.current = getSnapshot();
         stack?.close('recurrence');
         stack?.open('event-form');
     };
 
-    const toggleStack = () => {
-        onApply(buildRule());
-        stack.open('event-form');
-        stack.close('recurrence');
-        setInterval(1);
-        setFreq("WEEKLY");
+    const handleCancel = () => {
+        stack?.close('recurrence');
+        stack?.open('event-form');
+        restoreSnapshot(lastSavedSnapshotRef.current);
+    };
+
+    const handleRepeatEveryBlur = () => {
+        if (typeof interval === 'string') {
+            setInterval(DEFAULT_INTERVAL);
+        }
     }
+
+    const handleAfterBlur = () => {
+        if (typeof endsAfterOccurrences === 'string') {
+            setEndsAfterOccurrences(DEFAULT_OCCURRENCES);
+        }
+    }
+
+    // Same issue as EventForm's own Modal: stack?.register(...) is
+    // undefined with no stack, which would otherwise leave `opened` unset
+    // against ModalProps' required boolean. Unlike EventForm, this modal
+    // has no independent `opened` prop of its own -- it's only ever opened
+    // via stack.open('recurrence') -- so without a stack there's simply no
+    // way to open it, and the fallback is just `false`.
+    const recurrenceStackProps = stack?.register('recurrence');
 
     return (
         <Modal
-            {...stack?.register('recurrence')}
+            {...recurrenceStackProps}
+            opened={recurrenceStackProps?.opened ?? false}
             title="Custom recurrence"
-            onClose={toggleStack}
+            onClose={handleCancel}
             centered
             size="sm"
         >
@@ -130,23 +195,19 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                 <NumberInput
                     value={interval}
                     onChange={setInterval}
-                    onBlur={() => {
-                        if (typeof interval === 'string') {
-                            setInterval(1);
-                        }
-                    }}
-                    min={1}
+                    onBlur={handleRepeatEveryBlur}
+                    min={MIN_NUM_INPUT_VALUE}
+                    max={MAX_NUM_INPUT_VALUE}
                     clampBehavior="blur"
                     allowNegative={false}
                     allowDecimal={false}
                     aria-label="Repeat every"
-                    max={9999}
                     w={70}
                 />
                 <Select
                     data={data}
                     value={freq}
-                    onChange={(v) => setFreq(v ?? 'WEEKLY')}
+                    onChange={(v) => setFreq((v ?? DEFAULT_FREQ) as Freq)}
                     w={120}
                     allowDeselect={false}
                 />
@@ -158,7 +219,7 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                     <div className="event-form-repeat-custom--multiday">
                         <Chip.Group multiple value={selectedDays} onChange={handleDaysChange}>
                             <Group justify="center" pt={8} gap=".25rem">
-                                <Tooltip.Group openDelay={500} closeDelay={500}>
+                                <Tooltip.Group openDelay={CHIP_TOOLTIP_DELAY_MS} closeDelay={CHIP_TOOLTIP_DELAY_MS}>
                                     {weekdayChips.map((chip) => (
                                         <WeekdayChip key={chip.value} label={chip.label} value={chip.value} tooltip={chip.tooltip} />
                                     ))}
@@ -173,7 +234,7 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                 <Select
                     data={monthlyData}
                     value={monthlyMode}
-                    onChange={(v) => setMonthlyMode((v ?? 'nth-weekday') as 'day-of-month' | 'nth-weekday')}
+                    onChange={(v) => setMonthlyMode((v ?? DEFAULT_MONTHLY_MODE) as 'day-of-month' | 'nth-weekday')}
                     allowDeselect={false}
                 />
             )}
@@ -182,11 +243,11 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
             <div className="event-form-repeat-custom--vertical-section">
                 <span className="event-form-repeat-custom--section-text">Ends</span>
                 <div className="event-form-repeat-custom--radio-group">
-                    <Radio.Group defaultValue="Never" value={endsMode} onChange={setEndsMode}>
+                    <Radio.Group value={endsMode} onChange={setEndsMode}>
                         <Group mt="xs">
                             <Radio.Card
                                 value="never"
-                                key="Never"
+                                key="never"
                                 className="radio-root"
 
                             >
@@ -197,7 +258,7 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                             </Radio.Card>
                             <Radio.Card
                                 value="on"
-                                key="On"
+                                key="on"
                                 className="radio-root"
                             >
                                 <div className="radio-root-label">
@@ -216,7 +277,7 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                             </Radio.Card>
                             <Radio.Card
                                 value="after"
-                                key="After"
+                                key="after"
                                 className="radio-root"
                             >
                                 <div className="radio-root-label">
@@ -226,21 +287,16 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                                 <NumberInput
                                     suffix={endsAfterOccurrences === 1 ? " occurrence" : " occurrences"}
                                     w={150}
-                                    defaultValue={5}
                                     value={endsAfterOccurrences}
                                     onChange={setEndsAfterOccurrences}
+                                    onBlur={handleAfterBlur}
                                     disabled={endsMode !== "after"}
-                                    min={1}
-                                    max={9999}
+                                    min={MIN_NUM_INPUT_VALUE}
+                                    max={MAX_NUM_INPUT_VALUE}
                                     clampBehavior="blur"
                                     allowNegative={false}
                                     allowDecimal={false}
                                     aria-label="After"
-                                    onBlur={() => {
-                                        if (typeof endsAfterOccurrences === 'string') {
-                                            setEndsAfterOccurrences(5);
-                                        }
-                                    }}
 
                                 />
                             </Radio.Card>
@@ -249,52 +305,8 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                 </div>
             </div>
             {/* TODO: Footer buttons */}
-            <Button onClick={toggleStack}>Cancel</Button>
+            <Button onClick={handleCancel}>Cancel</Button>
             <Button onClick={handleSave}>Save</Button>
         </Modal>
-    )
-}
-
-type WeekdayChipProps = {
-    label: string;
-    value: string;
-    tooltip: string;
-}
-
-const WeekdayChip = ({ label, value, tooltip }: WeekdayChipProps) => {
-    const dayChipStyles = {
-        label: {
-            width: 32,
-            height: 32,
-            padding: 0,
-            justifyContent: 'center' as const,
-            borderRadius: '50%',
-        },
-    } as const;
-
-    return (
-        <Tooltip
-            label={tooltip}
-            refProp="rootRef"
-            transitionProps={{
-                duration: 100,
-                transition: {
-                    in: { opacity: 1, transform: 'scale(1) translateY(0)' },
-                    out: { transform: 'scale(0.8) translateY(0)', opacity: 0 },
-                    common: { transformOrigin: 'bottom' },
-                    transitionProperty: 'opacity, transform',
-                },
-            }}
-        >
-            <Chip
-                value={value}
-                icon={null}
-                styles={dayChipStyles}
-                classNames={{ label: "day-chip" }}
-                color="blue.6"
-            >
-                {label}
-            </Chip>
-        </Tooltip>
     )
 }

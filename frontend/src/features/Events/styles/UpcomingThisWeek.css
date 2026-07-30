@@ -9,11 +9,17 @@
     padding-right: 1rem;
     font-family: "Alan Sans", sans-serif;
     text-align: center;
+    width: 50px;
 }
 
 .upcoming-event-date p {
     line-height: 1.2;
     color: var(--mantine-color-dark-7);
+}
+
+.upcoming-events-container {
+    padding: 1rem;
+    background: white;
 }
 
 .upcoming-events {

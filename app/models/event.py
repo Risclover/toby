@@ -8,6 +8,8 @@ PRESET_USER_COLORS = [
 ]
 
 DEFAULT_ACCENT_COLOR = "gray"
+VALID_VISIBILITIES = {"public", "private"}
+DEFAULT_VISIBILITY = "public"
  
  
 def assign_user_color(household_id: int) -> str:
@@ -43,7 +45,7 @@ class Event(db.Model):
     start_utc = db.Column(db.DateTime(timezone=True), nullable=True)
     end_utc = db.Column(db.DateTime(timezone=True), nullable=True)
     has_time = db.Column(db.Boolean, nullable=False, default=False)
-    
+    visibility = db.Column(db.String(10), nullable=False, default=DEFAULT_VISIBILITY)
     created_at = db.Column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -52,7 +54,8 @@ class Event(db.Model):
     tzid = db.Column(db.String(64), nullable=False)  # e.g. "America/Los_Angeles"
 
     rrule = db.Column(db.String(255), nullable=True)
- 
+    all_members = db.Column(db.Boolean, default=False, nullable=False)
+    
     household = db.relationship("Household", backref=db.backref("events", lazy="dynamic"))
     event_creator = db.relationship("User", foreign_keys=[creator_id])
 
@@ -87,11 +90,13 @@ class Event(db.Model):
             "tzid": self.tzid,
             "hasTime": bool(self.has_time),
             "rrule": self.rrule,
+            "visibility": self.visibility,
             "createdAt": to_utc_z(self.created_at),
             "attendees": [
                 {"id": u.id, "name": getattr(u, "name", None), "color": u.color}
                 for u in attendees
             ],
+            "allMembers": self.all_members,
             "attendeeIds": [u.id for u in attendees],
             "household": {
                 "id": self.household.id,

@@ -8,7 +8,7 @@ from .tasklist import Tasklist
 from .task import Task 
 from .tasklist_member import TasklistMember
 from .announcement import Announcement, AnnouncementSeen
-from .event import Event, assign_user_color
+from .event import Event, assign_user_color, VALID_VISIBILITIES, DEFAULT_VISIBILITY
 from .checkin import Checkin
 from .mood import Mood
 from .reminder import Reminder, ReminderType, ReminderAssignment, RepeatFrequency

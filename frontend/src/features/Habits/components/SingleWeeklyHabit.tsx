@@ -35,7 +35,7 @@ export const SingleWeeklyHabit = ({ habit }: Props) => {
                         </div>
                         <span className={`chevron-down-icon${opened ? " icon-turned" : ""}`}><ChevronDownIcon size={isSmall ? "1.25rem" : "1.5rem"} color="var(--mantine-color-gray-6)" /></span>
                     </div>
-                    <Collapse in={opened}>
+                    <Collapse expanded={opened}>
                         <div className={`single-weekly-habit-description${isSmall ? " habit-desc-small" : ""}`}>{habit.description}</div>
                     </Collapse>
                 </div>

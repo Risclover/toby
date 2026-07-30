@@ -1,5 +1,5 @@
 # app/utils/timezone.py
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timezone
 import pytz
 
 def get_user_timezone(user):
@@ -32,6 +32,17 @@ def local_date_to_utc_datetime(user, local_date, at_time=None):
     local_dt = user_tz.localize(local_dt)
     return local_dt.astimezone(pytz.UTC)
 
+def ensure_utc(dt):
+    """Guarantees dt is aware and in UTC. Every *_utc column in this app is
+    always meant to represent a UTC instant, but SQLAlchemy/DB round-trips
+    can hand back a naive datetime (no tzinfo) -- and datetime.astimezone()
+    on a naive value silently assumes it's already in the SERVER PROCESS's
+    own system timezone, not UTC. Call this before any .astimezone() on a
+    *_utc value so the conversion is unambiguous regardless of what tzinfo
+    state it came back with."""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
 
 def utc_datetime_to_local(user, utc_dt):
     """
@@ -42,15 +53,12 @@ def utc_datetime_to_local(user, utc_dt):
     if utc_dt is None:
         return None
 
-    if utc_dt.tzinfo is None:
-        from datetime import timezone
-        utc_dt = utc_dt.replace(tzinfo=timezone.utc)
-
+    utc_dt = ensure_utc(utc_dt)
     user_tz = get_user_timezone(user)
-    
+
     # 1. Convert to the user's specific timezone
     localized_dt = utc_dt.astimezone(user_tz)
-    
+
     # 2. STRIP the timezone info. 
     # This prevents the browser from converting it back to the device's local time.
     return localized_dt.replace(tzinfo=None)

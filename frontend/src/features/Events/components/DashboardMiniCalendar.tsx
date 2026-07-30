@@ -2,7 +2,7 @@ import React, { useMemo, useState, type SetStateAction } from "react";
 import { Flex, Group, Stack, Text, useModalsStack } from "@mantine/core";
 import dayjs from "dayjs";
 import { useGetAllHouseholdEventsQuery } from "@/store/eventSlice";
-import { QuickAddEvent } from "./QuickAddEvent";
+import { EventForm } from "./EventForm/EventForm";
 import { MiniCalendar } from "@mantine/dates";
 import "../styles/QuickAddEvent.css"; // or a global index.css
 import "../styles/DashboardMiniCalendar.css";
@@ -140,12 +140,22 @@ export function DashboardMiniCalendar({
                         title: has ? "Has events" : undefined,
                         onClick: () => {
                             setSelectedDate(dateFromYmd(ymd));
+                            // Both signals need to flip together: `showAddEvent` drives
+                            // EventForm's `opened` prop (which its seeding effect keys
+                            // off of), while stack.open('event-form') drives whether the
+                            // Modal is actually visible. They're separate on purpose --
+                            // EventForm intentionally does NOT re-seed off the stack's
+                            // own internal 'event-form' state, since that toggles closed
+                            // and back open every time the user visits the recurrence
+                            // sub-modal, which would wipe in-progress form data. But that
+                            // means every call site that opens the form has to set both.
+                            setShowAddEvent(true);
                             stack.open('event-form');
                         },
                     };
                 }}
             />
-            <QuickAddEvent
+            <EventForm
                 householdId={householdId}
                 opened={showAddEvent}
                 initialDate={selectedDate}

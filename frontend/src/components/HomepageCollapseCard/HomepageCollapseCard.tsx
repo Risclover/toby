@@ -34,7 +34,7 @@ export const HomepageCollapseCard = ({ cardKey, title, color, badge, scrollSelec
         <div className={`homepage-collapse-card fade-in${noTopMargin ? " no-top-margin" : ""}`} ref={containerRef}>
 
             <HomepageCollapseCardTitle dotColor={color} title={title} setShowCard={handleToggle} showCard={showCard} badge={badge} />
-            <Collapse in={showCard} transitionDuration={hasAnimated ? 100 : 0} transitionTimingFunction="ease-in-out" keepMounted>
+            <Collapse expanded={showCard} transitionDuration={hasAnimated ? 100 : 0} transitionTimingFunction="ease-in-out" keepMounted>
                 <HomepageCollapseCardBody>{children}</HomepageCollapseCardBody>
             </Collapse>
         </div>
