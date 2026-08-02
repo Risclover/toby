@@ -26,7 +26,7 @@ export const MobileHomeNavGrid = ({ activeTab }: Props) => {
     const items: Item[] = [
         { href: "/", label: "Home", ariaLabel: "Home", icon: <HomeRoundedIcon /> },
         { href: "/tasklists", label: "Tasklists", ariaLabel: "Tasklists", icon: <AssignmentTurnedInRoundedIcon /> },
-        { href: "#", label: "Calendar", ariaLabel: "Calendar", icon: <EditCalendarRoundedIcon /> },
+        { href: "/calendar", label: "Calendar", ariaLabel: "Calendar", icon: <EditCalendarRoundedIcon /> },
         { href: "/shopping", label: "Shopping", ariaLabel: "Shopping Lists", icon: <ShoppingCartRoundedIcon /> },
     ];
 

@@ -7,6 +7,7 @@ import { MiniCalendar } from "@mantine/dates";
 import "../styles/QuickAddEvent.css"; // or a global index.css
 import "../styles/DashboardMiniCalendar.css";
 import { useAuthenticateQuery } from "@/store";
+import { useHousehold } from "@/hooks";
 
 const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -73,7 +74,7 @@ export function DashboardMiniCalendar({
         { householdId },
         { skip: !householdId }
     );
-
+    const { data: household } = useHousehold();
     const daysWithEvents = useMemo(() => {
         const set = new Set<string>();
         for (const e of allEvents) {
@@ -100,8 +101,14 @@ export function DashboardMiniCalendar({
             const days = expandSpanToLocalDays(e.startUtc, e.endUtc);
             if (e.visibility === "public") {
                 for (const ymd of days) {
-                    for (const attendee of e.attendees ?? []) {
-                        addColor(ymd, attendee.id, attendee.color);
+                    if (e.allMembers) {
+                        for (const member of household?.members ?? []) {
+                            addColor(ymd, member.id, member.color);
+                        }
+                    } else {
+                        for (const attendee of e.attendees ?? []) {
+                            addColor(ymd, attendee.id, attendee.color);
+                        }
                     }
                 }
 
@@ -116,7 +123,7 @@ export function DashboardMiniCalendar({
         const out = new Map<string, string[]>();
         byDay.forEach((userColors, ymd) => out.set(ymd, Array.from(userColors.values())));
         return out;
-    }, [allEvents, user]);
+    }, [allEvents, user, household]);
 
 
 
@@ -175,7 +182,11 @@ export function DashboardMiniCalendar({
                     const has = colors.length > 0;
 
                     const dotVars: Record<string, string | number> = { "--dot-count": colors.length };
-                    colors.forEach((color, i) => (dotVars[`--dot-color-${i + 1}`] = color));
+                    colors.forEach((color, i) => {
+                        const n = i + 1;
+                        dotVars[`--dot-color-${n}`] = color;
+                        if (n > 1) dotVars[`--dot-ring-${n}`] = "#fff"; // match your day-cell background
+                    });
 
                     return {
                         "data-testid": `cal-day-${ymd}`,

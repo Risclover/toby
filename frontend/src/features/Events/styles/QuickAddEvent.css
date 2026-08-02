@@ -16,20 +16,26 @@
 }
 
 .mc-has-events::after {
+    --dot-gap: 5.5px;
+    /* was effectively 4px; bump/lower this to taste */
+
     content: "";
     position: absolute;
     left: 50%;
     bottom: 4px;
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: var(--dot-color-1, rgb(5, 5, 73));
     box-shadow:
-        8px 0 0 var(--dot-color-2, transparent),
-        16px 0 0 var(--dot-color-3, transparent),
-        24px 0 0 var(--dot-color-4, transparent);
-    /* re-centers the whole cluster of dots, not just the first one */
-    transform: translateX(calc(-50% - (var(--dot-count, 1) - 1) * 4px));
+        0 0 0 1px #fff,
+        var(--dot-gap) 0 0 0 var(--dot-color-2, transparent),
+        var(--dot-gap) 0 0 1.5px var(--dot-ring-2, transparent),
+        calc(var(--dot-gap) * 2) 0 0 0 var(--dot-color-3, transparent),
+        calc(var(--dot-gap) * 2) 0 0 1.5px var(--dot-ring-3, transparent),
+        calc(var(--dot-gap) * 3) 0 0 0 var(--dot-color-4, transparent),
+        calc(var(--dot-gap) * 3) 0 0 1.5px var(--dot-ring-4, transparent);
+    transform: translateX(calc(-50% - (var(--dot-count, 1) - 1) * var(--dot-gap) / 2));
     pointer-events: none;
 }
 
