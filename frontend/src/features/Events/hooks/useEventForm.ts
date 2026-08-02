@@ -1,4 +1,6 @@
 import { useForm } from "@mantine/form";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { useState } from "react";
 
 export type EventVisibility = 'public' | 'private';
@@ -20,6 +22,10 @@ interface UseEventFormArgs {
     startDate: string;
 }
 
+const TIME_FORMAT = 'HH:mm'; // 'HH:mm:ss' if TimeInput has withSeconds
+const THIRTY_MIN_MS = 30 * 60 * 1000;
+const DEFAULT_EVENT_DURATION_HOURS = 1;
+
 export function useEventForm({ currentUserId, startDate }: UseEventFormArgs) {
 
     const [allDay, setAllDay] = useState(true);
@@ -29,6 +35,16 @@ export function useEventForm({ currentUserId, startDate }: UseEventFormArgs) {
     const [allMembers, setAllMembers] = useState(false);
     const [assignedUserIds, setAssignedUserIds] = useState<number[]>([currentUserId]);
 
+    const roundUpToNearest30Min = (time: Dayjs): Dayjs => {
+        const msSinceMidnight = time.diff(time.startOf('day'));
+        const roundedMs = Math.ceil(msSinceMidnight / THIRTY_MIN_MS) * THIRTY_MIN_MS;
+        return time.startOf('day').add(roundedMs, 'millisecond');
+    };
+
+    // Computed once, used to seed the form's initial values
+    const defaultStartTime = roundUpToNearest30Min(dayjs());
+    const defaultEndTime = defaultStartTime.add(DEFAULT_EVENT_DURATION_HOURS, 'hour');
+
     const form = useForm<EventFormValues>({
         mode: 'uncontrolled',
         initialValues: {
@@ -36,8 +52,8 @@ export function useEventForm({ currentUserId, startDate }: UseEventFormArgs) {
             startDate,
             endDate: '',
             allDay: true,
-            startTime: '',
-            endTime: '',
+            startTime: defaultStartTime.format(TIME_FORMAT),
+            endTime: defaultEndTime.format(TIME_FORMAT),
             visibility: 'public',
             allMembers: false,
             assignedUserIds: [currentUserId],
@@ -77,14 +93,18 @@ export function useEventForm({ currentUserId, startDate }: UseEventFormArgs) {
                 : undefined;
 
             if (!values.allDay) {
+                errors.startTime = values.startTime ? undefined : 'Start time is required';
 
-                const endIsSameDayAsStart = values.endDate ? values.endDate === values.startDate : true;
-                errors.endTime = (
-                    endIsSameDayAsStart &&
-                    values.startTime &&
-                    values.endTime &&
-                    values.endTime < values.startTime
-                ) ? "End time can't be before start time" : undefined;
+                if (!values.endTime) {
+                    errors.endTime = 'End time is required';
+                } else {
+                    const endIsSameDayAsStart = values.endDate ? values.endDate === values.startDate : true;
+                    errors.endTime = (
+                        endIsSameDayAsStart &&
+                        values.startTime &&
+                        values.endTime < values.startTime
+                    ) ? "End time can't be before start time" : undefined;
+                }
             }
 
             errors.assignedUserIds = (!values.allMembers && values.assignedUserIds.length === 0)
@@ -94,6 +114,7 @@ export function useEventForm({ currentUserId, startDate }: UseEventFormArgs) {
             return errors;
         },
     });
+
 
     return { form, allDay, startDate: startDateValue, title, allMembers, assignedUserIds };
 }

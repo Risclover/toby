@@ -1,8 +1,7 @@
-// EventForm/EventForm.tsx
-import { useEffect, useMemo, useState } from "react";
-import { Modal, Button, TextInput, Group, Stack, Text, useModalsStack, getDefaultZIndex, Checkbox, Select, SegmentedControl, Input, Switch, Avatar, type MultiSelectProps, MultiSelect } from "@mantine/core";
-import { DatePickerInput, TimeInput } from "@mantine/dates";
-import dayjs from "dayjs";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Modal, Button, TextInput, Group, Stack, Text, useModalsStack, getDefaultZIndex, Checkbox, Select, SegmentedControl, Input, Switch, Avatar, type MultiSelectProps, MultiSelect, InputWrapper } from "@mantine/core";
+import { DatePickerInput, DateTimePicker, TimeInput, TimePicker, type DateFormatter } from "@mantine/dates";
+import dayjs, { Dayjs } from "dayjs";
 import { useCreateEventMutation, useDeleteEventMutation, useGetHouseholdEventsQuery, useUpdateEventMutation, type CalendarEvent } from "@/store/eventSlice";
 import "../../styles/QuickAddEvent.css";
 import { useHousehold, useIsSmallScreen } from "@/hooks";
@@ -17,6 +16,10 @@ import { EventFormRepeat } from "./Recurrence/EventFormRepeat";
 import { EventFormRepeatCustom } from "./Recurrence/EventFormRepeatCustom";
 import { buildRRule, matchingPresetKind, type CustomRecurrenceRule, type PresetKind } from "../../utils/recurrence";
 import { useEventForm, type EventFormValues } from "../../hooks/useEventForm";
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { useId } from "@mantine/hooks";
+dayjs.extend(customParseFormat);
 
 function combineLocalFromStrings(dateStr: string, timeStr: string) {
     const [y, m, d] = dateStr.split("-").map(Number);
@@ -58,9 +61,10 @@ const DATE_PRESETS = [
     { value: dayjs().add(1, "week").format("YYYY-MM-DD HH:mm:ss"), label: "Next week" },
     { value: dayjs().add(1, "month").format("YYYY-MM-DD HH:mm:ss"), label: "Next month" },
 ];
-
 const TITLE_MAX_LENGTH = 100;
 const DEFAULT_EVENT_DURATION_HOURS = 1;
+const TIME_FORMAT = 'HH:mm'; // 'HH:mm:ss' if TimeInput has withSeconds
+const THIRTY_MIN_MS = 30 * 60 * 1000;
 
 type ModalId = 'recurrence' | 'event-form';
 
@@ -100,7 +104,9 @@ export function EventForm({
         currentUserId: user.id,
         startDate: event ? ymdFromIso(event.startUtc ?? undefined) : dayjs(initialDate).format("YYYY-MM-DD"),
     });
-
+    const lastEnteredStartTimeRef = useRef(form.getValues().startTime);
+    const lastEnteredEndTimeRef = useRef(form.getValues().endTime);
+    const titleId = useId();
     const allHouseholdMemberIds = useMemo(
         () => household?.members?.map((m: { id: number }) => m.id) ?? [],
         [household]
@@ -161,8 +167,6 @@ export function EventForm({
         { skip: !householdId || !startDate }
     );
 
-    console.log('events:', dayEvents);
-
     const sorted = useMemo(() => {
         return [...dayEvents].sort((a: CalendarEvent, b: CalendarEvent) => {
             const aAll = a.hasTime === false;
@@ -181,25 +185,25 @@ export function EventForm({
         setRepeatKind('none');
         setCustomRule(null);
         setRecurrenceSessionId((n) => n + 1);
+
+        const defaultStartTime = roundUpToNearest30Min(dayjs());
+        const defaultEndTime = defaultStartTime.add(DEFAULT_EVENT_DURATION_HOURS, 'hour');
+
         const values = {
             title: '',
             startDate: seededDate,
             endDate: '',
             allDay: true,
-            startTime: '',
-            endTime: '',
+            startTime: defaultStartTime.format(TIME_FORMAT),
+            endTime: defaultEndTime.format(TIME_FORMAT),
             visibility: userSettings?.settings.eventsPrivacyMode === "private_by_default" ? "private" : 'public' as const,
             assignedUserIds: [user.id],
             allMembers: false,
         };
-        // setValues + setInitialValues, NOT form.initialize -- initialize()
-        // only ever does anything on its first-ever call for this form
-        // instance (Mantine's own implementation guards it with a
-        // one-shot `initialized` ref). Since this component never
-        // unmounts, every call after the first was silently a no-op.
-        // setValues/setInitialValues have no such guard.
         form.setValues(values);
         form.setInitialValues(values);
+        lastEnteredStartTimeRef.current = values.startTime;
+        lastEnteredEndTimeRef.current = values.endTime;
     };
 
     // Establishes a NEW baseline representing an existing event -- used
@@ -374,6 +378,79 @@ export function EventForm({
     // stack registration to pull it from.
     const eventFormStackProps = stack?.register('event-form');
 
+    const roundUpToNearest30Min = (time: Dayjs): Dayjs => {
+        const msSinceMidnight = time.diff(time.startOf('day'));
+        const roundedMs = Math.ceil(msSinceMidnight / THIRTY_MIN_MS) * THIRTY_MIN_MS;
+        return time.startOf('day').add(roundedMs, 'millisecond');
+    };
+
+    // Computed once, used to seed the form's initial values
+    const defaultStartTime = roundUpToNearest30Min(dayjs());
+    const defaultEndTime = defaultStartTime.add(DEFAULT_EVENT_DURATION_HOURS, 'hour');
+
+
+    const handleStartTimeChange = (value: string) => {
+        form.setFieldValue('startTime', value);
+
+        if (value) {
+            const newEndTime = dayjs(value, TIME_FORMAT)
+                .add(DEFAULT_EVENT_DURATION_HOURS, 'hour')
+                .format(TIME_FORMAT);
+            form.setFieldValue('endTime', newEndTime);
+        }
+
+        form.validate();
+    };
+
+    const handleEndTimeChange = (value: string) => {
+        form.setFieldValue('endTime', value);
+        form.validate();
+    };
+
+    const handleStartTimeBlur = () => {
+        if (!form.getValues().startTime) {
+            form.setFieldValue('startTime', lastEnteredStartTimeRef.current);
+        }
+    };
+
+    const handleEndTimeBlur = () => {
+        if (!form.getValues().endTime) {
+            form.setFieldValue('endTime', lastEnteredEndTimeRef.current);
+        }
+    };
+    const dateRangeValue: [string | null, string | null] = [
+        form.getValues().startDate || null,
+        form.getValues().endDate || null,
+    ];
+
+    const handleDateRangeChange = ([a, b]: [string | null, string | null]) => {
+        if (!a) {
+            form.setFieldValue('startDate', '');
+            form.setFieldValue('endDate', '');
+        } else if (!b) {
+            form.setFieldValue('startDate', a);
+            form.setFieldValue('endDate', '');
+        } else {
+            const [earlier, later] = a <= b ? [a, b] : [b, a];
+            form.setFieldValue('startDate', earlier);
+            form.setFieldValue('endDate', earlier === later ? '' : later);
+        }
+        form.validate();
+    };
+
+    const formatDateRangeValue: DateFormatter = ({ type, date, locale, format }) => {
+        if (type !== 'range' || !Array.isArray(date)) return '';
+
+        const [start, end] = date;
+        if (!start) return '';
+
+        const startLabel = dayjs(start).locale(locale).format(format);
+        if (!end || dayjs(end).isSame(start, 'day')) {
+            return startLabel;
+        }
+
+        return `${startLabel} \u2013 ${dayjs(end).locale(locale).format(format)}`;
+    };
     return (
         <>
             <Modal.Stack>
@@ -416,52 +493,39 @@ export function EventForm({
                     <div className="event-form-modal--body">
                         <TextInput
                             {...form.getInputProps('title')}
+                            error={!!form.errors.title}
                             key={form.key('title')}
                             ref={nameRef}
                             label="Title"
                             placeholder="ex: Dentist"
                             required
-                            withErrorStyles
                             maxLength={TITLE_MAX_LENGTH}
                         />
-                        <RemainingChars count={title.length} max={TITLE_MAX_LENGTH} />
+                        <div className="event-form-input--error-container">
+                            <div className="event-form-input--error">{form.errors.title}</div>
+                            <div className="event-form-input--error-right">
+                                <RemainingChars count={title.length} max={TITLE_MAX_LENGTH} />
+                            </div>
+                        </div>
                         {isSmallScreen ?
                             <Stack gap="0.5rem">
                                 <DatePickerInput
-                                    {...form.getInputProps('startDate')}
-                                    key={form.key('startDate')}
-                                    onChange={validateOnChange('startDate')}
+                                    type="range"
+                                    allowSingleDateInRange
+                                    value={dateRangeValue}
+                                    onChange={handleDateRangeChange}
                                     dropdownType={isSmallScreen ? "modal" : "popover"}
                                     modalProps={{ zIndex: getDefaultZIndex('popover') }}
-                                    placeholder="Select date"
-                                    label="Start Date"
+                                    placeholder="Select date range"
+                                    label="Date"
                                     required
                                     leftSection={<CalendarMonthRoundedIcon />}
                                     leftSectionWidth="40px"
                                     color="rgb(5, 5, 73)"
                                     styles={DATE_PICKER_STYLES}
-                                    presets={DATE_PRESETS}
-                                    valueFormatter={({ date, format }: any) =>
-                                        date ? dayjs(date).format(format) : ""
-                                    }
                                     firstDayOfWeek={0}
-                                />
-                                <DatePickerInput
-                                    {...form.getInputProps('endDate')}
-                                    key={form.key('endDate')}
-                                    onChange={validateOnChange('endDate')}
-                                    dropdownType={isSmallScreen ? "modal" : "popover"}
-                                    modalProps={{ zIndex: getDefaultZIndex('popover') }}
-                                    placeholder="Select end date"
-                                    label="End Date"
-                                    leftSection={<CalendarMonthRoundedIcon />}
-                                    leftSectionWidth="40px"
-                                    clearable={form.getValues().endDate !== ""}
-                                    color="rgb(5, 5, 73)"
-                                    styles={DATE_PICKER_STYLES}
-                                    presets={DATE_PRESETS}
-                                    valueFormatter={({ date, format }: any) => date ? dayjs(date).format(format) : ""}
-                                    firstDayOfWeek={0}
+                                    clearable={!!form.getValues().endDate}
+                                    valueFormatter={formatDateRangeValue}
                                 />
                                 <Checkbox
                                     {...form.getInputProps('allDay', { type: 'checkbox' })}
@@ -492,40 +556,23 @@ export function EventForm({
                             <>
                                 <Group grow align="flex-start">
                                     <DatePickerInput
-                                        {...form.getInputProps('startDate')}
-                                        key={form.key('startDate')}
-                                        onChange={validateOnChange('startDate')}
+                                        type="range"
+                                        allowSingleDateInRange
+                                        value={dateRangeValue}
+                                        onChange={handleDateRangeChange}
                                         dropdownType={isSmallScreen ? "modal" : "popover"}
                                         modalProps={{ zIndex: getDefaultZIndex('popover') }}
-                                        placeholder="Select date"
-                                        label="Start Date"
+                                        placeholder="Select event date(s)"
+                                        label="Date"
+                                        description="Select a single date, or create a range (start and end dates)."
                                         required
                                         leftSection={<CalendarMonthRoundedIcon />}
                                         leftSectionWidth="40px"
                                         color="rgb(5, 5, 73)"
                                         styles={DATE_PICKER_STYLES}
-                                        presets={DATE_PRESETS}
-                                        valueFormatter={({ date, format }: any) =>
-                                            date ? dayjs(date).format(format) : ""
-                                        }
                                         firstDayOfWeek={0}
-                                    />
-                                    <DatePickerInput
-                                        {...form.getInputProps('endDate')}
-                                        key={form.key('endDate')}
-                                        onChange={validateOnChange('endDate')}
-                                        dropdownType={isSmallScreen ? "modal" : "popover"}
-                                        modalProps={{ zIndex: getDefaultZIndex('popover') }}
-                                        placeholder="Select end date"
-                                        label="End Date"
-                                        clearable={form.getValues().endDate !== ""}
-                                        leftSection={<CalendarMonthRoundedIcon />}
-                                        leftSectionWidth="40px"
-                                        color="rgb(5, 5, 73)"
-                                        styles={DATE_PICKER_STYLES}
-                                        presets={DATE_PRESETS}
-                                        valueFormatter={({ date, format }: any) => date ? dayjs(date).format(format) : ""}
-                                        firstDayOfWeek={0}
+                                        clearable={!!form.getValues().endDate}
+                                        valueFormatter={formatDateRangeValue}
                                     />
                                 </Group>
                                 <Checkbox
@@ -537,22 +584,55 @@ export function EventForm({
                                 />
                                 {!form.getValues().allDay &&
                                     <Group grow align="flex-start">
-                                        <TimeInput
+                                        {/* <TimeInput
                                             {...form.getInputProps('startTime')}
                                             key={form.key('startTime')}
-                                            onChange={validateOnChange('startTime')}
                                             leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
                                             label="Start Time"
                                             disabled={form.getValues().allDay}
                                             required={!form.getValues().allDay}
+                                            onChange={handleStartTimeChange}
+                                            onBlur={handleStartTimeBlur}
                                         />
                                         <TimeInput
                                             {...form.getInputProps('endTime')}
                                             key={form.key('endTime')}
-                                            onChange={validateOnChange('endTime')}
                                             leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
                                             label="End Time"
+                                            onChange={handleEndTimeChange}
+                                            onBlur={handleEndTimeBlur}
                                             disabled={form.getValues().allDay}
+                                        />
+                                        <DatePickerInput
+                                            type="range"
+                                            allowSingleDateInRange
+                                            clearable
+                                        />a */}
+                                        <TimePicker
+                                            {...form.getInputProps('startTime')}
+                                            key={form.key('startTime')}
+                                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
+                                            label="Start time"
+                                            disabled={form.getValues().allDay}
+                                            required={!form.getValues().allDay}
+                                            onChange={handleStartTimeChange}
+                                            withDropdown
+                                            minutesStep={15}
+                                            hoursStep={1}
+                                            format="12h"
+                                        />
+                                        <TimePicker
+                                            {...form.getInputProps('endTime')}
+                                            key={form.key('endTime')}
+                                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
+                                            label="End Time"
+                                            required={!form.getValues().allDay}
+                                            onChange={handleEndTimeChange}
+                                            disabled={form.getValues().allDay}
+                                            withDropdown
+                                            minutesStep={15}
+                                            hoursStep={1}
+                                            format="12h"
                                         />
                                     </Group>
                                 }
@@ -571,33 +651,41 @@ export function EventForm({
                             data={[{ value: "public", label: "Public" }, { value: "private", label: "Private" }]}
                             allowDeselect={false}
                             label="Visibility"
-                            leftSection={<VisibilityRoundedIcon style={{ fill: "rgb(5, 5, 73)" }} />}
+                            leftSection={form.getValues().visibility === "public" ? <VisibilityRoundedIcon style={{ fill: "rgb(5, 5, 73)" }} /> : <VisibilityOffIcon style={{ fill: "rgb(5, 5, 73)" }} />}
                             leftSectionWidth="40px"
                         />
                         {(household?.members?.length ?? 0) > 1 && (
                             <div className="event-form-repeat-custom--vertical-section">
-                                <span className="event-form-repeat-custom--section-text">Assigned members</span>
-                                {form.errors.assignedUserIds && (
+                                {/* {form.errors.assignedUserIds && (
                                     <Text size="xs" c="red">{form.errors.assignedUserIds}</Text>
-                                )}
-                                <Stack gap="xs">
-                                    <MultiSelect
-                                        data={memberOptions}
-                                        value={form.getValues().assignedUserIds.map(String)}
-                                        onChange={handleMemberChange}
-                                        renderOption={renderMultiSelectOption}
-                                        maxDropdownHeight={300}
-                                        placeholder="Assign members"
-                                        hidePickedOptions
-                                        clearable
-                                        c="black"
-                                    />
-                                    <Checkbox
-                                        label="All members"
-                                        checked={form.getValues().allMembers}
-                                        onChange={(e) => handleToggleAllMembers(e.currentTarget.checked)}
-                                    />
-                                </Stack>
+                                )} */}
+                                <InputWrapper>
+                                    <Stack gap="xs">
+                                        <div>
+                                            <Stack gap={0}>
+                                                <Input.Label htmlFor={titleId}>Assigned members</Input.Label>
+                                                <span className="event-form-input--error">{form.errors.assignedUserIds}</span>
+                                                <MultiSelect
+                                                    id={titleId}
+                                                    data={memberOptions}
+                                                    value={form.getValues().assignedUserIds.map(String)}
+                                                    onChange={handleMemberChange}
+                                                    renderOption={renderMultiSelectOption}
+                                                    maxDropdownHeight={300}
+                                                    placeholder="Assign members"
+                                                    hidePickedOptions
+                                                    clearable
+                                                    c="black"
+                                                />
+                                            </Stack>
+                                        </div>
+                                        <Checkbox
+                                            label="All members"
+                                            checked={form.getValues().allMembers}
+                                            onChange={(e) => handleToggleAllMembers(e.currentTarget.checked)}
+                                        />
+                                    </Stack>
+                                </InputWrapper>
                             </div>
                         )}
                         <Stack mt="lg" gap="xs">

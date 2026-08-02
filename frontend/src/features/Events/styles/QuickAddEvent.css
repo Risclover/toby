@@ -15,18 +15,21 @@
     position: relative;
 }
 
-/* The dot itself */
 .mc-has-events::after {
     content: "";
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
     bottom: 4px;
-    /* adjust for your theme */
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: rgb(5, 5, 73);
+    background: var(--dot-color-1, rgb(5, 5, 73));
+    box-shadow:
+        8px 0 0 var(--dot-color-2, transparent),
+        16px 0 0 var(--dot-color-3, transparent),
+        24px 0 0 var(--dot-color-4, transparent);
+    /* re-centers the whole cluster of dots, not just the first one */
+    transform: translateX(calc(-50% - (var(--dot-count, 1) - 1) * 4px));
     pointer-events: none;
 }
 
@@ -99,6 +102,22 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
+}
+
+.event-form-repeat-custom--section-text {
+    font-weight: 500;
+}
+
+.event-form-input--error-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.event-form-input--error {
+    color: var(--mantine-color-red-6);
+    font-size: var(--text-xs);
 }
 
 

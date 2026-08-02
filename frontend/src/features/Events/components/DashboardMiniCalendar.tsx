@@ -6,6 +6,7 @@ import { EventForm } from "./EventForm/EventForm";
 import { MiniCalendar } from "@mantine/dates";
 import "../styles/QuickAddEvent.css"; // or a global index.css
 import "../styles/DashboardMiniCalendar.css";
+import { useAuthenticateQuery } from "@/store";
 
 const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -50,6 +51,8 @@ function startOfWeekSunday(d: Date): Date {
     return js;
 }
 
+const MAX_DOTS = 4;
+
 export function DashboardMiniCalendar({
     householdId,
     showAddEvent,
@@ -79,6 +82,43 @@ export function DashboardMiniCalendar({
         }
         return set;
     }, [allEvents]);
+
+    console.log('DAYS WITH EVENTS:', allEvents);
+    const { data: user } = useAuthenticateQuery();
+    const dayDots = useMemo(() => {
+        const byDay = new Map<string, Map<number, string>>(); // ymd -> (userId -> color)
+
+        const addColor = (ymd: string, userId: number, color?: string | null) => {
+            if (!color) return;
+            let userColors = byDay.get(ymd);
+            if (!userColors) byDay.set(ymd, (userColors = new Map()));
+            if (!userColors.has(userId)) userColors.set(userId, color);
+        };
+
+        for (const e of allEvents) {
+            if (!e.startUtc || !e.endUtc) continue;
+            const days = expandSpanToLocalDays(e.startUtc, e.endUtc);
+            if (e.visibility === "public") {
+                for (const ymd of days) {
+                    for (const attendee of e.attendees ?? []) {
+                        addColor(ymd, attendee.id, attendee.color);
+                    }
+                }
+
+            } else if (e.visibility === "private" && user) {
+                const isMe = e.creatorId === user.id || (e.attendees ?? []).some((a) => a.id === user.id);
+                if (isMe) {
+                    for (const ymd of days) addColor(ymd, user.id, user.color);
+                }
+            }
+        }
+
+        const out = new Map<string, string[]>();
+        byDay.forEach((userColors, ymd) => out.set(ymd, Array.from(userColors.values())));
+        return out;
+    }, [allEvents, user]);
+
+
 
     // Dominant-month title for the visible strip (ties favor the month containing startDate/Sunday)
     const headerTitle = useMemo(() => {
@@ -129,28 +169,24 @@ export function DashboardMiniCalendar({
                 onPrevious={goPrev}    // keep header in sync with built-in arrows
                 onNext={goNext}
                 // Do NOT use onChange/onDateChange for opening the modal (arrows trigger them).
-                getDayProps={(ymd /* YYYY-MM-DD */) => {
+                getDayProps={(ymd) => {
                     const isToday = ymd === dayjs().format("YYYY-MM-DD");
-                    const has = daysWithEvents.has(ymd);
+                    const colors = (dayDots.get(ymd) ?? []).slice(0, MAX_DOTS);
+                    const has = colors.length > 0;
+
+                    const dotVars: Record<string, string | number> = { "--dot-count": colors.length };
+                    colors.forEach((color, i) => (dotVars[`--dot-color-${i + 1}`] = color));
+
                     return {
                         "data-testid": `cal-day-${ymd}`,
-                        "data-has-events": has ? true : false,
+                        "data-has-events": has,
                         className: has ? "mc-has-events" : "mc-no-events",
-                        style: { background: isToday ? "#f1f1ff" : undefined },
+                        style: { background: isToday ? "#f1f1ff" : undefined, ...dotVars },
                         title: has ? "Has events" : undefined,
                         onClick: () => {
                             setSelectedDate(dateFromYmd(ymd));
-                            // Both signals need to flip together: `showAddEvent` drives
-                            // EventForm's `opened` prop (which its seeding effect keys
-                            // off of), while stack.open('event-form') drives whether the
-                            // Modal is actually visible. They're separate on purpose --
-                            // EventForm intentionally does NOT re-seed off the stack's
-                            // own internal 'event-form' state, since that toggles closed
-                            // and back open every time the user visits the recurrence
-                            // sub-modal, which would wipe in-progress form data. But that
-                            // means every call site that opens the form has to set both.
                             setShowAddEvent(true);
-                            stack.open('event-form');
+                            stack.open("event-form");
                         },
                     };
                 }}

@@ -221,7 +221,7 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                     eventId: realId,
                     title: ev.title,
                     dayYmd: startDay,
-                    timeLabel: payload.hasTime ? formatWallClockTime(startStr) : "All Day",
+                    timeLabel: payload.hasTime ? `${formatWallClockTime(startStr)} - ${formatWallClockTime(endStr)}` : "All Day",
                     sortKey: startStr,
                     creatorId: payload.creatorId,
                     householdAdminId: payload.householdAdminId,

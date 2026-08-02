@@ -6,7 +6,6 @@
     border-right: 1px solid var(--input-border);
     height: 100%;
     padding: 0.5rem;
-    padding-right: 1rem;
     font-family: "Alan Sans", sans-serif;
     text-align: center;
     width: 50px;
@@ -19,7 +18,7 @@
 
 .upcoming-events-container {
     padding: 1rem;
-    background: white;
+    background: #f7f8fc;
 }
 
 .upcoming-events {
@@ -69,7 +68,7 @@
 .event-skeleton-date {
     border-right: 1px solid var(--mantine-color-gray-4);
     padding: 0.5rem;
-    padding-right: 1rem;
+    width: 50px;
 }
 
 @media (max-width: 425px) {
