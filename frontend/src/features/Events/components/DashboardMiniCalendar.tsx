@@ -99,6 +99,7 @@ export function DashboardMiniCalendar({
         for (const e of allEvents) {
             if (!e.startUtc || !e.endUtc) continue;
             const days = expandSpanToLocalDays(e.startUtc, e.endUtc);
+
             if (e.visibility === "public") {
                 for (const ymd of days) {
                     if (e.allMembers) {

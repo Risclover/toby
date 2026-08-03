@@ -5,7 +5,9 @@ import {
     Group,
     Tooltip,
     ActionIcon,
-    Input
+    Input,
+    ColorPicker,
+    ColorInput
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -18,12 +20,13 @@ import {
 import { useGetUserQuery, useUploadImgMutation } from "@/store/userSlice"; // adjust import to your slice
 import { SettingsItem } from "@/features/HouseholdTasklists";
 import { SettingsSection } from "@/components/FeaturedListSettings/SettingsSection";
-import { useIsSmallScreen } from "@/hooks";
+import { useIsSmallScreen, useHousehold } from "@/hooks";
 import { useAuthenticateQuery } from "@/store";
 import "../styles/UserSettings.css"
 import { InfoIcon } from "@/assets";
 import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
 import { InfoTooltip } from "@/components/InfoTooltip";
+import { FormColorInput } from "@/components";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -36,6 +39,7 @@ type UpdateUserSettingsPayload = {
     habitsPrivacyMode: PrivacyMode;
     notesPrivacyMode: PrivacyMode;
     eventsPrivacyMode: PrivacyMode;
+    color: string;
 };
 
 type Props = {
@@ -61,6 +65,7 @@ const PRIVACY_OPTIONS: { value: PrivacyMode; label: string }[] = [
     { value: "private_by_default", label: "Private by default" },
     { value: "all_private", label: "All private" },
 ];
+const ALL_SWATCHES = ["#fa5252", "#fd7e14", "#fab005", "#82c91e", "#40c057", "#12b886", "#15aabf", "#228be6", "#4c6ef5", "#7950f2", "#be4bdb", "#e64980", "#2e2e2e"];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -76,6 +81,8 @@ export const UserSettings = ({ opened, onClose }: Props) => {
     const lastNameRef = useRef<HTMLInputElement>(null);
     const timezoneRef = useRef<HTMLInputElement>(null);
 
+    const { data: household } = useHousehold();
+
     // Pending image is intentionally outside useForm — File objects aren't
     // form values, and the upload is a separate mutation.
     const [pendingImage, setPendingImage] = useState<File | null>(null);
@@ -90,7 +97,8 @@ export const UserSettings = ({ opened, onClose }: Props) => {
         habitsOnHomepage: false,
         habitsPrivacyMode: "normal",
         notesPrivacyMode: "normal",
-        eventsPrivacyMode: "normal"
+        eventsPrivacyMode: "normal",
+        color: ""
 
     })
 
@@ -102,7 +110,8 @@ export const UserSettings = ({ opened, onClose }: Props) => {
         habitsOnHomepage: data?.settings.habitsOnHomepage,
         habitsPrivacyMode: data?.settings.habitsPrivacyMode,
         notesPrivacyMode: data?.settings.notesPrivacyMode,
-        eventsPrivacyMode: data?.settings.eventsPrivacyMode
+        eventsPrivacyMode: data?.settings.eventsPrivacyMode,
+        color: data?.user.color,
     })
 
     const form = useForm<UpdateUserSettingsPayload>({
@@ -115,6 +124,13 @@ export const UserSettings = ({ opened, onClose }: Props) => {
             habitsPrivacyMode: "normal",
             notesPrivacyMode: "normal",
             eventsPrivacyMode: "normal",
+            color: ""
+        },
+        validate: {
+            color: (value) =>
+                value && takenColors.some((c: string) => c.toLowerCase() === value.toLowerCase())
+                    ? "Already taken by another household member"
+                    : null,
         },
     });
 
@@ -168,6 +184,18 @@ export const UserSettings = ({ opened, onClose }: Props) => {
             setIsSubmitting(false);
         }
     };
+
+    const takenColors = useMemo(
+        () =>
+            (household?.members ?? [])
+                .filter((m: { id: number; color: string }) => m.id !== currentUser?.id)
+                .map((m: { id: number; color: string }) => m.color)
+                .filter(Boolean),
+        [household, currentUser]
+    );
+
+    const taken = new Set(takenColors.map((c: string) => c.toLowerCase()));
+    const availableSwatches = ALL_SWATCHES.filter((c) => !taken.has(c.toLowerCase()));
 
     const handleResetToDefaults = () => {
         if (!defaultValues) return;
@@ -270,7 +298,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                                 rightSectionPointerEvents="auto"
                             />
                         </SettingsItem>
-                        <SettingsItem description="Used to display dates and times in your local time" labelRequired layout="column" label="Timezone" divider={true}>
+                        <SettingsItem description="Used to display dates and times in your local time" labelRequired layout="column" label="Timezone" divider={false}>
                             <Select
                                 ref={timezoneRef}
                                 required
@@ -283,6 +311,19 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                                     form.setFieldValue("timezone", "");
                                     timezoneRef.current?.focus();
                                 }}
+                            />
+                        </SettingsItem>
+                        <SettingsItem description="Change the color that represents your events" layout="column" label="Event color" divider={true}>
+                            <ColorInput
+                                size="sm"
+                                radius="md"
+                                disallowInput={true}
+                                required
+                                withEyeDropper={false}
+                                closeOnColorSwatchClick={true}
+                                withPicker={false}
+                                swatches={availableSwatches}
+                                {...form.getInputProps('color')}
                             />
                         </SettingsItem>
                     </SettingsSection>

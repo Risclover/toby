@@ -32,5 +32,5 @@ class UserSettings(db.Model):
             "siteTheme": self.site_theme.value if self.site_theme else None,
             "habitsPrivacyMode": self.habits_privacy_mode.value,
             "notesPrivacyMode": self.notes_privacy_mode.value,
-            "eventsPrivacyMode": self.events_privacy_mode.value
+            "eventsPrivacyMode": self.events_privacy_mode.value,
         }

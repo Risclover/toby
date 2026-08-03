@@ -3,11 +3,12 @@ from app.extensions import db
 from app.models import User
  
 PRESET_USER_COLORS = [
-    "blue", "red", "green", "grape", "orange",
-    "teal", "pink", "indigo", "cyan", "lime",
+    "#fa5252", "#e64980", "#be4bdb", "#7950f2", "#fd7e14",
+    "#228be6", "#15aabf", "#12b886", "#40c057", "#fab005",
+    "#2e2e2e",
 ]
 
-DEFAULT_ACCENT_COLOR = "gray"
+DEFAULT_ACCENT_COLOR = "#868e96"
 VALID_VISIBILITIES = {"public", "private"}
 DEFAULT_VISIBILITY = "public"
  

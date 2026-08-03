@@ -179,6 +179,11 @@ class User(db.Model, UserMixin):
             "featuredStats": self.featured_stats if self.featured_stats else []
         }
 
+    
+    __table_args__ = (
+        db.UniqueConstraint("household_id", "color", name="uq_user_household_color"),
+    )
+
     def to_dict_with_mood(self):
         return {
             "userId": self.id,

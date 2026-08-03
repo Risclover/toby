@@ -93,8 +93,29 @@ def update_user_settings():
             user_settings.events_privacy_mode = PrivacyMode(data["eventsPrivacyMode"])
         except ValueError:
             return jsonify({"error": "Invalid eventsPrivacyMode"}), 400
+        
+    if "color" in data:
+        new_color = data["color"].strip().lower()
 
-    db.session.commit()
+        taken = (
+            db.session.query(User.id)
+            .filter(
+                User.household_id == user.household_id,
+                User.id != user.id,
+                db.func.lower(User.color) == new_color,
+            )
+            .first()
+        )
+        if taken:
+            return jsonify({"error": "That color is already in use by another household member"}), 409
+
+        user.color = new_color
+
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"error": "That color is already in use by another household member"}), 409
 
     return jsonify({
         "user": user.to_dict(),

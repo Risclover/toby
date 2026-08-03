@@ -21,6 +21,7 @@ export interface UserSettingsResponse {
         email: string;
         timezone: string;
         profileImg: string;
+        color: string;
         // Add other User fields you need here
     };
     settings: UserSettings;
@@ -44,7 +45,7 @@ export const userSettingsSlice = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: data
             }),
-            invalidatesTags: ["UserSettings"]
+            invalidatesTags: ["UserSettings", "Auth", "Household", "Calendar"]
         }),
 
         resetUserSettings: builder.mutation<UserSettingsResponse, void>({
@@ -52,7 +53,7 @@ export const userSettingsSlice = apiSlice.injectEndpoints({
                 url: "/user-settings/reset",
                 method: "POST"
             }),
-            invalidatesTags: ["UserSettings"]
+            invalidatesTags: ["UserSettings", "Auth", "Household", "Calendar"]
         }),
     })
 });
