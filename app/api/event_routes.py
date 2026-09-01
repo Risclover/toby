@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone, date
 from typing import Optional, Tuple
 from flask import Blueprint, request, jsonify, abort
-from sqlalchemy import or_, exists
+from sqlalchemy import or_, and_, exists
 from sqlalchemy.orm import joinedload
 from app.extensions import db
 from app.models import Household, Event, EventAttendee, User, VALID_VISIBILITIES, DEFAULT_VISIBILITY, UserSettings
@@ -192,78 +192,33 @@ def event_to_local_dict(event, user):
 
     return d
 
-
-# -------------------- Routes -------------------- #
-
-@event_routes.get('/households/<int:hid>/events')
-@login_required
-def get_household_events(hid: int):
-    household = get_household_or_403(hid)
-
-    start_s = request.args.get('start')
-    end_s = request.args.get('end')
-    fetch_all = request.args.get('all') == '1'
-    attendee_ids = request.args.get('attendeeIds')
-
-    q = Event.query.options(
-        joinedload(Event.attendee_links).joinedload(EventAttendee.user)
-    ).filter(Event.household_id == hid)
-
-    # Creator's "all private" setting is an absolute override: hidden from
-    # every other household member, including the admin. Applied before the
-    # admin-bypass check below so it can't be skipped.
+def apply_visibility_filter(query, household: Household, viewer: User):
+    """
+    Restricts a household event query to whta `viewer` is allowed to see. Shared by every route that lists more than one event, so the pribacy rule can't drift between them: a creator's `events_privacy_mode == 'all_private'` setting is an absolute override (hidden from everyone, including the admin, except the creator themself), applied before the min-bypass becheck below so it can't be skipped. Non-admins additionally only see events that are public, their own, marked all_members, or ones they're an explicit attendee on.
+    """
     all_private_creator = exists().where(
         UserSettings.user_id == Event.creator_id,
         UserSettings.events_privacy_mode == 'all_private',
     )
-    q = q.filter(
+
+    query = query.filter(
         or_(
             ~all_private_creator,
-            Event.creator_id == current_user.id,
+            Event.creator_id == viewer.id,
         )
     )
 
-    if current_user.id != household.admin_id:
-        q = q.filter(
+    if viewer.id != household.admin_id:
+        query = query.filter(
             or_(
                 Event.visibility == 'public',
-                Event.creator_id == current_user.id,
-                Event.all_members == True,  # noqa: E712 -- SQLAlchemy needs `== True`, not `is True`
-                Event.attendee_links.any(EventAttendee.user_id == current_user.id),
+                Event.creator_id == viewer.id,
+                Event.all_members == True,
+                Event.attendee_links.any(EventAttendee.user_id == viewer.id)
             )
         )
-
-    if fetch_all:
-        q = q.filter(Event.start_utc.isnot(None), Event.end_utc.isnot(None))
-    else:
-        if not start_s or not end_s:
-            abort(400, description='start and end query params are required (or pass all=1)')
-        start = parse_iso8601(start_s)
-        end = parse_iso8601(end_s)
-        if start >= end:
-            abort(400, description='start must be before end')
-
-        q = q.filter(
-            Event.start_utc < end,
-            Event.end_utc > start,
-        )
-
-    if attendee_ids:
-        try:
-            requested_ids = {int(x) for x in attendee_ids.split(',') if x.strip()}
-        except ValueError:
-            abort(400, description='attendeeIds must be a comma-separated list of integers')
-
-        q = q.filter(
-            or_(
-                Event.all_members == True,  # noqa: E712
-                Event.attendee_links.any(EventAttendee.user_id.in_(requested_ids)),
-            )
-        )
-
-    events = q.order_by(Event.start_utc.asc()).all()
-    return jsonify([event_to_local_dict(e, current_user) for e in events]), 200
-
+    
+    return query
 
 def get_visible_events(household_id, viewer_id, query=None):
     """Filter events to those visible to the viewer on the household homepage.
@@ -289,6 +244,103 @@ def get_visible_events(household_id, viewer_id, query=None):
             Event.creator_id == viewer_id,
         ),
     )
+
+# -------------------- Routes -------------------- #
+
+@event_routes.get('/households/<int:hid>/events')
+@login_required
+def get_household_events(hid: int):
+    household = get_household_or_403(hid)
+
+    start_s = request.args.get('start')
+    end_s = request.args.get('end')
+    fetch_all = request.args.get('all') == '1'
+    attendee_ids = request.args.get('attendeeIds')
+
+    q = Event.query.options(
+        joinedload(Event.attendee_links).joinedload(EventAttendee.user)
+    ).filter(Event.household_id == hid)
+
+    q = apply_visibility_filter(q, household, current_user)
+
+    if fetch_all:
+        q = q.filter(Event.start_utc.isnot(None), Event.end_utc.isnot(None))
+    else:
+        if not start_s or not end_s:
+            abort(400, description='start and end query params are required (or pass all=1)')
+        start = parse_iso8601(start_s)
+        end = parse_iso8601(end_s)
+        if start >= end:
+            abort(400, description='start must be before end')
+
+        # A recurring event's stored start_utc/end_utc describe only its
+        # first occurrence -- a range-only filter would silently exclude
+        # every later occurrence of a recurring event whose original date
+        # falls outside [start, end). Include anything with an rrule
+        # regardless of its stored range, and let the frontend's existing
+        # expandRecurringEvents step (already run in UpcomingThisWeek)
+        # narrow it down to the occurrences that actually land in range.
+        q = q.filter(
+            or_(
+                and_(Event.start_utc < end, Event.end_utc > start),
+                Event.rrule.isnot(None),
+            )
+        )
+
+    if attendee_ids:
+        try:
+            requested_ids = {int(x) for x in attendee_ids.split(',') if x.strip()}
+        except ValueError:
+            abort(400, description='attendeeIds must be a comma-separated list of integers')
+
+        q = q.filter(
+            or_(
+                Event.all_members == True,  # noqa: E712
+                Event.attendee_links.any(EventAttendee.user_id.in_(requested_ids)),
+            )
+        )
+
+    events = q.order_by(Event.start_utc.asc()).all()
+    return jsonify([event_to_local_dict(e, current_user) for e in events]), 200
+
+@event_routes.get('/households/<int:hid>/events/day')
+@login_required
+def get_household_events_for_day(hid: int):
+    """
+    Events for a single local calendar day
+    """
+    household = get_household_or_403(hid)
+
+    date_s = request.args.get('date')
+
+    if not date_s:
+        abort(400, description='date query param is required (YYYY-MM-DD)')
+    try:
+        target_date = datetime.strptime(date_s, "%Y-%m-%d").date()
+    except ValueError:
+        abort(400, description='date must be YYYY-MM-DD')
+
+    tzid = request.args.get('tzid') or 'UTC'
+    start_utc, end_utc = compute_allday_utc_bounds(target_date, tzid)
+
+    q = Event.query.options(
+        joinedload(Event.attendee_links).joinedload(EventAttendee.user)
+    ).filter(
+        Event.household_id == hid,
+        or_(
+            and_(
+                Event.start_utc < end_utc,
+                Event.end_utc > start_utc
+            ),
+            Event.rrule.isnot(None)  # include recurring events, which may not have start/end set
+        ),
+    )
+
+    q = apply_visibility_filter(q, household, current_user)
+
+    events = q.order_by(Event.start_utc.asc()).all()
+    return jsonify([event_to_local_dict(e, current_user) for e in events]), 200
+    
 
 
 @event_routes.post('/households/<int:hid>/events')

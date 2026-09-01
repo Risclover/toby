@@ -19,6 +19,7 @@ import { useEventForm, type EventFormValues } from "../../hooks/useEventForm";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useId } from "@mantine/hooks";
+import { EventsModal } from "../EventsModal/EventsModal";
 dayjs.extend(customParseFormat);
 
 function combineLocalFromStrings(dateStr: string, timeStr: string) {
@@ -66,7 +67,7 @@ const DEFAULT_EVENT_DURATION_HOURS = 1;
 const TIME_FORMAT = 'HH:mm'; // 'HH:mm:ss' if TimeInput has withSeconds
 const THIRTY_MIN_MS = 30 * 60 * 1000;
 
-type ModalId = 'recurrence' | 'event-form';
+type ModalId = 'recurrence' | 'event-form' | 'events-list';
 
 export function EventForm({
     householdId,
@@ -491,100 +492,58 @@ export function EventForm({
                     }}
                 >
                     <div className="event-form-modal--body">
-                        <TextInput
-                            {...form.getInputProps('title')}
-                            error={!!form.errors.title}
-                            key={form.key('title')}
-                            ref={nameRef}
-                            label="Title"
-                            placeholder="ex: Dentist"
-                            required
-                            maxLength={TITLE_MAX_LENGTH}
-                        />
-                        <div className="event-form-input--error-container">
-                            <div className="event-form-input--error">{form.errors.title}</div>
-                            <div className="event-form-input--error-right">
-                                <RemainingChars count={title.length} max={TITLE_MAX_LENGTH} />
+                        <div>
+                            <TextInput
+                                {...form.getInputProps('title')}
+                                error={!!form.errors.title}
+                                key={form.key('title')}
+                                ref={nameRef}
+                                label="Title"
+                                placeholder="ex: Dentist"
+                                required
+                                maxLength={TITLE_MAX_LENGTH}
+                            />
+                            <div className="event-form-input--error-container">
+                                <div className="event-form-input--error">{form.errors.title}</div>
+                                <div className="event-form-input--error-right">
+                                    <RemainingChars count={title.length} max={TITLE_MAX_LENGTH} />
+                                </div>
                             </div>
                         </div>
-                        {isSmallScreen ?
-                            <Stack gap="0.5rem">
-                                <DatePickerInput
-                                    type="range"
-                                    allowSingleDateInRange
-                                    value={dateRangeValue}
-                                    onChange={handleDateRangeChange}
-                                    dropdownType={isSmallScreen ? "modal" : "popover"}
-                                    modalProps={{ zIndex: getDefaultZIndex('popover') }}
-                                    placeholder="Select date range"
-                                    label="Date"
-                                    required
-                                    leftSection={<CalendarMonthRoundedIcon />}
-                                    leftSectionWidth="40px"
-                                    color="rgb(5, 5, 73)"
-                                    styles={DATE_PICKER_STYLES}
-                                    firstDayOfWeek={0}
-                                    clearable={!!form.getValues().endDate}
-                                    valueFormatter={formatDateRangeValue}
-                                />
-                                <Checkbox
-                                    {...form.getInputProps('allDay', { type: 'checkbox' })}
-                                    key={form.key('allDay')}
-                                    label="All Day"
-                                    onChange={validateOnChange('allDay', { type: 'checkbox' })}
-                                />
-                                {!form.getValues().allDay &&
-                                    <>
-                                        <TimeInput
-                                            {...form.getInputProps('startTime')}
-                                            key={form.key('startTime')}
-                                            onChange={validateOnChange('startTime')}
-                                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                                            label="Start Time"
-                                            disabled={form.getValues().allDay}
-                                            required={!form.getValues().allDay}
-                                        />
-                                        <TimeInput
-                                            {...form.getInputProps('endTime')}
-                                            key={form.key('endTime')}
-                                            onChange={validateOnChange('endTime')}
-                                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                                            label="End Time"
-                                            disabled={form.getValues().allDay}
-                                        /></>}
-                            </Stack> :
-                            <>
-                                <Group grow align="flex-start">
-                                    <DatePickerInput
-                                        type="range"
-                                        allowSingleDateInRange
-                                        value={dateRangeValue}
-                                        onChange={handleDateRangeChange}
-                                        dropdownType={isSmallScreen ? "modal" : "popover"}
-                                        modalProps={{ zIndex: getDefaultZIndex('popover') }}
-                                        placeholder="Select event date(s)"
-                                        label="Date"
-                                        description="Select a single date, or create a range (start and end dates)."
-                                        required
-                                        leftSection={<CalendarMonthRoundedIcon />}
-                                        leftSectionWidth="40px"
-                                        color="rgb(5, 5, 73)"
-                                        styles={DATE_PICKER_STYLES}
-                                        firstDayOfWeek={0}
-                                        clearable={!!form.getValues().endDate}
-                                        valueFormatter={formatDateRangeValue}
-                                    />
-                                </Group>
-                                <Checkbox
-                                    {...form.getInputProps('allDay', { type: 'checkbox' })}
-                                    key={form.key('allDay')}
-                                    label="All Day"
-                                    onChange={validateOnChange('allDay', { type: 'checkbox' })}
-                                    color="rgb(5, 5, 73)"
-                                />
-                                {!form.getValues().allDay &&
+                        <Stack gap="md">
+                            <div>
+                                <Stack gap="sm">
                                     <Group grow align="flex-start">
-                                        {/* <TimeInput
+                                        <DatePickerInput
+                                            type="range"
+                                            allowSingleDateInRange
+                                            value={dateRangeValue}
+                                            onChange={handleDateRangeChange}
+                                            dropdownType={isSmallScreen ? "modal" : "popover"}
+                                            modalProps={{ zIndex: getDefaultZIndex('popover') }}
+                                            placeholder="Select event date(s)"
+                                            label="Date"
+                                            description="Select a single date, or create a range (start and end dates)."
+                                            required
+                                            leftSection={<CalendarMonthRoundedIcon />}
+                                            leftSectionWidth="40px"
+                                            color="rgb(5, 5, 73)"
+                                            styles={DATE_PICKER_STYLES}
+                                            firstDayOfWeek={0}
+                                            clearable={!!form.getValues().endDate}
+                                            valueFormatter={formatDateRangeValue}
+                                        />
+                                    </Group>
+                                    <Checkbox
+                                        {...form.getInputProps('allDay', { type: 'checkbox' })}
+                                        key={form.key('allDay')}
+                                        label="All Day"
+                                        onChange={validateOnChange('allDay', { type: 'checkbox' })}
+                                        color="rgb(5, 5, 73)"
+                                    />
+                                    {!form.getValues().allDay &&
+                                        <Group grow align="flex-start">
+                                            {/* <TimeInput
                                             {...form.getInputProps('startTime')}
                                             key={form.key('startTime')}
                                             leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
@@ -608,87 +567,90 @@ export function EventForm({
                                             allowSingleDateInRange
                                             clearable
                                         />a */}
-                                        <TimePicker
-                                            {...form.getInputProps('startTime')}
-                                            key={form.key('startTime')}
-                                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                                            label="Start time"
-                                            disabled={form.getValues().allDay}
-                                            required={!form.getValues().allDay}
-                                            onChange={handleStartTimeChange}
-                                            withDropdown
-                                            minutesStep={15}
-                                            hoursStep={1}
-                                            format="12h"
-                                        />
-                                        <TimePicker
-                                            {...form.getInputProps('endTime')}
-                                            key={form.key('endTime')}
-                                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                                            label="End Time"
-                                            required={!form.getValues().allDay}
-                                            onChange={handleEndTimeChange}
-                                            disabled={form.getValues().allDay}
-                                            withDropdown
-                                            minutesStep={15}
-                                            hoursStep={1}
-                                            format="12h"
-                                        />
-                                    </Group>
-                                }
-                            </>
-                        }
-                        <EventFormRepeat
-                            dateValue={startDate}
-                            stack={stack}
-                            customRule={customRule}
-                            repeatKind={repeatKind}
-                            onRepeatKindChange={setRepeatKind}
-                        />
-                        <Select
-                            {...form.getInputProps('visibility')}
-                            key={form.key('visibility')}
-                            data={[{ value: "public", label: "Public" }, { value: "private", label: "Private" }]}
-                            allowDeselect={false}
-                            label="Visibility"
-                            leftSection={form.getValues().visibility === "public" ? <VisibilityRoundedIcon style={{ fill: "rgb(5, 5, 73)" }} /> : <VisibilityOffIcon style={{ fill: "rgb(5, 5, 73)" }} />}
-                            leftSectionWidth="40px"
-                        />
-                        {(household?.members?.length ?? 0) > 1 && (
-                            <div className="event-form-repeat-custom--vertical-section">
-                                {/* {form.errors.assignedUserIds && (
-                                    <Text size="xs" c="red">{form.errors.assignedUserIds}</Text>
-                                )} */}
-                                <InputWrapper>
-                                    <Stack gap="xs">
-                                        <div>
-                                            <Stack gap={0}>
-                                                <Input.Label htmlFor={titleId}>Assigned members</Input.Label>
-                                                <span className="event-form-input--error">{form.errors.assignedUserIds}</span>
-                                                <MultiSelect
-                                                    id={titleId}
-                                                    data={memberOptions}
-                                                    value={form.getValues().assignedUserIds.map(String)}
-                                                    onChange={handleMemberChange}
-                                                    renderOption={renderMultiSelectOption}
-                                                    maxDropdownHeight={300}
-                                                    placeholder="Assign members"
-                                                    hidePickedOptions
-                                                    clearable
-                                                    c="black"
-                                                />
-                                            </Stack>
-                                        </div>
-                                        <Checkbox
-                                            label="All members"
-                                            checked={form.getValues().allMembers}
-                                            onChange={(e) => handleToggleAllMembers(e.currentTarget.checked)}
-                                        />
-                                    </Stack>
-                                </InputWrapper>
+                                            <TimePicker
+                                                {...form.getInputProps('startTime')}
+                                                key={form.key('startTime')}
+                                                leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
+                                                label="Start time"
+                                                disabled={form.getValues().allDay}
+                                                required={!form.getValues().allDay}
+                                                onChange={handleStartTimeChange}
+                                                withDropdown
+                                                minutesStep={15}
+                                                hoursStep={1}
+                                                format="12h"
+                                            />
+                                            <TimePicker
+                                                {...form.getInputProps('endTime')}
+                                                key={form.key('endTime')}
+                                                leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
+                                                label="End Time"
+                                                required={!form.getValues().allDay}
+                                                onChange={handleEndTimeChange}
+                                                disabled={form.getValues().allDay}
+                                                withDropdown
+                                                minutesStep={15}
+                                                hoursStep={1}
+                                                format="12h"
+                                            />
+                                        </Group>
+                                    }
+                                </Stack>
                             </div>
-                        )}
-                        <Stack mt="lg" gap="xs">
+                            <EventFormRepeat
+                                dateValue={startDate}
+                                stack={stack}
+                                customRule={customRule}
+                                repeatKind={repeatKind}
+                                onRepeatKindChange={setRepeatKind}
+                            />
+                            <Select
+                                {...form.getInputProps('visibility')}
+                                key={form.key('visibility')}
+                                data={[{ value: "public", label: "Public" }, { value: "private", label: "Private" }]}
+                                allowDeselect={false}
+                                label="Visibility"
+                                leftSection={form.getValues().visibility === "public" ? <VisibilityRoundedIcon style={{ fill: "rgb(5, 5, 73)" }} /> : <VisibilityOffIcon style={{ fill: "rgb(5, 5, 73)" }} />}
+                                leftSectionWidth="40px"
+                            />
+                            {(household?.members?.length ?? 0) > 1 && (
+                                <div className="event-form-repeat-custom--vertical-section">
+                                    {/* {form.errors.assignedUserIds && (
+                                    <Text size="xs" c="red">{form.errors.assignedUserIds}</Text>
+                                    )} */}
+                                    <InputWrapper>
+                                        <Stack gap="xs">
+                                            <div>
+                                                <Stack gap={0}>
+                                                    <Input.Label required htmlFor={titleId}>Assigned members</Input.Label>
+                                                    <span className="event-form-input--error">{form.errors.assignedUserIds}</span>
+                                                    <MultiSelect
+                                                        id={titleId}
+                                                        data={memberOptions}
+                                                        value={form.getValues().assignedUserIds.map(String)}
+                                                        onChange={handleMemberChange}
+                                                        renderOption={renderMultiSelectOption}
+                                                        maxDropdownHeight={300}
+                                                        placeholder="Assign members"
+                                                        hidePickedOptions
+                                                        clearable
+                                                        c="black"
+                                                    />
+                                                </Stack>
+                                            </div>
+                                            <Checkbox
+                                                label="All members"
+                                                checked={form.getValues().allMembers}
+                                                onChange={(e) => handleToggleAllMembers(e.currentTarget.checked)}
+                                                color="rgb(5, 5, 73)"
+                                                size="sm"
+                                            />
+                                        </Stack>
+                                    </InputWrapper>
+                                </div>
+                            )}
+                        </Stack>
+                        {/* <Stack mt="lg" gap="xs">
                             <div className="todays-events-container">
                                 <div className="todays-events">
                                     {sorted.length === 0 ? (
@@ -711,7 +673,7 @@ export function EventForm({
                                     )}
                                 </div>
                             </div>
-                        </Stack>
+                        </Stack> */}
                     </div>
                     <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0 }}>
                         <Group w="100%" justify="flex-end">
@@ -725,6 +687,9 @@ export function EventForm({
             </Modal.Stack >
             <Modal.Stack>
                 <EventFormRepeatCustom key={recurrenceSessionId} stack={stack} dateStr={startDate} onApply={handleApplyCustomRule} />
+            </Modal.Stack>
+            <Modal.Stack>
+                <EventsModal stack={stack} />
             </Modal.Stack>
         </>
     );

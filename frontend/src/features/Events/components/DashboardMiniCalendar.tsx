@@ -64,7 +64,7 @@ export function DashboardMiniCalendar({
     setShowAddEvent: React.Dispatch<SetStateAction<boolean>>;
 }) {
     const numberOfDays = 7;
-    const stack = useModalsStack(['recurrence', 'event-form'])
+    const stack = useModalsStack(['events-list', 'recurrence', 'event-form'])
     // start of the visible 7-day strip — anchored to Sunday
     const [startDate, setStartDate] = useState<Date>(() => startOfWeekSunday(new Date()));
     // date to seed QuickAddEvent
@@ -198,7 +198,7 @@ export function DashboardMiniCalendar({
                         onClick: () => {
                             setSelectedDate(dateFromYmd(ymd));
                             setShowAddEvent(true);
-                            stack.open("event-form");
+                            stack.open("events-list");
                         },
                     };
                 }}

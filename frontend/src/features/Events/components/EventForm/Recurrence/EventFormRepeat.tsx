@@ -6,7 +6,7 @@ import type { CustomRecurrenceRule, PresetKind } from "../../../utils/recurrence
 import EventRepeatRoundedIcon from '@mui/icons-material/EventRepeatRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 
-type ModalId = 'recurrence' | 'event-form';
+type ModalId = 'recurrence' | 'event-form' | 'events-list';
 
 type Props = {
     stack: ReturnType<typeof useModalsStack<ModalId>> | undefined;

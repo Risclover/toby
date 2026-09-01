@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { nthWeekdaySuffix, WEEKDAY_ORDER, type CustomRecurrenceRule, type RecurrenceEnd } from "../../../utils/recurrence";
 import { WeekdayChip } from "./WeekdayChip";
 
-type ModalId = 'recurrence' | 'event-form';
+type ModalId = 'recurrence' | 'event-form' | 'events-list';
 type EndsMode = 'never' | 'on' | 'after';
 type Freq = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 
