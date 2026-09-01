@@ -79,6 +79,13 @@ type GetRangeArgs = {
     endIso: string;
     attendeeIds?: number[];
 };
+
+type GetDayArgs = {
+    householdId: number;
+    date: string; // "YYYY-MM-DD"
+    tzid?: string;
+};
+
 type AllArgs = { householdId: number };
 
 /** Small helper: strip undefined so we only send changed fields */
@@ -123,6 +130,19 @@ export const eventSlice = apiSlice.injectEndpoints({
             query: ({ householdId }) => `/events/households/${householdId}/events?all=1`,
             keepUnusedDataFor: 3600,
             providesTags: (_r, _e, a) => [{ type: "Calendar", id: `HOUSEHOLD_${a.householdId}_ALL` }],
+        }),
+
+        getHouseholdEventsForDay: b.query<CalendarEvent[], GetDayArgs>({
+            query: ({ householdId, date, tzid }) => {
+                const params = new URLSearchParams({ date });
+                if (tzid) params.set("tzid", tzid);
+
+                return `/events/households/${householdId}/events/day?${params.toString()}`;
+            },
+            providesTags: (_res, _err, a) => [
+                { type: "Calendar", id: `DAY_${a.householdId}|${a.date}|${a.tzid ?? "UTC"}` },
+                { type: "Calendar", id: `HOUSEHOLD_${a.householdId}` },
+            ],
         }),
 
         createEvent: b.mutation<CalendarEvent, CreateEventInput>({
@@ -218,6 +238,7 @@ export const eventSlice = apiSlice.injectEndpoints({
 export const {
     useGetHouseholdEventsQuery,
     useGetAllHouseholdEventsQuery,
+    useGetHouseholdEventsForDayQuery,
     useCreateEventMutation,
     useUpdateEventMutation,
     useDeleteEventMutation,
