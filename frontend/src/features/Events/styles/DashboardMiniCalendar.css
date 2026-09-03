@@ -9,3 +9,62 @@
     align-items: center;
     justify-content: center;
 }
+
+.events-modal-next-prev {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
+}
+
+.expand-events-date-picker {
+    cursor: pointer;
+}
+
+
+.events-member-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--dot-color);
+    flex-shrink: 0;
+}
+
+.events-member-dot:focus {
+    outline: 1px solid rgb(5, 5, 73);
+}
+
+.member-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--dot-color);
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px #fff;
+    outline: none;
+    /* match your row background, same as .mc-has-events's ring */
+}
+
+.events-modal {
+    padding-bottom: .5rem;
+}
+
+.events-modal-list {
+    margin-top: .5rem;
+}
+
+.event-row {
+    border-radius: .5rem;
+    padding: .75rem;
+}
+
+.event-row:hover {
+    background: var(--mantine-color-gray-1);
+}
+
+
+.events-modal-header {
+    padding: 0 1rem;
+}

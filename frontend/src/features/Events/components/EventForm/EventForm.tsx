@@ -2,12 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Modal, Button, TextInput, Group, Stack, Text, useModalsStack, getDefaultZIndex, Checkbox, Select, SegmentedControl, Input, Switch, Avatar, type MultiSelectProps, MultiSelect, InputWrapper } from "@mantine/core";
 import { DatePickerInput, DateTimePicker, TimeInput, TimePicker, type DateFormatter } from "@mantine/dates";
 import dayjs, { Dayjs } from "dayjs";
-import { useCreateEventMutation, useDeleteEventMutation, useGetHouseholdEventsQuery, useUpdateEventMutation, type CalendarEvent } from "@/store/eventSlice";
+import { useCreateEventMutation, useUpdateEventMutation, type CalendarEvent } from "@/store/eventSlice";
 import "../../styles/QuickAddEvent.css";
 import { useHousehold, useIsSmallScreen } from "@/hooks";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import { EventMenu } from "../EventMenu";
 import { RemainingChars } from "@/components/RemainingChars";
 import { ClockIcon } from "@/assets/icons/ClockIcon";
 import { useModalFocus } from "@/hooks/useModalFocus";
@@ -19,7 +18,6 @@ import { useEventForm, type EventFormValues } from "../../hooks/useEventForm";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useId } from "@mantine/hooks";
-import { EventsModal } from "../EventsModal/EventsModal";
 dayjs.extend(customParseFormat);
 
 function combineLocalFromStrings(dateStr: string, timeStr: string) {
@@ -27,17 +25,6 @@ function combineLocalFromStrings(dateStr: string, timeStr: string) {
     const [hh = "0", mm = "0"] = timeStr.split(":");
     return new Date(y, (m ?? 1) - 1, d ?? 1, Number(hh), Number(mm), 0, 0);
 }
-
-function startEndIsoForLocalDay(ymd: string) {
-    const [y, m, d] = ymd.split("-").map(Number);
-    const start = new Date(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0);
-    const end = new Date(start);
-    end.setDate(end.getDate() + 1);
-    return { startIso: start.toISOString(), endIso: end.toISOString() };
-}
-
-const fmtTime = (iso: string) =>
-    new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
 const ymdFromIso = (iso?: string | null, fallback = new Date()) =>
     dayjs(iso ?? fallback).format("YYYY-MM-DD");
@@ -69,6 +56,7 @@ const THIRTY_MIN_MS = 30 * 60 * 1000;
 
 type ModalId = 'recurrence' | 'event-form' | 'events-list';
 
+
 export function EventForm({
     householdId,
     opened,
@@ -89,7 +77,6 @@ export function EventForm({
     const isSmallScreen = useIsSmallScreen(475);
     const [createEvent, { isLoading: creating }] = useCreateEventMutation();
     const [updateEvent, { isLoading: updating }] = useUpdateEventMutation();
-    const [deleteEvent] = useDeleteEventMutation();
     const { ref: nameRef, transitionProps } = useModalFocus(!edit);
     const isSaving = creating || updating;
     const [repeatKind, setRepeatKind] = useState<PresetKind | 'custom'>('none');
@@ -98,8 +85,6 @@ export function EventForm({
     const { data: household } = useHousehold();
     const { data: userSettings } = useGetUserSettingsQuery(user.id);
 
-    const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
-    const isEditingRow = editingEvent !== null;
     const [recurrenceSessionId, setRecurrenceSessionId] = useState(0);
     const { form, allDay, startDate, title } = useEventForm({
         currentUserId: user.id,
@@ -107,6 +92,7 @@ export function EventForm({
     });
     const lastEnteredStartTimeRef = useRef(form.getValues().startTime);
     const lastEnteredEndTimeRef = useRef(form.getValues().endTime);
+    const endTimeManuallySetRef = useRef(false);
     const titleId = useId();
     const allHouseholdMemberIds = useMemo(
         () => household?.members?.map((m: { id: number }) => m.id) ?? [],
@@ -158,31 +144,9 @@ export function EventForm({
         setRepeatKind(preset ?? 'custom');
     };
 
-    const { startIso, endIso } = useMemo(
-        () => (startDate ? startEndIsoForLocalDay(startDate) : { startIso: "", endIso: "" }),
-        [startDate]
-    );
-
-    const { data: dayEvents = [], isLoading: loading } = useGetHouseholdEventsQuery(
-        { householdId, startIso, endIso },
-        { skip: !householdId || !startDate }
-    );
-
-    const sorted = useMemo(() => {
-        return [...dayEvents].sort((a: CalendarEvent, b: CalendarEvent) => {
-            const aAll = a.hasTime === false;
-            const bAll = b.hasTime === false;
-            if (aAll !== bAll) return aAll ? -1 : 1;
-            const ta = a.startUtc ? +new Date(a.startUtc) : 0;
-            const tb = b.startUtc ? +new Date(b.startUtc) : 0;
-            return ta - tb;
-        });
-    }, [dayEvents]);
-
     // Establishes a NEW baseline for this modal instance -- call whenever
     // it should represent a fresh, blank add for the given date.
     const seedBlank = (seededDate: string) => {
-        setEditingEvent(null);
         setRepeatKind('none');
         setCustomRule(null);
         setRecurrenceSessionId((n) => n + 1);
@@ -205,15 +169,14 @@ export function EventForm({
         form.setInitialValues(values);
         lastEnteredStartTimeRef.current = values.startTime;
         lastEnteredEndTimeRef.current = values.endTime;
+        endTimeManuallySetRef.current = false;
     };
 
     // Establishes a NEW baseline representing an existing event -- used
-    // both for the externally-passed `event` prop and for clicking "edit"
-    // on one of the day's other events in the list below.
+    // for the externally-passed `event` prop (edit mode).
     const seedFromEvent = (targetEvent: CalendarEvent) => {
         const seededDate = ymdFromIso(targetEvent.startUtc ?? undefined);
         const seededTime = targetEvent.hasTime === false ? "" : hmFromIso(targetEvent.startUtc);
-        setEditingEvent(targetEvent);
         setRepeatKind('none'); // TODO: seed from targetEvent.rrule once parsing exists
         setCustomRule(null);
         setRecurrenceSessionId((n) => n + 1);
@@ -230,6 +193,7 @@ export function EventForm({
         };
         form.setValues(values);
         form.setInitialValues(values);
+        endTimeManuallySetRef.current = false;
     };
 
 
@@ -243,20 +207,19 @@ export function EventForm({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [opened, event?.id, initialDate.getTime()]);
 
-    const handleDeleteEvent = async (eventId: number) => {
-        await deleteEvent({ id: eventId, householdId }).unwrap();
-        if (editingEvent?.id === eventId) seedBlank(dayjs(initialDate).format("YYYY-MM-DD"));
-    };
-
+    // Handles Cancel, the Modal's own close (X/Escape/backdrop), and a
+    // successful save alike -- all three mean "leave the form." What that
+    // actually does (return to a day's event list vs. fully close) is up
+    // to whatever `onClose` the caller passed in; this component doesn't
+    // know or care which. Resetting here matters regardless of what
+    // `onClose` does: without it, `opened` never flips back to false, so
+    // clicking the same day again after closing without saving wouldn't
+    // re-trigger the seeding effect -- the form would show whatever was
+    // left over from the abandoned edit instead of a fresh blank.
     const handleClose = () => {
-        stack?.closeAll();
         form.reset();
         setRepeatKind('none');
         setCustomRule(null);
-        // Without this, `opened` never flips back to false, so clicking
-        // the same day again after closing without saving wouldn't
-        // re-trigger the seeding effect -- the form would show whatever
-        // was left over from the abandoned edit instead of a fresh blank.
         onClose();
     };
 
@@ -284,36 +247,7 @@ export function EventForm({
         const rrule = buildRRule(repeatKind, customRule, dayjs(values.startDate), hasTime) ?? undefined;
 
         try {
-            if (isEditingRow && editingEvent) {
-                if (hasTime) {
-                    const startLocal = combineLocalFromStrings(values.startDate, values.startTime);
-                    // Use the picked end date/time if there is one; fall back
-                    // to the old start+1hr default only when no end date was
-                    // ever set. If an end date was picked but no end time,
-                    // reuse the start time (same clock time, later date) --
-                    // flag if you want that to default to something else.
-                    const endLocal = values.endDate
-                        ? combineLocalFromStrings(values.endDate, values.endTime || values.startTime)
-                        : dayjs(startLocal).add(DEFAULT_EVENT_DURATION_HOURS, "hour").toDate();
-                    await updateEvent({
-                        id: editingEvent.id, householdId, title: values.title.trim(), tzid,
-                        startUtc: startLocal.toISOString(), endUtc: endLocal.toISOString(), rrule,
-                        visibility: values.visibility, allMembers: values.allMembers, attendeeIds: values.assignedUserIds
-                    }).unwrap();
-                } else {
-                    // NOTE: values.endDate is NOT sent here -- the backend's
-                    // compute_allday_utc_bounds only accepts a single date,
-                    // so a multi-day all-day span isn't representable yet
-                    // without a backend change. allDay also isn't wired to
-                    // any checkbox in the UI yet, so this branch won't
-                    // actually run until that's added.
-                    await updateEvent({
-                        id: editingEvent.id, householdId, title: values.title.trim(), tzid, date: values.startDate, rrule, visibility: values.visibility,
-                        allMembers: values.allMembers, attendeeIds: values.assignedUserIds
-                    }).unwrap();
-                }
-                seedBlank(dayjs(initialDate).format("YYYY-MM-DD"));
-            } else if (edit && event) {
+            if (edit && event) {
                 if (hasTime) {
                     const startLocal = combineLocalFromStrings(values.startDate, values.startTime);
                     // Use the picked end date/time if there is one; fall back
@@ -330,14 +264,17 @@ export function EventForm({
                         visibility: values.visibility, allMembers: values.allMembers, attendeeIds: values.assignedUserIds
                     }).unwrap();
                 } else {
-                    // NOTE: values.endDate is NOT sent here -- see comment
-                    // in the isEditingRow branch above.
+                    // NOTE: values.endDate is NOT sent here -- the backend's
+                    // compute_allday_utc_bounds only accepts a single date,
+                    // so a multi-day all-day span isn't representable yet
+                    // without a backend change. allDay also isn't wired to
+                    // any checkbox in the UI yet, so this branch won't
+                    // actually run until that's added.
                     await updateEvent({
                         id: event.id, householdId, title: values.title.trim(), tzid, date: values.startDate, rrule,
                         visibility: values.visibility, allMembers: values.allMembers, attendeeIds: values.assignedUserIds
                     }).unwrap();
                 }
-                onClose();
             } else {
                 if (hasTime) {
                     const startLocal = combineLocalFromStrings(values.startDate, values.startTime);
@@ -356,20 +293,21 @@ export function EventForm({
                     }).unwrap();
                 } else {
                     // NOTE: values.endDate is NOT sent here -- see comment
-                    // in the isEditingRow branch above.
+                    // in the update branch above.
                     await createEvent({
                         householdId, title: values.title.trim(), date: values.startDate, tzid, rrule,
                         visibility: values.visibility, allMembers: values.allMembers, attendeeIds: values.assignedUserIds
                     } as any).unwrap();
                 }
-                onClose();
             }
+            onClose();
         } catch (e) {
             console.error(e);
         }
     };
 
-    const modalTitle = isEditingRow || (edit && event) ? "Edit event" : "Add event";
+    const isEditMode = edit && !!event;
+    const modalTitle = isEditMode ? "Edit event" : "Add event";
 
     // stack?.register(...) returns undefined when this EventForm isn't
     // rendered inside a Modal.Stack (e.g. from UpcomingThisWeek, which has
@@ -393,7 +331,7 @@ export function EventForm({
     const handleStartTimeChange = (value: string) => {
         form.setFieldValue('startTime', value);
 
-        if (value) {
+        if (value && !endTimeManuallySetRef.current) {
             const newEndTime = dayjs(value, TIME_FORMAT)
                 .add(DEFAULT_EVENT_DURATION_HOURS, 'hour')
                 .format(TIME_FORMAT);
@@ -404,6 +342,7 @@ export function EventForm({
     };
 
     const handleEndTimeChange = (value: string) => {
+        endTimeManuallySetRef.current = true;
         form.setFieldValue('endTime', value);
         form.validate();
     };
@@ -543,30 +482,6 @@ export function EventForm({
                                     />
                                     {!form.getValues().allDay &&
                                         <Group grow align="flex-start">
-                                            {/* <TimeInput
-                                            {...form.getInputProps('startTime')}
-                                            key={form.key('startTime')}
-                                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                                            label="Start Time"
-                                            disabled={form.getValues().allDay}
-                                            required={!form.getValues().allDay}
-                                            onChange={handleStartTimeChange}
-                                            onBlur={handleStartTimeBlur}
-                                        />
-                                        <TimeInput
-                                            {...form.getInputProps('endTime')}
-                                            key={form.key('endTime')}
-                                            leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                                            label="End Time"
-                                            onChange={handleEndTimeChange}
-                                            onBlur={handleEndTimeBlur}
-                                            disabled={form.getValues().allDay}
-                                        />
-                                        <DatePickerInput
-                                            type="range"
-                                            allowSingleDateInRange
-                                            clearable
-                                        />a */}
                                             <TimePicker
                                                 {...form.getInputProps('startTime')}
                                                 key={form.key('startTime')}
@@ -615,9 +530,6 @@ export function EventForm({
                             />
                             {(household?.members?.length ?? 0) > 1 && (
                                 <div className="event-form-repeat-custom--vertical-section">
-                                    {/* {form.errors.assignedUserIds && (
-                                    <Text size="xs" c="red">{form.errors.assignedUserIds}</Text>
-                                    )} */}
                                     <InputWrapper>
                                         <Stack gap="xs">
                                             <div>
@@ -650,36 +562,12 @@ export function EventForm({
                                 </div>
                             )}
                         </Stack>
-                        {/* <Stack mt="lg" gap="xs">
-                            <div className="todays-events-container">
-                                <div className="todays-events">
-                                    {sorted.length === 0 ? (
-                                        <div className="no-events">
-                                            <Text c="dimmed" size="sm">No events for this date.</Text>
-                                        </div>
-                                    ) : loading ? (
-                                        <Text size="sm">Loading...</Text>
-                                    ) : (
-                                        sorted.map((e: CalendarEvent) => (
-                                            <EventRow
-                                                key={e.id}
-                                                e={e}
-                                                isEditing={editingEvent?.id === e.id}
-                                                onEdit={seedFromEvent}
-                                                onCancelEdit={() => seedBlank(dayjs(initialDate).format("YYYY-MM-DD"))}
-                                                onDelete={handleDeleteEvent}
-                                            />
-                                        ))
-                                    )}
-                                </div>
-                            </div>
-                        </Stack> */}
                     </div>
                     <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0 }}>
                         <Group w="100%" justify="flex-end">
-                            <Button h="auto" p=".5rem 1rem" size="sm" fw={500} radius="sm" color="rgb(5, 5, 73)" variant="outline" onClick={isEditingRow ? () => seedBlank(dayjs(initialDate).format("YYYY-MM-DD")) : handleClose}>Cancel</Button>
+                            <Button h="auto" p=".5rem 1rem" size="sm" fw={500} radius="sm" color="rgb(5, 5, 73)" variant="outline" onClick={handleClose}>Cancel</Button>
                             <Button h="auto" p=".5rem 1rem" size="sm" fw={500} radius="sm" color="rgb(5, 5, 73)" loading={isSaving} onClick={handleSave} data-test="quickadd-submit" disabled={!form.isValid()}>
-                                {isEditingRow ? "Update" : "Save"}
+                                {isEditMode ? "Update" : "Save"}
                             </Button>
                         </Group>
                     </Modal.Header>
@@ -688,42 +576,6 @@ export function EventForm({
             <Modal.Stack>
                 <EventFormRepeatCustom key={recurrenceSessionId} stack={stack} dateStr={startDate} onApply={handleApplyCustomRule} />
             </Modal.Stack>
-            <Modal.Stack>
-                <EventsModal stack={stack} />
-            </Modal.Stack>
         </>
     );
 }
-
-const EventRow = ({
-    e,
-    isEditing,
-    onEdit,
-    onCancelEdit,
-    onDelete,
-}: {
-    e: CalendarEvent;
-    isEditing: boolean;
-    onEdit: (event: CalendarEvent) => void;
-    onCancelEdit: () => void;
-    onDelete: (id: number) => void;
-}) => {
-    const { data: currentUser } = useAuthenticateQuery();
-    return (
-        <div className={`event-row${isEditing ? " editing" : ""}`}>
-            <Group gap="xs" wrap="nowrap" align="center">
-                <Text size="12px" inline w={80} fw={400}>
-                    {e.hasTime === false ? "All day" : (e.startUtc && fmtTime(e.startUtc)) || ""}
-                </Text>
-                <Group gap=".25rem" miw={0} wrap="nowrap" justify="space-between" w="100%">
-                    <Text size="sm" inline c="var(--mantine-color-dark-7)" fw={500} truncate miw={0}>{e.title}</Text>
-                    {(e.household.adminId === currentUser.id || e.creatorId === currentUser.id) && <EventMenu
-                        isEditing={isEditing}
-                        setIsEditing={(val: boolean) => val ? onEdit(e) : onCancelEdit()}
-                        onDelete={() => onDelete(e.id)}
-                    />}
-                </Group>
-            </Group>
-        </div>
-    );
-};

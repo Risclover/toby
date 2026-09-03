@@ -1,13 +1,14 @@
 import React, { useMemo, useState, type SetStateAction } from "react";
 import { Flex, Group, Stack, Text, useModalsStack } from "@mantine/core";
 import dayjs from "dayjs";
-import { useGetAllHouseholdEventsQuery } from "@/store/eventSlice";
+import { useGetAllHouseholdEventsQuery, type CalendarEvent } from "@/store/eventSlice";
 import { EventForm } from "./EventForm/EventForm";
 import { MiniCalendar } from "@mantine/dates";
 import "../styles/QuickAddEvent.css"; // or a global index.css
 import "../styles/DashboardMiniCalendar.css";
 import { useAuthenticateQuery } from "@/store";
 import { useHousehold } from "@/hooks";
+import { DayEventsModal } from "./EventsModal/DayEventsModal";
 
 const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -54,20 +55,25 @@ function startOfWeekSunday(d: Date): Date {
 
 const MAX_DOTS = 4;
 
+type ModalId = 'recurrence' | 'event-form' | 'events-list';
+type NavigableScreen = Exclude<ModalId, 'recurrence'>;
+
+type Props = {
+    householdId: number;
+    showAddEvent: boolean;
+    setShowAddEvent: React.Dispatch<SetStateAction<boolean>>;
+}
 export function DashboardMiniCalendar({
     householdId,
     showAddEvent,
     setShowAddEvent,
-}: {
-    householdId: number;
-    showAddEvent: boolean;
-    setShowAddEvent: React.Dispatch<SetStateAction<boolean>>;
-}) {
+}: Props) {
     const numberOfDays = 7;
     const stack = useModalsStack(['events-list', 'recurrence', 'event-form'])
     // start of the visible 7-day strip — anchored to Sunday
     const [startDate, setStartDate] = useState<Date>(() => startOfWeekSunday(new Date()));
     // date to seed QuickAddEvent
+    const [editingEvent, setEditingEvent] = useState<CalendarEvent | undefined>(undefined);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const { data: allEvents = [] } = useGetAllHouseholdEventsQuery(
@@ -153,6 +159,13 @@ export function DashboardMiniCalendar({
     const goNext = () =>
         setStartDate((d) => dayjs(d).add(numberOfDays, "day").toDate()); // stays on Sundays
 
+    const navigateTo = (screen: NavigableScreen, eventToEdit?: CalendarEvent) => {
+        setEditingEvent(eventToEdit);
+        setShowAddEvent(screen === 'event-form');
+        stack.close(screen === 'event-form' ? 'events-list' : 'event-form');
+        stack.open(screen);
+    };
+
     return (
         <div className="events-calendar">
             {/* Centered dominant-month title; MiniCalendar keeps its own arrows */}
@@ -197,18 +210,26 @@ export function DashboardMiniCalendar({
                         title: has ? "Has events" : undefined,
                         onClick: () => {
                             setSelectedDate(dateFromYmd(ymd));
-                            setShowAddEvent(true);
-                            stack.open("events-list");
+                            stack.open("events-list"); // was: setShowAddEvent(true); stack.open("event-form");
                         },
                     };
                 }}
+            />
+            <DayEventsModal
+                householdId={householdId}
+                date={selectedDate}
+                setSelectedDate={setSelectedDate}
+                stack={stack}
+                onAddEvent={() => navigateTo('event-form')}
+                onEditEvent={(event) => navigateTo('event-form', event)}
             />
             <EventForm
                 householdId={householdId}
                 opened={showAddEvent}
                 initialDate={selectedDate}
-                onClose={() => setShowAddEvent(false)}
-                edit={false}
+                onClose={() => navigateTo('events-list')}
+                edit={Boolean(editingEvent)}
+                event={editingEvent}
                 stack={stack}
             />
         </div>

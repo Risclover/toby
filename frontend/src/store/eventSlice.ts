@@ -4,8 +4,10 @@ import { apiSlice } from "./apiSlice";
 
 export type EventAttendee = {
     id: number;
-    first_name: string | null;
+    firstName: string;
+    lastName: string;
     color: string;
+    profileImg: string;
 };
 
 export type CalendarEvent = {

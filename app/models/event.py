@@ -94,7 +94,7 @@ class Event(db.Model):
             "visibility": self.visibility,
             "createdAt": to_utc_z(self.created_at),
             "attendees": [
-                {"id": u.id, "name": getattr(u, "name", None), "color": u.color}
+                {"id": u.id, "profileImg": u.profile_img, "firstName": u.first_name, "lastName": u.last_name, "color": u.color}
                 for u in attendees
             ],
             "allMembers": self.all_members,
