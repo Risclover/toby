@@ -4,6 +4,7 @@ import { EventsModalList } from "./EventsModalList";
 import dayjs from "dayjs";
 import { type CalendarEvent } from "@/store";
 import { useIsSmallScreen } from "@/hooks";
+import { useState } from "react";
 
 
 const DAY_HEADER_FORMAT = "dddd, MMMM D";
@@ -20,6 +21,7 @@ type Props = {
 export const DayEventsModal = ({ stack, date, householdId, onAddEvent, onEditEvent, setSelectedDate }: Props) => {
     const smallScreen = useIsSmallScreen(475);
     const dayEventsStackProps = stack?.register('events-list');
+    const [filterValue, setFilterValue] = useState<string | null>(null);
 
     return (
         <Modal
@@ -32,12 +34,19 @@ export const DayEventsModal = ({ stack, date, householdId, onAddEvent, onEditEve
             styles={{ body: { padding: 0 } }}
         >
             <div className="events-modal" style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
-                <EventsModalHeader date={date} onDateChange={setSelectedDate} onAddEvent={onAddEvent} />
+                <EventsModalHeader
+                    date={date}
+                    onDateChange={setSelectedDate}
+                    onAddEvent={onAddEvent}
+                    filterValue={filterValue}
+                    onFilterChange={setFilterValue}
+                />
                 <EventsModalList
                     householdId={householdId}
                     date={date}
                     onAddEvent={onAddEvent}
                     onEditEvent={onEditEvent}
+                    filterValue={filterValue}
                 />
             </div>
         </Modal>

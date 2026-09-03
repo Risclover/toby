@@ -18,7 +18,7 @@ export const EventMenu = ({
     return (
         <Menu offset={2}>
             <Menu.Target>
-                <ActionIcon size="sm" variant="subtle" color="var(--mantine-color-gray-6)">
+                <ActionIcon size="sm" variant="transparent" color="var(--mantine-color-gray-6)">
                     <IoEllipsisHorizontalSharp />
                 </ActionIcon>
             </Menu.Target>

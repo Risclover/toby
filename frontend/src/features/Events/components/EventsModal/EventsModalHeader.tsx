@@ -16,6 +16,8 @@ type Props = {
     date: Date;
     onDateChange: (date: Date) => void;
     onAddEvent: () => void;
+    filterValue: string | null;
+    onFilterChange: (val: string | null) => void;
 }
 
 const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
@@ -25,7 +27,7 @@ const PlusIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 
-export const EventsModalHeader = ({ date, onDateChange, onAddEvent }: Props) => {
+export const EventsModalHeader = ({ date, onDateChange, onAddEvent, filterValue, onFilterChange }: Props) => {
     const isSmallScreen = useIsSmallScreen(475);
     const handleDateChange = (value: string | null) => {
         if (!value) return; // clearing isn't meaningful here -- there's always a day being viewed
@@ -35,12 +37,6 @@ export const EventsModalHeader = ({ date, onDateChange, onAddEvent }: Props) => 
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
-    const [filterValue, setFilterValue] = useState<string | null>(null);
-
-    const handleFilterSubmit = (value: string) => {
-        setFilterValue(value);
-        combobox.closeDropdown();
-    };
 
     const goToPreviousDay = () => onDateChange(dayjs(date).subtract(1, 'day').toDate());
     const goToNextDay = () => onDateChange(dayjs(date).add(1, 'day').toDate());
@@ -106,7 +102,7 @@ export const EventsModalHeader = ({ date, onDateChange, onAddEvent }: Props) => 
                         <ComboboxPopover
                             data={["Mine only", "Group by user"]}
                             value={filterValue}
-                            onChange={setFilterValue}
+                            onChange={onFilterChange}
                             styles={{
                                 dropdown: {
                                     minWidth: 150,
@@ -148,7 +144,7 @@ export const EventsModalHeader = ({ date, onDateChange, onAddEvent }: Props) => 
                                     p={0}
                                     w={0}
 
-                                    onClick={() => setFilterValue(null)}
+                                    onClick={() => onFilterChange(null)}
                                     aria-label="Clear filter"
                                 >
                                     <CloseIcon />

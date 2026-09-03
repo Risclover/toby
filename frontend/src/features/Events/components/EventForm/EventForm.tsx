@@ -491,7 +491,7 @@ export function EventForm({
                                                 required={!form.getValues().allDay}
                                                 onChange={handleStartTimeChange}
                                                 withDropdown
-                                                minutesStep={15}
+                                                minutesStep={5}
                                                 hoursStep={1}
                                                 format="12h"
                                             />
