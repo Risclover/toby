@@ -1,7 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import dayjs from "dayjs";
+import type { useModalsStack } from "@mantine/core";
 import { expandRecurringEvents } from "@mantine/schedule";
-import { useGetHouseholdEventsForDayQuery, type CalendarEvent } from "@/store/eventSlice";
+import { useIsSmallScreen } from "@/hooks";
+import { useGetHouseholdEventsForDayQuery } from "@/store";
 
 const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -9,9 +11,24 @@ function toWallClock(isoWithOffset: string) {
     return isoWithOffset.slice(0, 19).replace("T", " ");
 }
 
-export function useDayEvents(householdId: number, date: Date) {
-    const dateStr = dayjs(date).format("YYYY-MM-DD");
+type Props = {
+    householdId: number;
+    date: Date;
+    onDateChange?: (date: Date) => void;
+    stack?: ReturnType<typeof useModalsStack<'recurrence' | 'event-form' | 'events-list'>> | undefined;
+}
 
+{/** Custom hook that handles logic and setup for homepage's events list modal */ }
+export function useDayEvents({
+    householdId,
+    date,
+    onDateChange,
+    stack
+}: Props) {
+    const dateStr = dayjs(date).format("YYYY-MM-DD");
+    const isSmallScreen = useIsSmallScreen(475);
+    const dayEventsStackProps = stack?.register('events-list');
+    const [filterValue, setFilterValue] = useState<string | null>(null);
     const { data: dayEvents = [], isLoading, isFetching } = useGetHouseholdEventsForDayQuery(
         { householdId, date: dateStr, tzid: userTz },
         { skip: !householdId }
@@ -24,11 +41,6 @@ export function useDayEvents(householdId: number, date: Date) {
                 .map((e) => {
                     const payload = { source: e };
 
-                    // Two distinct return shapes (not a conditionally-spread
-                    // `recurrence` field) so TS can infer a real
-                    // discriminated union for ScheduleEventData -- same fix
-                    // UpcomingThisWeek.tsx already applied for the identical
-                    // issue.
                     if (e.rrule) {
                         return {
                             id: e.id,
@@ -63,5 +75,23 @@ export function useDayEvents(householdId: number, date: Date) {
         [scheduleEvents, dateStr]
     );
 
-    return { occurrences, isLoading: isLoading || isFetching };
+    const handleDateChange = (value: string | null) => {
+        if (!value) return;
+        if (onDateChange)
+            onDateChange(dayjs(value).toDate());
+    };
+    const goToPreviousDay = () => onDateChange && onDateChange(dayjs(date).subtract(1, 'day').toDate());
+    const goToNextDay = () => onDateChange && onDateChange(dayjs(date).add(1, 'day').toDate());
+
+    return {
+        isSmallScreen,
+        dayEventsStackProps,
+        filterValue,
+        setFilterValue,
+        occurrences,
+        isLoading: isLoading || isFetching,
+        handleDateChange,
+        goToPreviousDay,
+        goToNextDay
+    };
 }

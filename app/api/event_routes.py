@@ -192,7 +192,7 @@ def event_to_local_dict(event, user):
 
     return d
 
-def apply_visibility_filter(query, household: Household, viewer: User):
+def apply_visibility_filter(query, viewer: User):
     """
     Restricts a household event query to whta `viewer` is allowed to see. Shared by every route that lists more than one event, so the pribacy rule can't drift between them: a creator's `events_privacy_mode == 'all_private'` setting is an absolute override (hidden from everyone, including the admin, except the creator themself), applied before the min-bypass becheck below so it can't be skipped. Non-admins additionally only see events that are public, their own, marked all_members, or ones they're an explicit attendee on.
     """
@@ -208,15 +208,14 @@ def apply_visibility_filter(query, household: Household, viewer: User):
         )
     )
 
-    if viewer.id != household.admin_id:
-        query = query.filter(
-            or_(
-                Event.visibility == 'public',
-                Event.creator_id == viewer.id,
-                Event.all_members == True,
-                Event.attendee_links.any(EventAttendee.user_id == viewer.id)
-            )
+    query = query.filter(
+        or_(
+            Event.visibility == 'public',
+            Event.creator_id == viewer.id,
+            Event.all_members == True,
+            Event.attendee_links.any(EventAttendee.user_id == viewer.id)
         )
+    )
     
     return query
 
@@ -261,7 +260,7 @@ def get_household_events(hid: int):
         joinedload(Event.attendee_links).joinedload(EventAttendee.user)
     ).filter(Event.household_id == hid)
 
-    q = apply_visibility_filter(q, household, current_user)
+    q = apply_visibility_filter(q, current_user)
 
     if fetch_all:
         q = q.filter(Event.start_utc.isnot(None), Event.end_utc.isnot(None))
@@ -336,7 +335,7 @@ def get_household_events_for_day(hid: int):
         ),
     )
 
-    q = apply_visibility_filter(q, household, current_user)
+    q = apply_visibility_filter(q, current_user)
 
     events = q.order_by(Event.start_utc.asc()).all()
     return jsonify([event_to_local_dict(e, current_user) for e in events]), 200

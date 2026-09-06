@@ -1,5 +1,3 @@
-import type { EventAttendee, User } from "@/store";
-
 type Props = {
     color: string;
     name: string;
@@ -8,6 +6,7 @@ type Props = {
     setOpened: (val: boolean) => void;
 };
 
+{/** Color-coded dot that represents one household user */ }
 export const MemberDot = ({ ref, color, name, opened, setOpened }: Props) => {
     return <span
         tabIndex={0}
@@ -23,5 +22,10 @@ export const MemberDot = ({ ref, color, name, opened, setOpened }: Props) => {
             e.stopPropagation();
             setOpened(!opened);
         }}
-        className="events-member-dot" role="img" ref={ref} aria-label={name} style={{ '--dot-color': color } as React.CSSProperties} />;
+        className="events-member-dot"
+        role="img"
+        ref={ref}
+        aria-label={name}
+        style={{ '--dot-color': color } as React.CSSProperties}
+    />;
 };

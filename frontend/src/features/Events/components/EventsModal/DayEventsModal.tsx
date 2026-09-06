@@ -1,27 +1,33 @@
+import dayjs from "dayjs";
 import { Modal, useModalsStack } from "@mantine/core"
+
 import { EventsModalHeader } from "./EventsModalHeader";
 import { EventsModalList } from "./EventsModalList";
-import dayjs from "dayjs";
 import { type CalendarEvent } from "@/store";
-import { useIsSmallScreen } from "@/hooks";
-import { useState } from "react";
+import { useDayEvents } from "../../hooks/useDayEvents";
 
-
-const DAY_HEADER_FORMAT = "dddd, MMMM D";
+const DAY_HEADER_FORMAT = "dddd, MMMM D"; // e.g., "Saturday, September 5"
 
 type Props = {
     householdId: number;
+    // Modal stack 
     stack: ReturnType<typeof useModalsStack<'recurrence' | 'event-form' | 'events-list'>> | undefined;
+    // Modal's selected date 
     date: Date;
     setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
+    // Function for when the 'add event' button is clicked 
     onAddEvent: () => void;
+    // Function for when the user clicks the 'Edit' button for a specific event (event menu)
     onEditEvent: (event: CalendarEvent) => void;
 }
 
 export const DayEventsModal = ({ stack, date, householdId, onAddEvent, onEditEvent, setSelectedDate }: Props) => {
-    const smallScreen = useIsSmallScreen(475);
-    const dayEventsStackProps = stack?.register('events-list');
-    const [filterValue, setFilterValue] = useState<string | null>(null);
+    const {
+        dayEventsStackProps,
+        isSmallScreen,
+        filterValue,
+        setFilterValue
+    } = useDayEvents({ householdId, date, stack });
 
     return (
         <Modal
@@ -29,17 +35,18 @@ export const DayEventsModal = ({ stack, date, householdId, onAddEvent, onEditEve
             title={`Events for ${dayjs(date).format(DAY_HEADER_FORMAT)}`}
             opened={dayEventsStackProps?.opened ?? false}
             onClose={() => stack?.closeAll()}
-            fullScreen={smallScreen}
+            fullScreen={isSmallScreen}
             radius="md"
             styles={{ body: { padding: 0 } }}
         >
-            <div className="events-modal" style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
+            <div className="events-modal">
                 <EventsModalHeader
                     date={date}
                     onDateChange={setSelectedDate}
                     onAddEvent={onAddEvent}
                     filterValue={filterValue}
                     onFilterChange={setFilterValue}
+                    householdId={householdId}
                 />
                 <EventsModalList
                     householdId={householdId}
