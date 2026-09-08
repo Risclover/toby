@@ -399,9 +399,8 @@ def create_event_for_household(hid: int):
     db.session.add(ev)
     db.session.flush()  # need ev.id before attaching attendees
 
-    if not all_members:
-        attendee_ids = resolve_attendee_ids(hid, requested_attendee_ids, fallback_id=current_user.id)
-        set_event_attendees(ev, attendee_ids)
+    attendee_ids = resolve_attendee_ids(hid, requested_attendee_ids, fallback_id=current_user.id)
+    set_event_attendees(ev, attendee_ids)
 
     db.session.commit()
     return jsonify(event_to_local_dict(ev, current_user)), 201
@@ -445,12 +444,8 @@ def update_event(hid: int, event_id: int):
         event.all_members = bool(data.get("allMembers"))
 
     if "attendeeIds" in data:
-
-        effective_all_members = data.get("allMembers", event.all_members)
-        if not effective_all_members:
-
-            attendee_ids = resolve_attendee_ids(hid, data.get("attendeeIds") or [], fallback_id=event.creator_id)
-            set_event_attendees(event, attendee_ids)
+        attendee_ids = resolve_attendee_ids(hid, data.get("attendeeIds") or [], fallback_id=event.creator_id)
+        set_event_attendees(event, attendee_ids)
 
     tzid_in = data.get('tzid')
     schedule_keys = {'startUtc', 'endUtc', 'date'}
@@ -526,17 +521,6 @@ def unassign_self(hid: int, event_id: int):
     their edit/delete rights via creator_id regardless -- attendee
     membership and creator/admin permissions are independent by design."""
     event = get_event_or_404(hid, event_id)
-
-    if event.all_members:
-
-        member_ids = get_household_member_ids(hid)
-        remaining_ids = member_ids - {current_user.id}
-        if not remaining_ids:
-            abort(400, description="Can't unassign -- at least one person must remain assigned to this event")
-        event.all_members = False
-        set_event_attendees(event, list(remaining_ids))
-        db.session.commit()
-        return jsonify(event_to_local_dict(event, current_user)), 200
 
     link = EventAttendee.query.filter_by(event_id=event.id, user_id=current_user.id).first()
     if link is None:

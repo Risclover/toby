@@ -53,6 +53,7 @@ class Event(db.Model):
         nullable=False,
     )
     tzid = db.Column(db.String(64), nullable=False)  # e.g. "America/Los_Angeles"
+    exdate = db.Column(db.Text, nullable=True)
 
     rrule = db.Column(db.String(255), nullable=True)
     all_members = db.Column(db.Boolean, default=False, nullable=False)
@@ -81,6 +82,9 @@ class Event(db.Model):
             return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
  
         attendees = self.attendees
+        attendee_ids = {u.id for u in attendees}
+        household_member_ids = {m.id for m in self.household.members}
+        computed_all_members = len(attendee_ids) > 0 and attendee_ids == household_member_ids
         return {
             "id": self.id,
             "householdId": self.household_id,
@@ -89,6 +93,7 @@ class Event(db.Model):
             "startUtc": to_utc_z(self.start_utc),
             "endUtc": to_utc_z(self.end_utc),
             "tzid": self.tzid,
+            "exdate": self.exdate,
             "hasTime": bool(self.has_time),
             "rrule": self.rrule,
             "visibility": self.visibility,
@@ -97,7 +102,7 @@ class Event(db.Model):
                 {"id": u.id, "profileImg": u.profile_img, "firstName": u.first_name, "lastName": u.last_name, "color": u.color}
                 for u in attendees
             ],
-            "allMembers": self.all_members,
+            "allMembers": computed_all_members,
             "attendeeIds": [u.id for u in attendees],
             "household": {
                 "id": self.household.id,

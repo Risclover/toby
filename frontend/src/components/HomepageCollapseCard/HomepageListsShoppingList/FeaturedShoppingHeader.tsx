@@ -16,7 +16,7 @@ export const FeaturedShoppingHeader = ({ title, listId, uncheckedCount, totalCou
         <div className="featured-tasklist-title-top">
             <span>{title}</span>{" "}
             <span className="featured-tasklist-title-count">
-                ({uncheckedCount === 0 ? "🛒" : `${uncheckedCount} / ${totalCount}`})
+                {uncheckedCount !== 0 ? `(${uncheckedCount} / ${totalCount})` : `(🥇)`}
             </span>
             <Tooltip label="Open shopping list" withArrow openDelay={500}>
                 <ActionIcon

@@ -24,4 +24,6 @@ export type DayEventRowSharedProps = {
 };
 
 export const getEventAttendees = (source: CalendarEvent, household?: { members: MemberLike[] }): MemberLike[] =>
-    source.allMembers ? household?.members ?? [] : source.attendees;
+    source.attendees.length > 0
+        ? source.attendees
+        : (source.allMembers ? household?.members ?? [] : []);

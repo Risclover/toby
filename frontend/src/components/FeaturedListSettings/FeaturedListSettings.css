@@ -71,7 +71,8 @@
 
 /* - Alan Sans - IBM Plex Sans - JetBrains Mono - Libre Franklin - Commissioner - Commissioner - Poppins - Roboto Condensed - Sedgwick Ave Display - Sora - Source Sans 3 - Ubuntu Mono */
 
-.settings-section-title {
+.settings-section-title,
+.events-settings-section-title {
     font-family: var(--font-family-jetbrains);
     font-size: var(--text-xs);
     letter-spacing: 0.05em;
@@ -79,6 +80,12 @@
     font-weight: 500;
     color: var(--mantine-color-gray-7);
     margin-bottom: 0.5rem;
+}
+
+.events-settings-section-title {
+    margin-bottom: 0;
+    line-height: 1;
+    color: black;
 }
 
 .settings-section-container .mantine-InputWrapper-description {
@@ -190,6 +197,7 @@
     font-size: var(--text-xs);
     color: var(--mantine-color-gray-7);
     margin-left: 0.25rem;
+    flex-shrink: 0;
 }
 
 .featured-tasklist-title svg {

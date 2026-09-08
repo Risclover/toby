@@ -17,7 +17,6 @@
 
 .mc-has-events::after {
     --dot-gap: 5.5px;
-    /* was effectively 4px; bump/lower this to taste */
 
     content: "";
     position: absolute;
@@ -30,11 +29,19 @@
     box-shadow:
         0 0 0 1px #fff,
         var(--dot-gap) 0 0 0 var(--dot-color-2, transparent),
-        var(--dot-gap) 0 0 1.5px var(--dot-ring-2, transparent),
+        var(--dot-gap) 0 0 1px var(--dot-ring-2, transparent),
         calc(var(--dot-gap) * 2) 0 0 0 var(--dot-color-3, transparent),
-        calc(var(--dot-gap) * 2) 0 0 1.5px var(--dot-ring-3, transparent),
+        calc(var(--dot-gap) * 2) 0 0 1px var(--dot-ring-3, transparent),
         calc(var(--dot-gap) * 3) 0 0 0 var(--dot-color-4, transparent),
-        calc(var(--dot-gap) * 3) 0 0 1.5px var(--dot-ring-4, transparent);
+        calc(var(--dot-gap) * 3) 0 0 1px var(--dot-ring-4, transparent),
+        calc(var(--dot-gap) * 4) 0 0 0 var(--dot-color-5, transparent),
+        calc(var(--dot-gap) * 4) 0 0 1px var(--dot-ring-5, transparent),
+        calc(var(--dot-gap) * 5) 0 0 0 var(--dot-color-6, transparent),
+        calc(var(--dot-gap) * 5) 0 0 1px var(--dot-ring-6, transparent),
+        calc(var(--dot-gap) * 6) 0 0 0 var(--dot-color-7, transparent),
+        calc(var(--dot-gap) * 6) 0 0 1px var(--dot-ring-7, transparent),
+        calc(var(--dot-gap) * 7) 0 0 0 var(--dot-color-8, transparent),
+        calc(var(--dot-gap) * 7) 0 0 1px var(--dot-ring-8, transparent);
     transform: translateX(calc(-50% - (var(--dot-count, 1) - 1) * var(--dot-gap) / 2));
     pointer-events: none;
 }

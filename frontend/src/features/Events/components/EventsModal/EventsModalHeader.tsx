@@ -124,15 +124,13 @@ export const EventsModalHeader = ({
                     </Group>
                 </Group>
                 {/** Bottom options (filter + 'add event' button) */}
-                <Group align="flex-end" justify="space-between" gap={10}>
-                    <Group justify="flex-start" gap={0}>
-                        {filterValue !== null &&
-                            <>
-                                <Text size="12px" c="black" fw={500} mt={4}>Filter active:</Text>
-                                <Text size="12px" fw={400} mt={4}>{` ${filterValue}`}</Text>
-                            </>
-                        }
-                    </Group>
+                <Group align="flex-end" justify={filterValue !== null ? "space-between" : "flex-end"} gap={10}>
+                    {filterValue !== null &&
+                        <Group gap={4}>
+                            <Text size="12px" c="black" fw={500} mt={4}>Filter active:</Text>
+                            <Text size="12px" fw={400} mt={4}>{` ${filterValue}`}</Text>
+                        </Group>
+                    }
                     <Group>
                         <Group gap={1} align="center">
                             <ComboboxPopover

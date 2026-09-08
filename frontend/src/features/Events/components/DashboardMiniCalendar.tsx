@@ -1,6 +1,7 @@
 import React, { useMemo, useState, type SetStateAction } from "react";
 import { Flex, Group, Stack, Text, useModalsStack } from "@mantine/core";
 import dayjs from "dayjs";
+import { expandRecurringEvents } from "@mantine/schedule";
 import { useGetAllHouseholdEventsQuery, type CalendarEvent } from "@/store/eventSlice";
 import { EventForm } from "./EventForm/EventForm";
 import { MiniCalendar } from "@mantine/dates";
@@ -12,35 +13,43 @@ import { DayEventsModal } from "./EventsModal/DayEventsModal";
 
 const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-function ymdFromDateInTz(d: Date, tz = userTz) {
-    const parts = new Intl.DateTimeFormat("en-CA", {
-        timeZone: tz,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).formatToParts(d);
-    const y = parts.find((p) => p.type === "year")!.value;
-    const m = parts.find((p) => p.type === "month")!.value;
-    const da = parts.find((p) => p.type === "day")!.value;
-    return `${y}-${m}-${da}`;
+function toWallClock(isoWithOffset: string) {
+    return isoWithOffset.slice(0, 19).replace("T", " ");
 }
+
+// expandRecurringEvents' occurrence type allows start/end to be a Date;
+// at runtime they're always the wall-clock strings we passed in via
+// scheduleEvents, but normalize defensively either way.
+function toWallClockString(value: string | Date): string {
+    if (typeof value === "string") return value;
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}`;
+}
+
+// occ.start/occ.end from expandRecurringEvents are "YYYY-MM-DD HH:mm:ss" wall-clock
+// strings already in the viewer's local time — split into the local calendar day(s)
+// the occurrence actually spans. Mirrors the old expandSpanToLocalDays, but works
+// directly off wall-clock strings instead of re-parsing through Date/timezone math.
+function expandWallClockSpanToDays(startWallClock: string, endWallClock: string): string[] {
+    const startDay = startWallClock.slice(0, 10);
+    // treat an end landing exactly on midnight as "ends at the close of the previous day"
+    const endDay = endWallClock.slice(11) === "00:00:00"
+        ? dayjs(endWallClock.slice(0, 10)).subtract(1, "day").format("YYYY-MM-DD")
+        : endWallClock.slice(0, 10);
+
+    const out: string[] = [];
+    let cur = dayjs(startDay);
+    const last = dayjs(endDay);
+    while (cur.isBefore(last) || cur.isSame(last, "day")) {
+        out.push(cur.format("YYYY-MM-DD"));
+        cur = cur.add(1, "day");
+    }
+    return out;
+}
+
 function dateFromYmd(ymd: string) {
     const [y, m, d] = ymd.split("-").map(Number);
     return new Date(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0);
-}
-function localMidnight(d: Date, tz = userTz) {
-    const ymd = ymdFromDateInTz(d, tz).split("-").map(Number);
-    return new Date(ymd[0], ymd[1] - 1, ymd[2], 0, 0, 0, 0);
-}
-function expandSpanToLocalDays(startIso: string, endIso: string, tz = userTz): string[] {
-    // inclusive per local day
-    const startDay = localMidnight(new Date(startIso), tz);
-    const endDay = localMidnight(new Date(new Date(endIso).getTime() - 1), tz);
-    const out: string[] = [];
-    for (let cur = startDay; cur <= endDay; cur = new Date(cur.getTime() + 86400000)) {
-        out.push(ymdFromDateInTz(cur, tz));
-    }
-    return out;
 }
 
 // Return the Sunday of the week containing `d` (local time).
@@ -53,7 +62,7 @@ function startOfWeekSunday(d: Date): Date {
     return js;
 }
 
-const MAX_DOTS = 4;
+const MAX_DOTS = 8;
 
 type ModalId = 'recurrence' | 'event-form' | 'events-list';
 type NavigableScreen = Exclude<ModalId, 'recurrence'>;
@@ -81,17 +90,39 @@ export function DashboardMiniCalendar({
         { skip: !householdId }
     );
     const { data: household } = useHousehold();
-    const daysWithEvents = useMemo(() => {
-        const set = new Set<string>();
-        for (const e of allEvents) {
-            if (!e.startUtc || !e.endUtc) continue; // unscheduled → no dot on a specific date
-            for (const key of expandSpanToLocalDays(e.startUtc, e.endUtc)) set.add(key);
-        }
-        return set;
-    }, [allEvents]);
-
-    console.log('DAYS WITH EVENTS:', allEvents);
     const { data: user } = useAuthenticateQuery();
+
+    const scheduleEvents = useMemo(
+        () =>
+            allEvents
+                .filter((e) => e.startUtc && e.endUtc)
+                .map((e) => {
+                    const payload = { source: e };
+
+                    if (e.rrule) {
+                        return {
+                            id: e.id,
+                            title: e.title,
+                            start: toWallClock(e.startUtc),
+                            end: toWallClock(e.endUtc),
+                            color: "gray",
+                            recurrence: { rrule: e.rrule },
+                            payload,
+                        };
+                    }
+
+                    return {
+                        id: e.id,
+                        title: e.title,
+                        start: toWallClock(e.startUtc),
+                        end: toWallClock(e.endUtc),
+                        color: "gray",
+                        payload,
+                    };
+                }),
+        [allEvents]
+    );
+
     const dayDots = useMemo(() => {
         const byDay = new Map<string, Map<number, string>>(); // ymd -> (userId -> color)
 
@@ -102,23 +133,35 @@ export function DashboardMiniCalendar({
             if (!userColors.has(userId)) userColors.set(userId, color);
         };
 
-        for (const e of allEvents) {
-            if (!e.startUtc || !e.endUtc) continue;
-            const days = expandSpanToLocalDays(e.startUtc, e.endUtc);
+        const windowStart = `${dayjs(startDate).format("YYYY-MM-DD")} 00:00:00`;
+        const windowEnd = `${dayjs(startDate).add(numberOfDays - 1, "day").format("YYYY-MM-DD")} 23:59:59`;
+
+        // expandRecurringEvents can return occurrences that spill outside the
+        // requested range for recurring events (confirmed while debugging the
+        // events-list modal double-listing bug) — re-check actual overlap
+        // ourselves rather than trusting its range filtering.
+        const occurrences = expandRecurringEvents({
+            events: scheduleEvents,
+            rangeStart: windowStart,
+            rangeEnd: windowEnd,
+        })
+            .map((occ) => ({
+                ...occ,
+                start: toWallClockString(occ.start),
+                end: toWallClockString(occ.end),
+            }))
+            .filter((occ) => occ.start <= windowEnd && occ.end > windowStart);
+
+        for (const occ of occurrences) {
+            const e = occ.payload?.source;
+            const days = expandWallClockSpanToDays(occ.start, occ.end);
 
             if (e.visibility === "public") {
                 for (const ymd of days) {
-                    if (e.allMembers) {
-                        for (const member of household?.members ?? []) {
-                            addColor(ymd, member.id, member.color);
-                        }
-                    } else {
-                        for (const attendee of e.attendees ?? []) {
-                            addColor(ymd, attendee.id, attendee.color);
-                        }
+                    for (const attendee of e.attendees ?? []) {
+                        addColor(ymd, attendee.id, attendee.color);
                     }
                 }
-
             } else if (e.visibility === "private" && user) {
                 const isMe = e.creatorId === user.id || (e.attendees ?? []).some((a) => a.id === user.id);
                 if (isMe) {
@@ -130,7 +173,7 @@ export function DashboardMiniCalendar({
         const out = new Map<string, string[]>();
         byDay.forEach((userColors, ymd) => out.set(ymd, Array.from(userColors.values())));
         return out;
-    }, [allEvents, user, household]);
+    }, [scheduleEvents, user, startDate, numberOfDays]);
 
 
 
@@ -192,8 +235,11 @@ export function DashboardMiniCalendar({
                 // Do NOT use onChange/onDateChange for opening the modal (arrows trigger them).
                 getDayProps={(ymd) => {
                     const isToday = ymd === dayjs().format("YYYY-MM-DD");
-                    const colors = (dayDots.get(ymd) ?? []).slice(0, MAX_DOTS);
-                    const has = colors.length > 0;
+                    const allColors = dayDots.get(ymd) ?? [];
+                    const hasOverflow = allColors.length > MAX_DOTS;
+                    const colors = hasOverflow ? allColors.slice(0, MAX_DOTS - 1) : allColors.slice(0, MAX_DOTS);
+                    const overflowCount = allColors.length - colors.length;
+                    const has = colors.length > 0 || hasOverflow;
 
                     const dotVars: Record<string, string | number> = { "--dot-count": colors.length };
                     colors.forEach((color, i) => {
@@ -205,12 +251,13 @@ export function DashboardMiniCalendar({
                     return {
                         "data-testid": `cal-day-${ymd}`,
                         "data-has-events": has,
+                        ...(hasOverflow ? { "data-overflow": `+${overflowCount}` } : {}),
                         className: has ? "mc-has-events" : "mc-no-events",
                         style: { background: isToday ? "#f1f1ff" : undefined, ...dotVars },
                         title: has ? "Has events" : undefined,
                         onClick: () => {
                             setSelectedDate(dateFromYmd(ymd));
-                            stack.open("events-list"); // was: setShowAddEvent(true); stack.open("event-form");
+                            stack.open("events-list");
                         },
                     };
                 }}

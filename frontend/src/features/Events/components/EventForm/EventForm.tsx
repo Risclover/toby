@@ -13,7 +13,7 @@ import { useModalFocus } from "@/hooks/useModalFocus";
 import { useAuthenticateQuery, useGetUserSettingsQuery } from "@/store";
 import { EventFormRepeat } from "./Recurrence/EventFormRepeat";
 import { EventFormRepeatCustom } from "./Recurrence/EventFormRepeatCustom";
-import { buildRRule, matchingPresetKind, type CustomRecurrenceRule, type PresetKind } from "../../utils/recurrence";
+import { buildRRule, matchingPresetKind, parseRRule, type CustomRecurrenceRule, type PresetKind } from "../../utils/recurrence";
 import { useEventForm, type EventFormValues } from "../../hooks/useEventForm";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -176,19 +176,24 @@ export function EventForm({
     // for the externally-passed `event` prop (edit mode).
     const seedFromEvent = (targetEvent: CalendarEvent) => {
         const seededDate = ymdFromIso(targetEvent.startUtc ?? undefined);
+        const seededEndDate = targetEvent.hasTime !== false ? ymdFromIso(targetEvent.endUtc ?? undefined) : '';
         const seededTime = targetEvent.hasTime === false ? "" : hmFromIso(targetEvent.startUtc);
-        setRepeatKind('none'); // TODO: seed from targetEvent.rrule once parsing exists
-        setCustomRule(null);
+        const seededEndTime = targetEvent.hasTime === false ? "" : hmFromIso(targetEvent.endUtc);
+        const { repeatKind: seededRepeatKind, customRule: seededCustomRule } = parseRRule(targetEvent.rrule, dayjs(seededDate));
+
+        setRepeatKind(seededRepeatKind);
+        setCustomRule(seededCustomRule);
         setRecurrenceSessionId((n) => n + 1);
+
         const values = {
             title: targetEvent.title,
             startDate: seededDate,
-            endDate: '',
+            endDate: seededEndDate === seededDate ? '' : seededEndDate,
             allDay: targetEvent.hasTime === false,
             startTime: seededTime,
-            endTime: '',
+            endTime: seededEndTime,
             visibility: targetEvent.visibility,
-            assignedUserIds: targetEvent.attendeeIds ?? [user.id],
+            assignedUserIds: targetEvent.attendeeIds?.length ? targetEvent.attendeeIds : (targetEvent.allMembers ? allHouseholdMemberIds : [user.id]),
             allMembers: targetEvent.allMembers
         };
         form.setValues(values);
@@ -244,7 +249,7 @@ export function EventForm({
         const values = form.getValues();
         const tzid = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const hasTime = !values.allDay;
-        const rrule = buildRRule(repeatKind, customRule, dayjs(values.startDate), hasTime) ?? undefined;
+        const rrule = buildRRule(repeatKind, customRule, dayjs(values.startDate), hasTime);
 
         try {
             if (edit && event) {
@@ -504,7 +509,7 @@ export function EventForm({
                                                 onChange={handleEndTimeChange}
                                                 disabled={form.getValues().allDay}
                                                 withDropdown
-                                                minutesStep={15}
+                                                minutesStep={5}
                                                 hoursStep={1}
                                                 format="12h"
                                             />

@@ -12,3 +12,4 @@ export { useCloseModalOnNavigate } from "./useCloseModalOnNavigate";
 export { useIsScrolledToTop } from "./useIsScrolledToTop"
 export { useFeaturedShoppingDisplay } from "../features/Shopping/hooks/useFeaturedShoppingDisplay";
 export { useHousehold } from "./useHousehold";
+export { useIsTruncated } from "./useIsTruncated";

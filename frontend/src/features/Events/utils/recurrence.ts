@@ -113,8 +113,11 @@ export function matchingPresetKind(rule: CustomRecurrenceRule, date: dayjs.Dayjs
     switch (rule.freq) {
         case "DAILY":
             return "daily";
-        case "WEEKLY":
-            return rule.byDay.length === 1 && rule.byDay[0] === date.format("dddd") ? "weekly" : null;
+        case "WEEKLY": {
+            if (rule.byDay.length === 1 && rule.byDay[0] === date.format("dddd")) return "weekly";
+            if (rule.byDay.length === 5 && WEEKDAYS_ONLY.every((d) => rule.byDay.includes(d))) return "weekday";
+            return null;
+        }
         case "MONTHLY":
             return rule.mode === "nth-weekday" ? "monthly" : null;
         case "YEARLY":
@@ -199,6 +202,67 @@ function presetToRRuleString(kind: PresetKind, date: dayjs.Dayjs): string | null
         case "weekday":
             return "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR";
     }
+}
+
+
+/** ---------- RRULE parsing ---------- */
+
+const ICS_TO_DAY: Record<string, string> = Object.fromEntries(
+    Object.entries(DAY_TO_ICS).map(([day, code]) => [code, day])
+);
+
+/** "20261018" | "20261018T235959Z" -> "2026-10-18" -- inverse of
+ * toIcsUntilDate/toIcsUntilUtc. Only the date portion matters here; the
+ * time-of-day an UNTIL carries is always "last instant of that day" by
+ * construction (see toIcsUntilUtc), so recovering just the date is enough
+ * to round-trip back into the end-date picker. */
+function fromIcsUntil(value: string): string {
+    return `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6, 8)}`;
+}
+
+/**
+ * Parses an RFC5545 RRULE string (as produced by buildRRule) back into
+ * { repeatKind, customRule } for seeding the form on edit. Always builds
+ * the full CustomRecurrenceRule first, then defers to matchingPresetKind
+ * for the preset/custom decision -- same logic handleApplyCustomRule uses
+ * for a rule coming out of the Custom recurrence modal, so parsed and
+ * freshly-built rules are classified identically.
+ */
+export function parseRRule(
+    rruleStr: string | null | undefined,
+    date: dayjs.Dayjs
+): { repeatKind: PresetKind | "custom"; customRule: CustomRecurrenceRule | null } {
+    if (!rruleStr) return { repeatKind: "none", customRule: null };
+
+    const parts = Object.fromEntries(
+        rruleStr.split(";").map((part) => part.split("=") as [string, string])
+    );
+    const freq = parts.FREQ;
+    if (freq !== "DAILY" && freq !== "WEEKLY" && freq !== "MONTHLY" && freq !== "YEARLY") {
+        // Unrecognized/unsupported rule shape -- fall back to "none" rather
+        // than guessing or crashing on something this UI can't represent.
+        return { repeatKind: "none", customRule: null };
+    }
+
+    const interval = parts.INTERVAL ? Number(parts.INTERVAL) : 1;
+    const end: RecurrenceEnd = parts.COUNT
+        ? { type: "after", occurrences: Number(parts.COUNT) }
+        : parts.UNTIL
+            ? { type: "on", date: fromIcsUntil(parts.UNTIL) }
+            : { type: "never" };
+
+    let rule: CustomRecurrenceRule;
+    if (freq === "WEEKLY") {
+        const byDay = sortByWeekOrder((parts.BYDAY ?? "").split(",").filter(Boolean).map((code) => ICS_TO_DAY[code]));
+        rule = { freq, interval, end, byDay };
+    } else if (freq === "MONTHLY") {
+        rule = { freq, interval, end, mode: parts.BYMONTHDAY ? "day-of-month" : "nth-weekday" };
+    } else {
+        rule = { freq, interval, end };
+    }
+
+    const preset = matchingPresetKind(rule, date);
+    return { repeatKind: preset ?? "custom", customRule: rule };
 }
 
 /**

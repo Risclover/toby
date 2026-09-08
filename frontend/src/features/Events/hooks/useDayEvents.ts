@@ -65,15 +65,21 @@ export function useDayEvents({
         [dayEvents]
     );
 
-    const occurrences = useMemo(
-        () =>
-            expandRecurringEvents({
-                events: scheduleEvents,
-                rangeStart: `${dateStr} 00:00:00`,
-                rangeEnd: `${dateStr} 23:59:59`,
-            }),
-        [scheduleEvents, dateStr]
-    );
+    const occurrences = useMemo(() => {
+        const dayStart = `${dateStr} 00:00:00`;
+        const dayEnd = `${dateStr} 23:59:59`;
+
+        // expandRecurringEvents can return occurrences that spill outside
+        // [rangeStart, rangeEnd] for recurring all-day events (seen in practice:
+        // querying one day returned that day's occurrence *and* the next day's).
+        // Re-check actual overlap with this day ourselves rather than trusting
+        // the library's range filtering.
+        return expandRecurringEvents({
+            events: scheduleEvents,
+            rangeStart: dayStart,
+            rangeEnd: dayEnd,
+        }).filter((occ) => occ.start <= dayEnd && occ.end > dayStart);
+    }, [scheduleEvents, dateStr]);
 
     const handleDateChange = (value: string | null) => {
         if (!value) return;

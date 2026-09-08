@@ -37,9 +37,9 @@ export type CalendarEvent = {
 type TimedEventInput = {
     title: string;
     tzid?: string;
-    startUtc: string; // ISO
+    startUtc: string;
     endUtc: string;
-    rrule?: string;
+    rrule?: string | null;
     visibility?: string;
     allMembers?: boolean;
     attendeeIds?: number[];
@@ -48,11 +48,12 @@ type DateOnlyEventInput = {
     title: string;
     tzid?: string;
     date: string;
-    rrule?: string;
+    rrule?: string | null;
     visibility?: string;
     allMembers?: boolean;
     attendeeIds?: number[];
 };
+
 export type CreateEventInput = { householdId: number } & (TimedEventInput | DateOnlyEventInput);
 
 /** ---------- Update inputs (PATCH-style, id + householdId required) ---------- */
@@ -69,7 +70,7 @@ type UpdateEventPayload = UpdateEventBase &
         startUtc: string;
         endUtc: string;
         date: string;
-        rrule: string;
+        rrule: string | null;
         visibility: string;
         allMembers: boolean;
         attendeeIds: number[];

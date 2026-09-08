@@ -2,10 +2,11 @@ import { Avatar, Group, Stack, Text, Tooltip } from "@mantine/core";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { type CalendarEvent, useAuthenticateQuery } from "@/store";
-import { useHousehold, useIsSmallScreen } from "@/hooks";
+import { useHousehold, useIsSmallScreen, useIsTruncated } from "@/hooks";
 import { MemberDot } from "./MemberDot";
 import { formatFullName } from "@/utils/formatFullName";
 import { getEventAttendees, type DayEventRowSharedProps, type MemberLike, type Occurrence } from "../../types";
+import { EventMenu } from "../EventMenu";
 
 const parseWallClock = (wallClock: string) => new Date(wallClock.replace(" ", "T"));
 
@@ -57,9 +58,10 @@ const AttendeeDot = ({
 
 type DayEventRowProps = DayEventRowSharedProps & {
     occurrence: Occurrence;
+    groupOwnerId?: number;
 };
-
-export const DayEventRow = ({ occurrence, onEdit, onDelete, openDotId, onOpenDot }: DayEventRowProps) => {
+export const DayEventRow = ({ occurrence, onEdit, onDelete, openDotId, onOpenDot, groupOwnerId }: DayEventRowProps) => {
+    const { ref: titleRef, isTruncated } = useIsTruncated<HTMLParagraphElement>();
     const { data: currentUser } = useAuthenticateQuery();
     const { data: household } = useHousehold();
     const source = (occurrence.payload as { source: CalendarEvent }).source;
@@ -84,17 +86,37 @@ export const DayEventRow = ({ occurrence, onEdit, onDelete, openDotId, onOpenDot
         <div className="event-row">
             <Stack gap={4}>
                 <Group gap=".25rem" miw={0} wrap="nowrap" justify="space-between" w="100%">
-                    <Group gap={8}>
-                        <Text size="15px" inline c="black" fw={500} truncate miw={0}>{occurrence.title}</Text>
-                        <Group gap={3} wrap="nowrap">
+                    <Group gap={8} miw={0} wrap="nowrap">
+                        <Tooltip
+                            position="top"
+                            transitionProps={{ transition: "pop", duration: 100 }}
+                            withinPortal
+                            events={{ hover: true, focus: true, touch: true }}
+                            maw="95%"
+                            withArrow
+                            label={occurrence.title}
+                            disabled={!isTruncated}
+                            multiline
+                        >
+                            <Text ref={titleRef} size="15px" inline c="black" fw={500} truncate miw={0}>
+                                {occurrence.title}
+                            </Text>
+                        </Tooltip>
+                        <Group gap={3} wrap="nowrap" style={{ flexShrink: 0 }}>
                             {attendeesToShow.map((member) => (
-                                <AttendeeDot key={member.id} member={member} dotId={`${occurrence.id}-${member.id}`} openDotId={openDotId} onOpenDot={onOpenDot} />
+                                <AttendeeDot
+                                    key={member.id}
+                                    member={member}
+                                    dotId={`${groupOwnerId ?? "flat"}-${occurrence.id}-${member.id}`}
+                                    openDotId={openDotId}
+                                    onOpenDot={onOpenDot}
+                                />
                             ))}
                         </Group>
                     </Group>
-                    {/* {(source.household.adminId === currentUser.id || source.creatorId === currentUser.id) && (
+                    {(source.household.adminId === currentUser.id || source.creatorId === currentUser.id) && (
                         <EventMenu isEditing={false} setIsEditing={(val) => val && onEdit(source)} onDelete={() => onDelete(realId)} />
-                    )} */}
+                    )}
                 </Group>
                 <Text size="13px" inline fw={400} c="dimmed">{timeLabel}</Text>
             </Stack>

@@ -20,28 +20,30 @@ const MemberEventSection = ({
 
     return (
         <Stack gap={4} mb="sm" p="0 .5rem">
-            <Group gap={8} bg="var(--mantine-color-gray-1" fw={500} p="1rem" wrap="nowrap" align="center">
-                <Avatar src={member.profileImg} size={24} radius="xl" />
-                <div className="settings-section-title" style={{ marginBottom: 0, fontSize: "13px" }}>
-                    {formatFullName(member)}{isCurrentUser ? " (You)" : ""}
-                </div>
-                <ActionIcon
-                    variant="transparent"
-                    color="black"
-                    size="sm"
-                    radius="sm"
-                    onClick={() => setIsCollapsed((prev) => !prev)}
-                    aria-label={isCollapsed ? `Expand ${formatFullName(member)}` : `Collapse ${formatFullName(member)}`}
-                    aria-expanded={!isCollapsed}
-                >
-                    <ExpandMoreRoundedIcon
-                        fontSize="small"
-                        style={{ transform: isCollapsed ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 150ms ease" }}
-                    />
-                </ActionIcon>
-            </Group>
+            <div className="member-event-section-header" onClick={(e) => { e.stopPropagation(); setIsCollapsed((prev) => !prev) }}>
+                <Group gap={8} bg="var(--mantine-color-gray-1" fw={500} p=".75rem" wrap="nowrap" align="center" styles={{ root: { borderRadius: ".5rem" } }}>
+                    <Avatar src={member.profileImg} size={24} radius="xl" />
+                    <div className="events-settings-section-title" style={{ marginBottom: 0, fontSize: "13px" }}>
+                        {formatFullName(member)}{isCurrentUser ? " (You)" : ""}
+                    </div>
+                    <ActionIcon
+                        variant="transparent"
+                        color="black"
+                        size="sm"
+                        radius="sm"
+                        onClick={(e) => { e.stopPropagation(); setIsCollapsed((prev) => !prev) }}
+                        aria-label={isCollapsed ? `Expand ${formatFullName(member)}` : `Collapse ${formatFullName(member)}`}
+                        aria-expanded={!isCollapsed}
+                    >
+                        <ExpandMoreRoundedIcon
+                            fontSize="small"
+                            style={{ transform: isCollapsed ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 150ms ease" }}
+                        />
+                    </ActionIcon>
+                </Group>
+            </div>
             {!isCollapsed && events.map((occ) => (
-                <DayEventRow key={String(occ.id)} occurrence={occ} {...rowProps} />
+                <DayEventRow key={String(occ.id)} occurrence={occ} groupOwnerId={member.id} {...rowProps} />
             ))}
         </Stack>
     );
