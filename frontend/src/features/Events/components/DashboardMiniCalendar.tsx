@@ -1,5 +1,5 @@
 import React, { useMemo, useState, type SetStateAction } from "react";
-import { Flex, Group, Stack, Text, useModalsStack } from "@mantine/core";
+import { Flex, Group, Modal, Stack, Text, useModalsStack } from "@mantine/core";
 import dayjs from "dayjs";
 import { expandRecurringEvents } from "@mantine/schedule";
 import { useGetAllHouseholdEventsQuery, type CalendarEvent } from "@/store/eventSlice";
@@ -7,7 +7,7 @@ import { EventForm } from "./EventForm/EventForm";
 import { MiniCalendar } from "@mantine/dates";
 import "../styles/QuickAddEvent.css"; // or a global index.css
 import "../styles/DashboardMiniCalendar.css";
-import { useAuthenticateQuery } from "@/store";
+import { useAuthenticateQuery, type User } from "@/store";
 import { useHousehold } from "@/hooks";
 import { DayEventsModal } from "./EventsModal/DayEventsModal";
 
@@ -106,7 +106,7 @@ export function DashboardMiniCalendar({
                             start: toWallClock(e.startUtc),
                             end: toWallClock(e.endUtc),
                             color: "gray",
-                            recurrence: { rrule: e.rrule },
+                            recurrence: { rrule: e.rrule, exdate: e.exdate },
                             payload,
                         };
                     }
@@ -153,17 +153,17 @@ export function DashboardMiniCalendar({
             .filter((occ) => occ.start <= windowEnd && occ.end > windowStart);
 
         for (const occ of occurrences) {
-            const e = occ.payload?.source;
+            const event = occ.payload?.source;
             const days = expandWallClockSpanToDays(occ.start, occ.end);
 
-            if (e.visibility === "public") {
+            if (event.visibility === "public") {
                 for (const ymd of days) {
-                    for (const attendee of e.attendees ?? []) {
+                    for (const attendee of event.attendees ?? []) {
                         addColor(ymd, attendee.id, attendee.color);
                     }
                 }
-            } else if (e.visibility === "private" && user) {
-                const isMe = e.creatorId === user.id || (e.attendees ?? []).some((a) => a.id === user.id);
+            } else if (event.visibility === "private" && user) {
+                const isMe = event.creatorId === user.id || (event.attendees ?? []).some((a: User) => a.id === user.id);
                 if (isMe) {
                     for (const ymd of days) addColor(ymd, user.id, user.color);
                 }

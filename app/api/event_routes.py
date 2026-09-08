@@ -559,8 +559,10 @@ def unassign_self(hid: int, event_id: int):
 
     remaining_count = EventAttendee.query.filter_by(event_id=event.id).count()
     if remaining_count <= 1:
-        abort(400, description="Can't unassign -- at least one person must remain assigned to this event")
-
+        db.session.delete(event)  # cascades to event_attendees
+        db.session.commit()
+        return jsonify({"deleted": True, "id": event_id}), 200
+        
     db.session.delete(link)
     db.session.commit()
     return jsonify(event_to_local_dict(event, current_user)), 200

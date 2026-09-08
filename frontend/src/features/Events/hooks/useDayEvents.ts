@@ -48,7 +48,7 @@ export function useDayEvents({
                             start: toWallClock(e.startUtc),
                             end: toWallClock(e.endUtc),
                             color: "gray",
-                            recurrence: { rrule: e.rrule },
+                            recurrence: { rrule: e.rrule, exdate: e.exdate },
                             payload,
                         };
                     }

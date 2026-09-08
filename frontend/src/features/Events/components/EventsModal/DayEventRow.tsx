@@ -11,6 +11,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { DeleteRecurringEventConfirmation } from "../DeleteRecurringEventConfirmation";
 import { DeleteConfirmation, KittyNotification } from "@/components";
 import { KittyIcons } from "@/assets";
+import { UnassignSelfConfirmation } from "../UnassignSelfConfirmation";
 
 const parseWallClock = (wallClock: string) => new Date(wallClock.replace(" ", "T"));
 
@@ -90,6 +91,7 @@ export const DayEventRow = ({ occurrence, onEdit, openDotId, onOpenDot, groupOwn
 
     const [opened, { open, close }] = useDisclosure(false);
     const [secondOpened, secondHandlers] = useDisclosure(false);
+    const [thirdOpened, thirdHandlers] = useDisclosure(false);
 
     const handleDeleteEvent = async () => {
         await deleteEvent({ id: Number(occurrence.payload?.source.id), householdId: household.id }).unwrap();
@@ -100,6 +102,8 @@ export const DayEventRow = ({ occurrence, onEdit, openDotId, onOpenDot, groupOwn
             icon: KittyIcons.Huggy
         })
     }
+
+    console.log(occurrence.payload?.source.assignedIds)
     return (
         <div className="event-row">
             <Stack gap={4}>
@@ -132,13 +136,24 @@ export const DayEventRow = ({ occurrence, onEdit, openDotId, onOpenDot, groupOwn
                             ))}
                         </Group>
                     </Group>
-                    {(source.household.adminId === currentUser.id || source.creatorId === currentUser.id) && (
-                        <EventMenu isEditing={false} setIsEditing={(val) => val && onEdit(source)} occurrence={occurrence} opened={opened} open={open} close={close} secondOpened={secondOpened} secondHandlers={secondHandlers} />
+                    {(source.household.adminId === currentUser.id || source.creatorId === currentUser.id || source.attendeeIds.includes(currentUser.id)) && (
+                        <EventMenu
+                            isEditing={false}
+                            setIsEditing={(val) => val && onEdit(source)}
+                            occurrence={occurrence}
+                            opened={opened}
+                            open={open}
+                            close={close}
+                            secondOpened={secondOpened}
+                            secondHandlers={secondHandlers}
+                            thirdHandlers={thirdHandlers}
+                        />
                     )}
                 </Group>
                 <Text size="13px" inline fw={400} c="dimmed">{timeLabel}</Text>
             </Stack>
-            <DeleteRecurringEventConfirmation opened={opened} onClose={close} />
+            <DeleteRecurringEventConfirmation opened={opened} onClose={close} occurrence={occurrence} occurrenceStart={occurrence.start} />
+
             <DeleteConfirmation
                 itemType="event"
                 itemName={occurrence.payload?.source.title}
@@ -147,6 +162,15 @@ export const DayEventRow = ({ occurrence, onEdit, openDotId, onOpenDot, groupOwn
                 setShowDeleteConfirmation={secondHandlers.close}
                 handleDeleteItem={handleDeleteEvent}
             />
+
+            <UnassignSelfConfirmation
+                opened={thirdOpened}
+                onClose={thirdHandlers.close}
+                occurrence={occurrence}
+                eventTitle={occurrence.payload?.source.title}
+                onlyAssignedUser={occurrence.payload?.source.attendeeIds?.length === 1 && occurrence.payload?.source.attendeeIds.includes(currentUser.id)}
+            />
+
         </div>
     );
 };

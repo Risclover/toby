@@ -94,6 +94,7 @@ interface UpcomingRow {
     sortKey: string;
     creatorId: number;
     householdAdminId: number;
+    attendeeIds: number[];
 }
 
 export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; householdId: number }) {
@@ -157,6 +158,7 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                         end: toWallClock(e.endUtc),
                         color: "gray",
                         recurrence: { rrule: e.rrule },
+                        attendeeIds: e.attendeeIds,
                         payload,
                     };
                 }
@@ -225,6 +227,7 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                     sortKey: startStr,
                     creatorId: payload.creatorId,
                     householdAdminId: payload.householdAdminId,
+                    attendeeIds: ev.attendeeIds
                 });
                 continue;
             }
@@ -256,6 +259,7 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                     sortKey: `${day} ${day === startDay ? startStr.slice(11) : "00:00:00"}`,
                     creatorId: payload.creatorId,
                     householdAdminId: payload.householdAdminId,
+                    attendeeIds: ev.attendeeIds
                 });
             }
         }

@@ -18,6 +18,7 @@ export type CalendarEvent = {
     startUtc: string;
     endUtc: string;
     tzid: string;
+    exdate: string[];
     hasTime: boolean;
     rrule: string | null;
     visibility: string;
@@ -223,10 +224,22 @@ export const eventSlice = apiSlice.injectEndpoints({
             ],
         }),
 
-        unassignSelf: b.mutation<CalendarEvent, { id: number; householdId: number }>({
+        unassignSelf: b.mutation<CalendarEvent | { deleted: true; id: number }, { id: number; householdId: number }>({
             query: ({ id, householdId }) => ({
                 url: `/events/households/${householdId}/events/${id}/unassign`,
                 method: "POST",
+            }),
+            invalidatesTags: (_res, _err, { householdId }) => [
+                { type: "Calendar", id: `HOUSEHOLD_${householdId}` },
+                { type: "Calendar", id: `HOUSEHOLD_${householdId}_ALL` },
+            ],
+        }),
+
+        excludeEventOccurrence: b.mutation<CalendarEvent, { id: number; householdId: number; occurrenceStart: Date | string }>({
+            query: ({ id, householdId, occurrenceStart }) => ({
+                url: `/events/households/${householdId}/events/${id}/exclude-occurrence`,
+                method: "POST",
+                body: { occurrenceStart },
             }),
             invalidatesTags: (_res, _err, { householdId }) => [
                 { type: "Calendar", id: `HOUSEHOLD_${householdId}` },
@@ -246,4 +259,5 @@ export const {
     useUpdateEventMutation,
     useDeleteEventMutation,
     useUnassignSelfMutation,
+    useExcludeEventOccurrenceMutation
 } = eventSlice;
