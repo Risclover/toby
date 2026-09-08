@@ -416,6 +416,37 @@ def delete_event(hid: int, event_id: int):
     db.session.commit()
     return ("", 204)
 
+@event_routes.post("/households/<int:hid>/events/<int:event_id>/exclude-occurrence")
+@login_required
+def exclude_event_occurrence(hid: int, event_id: int):
+    """Excludes a single occurrence from a recurring event's series -- the
+    counterpart to full-series delete. Appends the occurrence's wall-clock
+    start value (exactly as the frontend computed it via
+    expandRecurringEvents) to the event's exdate list. The value is never
+    parsed or validated as a real occurrence of this event's rrule here --
+    the frontend is trusted to have computed it correctly, and a bogus
+    value would just be inert (never match anything) rather than corrupt
+    anything, so re-expanding the rule server-side to double-check isn't
+    worth the complexity."""
+    event = get_event_or_404(hid, event_id)
+    require_creator_or_admin(event, "delete")
+
+    if not event.rrule:
+        abort(400, description="This event does not recur -- delete it directly instead")
+
+    data = request.get_json(silent=True) or {}
+    occurrence_start = (data.get("occurrenceStart") or "").strip()
+    if not occurrence_start:
+        abort(400, description="occurrenceStart is required")
+
+    existing = event.exdate.split(",") if event.exdate else []
+    if occurrence_start not in existing:
+        existing.append(occurrence_start)
+        event.exdate = ",".join(existing)
+
+    db.session.commit()
+    return jsonify(event_to_local_dict(event, current_user)), 200
+
 
 @event_routes.route("/households/<int:hid>/events/<int:event_id>", methods=["PATCH", "PUT"])
 @login_required

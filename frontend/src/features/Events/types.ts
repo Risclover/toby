@@ -18,7 +18,6 @@ export type UserGroup = {
 
 export type DayEventRowSharedProps = {
     onEdit: (event: CalendarEvent) => void;
-    onDelete: (eventId: number) => void;
     openDotId: string | null;
     onOpenDot: (id: string) => void;
 };

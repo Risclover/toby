@@ -1,5 +1,5 @@
 import { Button, Chip, Group, Modal, NumberInput, Radio, Select, Tooltip, useModalsStack } from "@mantine/core"
-import { DateInput, type DateTimeStringValue } from "@mantine/dates";
+import { DateInput, DatePickerInput, type DateTimeStringValue } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { nthWeekdaySuffix, WEEKDAY_ORDER, type CustomRecurrenceRule, type RecurrenceEnd } from "../../../utils/recurrence";
@@ -189,124 +189,134 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
             onClose={handleCancel}
             centered
             size="sm"
+            styles={{
+                body: { display: "flex", flexDirection: "column", height: "100%", padding: 0, overflow: "hidden" },
+                content: { overflow: "hidden", maxHeight: "100%", display: "flex", flexDirection: "column" },
+            }}
         >
-            <div className="event-form-repeat-custom--section">
-                <span className="event-form-repeat-custom--section-text">Repeat every</span>
-                <NumberInput
-                    value={interval}
-                    onChange={setInterval}
-                    onBlur={handleRepeatEveryBlur}
-                    min={MIN_NUM_INPUT_VALUE}
-                    max={MAX_NUM_INPUT_VALUE}
-                    clampBehavior="blur"
-                    allowNegative={false}
-                    allowDecimal={false}
-                    aria-label="Repeat every"
-                    w={70}
-                />
-                <Select
-                    data={data}
-                    value={freq}
-                    onChange={(v) => setFreq((v ?? DEFAULT_FREQ) as Freq)}
-                    w={120}
-                    allowDeselect={false}
-                />
-            </div>
+            <div className="event-form-modal--body">
+                <div className="event-form-repeat-custom--section">
+                    <span className="event-form-repeat-custom--section-text">Repeat every</span>
+                    <NumberInput
+                        value={interval}
+                        onChange={setInterval}
+                        onBlur={handleRepeatEveryBlur}
+                        min={MIN_NUM_INPUT_VALUE}
+                        max={MAX_NUM_INPUT_VALUE}
+                        clampBehavior="blur"
+                        allowNegative={false}
+                        allowDecimal={false}
+                        aria-label="Repeat every"
+                        w={70}
+                    />
+                    <Select
+                        data={data}
+                        value={freq}
+                        onChange={(v) => setFreq((v ?? DEFAULT_FREQ) as Freq)}
+                        w={120}
+                        allowDeselect={false}
+                    />
+                </div>
 
-            {freq === 'WEEKLY' && (
+                {freq === 'WEEKLY' && (
+                    <div className="event-form-repeat-custom--vertical-section">
+                        <span className="event-form-repeat-custom--section-text">Repeat on</span>
+                        <div className="event-form-repeat-custom--multiday">
+                            <Chip.Group multiple value={selectedDays} onChange={handleDaysChange}>
+                                <Group justify="center" pt={8} gap=".25rem">
+                                    <Tooltip.Group openDelay={CHIP_TOOLTIP_DELAY_MS} closeDelay={CHIP_TOOLTIP_DELAY_MS}>
+                                        {weekdayChips.map((chip) => (
+                                            <WeekdayChip key={chip.value} label={chip.label} value={chip.value} tooltip={chip.tooltip} />
+                                        ))}
+                                    </Tooltip.Group>
+                                </Group>
+                            </Chip.Group>
+                        </div>
+                    </div>
+                )}
+
+                {freq === "MONTHLY" && (
+                    <Select
+                        data={monthlyData}
+                        value={monthlyMode}
+                        onChange={(v) => setMonthlyMode((v ?? DEFAULT_MONTHLY_MODE) as 'day-of-month' | 'nth-weekday')}
+                        allowDeselect={false}
+                    />
+                )}
+
+                {/* TODO: Ends: Radio selections (Never / On [date] / After [x occurrences])*/}
                 <div className="event-form-repeat-custom--vertical-section">
-                    <span className="event-form-repeat-custom--section-text">Repeat on</span>
-                    <div className="event-form-repeat-custom--multiday">
-                        <Chip.Group multiple value={selectedDays} onChange={handleDaysChange}>
-                            <Group justify="center" pt={8} gap=".25rem">
-                                <Tooltip.Group openDelay={CHIP_TOOLTIP_DELAY_MS} closeDelay={CHIP_TOOLTIP_DELAY_MS}>
-                                    {weekdayChips.map((chip) => (
-                                        <WeekdayChip key={chip.value} label={chip.label} value={chip.value} tooltip={chip.tooltip} />
-                                    ))}
-                                </Tooltip.Group>
+                    <span className="event-form-repeat-custom--section-text">Ends</span>
+                    <div className="event-form-repeat-custom--radio-group">
+                        <Radio.Group value={endsMode} onChange={setEndsMode}>
+                            <Group mt="xs">
+                                <Radio.Card
+                                    value="never"
+                                    key="never"
+                                    className="radio-root"
+
+                                >
+                                    <div className="radio-root-label">
+                                        <Radio.Indicator color="rgb(5, 5, 73)" />
+                                        <span className="radio-label">Never</span>
+                                    </div>
+                                </Radio.Card>
+                                <Radio.Card
+                                    value="on"
+                                    key="on"
+                                    className="radio-root"
+                                >
+                                    <div className="radio-root-label">
+                                        <Radio.Indicator color="rgb(5, 5, 73)" />
+                                        <span className="radio-label">On</span>
+                                    </div>
+                                    <DatePickerInput
+                                        disabled={endsMode !== "on"}
+                                        value={endsOnDate}
+                                        onChange={setEndsOnDate}
+                                        minDate={dateStr}
+                                        valueFormat="MMM D, YYYY"
+                                        w={150}
+                                        aria-label="Ends on date"
+                                    />
+                                </Radio.Card>
+                                <Radio.Card
+                                    value="after"
+                                    key="after"
+                                    className="radio-root"
+                                >
+                                    <div className="radio-root-label">
+                                        <Radio.Indicator color="rgb(5, 5, 73)" />
+                                        <span className="radio-label">After</span>
+                                    </div>
+                                    <NumberInput
+                                        suffix={endsAfterOccurrences === 1 ? " occurrence" : " occurrences"}
+                                        w={150}
+                                        value={endsAfterOccurrences}
+                                        onChange={setEndsAfterOccurrences}
+                                        onBlur={handleAfterBlur}
+                                        disabled={endsMode !== "after"}
+                                        min={MIN_NUM_INPUT_VALUE}
+                                        max={MAX_NUM_INPUT_VALUE}
+                                        clampBehavior="blur"
+                                        allowNegative={false}
+                                        allowDecimal={false}
+                                        aria-label="After"
+
+                                    />
+                                </Radio.Card>
                             </Group>
-                        </Chip.Group>
+                        </Radio.Group>
                     </div>
                 </div>
-            )}
-
-            {freq === "MONTHLY" && (
-                <Select
-                    data={monthlyData}
-                    value={monthlyMode}
-                    onChange={(v) => setMonthlyMode((v ?? DEFAULT_MONTHLY_MODE) as 'day-of-month' | 'nth-weekday')}
-                    allowDeselect={false}
-                />
-            )}
-
-            {/* TODO: Ends: Radio selections (Never / On [date] / After [x occurrences])*/}
-            <div className="event-form-repeat-custom--vertical-section">
-                <span className="event-form-repeat-custom--section-text">Ends</span>
-                <div className="event-form-repeat-custom--radio-group">
-                    <Radio.Group value={endsMode} onChange={setEndsMode}>
-                        <Group mt="xs">
-                            <Radio.Card
-                                value="never"
-                                key="never"
-                                className="radio-root"
-
-                            >
-                                <div className="radio-root-label">
-                                    <Radio.Indicator />
-                                    <span className="radio-label">Never</span>
-                                </div>
-                            </Radio.Card>
-                            <Radio.Card
-                                value="on"
-                                key="on"
-                                className="radio-root"
-                            >
-                                <div className="radio-root-label">
-                                    <Radio.Indicator />
-                                    <span className="radio-label">On</span>
-                                </div>
-                                <DateInput
-                                    disabled={endsMode !== "on"}
-                                    value={endsOnDate}
-                                    onChange={setEndsOnDate}
-                                    minDate={dateStr}
-                                    valueFormat="MMM D, YYYY"
-                                    w={150}
-                                    aria-label="Ends on date"
-                                />
-                            </Radio.Card>
-                            <Radio.Card
-                                value="after"
-                                key="after"
-                                className="radio-root"
-                            >
-                                <div className="radio-root-label">
-                                    <Radio.Indicator />
-                                    <span className="radio-label">After</span>
-                                </div>
-                                <NumberInput
-                                    suffix={endsAfterOccurrences === 1 ? " occurrence" : " occurrences"}
-                                    w={150}
-                                    value={endsAfterOccurrences}
-                                    onChange={setEndsAfterOccurrences}
-                                    onBlur={handleAfterBlur}
-                                    disabled={endsMode !== "after"}
-                                    min={MIN_NUM_INPUT_VALUE}
-                                    max={MAX_NUM_INPUT_VALUE}
-                                    clampBehavior="blur"
-                                    allowNegative={false}
-                                    allowDecimal={false}
-                                    aria-label="After"
-
-                                />
-                            </Radio.Card>
-                        </Group>
-                    </Radio.Group>
-                </div>
             </div>
-            {/* TODO: Footer buttons */}
-            <Button onClick={handleCancel}>Cancel</Button>
-            <Button onClick={handleSave}>Save</Button>
+            <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0 }}>
+                {/* TODO: Footer buttons */}
+                <Group w="100%" justify="flex-end">
+                    <Button h="auto" p=".5rem 1rem" size="sm" fw={500} radius="sm" color="rgb(5, 5, 73)" variant="outline" onClick={handleCancel}>Cancel</Button>
+                    <Button h="auto" p=".5rem 1rem" size="sm" fw={500} radius="sm" color="rgb(5, 5, 73)" variant="filled" onClick={handleSave}>Save</Button>
+                </Group>
+            </Modal.Header>
         </Modal>
     )
 }

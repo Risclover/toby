@@ -1,6 +1,6 @@
 import { Stack, Text } from "@mantine/core";
 import { useState } from "react";
-import { useClickOutside } from "@mantine/hooks";
+import { useClickOutside, useDisclosure } from "@mantine/hooks";
 import { type CalendarEvent, useAuthenticateQuery, useDeleteEventMutation } from "@/store";
 import { useDayEvents } from "../../hooks/useDayEvents";
 import { useHousehold, useIsMobile } from "@/hooks";
@@ -37,8 +37,7 @@ export const EventsModalList = ({ householdId, date, onAddEvent, onEditEvent, fi
 
     useClickOutside(() => setOpenDotId(null), null, [], isMobile);
 
-    const handleDelete = (eventId: number) => deleteEvent({ id: eventId, householdId });
-    const rowProps: DayEventRowSharedProps = { onEdit: onEditEvent, onDelete: handleDelete, openDotId, onOpenDot: setOpenDotId };
+    const rowProps: DayEventRowSharedProps = { onEdit: onEditEvent, openDotId, onOpenDot: setOpenDotId };
     const attendeesOf = (occ: Occurrence): MemberLike[] =>
         getEventAttendees((occ.payload as { source: CalendarEvent }).source, household);
 

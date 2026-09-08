@@ -93,7 +93,7 @@ class Event(db.Model):
             "startUtc": to_utc_z(self.start_utc),
             "endUtc": to_utc_z(self.end_utc),
             "tzid": self.tzid,
-            "exdate": self.exdate,
+            "exdate": self.exdate.split(",") if self.exdate else [],
             "hasTime": bool(self.has_time),
             "rrule": self.rrule,
             "visibility": self.visibility,

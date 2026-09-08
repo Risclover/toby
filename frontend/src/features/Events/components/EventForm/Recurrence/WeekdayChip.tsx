@@ -36,7 +36,7 @@ export const WeekdayChip = ({ label, value, tooltip }: WeekdayChipProps) => {
                 icon={null}
                 styles={dayChipStyles}
                 classNames={{ label: "day-chip" }}
-                color="blue.6"
+                color="rgb(5, 5, 73)"
             >
                 {label}
             </Chip>

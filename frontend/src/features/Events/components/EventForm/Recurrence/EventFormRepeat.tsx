@@ -1,4 +1,4 @@
-import { CloseButton, Combobox, InputBase, useCombobox, useModalsStack } from "@mantine/core"
+import { CloseButton, Combobox, InputBase, ScrollArea, useCombobox, useModalsStack } from "@mantine/core"
 import type { DateTimeStringValue } from "@mantine/dates"
 import dayjs from "dayjs"
 import { nthWeekdaySuffix, describeCustomRecurrenceRule, matchingPresetKind } from "../../../utils/recurrence";
@@ -69,6 +69,7 @@ export const EventFormRepeat = ({ dateValue, stack, customRule, repeatKind, onRe
         <div className="event-form-repeat-dropdown">
             <Combobox
                 store={combobox}
+                floatingHeight="viewport"
                 onOptionSubmit={(val) => {
                     // Mantine fires onOptionSubmit for EVERY option click,
                     // even when that option also has its own onClick prop --
@@ -122,17 +123,19 @@ export const EventFormRepeat = ({ dateValue, stack, customRule, repeatKind, onRe
                     </InputBase>
                 </Combobox.Target>
                 <Combobox.Dropdown>
-                    <Combobox.Options>
-                        {options}
-                        {customLabel && !customIsDuplicate && (
-                            <Combobox.Option value="custom" key="custom">
-                                {customLabel}
+                    <ScrollArea.Autosize mah="var(--combobox-floating-options-max-height)">
+                        <Combobox.Options>
+                            {options}
+                            {customLabel && !customIsDuplicate && (
+                                <Combobox.Option value="custom" key="custom">
+                                    {customLabel}
+                                </Combobox.Option>
+                            )}
+                            <Combobox.Option value="open-custom" key="open-custom" onClick={toggleStack}>
+                                Custom...
                             </Combobox.Option>
-                        )}
-                        <Combobox.Option value="open-custom" key="open-custom" onClick={toggleStack}>
-                            Custom...
-                        </Combobox.Option>
-                    </Combobox.Options>
+                        </Combobox.Options>
+                    </ScrollArea.Autosize>
                 </Combobox.Dropdown>
             </Combobox>
         </div>

@@ -1,12 +1,16 @@
 import { Avatar, Group, Stack, Text, Tooltip } from "@mantine/core";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { type CalendarEvent, useAuthenticateQuery } from "@/store";
+import { type CalendarEvent, habitSlice, useAuthenticateQuery, useDeleteEventMutation } from "@/store";
 import { useHousehold, useIsSmallScreen, useIsTruncated } from "@/hooks";
 import { MemberDot } from "./MemberDot";
 import { formatFullName } from "@/utils/formatFullName";
 import { getEventAttendees, type DayEventRowSharedProps, type MemberLike, type Occurrence } from "../../types";
 import { EventMenu } from "../EventMenu";
+import { useDisclosure } from "@mantine/hooks";
+import { DeleteRecurringEventConfirmation } from "../DeleteRecurringEventConfirmation";
+import { DeleteConfirmation, KittyNotification } from "@/components";
+import { KittyIcons } from "@/assets";
 
 const parseWallClock = (wallClock: string) => new Date(wallClock.replace(" ", "T"));
 
@@ -60,13 +64,15 @@ type DayEventRowProps = DayEventRowSharedProps & {
     occurrence: Occurrence;
     groupOwnerId?: number;
 };
-export const DayEventRow = ({ occurrence, onEdit, onDelete, openDotId, onOpenDot, groupOwnerId }: DayEventRowProps) => {
+export const DayEventRow = ({ occurrence, onEdit, openDotId, onOpenDot, groupOwnerId }: DayEventRowProps) => {
     const { ref: titleRef, isTruncated } = useIsTruncated<HTMLParagraphElement>();
     const { data: currentUser } = useAuthenticateQuery();
     const { data: household } = useHousehold();
+    const [deleteEvent] = useDeleteEventMutation();
     const source = (occurrence.payload as { source: CalendarEvent }).source;
     const realId = Number(occurrence.recurringInstance?.recurringEventId ?? occurrence.id);
 
+    console.log('event to be deleted:', occurrence);
     const startDay = dayjs(parseWallClock(occurrence.start as string)).format("YYYY-MM-DD");
     const endDay = dayjs(parseWallClock(occurrence.end as string)).format("YYYY-MM-DD");
     const isMultiDay = startDay !== endDay;
@@ -82,6 +88,18 @@ export const DayEventRow = ({ occurrence, onEdit, onDelete, openDotId, onOpenDot
 
     const attendeesToShow = getEventAttendees(source, household);
 
+    const [opened, { open, close }] = useDisclosure(false);
+    const [secondOpened, secondHandlers] = useDisclosure(false);
+
+    const handleDeleteEvent = async () => {
+        await deleteEvent({ id: Number(occurrence.payload?.source.id), householdId: household.id }).unwrap();
+        KittyNotification({
+            title: "Event deleted",
+            message: <>Done - "<strong style={{ fontWeight: 500 }}>{occurrence.payload?.source.title}</strong>" has been removed from your events. Later, gator!</>,
+            color: "green",
+            icon: KittyIcons.Huggy
+        })
+    }
     return (
         <div className="event-row">
             <Stack gap={4}>
@@ -115,11 +133,20 @@ export const DayEventRow = ({ occurrence, onEdit, onDelete, openDotId, onOpenDot
                         </Group>
                     </Group>
                     {(source.household.adminId === currentUser.id || source.creatorId === currentUser.id) && (
-                        <EventMenu isEditing={false} setIsEditing={(val) => val && onEdit(source)} onDelete={() => onDelete(realId)} />
+                        <EventMenu isEditing={false} setIsEditing={(val) => val && onEdit(source)} occurrence={occurrence} opened={opened} open={open} close={close} secondOpened={secondOpened} secondHandlers={secondHandlers} />
                     )}
                 </Group>
                 <Text size="13px" inline fw={400} c="dimmed">{timeLabel}</Text>
             </Stack>
+            <DeleteRecurringEventConfirmation opened={opened} onClose={close} />
+            <DeleteConfirmation
+                itemType="event"
+                itemName={occurrence.payload?.source.title}
+                modalTitle="Confirm delete event"
+                opened={secondOpened}
+                setShowDeleteConfirmation={secondHandlers.close}
+                handleDeleteItem={handleDeleteEvent}
+            />
         </div>
     );
 };
