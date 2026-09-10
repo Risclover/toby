@@ -1,12 +1,12 @@
 import { Chip, Tooltip } from "@mantine/core";
 
-type WeekdayChipProps = {
+type Props = {
     label: string;
     value: string;
     tooltip: string;
 }
 
-export const WeekdayChip = ({ label, value, tooltip }: WeekdayChipProps) => {
+export const WeekdayChip = ({ label, value, tooltip }: Props) => {
     const dayChipStyles = {
         label: {
             width: 32,
@@ -25,7 +25,7 @@ export const WeekdayChip = ({ label, value, tooltip }: WeekdayChipProps) => {
                 duration: 100,
                 transition: {
                     in: { opacity: 1, transform: 'scale(1) translateY(0)' },
-                    out: { transform: 'scale(0.8) translateY(0)', opacity: 0 },
+                    out: { opacity: 0, transform: 'scale(0.8) translateY(0)' },
                     common: { transformOrigin: 'bottom' },
                     transitionProperty: 'opacity, transform',
                 },

@@ -6,7 +6,8 @@ import { useDayEvents } from "../../hooks/useDayEvents";
 import { useHousehold, useIsMobile } from "@/hooks";
 import { DayEventRow } from "./DayEventRow";
 import { MemberEventGroups } from "./MemberEventGroups";
-import { getEventAttendees, type DayEventRowSharedProps, type MemberLike, type Occurrence, type UserGroup } from "../../types";
+import { type DayEventRowSharedProps, type MemberLike, type Occurrence, type UserGroup } from "../../types";
+import { getEventAttendees } from "../../utils/getEventAttendees";
 
 type Props = {
     householdId: number;

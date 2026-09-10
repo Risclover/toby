@@ -15,6 +15,7 @@ import { RemainingChars } from "@/components/RemainingChars";
 import { useModalFocus } from "@/hooks/useModalFocus";
 import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
 import { InfoTooltip } from "@/components/InfoTooltip";
+import { ButtonStandard } from "@/components/ButtonStandard";
 
 interface ReminderFormValues {
     message: string;
@@ -180,28 +181,18 @@ export const CreateReminder = () => {
                 <Space h="md" />
 
                 <Group justify="flex-end">
-                    <Button
+                    <ButtonStandard
                         onClick={handleClose}
-                        className="tasklist-settings-footer-btn"
-                        size="compact-sm"
-                        color="var(--mantine-color-dark-6)"
                         variant="outline"
-                        fw={500}
-                    >
-                        Cancel
-                    </Button>
+                        label="Cancel"
+                    />
                     {/* type="submit" triggers form.onSubmit — no onClick needed */}
-                    <Button
+                    <ButtonStandard
                         type="submit"
-                        className="tasklist-settings-footer-btn"
-                        size="compact-sm"
-                        variant="light"
-                        color="rgb(5, 5, 73)"
+                        variant="filled"
                         disabled={form.values.message.trim().length === 0 || memberIds.length === 0}
-                        fw={500}
-                    >
-                        Save
-                    </Button>
+                        label="Save"
+                    />
                 </Group>
             </form>
         </Modal>

@@ -1,4 +1,5 @@
 import { Button, Group, Modal, Text } from "@mantine/core"
+import { ButtonStandard } from "../ButtonStandard";
 
 type Props = {
     opened: boolean;
@@ -12,28 +13,25 @@ export const MassDeleteConfirmation = ({ opened, close, count, handleDelete }: P
             <Text c="black" size="sm" style={{ lineHeight: 1.2 }}>Are you sure you want to permanently delete <strong style={{ fontWeight: 600 }}>{count} task{count !== 1 && "s"}</strong> from your list of time-sensitive tasks? This action cannot be undone.</Text>
 
             <Group justify="flex-end" w="100%" gap="0.5rem" mt="0.5rem">
-                <Button
-                    className="tasklist-settings-footer-btn"
-                    size="compact-sm"
+                <ButtonStandard
+                    label="Cancel"
                     onClick={() => {
                         close();
                     }}
                     color="var(--mantine-color-dark-6)"
                     variant="outline"
-                >
-                    Cancel
-                </Button>
-                <Button
-                    className="tasklist-settings-footer-btn"
-                    size="compact-sm"
+                />
+
+                <ButtonStandard
+                    label="Confirm"
+                    variant="filled"
                     onClick={(e) => {
                         e.stopPropagation();
                         handleDelete();
                     }}
                     color="red.7"
-                >
-                    Confirm
-                </Button>
+                />
+
             </Group>
         </Modal>
     )

@@ -3,9 +3,11 @@ import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { useState } from "react";
 
-export type EventVisibility = 'public' | 'private';
+const TIME_FORMAT = 'HH:mm'; // 'HH:mm:ss' if TimeInput has withSeconds
+const THIRTY_MIN_MS = 30 * 60 * 1000;
+const DEFAULT_EVENT_DURATION_HOURS = 1;
 
-export interface EventFormValues {
+export type EventFormValues = {
     title: string;
     startDate: string; // "YYYY-MM-DD"
     endDate: string;   // "YYYY-MM-DD" | ""
@@ -17,16 +19,13 @@ export interface EventFormValues {
     assignedUserIds: number[];
 }
 
-interface UseEventFormArgs {
+
+type Props = {
     currentUserId: number;
     startDate: string;
 }
 
-const TIME_FORMAT = 'HH:mm'; // 'HH:mm:ss' if TimeInput has withSeconds
-const THIRTY_MIN_MS = 30 * 60 * 1000;
-const DEFAULT_EVENT_DURATION_HOURS = 1;
-
-export function useEventForm({ currentUserId, startDate }: UseEventFormArgs) {
+export function useEventForm({ currentUserId, startDate }: Props) {
 
     const [allDay, setAllDay] = useState(true);
     const [startDateValue, setStartDateValue] = useState(startDate);

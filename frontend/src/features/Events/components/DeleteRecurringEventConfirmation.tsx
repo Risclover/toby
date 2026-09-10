@@ -9,6 +9,7 @@ type Props = {
     occurrence: Occurrence;
     occurrenceStart: Date | string;
 }
+
 export const DeleteRecurringEventConfirmation = ({ opened, onClose, occurrence, occurrenceStart }: Props) => {
     const [checked, setChecked] = useState("one-event");
     const [excludeEventOccurrence, { isLoading: excluding }] = useExcludeEventOccurrenceMutation();
@@ -53,7 +54,7 @@ export const DeleteRecurringEventConfirmation = ({ opened, onClose, occurrence, 
             title="Delete recurring event"
             opened={opened}
             onClose={onClose}
-            size="sm"
+            size="md"
             centered
             onExitTransitionEnd={() => setChecked('one-event')}
         >
@@ -76,7 +77,7 @@ export const DeleteRecurringEventConfirmation = ({ opened, onClose, occurrence, 
                 </Stack>
             </Radio.Group>
             <Text size="sm" c="gray.9" lh={1.2} my="1rem"><strong>Note</strong>: Once you click submit, you can't bring it back - are you sure?</Text>
-            <Group w="100%" justify="flex-end">
+            <Group justify="flex-end" w="100%" gap="0.5rem" mt="md">
                 <Button
                     fw={500}
                     color="rgb(5, 5, 73)"

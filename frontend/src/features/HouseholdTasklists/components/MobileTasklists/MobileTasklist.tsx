@@ -22,6 +22,7 @@ import { useState } from "react";
 import { DeleteConfirmation } from "@/components";
 import { useAuthenticateQuery, useGetHouseholdQuery } from "@/store";
 import { useHousehold } from "@/hooks/useHousehold";
+import { ButtonStandard } from "@/components/ButtonStandard";
 
 export const MobileTasklist = () => {
     const { tasklistId } = useParams();
@@ -97,25 +98,19 @@ export const MobileTasklist = () => {
                                 If you're finished with this list, consider archiving or deleting it.
                             </Text>
                             <Group w="100%" gap="0.5rem" justify="center">
-                                <Button
+                                <ButtonStandard
                                     color="var(--tasklist-color)"
                                     variant="outline"
-                                    className="tasklist-settings-footer-btn"
+                                    label="Archive list"
                                     onClick={handleArchiveList}
-                                    fw={500}
-                                >
-                                    Archive list
-                                </Button>
-                                <Button
+                                />
+                                <ButtonStandard
                                     color="var(--mantine-color-red-7)"
                                     variant="filled"
-                                    className="tasklist-settings-footer-btn"
                                     loaderProps={{ children: 'Saving...' }}
                                     onClick={() => setShowDeleteConfirmation(true)}
-                                    fw={500}
-                                >
-                                    Delete list
-                                </Button>
+                                    label="Delete list"
+                                />
                             </Group>
                         </Stack>
                     </Card>

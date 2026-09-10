@@ -10,8 +10,7 @@ import "../styles/DashboardMiniCalendar.css";
 import { useAuthenticateQuery, type User } from "@/store";
 import { useHousehold } from "@/hooks";
 import { DayEventsModal } from "./EventsModal/DayEventsModal";
-
-const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+import type { ModalId } from "../types";
 
 function toWallClock(isoWithOffset: string) {
     return isoWithOffset.slice(0, 19).replace("T", " ");
@@ -64,7 +63,6 @@ function startOfWeekSunday(d: Date): Date {
 
 const MAX_DOTS = 8;
 
-type ModalId = 'recurrence' | 'event-form' | 'events-list';
 type NavigableScreen = Exclude<ModalId, 'recurrence'>;
 
 type Props = {
@@ -89,7 +87,6 @@ export function DashboardMiniCalendar({
         { householdId },
         { skip: !householdId }
     );
-    const { data: household } = useHousehold();
     const { data: user } = useAuthenticateQuery();
 
     const scheduleEvents = useMemo(

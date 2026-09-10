@@ -22,7 +22,4 @@ export type DayEventRowSharedProps = {
     onOpenDot: (id: string) => void;
 };
 
-export const getEventAttendees = (source: CalendarEvent, household?: { members: MemberLike[] }): MemberLike[] =>
-    source.attendees.length > 0
-        ? source.attendees
-        : (source.allMembers ? household?.members ?? [] : []);
+export type ModalId = 'recurrence' | 'event-form' | 'events-list';

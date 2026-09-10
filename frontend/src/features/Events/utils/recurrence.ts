@@ -18,20 +18,26 @@ export type CustomRecurrenceRule =
     | ({ freq: "MONTHLY"; mode: "day-of-month" | "nth-weekday" } & RecurrenceBase)
     | ({ freq: "YEARLY" } & RecurrenceBase);
 
-export const WEEKDAY_ORDER = [
-    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
-];
+export const WEEKDAY_ORDER = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const WEEKDAYS_ONLY = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const ORDINAL_WORDS = ["first", "second", "third", "fourth", "fifth"];
+
+
+
 
 function sortByWeekOrder(days: string[]): string[] {
     return [...days].sort((a, b) => WEEKDAY_ORDER.indexOf(a) - WEEKDAY_ORDER.indexOf(b));
 }
 
-function pluralizeUnit(unit: string, count: number): string {
+
+export function pluralizeUnit(unit: string, count: number): string {
     return count === 1 ? unit : `${unit}s`;
 }
 
-const ORDINAL_WORDS = ["first", "second", "third", "fourth", "fifth"];
+
+
+
+/** ---------- Custom recurrence description building ---------- */
 
 export function nthWeekdaySuffix(date: dayjs.Dayjs): string {
     const weekday = date.format("dddd");
@@ -41,7 +47,7 @@ export function nthWeekdaySuffix(date: dayjs.Dayjs): string {
 }
 
 /** Collapses a full 7-day or Mon-Fri selection into the shorthand Google
- * Calendar uses, instead of spelling out every day. */
+ * Calendar uses, instead of spelling out every day (e.g., "weekdays" instead of "Monday, Tuesday, Wednesday, Thursday, Friday") */
 function describeWeeklyDays(sortedDays: string[], date: dayjs.Dayjs): string {
     if (sortedDays.length === 0) return date.format("dddd");
     if (sortedDays.length === 7) return "all days";
@@ -64,6 +70,8 @@ function describeEnd(end: RecurrenceEnd): string {
     }
 }
 
+
+/** Describing 1 of a frequency vs. several (e.g., 1 = "daily" vs. several = "every x days") */
 function describeBase(rule: CustomRecurrenceRule, date: dayjs.Dayjs): string {
     switch (rule.freq) {
         case "DAILY":
@@ -160,8 +168,8 @@ function toIcsUntilDate(dateStr: string): string {
  * no separate zone conversion needed. RFC5545 requires UNTIL to be a UTC
  * DATE-TIME when DTSTART has a time component. */
 function toIcsUntilUtc(dateStr: string): string {
-    const [y, m, d] = dateStr.split("-").map(Number);
-    const nextLocalMidnight = new Date(y, (m ?? 1) - 1, (d ?? 1) + 1, 0, 0, 0, 0);
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const nextLocalMidnight = new Date(year, (month ?? 1) - 1, (day ?? 1) + 1, 0, 0, 0, 0);
     const lastInstant = new Date(nextLocalMidnight.getTime() - 1000);
     return lastInstant.toISOString().slice(0, 19).replace(/[-:]/g, "") + "Z";
 }
@@ -171,7 +179,7 @@ function customRuleToRRuleString(rule: CustomRecurrenceRule, date: dayjs.Dayjs, 
     if (rule.interval > 1) parts.push(`INTERVAL=${rule.interval}`);
 
     if (rule.freq === "WEEKLY") {
-        parts.push(`BYDAY=${rule.byDay.map((d) => DAY_TO_ICS[d]).join(",")}`);
+        parts.push(`BYDAY=${rule.byDay.map((day) => DAY_TO_ICS[day]).join(",")}`);
     } else if (rule.freq === "MONTHLY") {
         parts.push(
             rule.mode === "day-of-month" ? `BYMONTHDAY=${date.date()}` : `BYDAY=${bydayOrdinalCode(date)}`
@@ -235,9 +243,13 @@ export function parseRRule(
     if (!rruleStr) return { repeatKind: "none", customRule: null };
 
     const parts = Object.fromEntries(
-        rruleStr.split(";").map((part) => part.split("=") as [string, string])
+        rruleStr
+            .split(";")
+            .map((part) => part.split("=") as [string, string])
     );
+
     const freq = parts.FREQ;
+
     if (freq !== "DAILY" && freq !== "WEEKLY" && freq !== "MONTHLY" && freq !== "YEARLY") {
         // Unrecognized/unsupported rule shape -- fall back to "none" rather
         // than guessing or crashing on something this UI can't represent.
@@ -252,6 +264,7 @@ export function parseRRule(
             : { type: "never" };
 
     let rule: CustomRecurrenceRule;
+
     if (freq === "WEEKLY") {
         const byDay = sortByWeekOrder((parts.BYDAY ?? "").split(",").filter(Boolean).map((code) => ICS_TO_DAY[code]));
         rule = { freq, interval, end, byDay };

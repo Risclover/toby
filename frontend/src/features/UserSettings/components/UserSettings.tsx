@@ -27,6 +27,8 @@ import { InfoIcon } from "@/assets";
 import HelpOutlineRoundedIcon from '@mui/icons-material/HelpOutlineRounded';
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { FormColorInput } from "@/components";
+import { ButtonStandard } from "@/components/ButtonStandard";
+import { ModalFooter } from "@/components/ModalFooter";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -439,36 +441,29 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                     </SettingsSection>
                 </Stack>
             </div>
-            <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ flexShrink: 0, borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}>
+            <ModalFooter borderTop="1px solid var(--mantine-color-gray-3)">
                 <Group justify="space-between" w="100%">
                     <Button size="compact-sm" variant="transparent" color="rgb(5, 5, 73)" onClick={handleResetToDefaults} fw={500}>Reset to default</Button>
                     <Group gap="0.5rem">
-                        <Button
+                        <ButtonStandard
                             variant="outline"
-                            className="tasklist-settings-footer-btn"
+                            label="Cancel"
                             onClick={() => form.reset()}
                             disabled={!form.isDirty() || !form.isValid()}
-                            fw={500}
-                            color="rgb(5, 5, 73)"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
+                        />
+
+                        <ButtonStandard
                             type="submit"
                             variant="filled"
-                            color="rgb(5, 5, 73)"
                             disabled={!hasChanges || !form.isValid()}
-                            loading={isSubmitting}
+                            isLoading={isSubmitting}
                             loaderProps={{ children: "Saving..." }}
-                            className="tasklist-settings-footer-btn"
-                            fw={500}
+                            label="Update"
                             onClick={handleSubmit}
-                        >
-                            Update
-                        </Button>
+                        />
                     </Group>
                 </Group>
-            </Modal.Header>
+            </ModalFooter>
         </Modal >
     );
 };

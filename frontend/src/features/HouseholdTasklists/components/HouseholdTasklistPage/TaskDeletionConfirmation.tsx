@@ -1,3 +1,4 @@
+import { ButtonStandard } from "@/components/ButtonStandard";
 import { useDeleteTaskMutation } from "@/store/taskSlice";
 import { Button, Group, Modal, Space, Text } from "@mantine/core"
 import { notifications } from "@mantine/notifications";
@@ -28,8 +29,8 @@ export const TaskDeletionConfirmation = ({ title, opened, onClose, listId, taskI
         <Text size="sm" c="black">Are you sure you want to delete the task <strong className="task-deletion-title">{title}</strong>? This action cannot be undone.</Text>
         <Space h="md" />
         <Group justify="flex-end">
-            <Button className="tasklist-settings-footer-btn" size="compact-sm" radius="sm" variant="outline" color="var(--tasklist-color)" onClick={onClose}>Cancel</Button>
-            <Button className="tasklist-settings-footer-btn" size="compact-sm" color="red" radius="sm" variant="" onClick={handleTaskDeletion}>Confirm</Button>
+            <ButtonStandard variant="outline" color="var(--tasklist-color)" onClick={onClose} label="Cancel" />
+            <ButtonStandard label="Confirm" variant="filled" color="red" onClick={handleTaskDeletion} />
         </Group>
     </Modal>
 }

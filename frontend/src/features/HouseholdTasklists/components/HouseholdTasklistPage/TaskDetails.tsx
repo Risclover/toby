@@ -15,6 +15,7 @@ import { useIsSmallScreen } from "@/hooks";
 import { useEffect } from "react";
 import { useGetTaskQuery } from "@/store";
 import { DeleteConfirmation } from "@/components";
+import { ButtonStandard } from "@/components/ButtonStandard";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -152,28 +153,22 @@ export const TaskDetails = ({ opened, close, taskId, listId, householdId }: Prop
                         {...form.getInputProps("notes")}
                     />
                     <Group justify="flex-end" mt="md">
-                        <Button
-                            className="tasklist-settings-footer-btn"
+                        <ButtonStandard
                             variant="outline"
                             color="var(--tasklist-color)"
                             onClick={() => form.reset()}
                             disabled={!form.isDirty() || !form.isValid()}
-                            fw={500}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            className="tasklist-settings-footer-btn"
+                            label="Cancel"
+                        />
+                        <ButtonStandard
+                            label="Update"
                             variant="filled"
                             color="var(--tasklist-color)"
                             onClick={handleSaveTaskDetails}
-                            loading={isSubmitting}
+                            isLoading={isSubmitting}
                             loaderProps={{ children: 'Saving...' }}
                             disabled={!form.isDirty() || !form.isValid()}
-                            fw={500}
-                        >
-                            Update
-                        </Button>
+                        />
                     </Group>
                 </div>
             </div>

@@ -10,6 +10,8 @@ import { MassDeleteConfirmation } from "./MassDeleteConfirmation"
 import { KittyNotification } from "../KittyNotification"
 import { KittyIcons } from "@/assets"
 import { rgbToHex } from "@mui/material/styles"
+import { ModalFooter } from "../ModalFooter"
+import { ButtonStandard } from "../ButtonStandard"
 
 type TaskItem = {
     id: number
@@ -236,38 +238,12 @@ export const TimeSensitiveModal = ({ opened, close, activeTab }: Props) => {
                 />
             </Tabs>
 
-            <Modal.Header
-                component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}
-            >
+            <ModalFooter borderTop="1px solid var(--mantine-color-gray-3)">
                 <Group gap=".5rem" justify="flex-end" w="100%">
-                    <Button
-                        radius="sm"
-                        size="sm"
-                        p=".5rem 1rem"
-                        h="auto"
-                        variant="outline"
-                        fw={500}
-                        color="red"
-                        onClick={() => setShowDeleteConfirmation(true)}
-                        disabled={getSelectedCount(currentTab) === 0}
-                    >
-                        Delete
-                    </Button>
-                    <Button
-                        radius="sm"
-                        size="sm"
-                        p=".5rem 1rem"
-                        h="auto"
-                        variant="filled"
-                        fw={500}
-                        color="rgb(5, 5, 73)"
-                        onClick={handleMassComplete}
-                        disabled={getSelectedCount(currentTab) === 0}
-                    >
-                        Complete
-                    </Button>
+                    <ButtonStandard label="Delete" onClick={() => setShowDeleteConfirmation(true)} disabled={getSelectedCount(currentTab) === 0} variant="outline" color="red" />
+                    <ButtonStandard label="Complete" onClick={handleMassComplete} disabled={getSelectedCount(currentTab) === 0} variant="filled" />
                 </Group>
-            </Modal.Header>
+            </ModalFooter>
             {/* <DeleteConfirmation
                 modalTitle="Bulk delete tasks"
                 itemName={`${list.length}`}

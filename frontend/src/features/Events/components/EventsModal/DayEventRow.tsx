@@ -5,67 +5,26 @@ import { type CalendarEvent, habitSlice, useAuthenticateQuery, useDeleteEventMut
 import { useHousehold, useIsSmallScreen, useIsTruncated } from "@/hooks";
 import { MemberDot } from "./MemberDot";
 import { formatFullName } from "@/utils/formatFullName";
-import { getEventAttendees, type DayEventRowSharedProps, type MemberLike, type Occurrence } from "../../types";
+import { type DayEventRowSharedProps, type MemberLike, type Occurrence } from "../../types";
 import { EventMenu } from "../EventMenu";
 import { useDisclosure } from "@mantine/hooks";
 import { DeleteRecurringEventConfirmation } from "../DeleteRecurringEventConfirmation";
 import { DeleteConfirmation, KittyNotification } from "@/components";
 import { KittyIcons } from "@/assets";
 import { UnassignSelfConfirmation } from "../UnassignSelfConfirmation";
+import { getEventAttendees } from "../../utils/getEventAttendees";
 
 const parseWallClock = (wallClock: string) => new Date(wallClock.replace(" ", "T"));
 
 const formatEventDateTime = (wallClock: string) =>
     dayjs(parseWallClock(wallClock)).format(`MMM D${dayjs().year() !== dayjs(parseWallClock(wallClock)).year() ? ", YYYY" : ""}, h:mma`);
 
-const AttendeeDot = ({
-    member,
-    dotId,
-    openDotId,
-    onOpenDot,
-}: {
-    member: MemberLike;
-    dotId: string;
-    openDotId: string | null;
-    onOpenDot: (id: string) => void;
-}) => {
-    const isSmallScreen = useIsSmallScreen(475);
-    const [localOpened, setLocalOpened] = useState(false);
-    const opened = isSmallScreen ? openDotId === dotId : localOpened;
-
-    const handleOpenedChange = (val: boolean) => {
-        if (isSmallScreen) {
-            if (val) onOpenDot(dotId);
-        } else {
-            setLocalOpened(val);
-        }
-    };
-
-    return (
-        <Tooltip
-            label={
-                <Group gap={6} wrap="nowrap">
-                    <Avatar src={member.profileImg} size="xs" radius="xl" />
-                    <Text size="sm">{formatFullName(member)}</Text>
-                </Group>
-            }
-            withArrow
-            position="top"
-            transitionProps={{ transition: "pop", duration: 100 }}
-            withinPortal
-            events={{ hover: true, focus: true, touch: true }}
-            opened={opened}
-        >
-            <MemberDot color={member.color} name={formatFullName(member)} opened={opened} setOpened={handleOpenedChange} />
-        </Tooltip>
-    );
-};
-
-type DayEventRowProps = DayEventRowSharedProps & {
+type Props = DayEventRowSharedProps & {
     occurrence: Occurrence;
     groupOwnerId?: number;
 };
-export const DayEventRow = ({ occurrence, onEdit, openDotId, onOpenDot, groupOwnerId }: DayEventRowProps) => {
+
+export const DayEventRow = ({ occurrence, onEdit, openDotId, onOpenDot, groupOwnerId }: Props) => {
     const { ref: titleRef, isTruncated } = useIsTruncated<HTMLParagraphElement>();
     const { data: currentUser } = useAuthenticateQuery();
     const { data: household } = useHousehold();
@@ -167,10 +126,52 @@ export const DayEventRow = ({ occurrence, onEdit, openDotId, onOpenDot, groupOwn
                 opened={thirdOpened}
                 onClose={thirdHandlers.close}
                 occurrence={occurrence}
-                eventTitle={occurrence.payload?.source.title}
-                onlyAssignedUser={occurrence.payload?.source.attendeeIds?.length === 1 && occurrence.payload?.source.attendeeIds.includes(currentUser.id)}
             />
 
         </div>
+    );
+};
+
+type AttendeeDotProps = {
+    member: MemberLike;
+    dotId: string;
+    openDotId: string | null;
+    onOpenDot: (id: string) => void;
+}
+const AttendeeDot = ({
+    member,
+    dotId,
+    openDotId,
+    onOpenDot,
+}: AttendeeDotProps) => {
+    const isSmallScreen = useIsSmallScreen(475);
+    const [localOpened, setLocalOpened] = useState(false);
+    const opened = isSmallScreen ? openDotId === dotId : localOpened;
+
+    const handleOpenedChange = (val: boolean) => {
+        if (isSmallScreen) {
+            if (val) onOpenDot(dotId);
+        } else {
+            setLocalOpened(val);
+        }
+    };
+
+    return (
+        <Tooltip
+            label={
+                <Group gap={6} wrap="nowrap">
+                    <Avatar src={member.profileImg} size="xs" radius="xl" />
+                    <Text size="sm">{formatFullName(member)}</Text>
+                </Group>
+            }
+            withArrow
+            position="top"
+            transitionProps={{ transition: "pop", duration: 100 }}
+            withinPortal
+            events={{ hover: true, focus: true, touch: true }}
+            opened={opened}
+        >
+            <MemberDot color={member.color} name={formatFullName(member)} opened={opened} setOpened={handleOpenedChange} />
+        </Tooltip>
     );
 };

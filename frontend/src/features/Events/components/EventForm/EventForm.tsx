@@ -1,62 +1,42 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Modal, Button, TextInput, Group, Stack, Text, useModalsStack, getDefaultZIndex, Checkbox, Select, SegmentedControl, Input, Switch, Avatar, type MultiSelectProps, MultiSelect, InputWrapper } from "@mantine/core";
-import { DatePickerInput, DateTimePicker, TimeInput, TimePicker, type DateFormatter } from "@mantine/dates";
 import dayjs, { Dayjs } from "dayjs";
-import { useCreateEventMutation, useUpdateEventMutation, type CalendarEvent } from "@/store/eventSlice";
-import "../../styles/QuickAddEvent.css";
-import { useHousehold, useIsSmallScreen } from "@/hooks";
-import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
-import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import { RemainingChars } from "@/components/RemainingChars";
-import { ClockIcon } from "@/assets/icons/ClockIcon";
-import { useModalFocus } from "@/hooks/useModalFocus";
-import { useAuthenticateQuery, useGetUserSettingsQuery } from "@/store";
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { Modal, Group, Stack, useModalsStack, } from "@mantine/core";
+
 import { EventFormRepeat } from "./Recurrence/EventFormRepeat";
 import { EventFormRepeatCustom } from "./Recurrence/EventFormRepeatCustom";
+import { useHousehold, useIsSmallScreen, useModalFocus } from "@/hooks";
+import { useEventForm } from "../../hooks/useEventForm";
+import { useAuthenticateQuery, useGetUserSettingsQuery, useCreateEventMutation, useUpdateEventMutation, type CalendarEvent } from "@/store";
 import { buildRRule, matchingPresetKind, parseRRule, type CustomRecurrenceRule, type PresetKind } from "../../utils/recurrence";
-import { useEventForm, type EventFormValues } from "../../hooks/useEventForm";
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { useId } from "@mantine/hooks";
+import type { ModalId } from "../../types";
+
+import "../../styles/QuickAddEvent.css";
+import { EventFormVisibility } from "./EventFormVisibility";
+import { EventFormAssignedUsers } from "./EventFormAssignedUsers";
+import { EventFormTitle } from "./EventFormTitle";
+import { EventFormDates } from "./EventFormDates";
+import { EventFormTimes } from "./EventFormTimes";
+import { ButtonStandard } from "@/components/ButtonStandard";
+import { ModalFooter } from "@/components/ModalFooter";
+import { combineLocalFromStrings } from "../../utils/combineLocalFromStrings";
+import { hmFromIso, ymdFromIso } from "../../utils/fromIso";
+import { roundUpToNearest30Min } from "../../utils/roundUpToNearest30Min";
+
 dayjs.extend(customParseFormat);
 
-function combineLocalFromStrings(dateStr: string, timeStr: string) {
-    const [y, m, d] = dateStr.split("-").map(Number);
-    const [hh = "0", mm = "0"] = timeStr.split(":");
-    return new Date(y, (m ?? 1) - 1, d ?? 1, Number(hh), Number(mm), 0, 0);
+export const DEFAULT_EVENT_DURATION_HOURS = 1;
+export const TIME_FORMAT = 'HH:mm'; // 'HH:mm:ss' if TimeInput has withSeconds
+
+type Props = {
+    householdId: number;
+    opened: boolean;
+    initialDate: Date;
+    onClose: () => void;
+    edit: boolean;
+    event?: CalendarEvent;
+    stack?: ReturnType<typeof useModalsStack<ModalId>>;
 }
-
-const ymdFromIso = (iso?: string | null, fallback = new Date()) =>
-    dayjs(iso ?? fallback).format("YYYY-MM-DD");
-
-const hmFromIso = (iso?: string | null) =>
-    iso ? dayjs(iso).format("HH:mm") : "";
-
-const DATE_PICKER_STYLES = {
-    section: { color: "rgb(5, 5, 73)" },
-    day: {
-        "&[data-weekend]": { color: "#4e0202" },
-        "&[data-selected], &[data-selected]:hover": {
-            backgroundColor: "#2563eb",
-            color: "white",
-        },
-    },
-};
-
-const DATE_PRESETS = [
-    { value: dayjs().format("YYYY-MM-DD HH:mm:ss"), label: "Today" },
-    { value: dayjs().add(1, "day").format("YYYY-MM-DD HH:mm:ss"), label: "Tomorrow" },
-    { value: dayjs().add(1, "week").format("YYYY-MM-DD HH:mm:ss"), label: "Next week" },
-    { value: dayjs().add(1, "month").format("YYYY-MM-DD HH:mm:ss"), label: "Next month" },
-];
-const TITLE_MAX_LENGTH = 100;
-const DEFAULT_EVENT_DURATION_HOURS = 1;
-const TIME_FORMAT = 'HH:mm'; // 'HH:mm:ss' if TimeInput has withSeconds
-const THIRTY_MIN_MS = 30 * 60 * 1000;
-
-type ModalId = 'recurrence' | 'event-form' | 'events-list';
-
-
 export function EventForm({
     householdId,
     opened,
@@ -65,84 +45,58 @@ export function EventForm({
     edit,
     event,
     stack
-}: {
-    householdId: number;
-    opened: boolean;
-    initialDate: Date;
-    onClose: () => void;
-    edit: boolean;
-    event?: CalendarEvent;
-    stack?: ReturnType<typeof useModalsStack<ModalId>>;
-}) {
-    const isSmallScreen = useIsSmallScreen(475);
-    const [createEvent, { isLoading: creating }] = useCreateEventMutation();
-    const [updateEvent, { isLoading: updating }] = useUpdateEventMutation();
-    const { ref: nameRef, transitionProps } = useModalFocus(!edit);
-    const isSaving = creating || updating;
+}: Props) {
+    // State
     const [repeatKind, setRepeatKind] = useState<PresetKind | 'custom'>('none');
     const [customRule, setCustomRule] = useState<CustomRecurrenceRule | null>(null);
+    const [recurrenceSessionId, setRecurrenceSessionId] = useState(0);
+
+    // Queries
     const { data: user } = useAuthenticateQuery();
     const { data: household } = useHousehold();
     const { data: userSettings } = useGetUserSettingsQuery(user.id);
 
-    const [recurrenceSessionId, setRecurrenceSessionId] = useState(0);
-    const { form, allDay, startDate, title } = useEventForm({
+    // Mutations
+    const [createEvent, { isLoading: creating }] = useCreateEventMutation();
+    const [updateEvent, { isLoading: updating }] = useUpdateEventMutation();
+
+    const isSmallScreen = useIsSmallScreen(475);
+    const { ref: nameRef, transitionProps } = useModalFocus(!edit);
+    const { form, startDate, title } = useEventForm({
         currentUserId: user.id,
-        startDate: event ? ymdFromIso(event.startUtc ?? undefined) : dayjs(initialDate).format("YYYY-MM-DD"),
+        startDate: event
+            ? ymdFromIso(event.startUtc ?? undefined)
+            : dayjs(initialDate).format("YYYY-MM-DD"),
     });
+
+    // Ref
     const lastEnteredStartTimeRef = useRef(form.getValues().startTime);
     const lastEnteredEndTimeRef = useRef(form.getValues().endTime);
     const endTimeManuallySetRef = useRef(false);
-    const titleId = useId();
+
+    // Effects
+    useEffect(() => {
+        if (!opened) return;
+        if (event?.id) {
+            seedFromEvent(event);
+        } else {
+            seedBlank(dayjs(initialDate).format("YYYY-MM-DD"));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [opened, event?.id, initialDate.getTime()]);
+
+    // Constants
     const allHouseholdMemberIds = useMemo(
         () => household?.members?.map((m: { id: number }) => m.id) ?? [],
         [household]
     );
 
-    const memberOptions = useMemo(
-        () => household?.members?.map((member: { id: number; firstName: string; lastName: string }) => ({
-            value: String(member.id),
-            label: `${member.firstName} ${member.lastName}`,
-        })) ?? [],
-        [household]
-    );
+    const isEditMode = edit && !!event;
+    const modalTitle = isEditMode ? "Edit event" : "Add event";
+    const isSaving = creating || updating;
+    const eventFormStackProps = stack?.register('event-form');
 
-    const memberAvatars = useMemo(() => Object.fromEntries(
-        household?.members?.map((member: { id: number; profileImg?: string | null }) => [String(member.id), member.profileImg]) ?? []
-    ), [household]);
-
-    const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) => (
-        <Group gap="sm">
-            <Avatar src={memberAvatars[option.value]} size="sm" radius="xl" />
-            <Text size="sm">{option.label}</Text>
-        </Group>
-    );
-
-    const handleMemberChange = (values: string[]) => {
-        const ids = values.map(Number);
-        form.setFieldValue('assignedUserIds', ids);
-        form.setFieldValue('allMembers', ids.length > 0 && ids.length === allHouseholdMemberIds.length);
-        form.validate();
-    };
-
-    const handleToggleAllMembers = (checked: boolean) => {
-        form.setFieldValue('allMembers', checked);
-        form.setFieldValue('assignedUserIds', checked ? allHouseholdMemberIds : []);
-        form.validate();
-    };
-
-    // The only place customRule and repeatKind should ever be updated
-    // together, in response to an actual Save in the custom recurrence
-    // modal -- not reactively (see the comment left in EventFormRepeat.tsx
-    // where the old useEffect used to live). If the freshly-saved rule
-    // happens to be identical to one of the plain presets, activate that
-    // preset instead of 'custom' -- same as the old effect's behavior,
-    // just no longer re-run on every remount.
-    const handleApplyCustomRule = (rule: CustomRecurrenceRule) => {
-        setCustomRule(rule);
-        const preset = matchingPresetKind(rule, dayjs(startDate));
-        setRepeatKind(preset ?? 'custom');
-    };
+    // Form seeds
 
     // Establishes a NEW baseline for this modal instance -- call whenever
     // it should represent a fresh, blank add for the given date.
@@ -201,45 +155,18 @@ export function EventForm({
         endTimeManuallySetRef.current = false;
     };
 
+    // Handlers
+    const handleApplyCustomRule = (rule: CustomRecurrenceRule) => {
+        setCustomRule(rule);
+        const preset = matchingPresetKind(rule, dayjs(startDate));
+        setRepeatKind(preset ?? 'custom');
+    };
 
-    useEffect(() => {
-        if (!opened) return;
-        if (event?.id) {
-            seedFromEvent(event);
-        } else {
-            seedBlank(dayjs(initialDate).format("YYYY-MM-DD"));
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [opened, event?.id, initialDate.getTime()]);
-
-    // Handles Cancel, the Modal's own close (X/Escape/backdrop), and a
-    // successful save alike -- all three mean "leave the form." What that
-    // actually does (return to a day's event list vs. fully close) is up
-    // to whatever `onClose` the caller passed in; this component doesn't
-    // know or care which. Resetting here matters regardless of what
-    // `onClose` does: without it, `opened` never flips back to false, so
-    // clicking the same day again after closing without saving wouldn't
-    // re-trigger the seeding effect -- the form would show whatever was
-    // left over from the abandoned edit instead of a fresh blank.
     const handleClose = () => {
         form.reset();
         setRepeatKind('none');
         setCustomRule(null);
         onClose();
-    };
-
-    // Mantine's validateInputOnChange only re-applies the CHANGED field's
-    // own error, not the whole errors object -- so a cross-field rule
-    // (e.g. "end time can't be before start time") never gets cleared by
-    // editing the *other* side of the relationship unless something forces
-    // a full revalidation. Wrap onChange to do that explicitly, for any
-    // field involved in one of these relationships.
-    const validateOnChange = <Key extends keyof EventFormValues>(
-        path: Key,
-        options?: Parameters<typeof form.getInputProps>[1]
-    ) => (value: any) => {
-        form.getInputProps(path, options).onChange(value);
-        form.validate();
     };
 
     const handleSave = async () => {
@@ -255,53 +182,60 @@ export function EventForm({
             if (edit && event) {
                 if (hasTime) {
                     const startLocal = combineLocalFromStrings(values.startDate, values.startTime);
-                    // Use the picked end date/time if there is one; fall back
-                    // to the old start+1hr default only when no end date was
-                    // ever set. If an end date was picked but no end time,
-                    // reuse the start time (same clock time, later date) --
-                    // flag if you want that to default to something else.
                     const endLocal = values.endDate
                         ? combineLocalFromStrings(values.endDate, values.endTime || values.startTime)
                         : dayjs(startLocal).add(DEFAULT_EVENT_DURATION_HOURS, "hour").toDate();
                     await updateEvent({
-                        id: event.id, householdId, title: values.title.trim(), tzid,
-                        startUtc: startLocal.toISOString(), endUtc: endLocal.toISOString(), rrule,
-                        visibility: values.visibility, allMembers: values.allMembers, attendeeIds: values.assignedUserIds
+                        id: event.id,
+                        householdId,
+                        title: values.title.trim(),
+                        tzid,
+                        startUtc: startLocal.toISOString(),
+                        endUtc: endLocal.toISOString(),
+                        rrule,
+                        visibility: values.visibility,
+                        allMembers: values.allMembers,
+                        attendeeIds: values.assignedUserIds
                     }).unwrap();
                 } else {
-                    // NOTE: values.endDate is NOT sent here -- the backend's
-                    // compute_allday_utc_bounds only accepts a single date,
-                    // so a multi-day all-day span isn't representable yet
-                    // without a backend change. allDay also isn't wired to
-                    // any checkbox in the UI yet, so this branch won't
-                    // actually run until that's added.
                     await updateEvent({
-                        id: event.id, householdId, title: values.title.trim(), tzid, date: values.startDate, rrule,
-                        visibility: values.visibility, allMembers: values.allMembers, attendeeIds: values.assignedUserIds
+                        id: event.id,
+                        householdId,
+                        title: values.title.trim(),
+                        tzid,
+                        date: values.startDate,
+                        rrule,
+                        visibility: values.visibility,
+                        allMembers: values.allMembers,
+                        attendeeIds: values.assignedUserIds
                     }).unwrap();
                 }
             } else {
                 if (hasTime) {
                     const startLocal = combineLocalFromStrings(values.startDate, values.startTime);
-                    // Use the picked end date/time if there is one; fall back
-                    // to the old start+1hr default only when no end date was
-                    // ever set. If an end date was picked but no end time,
-                    // reuse the start time (same clock time, later date) --
-                    // flag if you want that to default to something else.
                     const endLocal = values.endDate
                         ? combineLocalFromStrings(values.endDate, values.endTime || values.startTime)
                         : dayjs(startLocal).add(DEFAULT_EVENT_DURATION_HOURS, "hour").toDate();
                     await createEvent({
                         householdId, title: values.title.trim(),
-                        startUtc: startLocal.toISOString(), endUtc: endLocal.toISOString(), tzid, rrule,
-                        visibility: values.visibility, allMembers: values.allMembers, attendeeIds: values.assignedUserIds
+                        startUtc: startLocal.toISOString(),
+                        endUtc: endLocal.toISOString(),
+                        tzid,
+                        rrule,
+                        visibility: values.visibility,
+                        allMembers: values.allMembers,
+                        attendeeIds: values.assignedUserIds
                     }).unwrap();
                 } else {
-                    // NOTE: values.endDate is NOT sent here -- see comment
-                    // in the update branch above.
                     await createEvent({
-                        householdId, title: values.title.trim(), date: values.startDate, tzid, rrule,
-                        visibility: values.visibility, allMembers: values.allMembers, attendeeIds: values.assignedUserIds
+                        householdId,
+                        title: values.title.trim(),
+                        date: values.startDate,
+                        tzid,
+                        rrule,
+                        visibility: values.visibility,
+                        allMembers: values.allMembers,
+                        attendeeIds: values.assignedUserIds
                     } as any).unwrap();
                 }
             }
@@ -311,276 +245,58 @@ export function EventForm({
         }
     };
 
-    const isEditMode = edit && !!event;
-    const modalTitle = isEditMode ? "Edit event" : "Add event";
-
-    // stack?.register(...) returns undefined when this EventForm isn't
-    // rendered inside a Modal.Stack (e.g. from UpcomingThisWeek, which has
-    // no stack at all) -- spreading that straight into <Modal> left `opened`
-    // unset in that case, but ModalProps.opened is required, not optional.
-    // Fall back to the component's own `opened` prop whenever there's no
-    // stack registration to pull it from.
-    const eventFormStackProps = stack?.register('event-form');
-
-    const roundUpToNearest30Min = (time: Dayjs): Dayjs => {
-        const msSinceMidnight = time.diff(time.startOf('day'));
-        const roundedMs = Math.ceil(msSinceMidnight / THIRTY_MIN_MS) * THIRTY_MIN_MS;
-        return time.startOf('day').add(roundedMs, 'millisecond');
-    };
-
-    // Computed once, used to seed the form's initial values
-    const defaultStartTime = roundUpToNearest30Min(dayjs());
-    const defaultEndTime = defaultStartTime.add(DEFAULT_EVENT_DURATION_HOURS, 'hour');
-
-
-    const handleStartTimeChange = (value: string) => {
-        form.setFieldValue('startTime', value);
-
-        if (value && !endTimeManuallySetRef.current) {
-            const newEndTime = dayjs(value, TIME_FORMAT)
-                .add(DEFAULT_EVENT_DURATION_HOURS, 'hour')
-                .format(TIME_FORMAT);
-            form.setFieldValue('endTime', newEndTime);
-        }
-
-        form.validate();
-    };
-
-    const handleEndTimeChange = (value: string) => {
-        endTimeManuallySetRef.current = true;
-        form.setFieldValue('endTime', value);
-        form.validate();
-    };
-
-    const handleStartTimeBlur = () => {
-        if (!form.getValues().startTime) {
-            form.setFieldValue('startTime', lastEnteredStartTimeRef.current);
-        }
-    };
-
-    const handleEndTimeBlur = () => {
-        if (!form.getValues().endTime) {
-            form.setFieldValue('endTime', lastEnteredEndTimeRef.current);
-        }
-    };
-    const dateRangeValue: [string | null, string | null] = [
-        form.getValues().startDate || null,
-        form.getValues().endDate || null,
-    ];
-
-    const handleDateRangeChange = ([a, b]: [string | null, string | null]) => {
-        if (!a) {
-            form.setFieldValue('startDate', '');
-            form.setFieldValue('endDate', '');
-        } else if (!b) {
-            form.setFieldValue('startDate', a);
-            form.setFieldValue('endDate', '');
-        } else {
-            const [earlier, later] = a <= b ? [a, b] : [b, a];
-            form.setFieldValue('startDate', earlier);
-            form.setFieldValue('endDate', earlier === later ? '' : later);
-        }
-        form.validate();
-    };
-
-    const formatDateRangeValue: DateFormatter = ({ type, date, locale, format }) => {
-        if (type !== 'range' || !Array.isArray(date)) return '';
-
-        const [start, end] = date;
-        if (!start) return '';
-
-        const startLabel = dayjs(start).locale(locale).format(format);
-        if (!end || dayjs(end).isSame(start, 'day')) {
-            return startLabel;
-        }
-
-        return `${startLabel} \u2013 ${dayjs(end).locale(locale).format(format)}`;
-    };
     return (
-        <>
-            <Modal.Stack>
-                <Modal
-                    {...eventFormStackProps}
-                    opened={eventFormStackProps?.opened ?? opened}
-                    transitionProps={transitionProps}
-                    onClose={handleClose}
-                    radius="md"
-                    title={modalTitle}
-                    centered
-                    // keepMounted MUST be true, not false. Opening the
-                    // Custom recurrence modal closes this modal via
-                    // stack.close('event-form') (see toggleStack in
-                    // EventFormRepeat), and reopens it via
-                    // stack.open('event-form') on both Save and Cancel
-                    // (see EventFormRepeatCustom). With keepMounted=false,
-                    // that close/reopen actually unmounts and remounts
-                    // everything in this modal's body -- including
-                    // EventFormRepeat, whose useEffect re-derives
-                    // repeatKind from customRule on every mount (not just
-                    // when customRule changes, since mount-time effects
-                    // always run regardless of the dependency array).
-                    // Since customRule is deliberately kept around after
-                    // switching to a preset (so it stays selectable in the
-                    // dropdown), that remount was silently overwriting
-                    // whatever preset you'd actually picked back to
-                    // 'custom' every time you opened Custom and hit
-                    // Cancel -- verified via a real Mantine Modal mounted
-                    // in a jsdom sandbox: keepMounted=false measurably
-                    // unmounts+remounts children across an opened
-                    // false->true cycle, keepMounted=true does not.
-                    keepMounted
-                    fullScreen={isSmallScreen}
-                    styles={{
-                        body: { display: "flex", flexDirection: "column", height: "100%", padding: 0, overflow: "hidden" },
-                        content: { overflow: "hidden", maxHeight: "100%", display: "flex", flexDirection: "column" },
-                    }}
-                >
-                    <div className="event-form-modal--body">
-                        <div>
-                            <TextInput
-                                {...form.getInputProps('title')}
-                                error={!!form.errors.title}
-                                key={form.key('title')}
-                                ref={nameRef}
-                                label="Title"
-                                placeholder="ex: Dentist"
-                                required
-                                maxLength={TITLE_MAX_LENGTH}
-                            />
-                            <div className="event-form-input--error-container">
-                                <div className="event-form-input--error">{form.errors.title}</div>
-                                <div className="event-form-input--error-right">
-                                    <RemainingChars count={title.length} max={TITLE_MAX_LENGTH} />
-                                </div>
-                            </div>
-                        </div>
-                        <Stack gap="md">
-                            <div>
-                                <Stack gap="sm">
-                                    <Group grow align="flex-start">
-                                        <DatePickerInput
-                                            type="range"
-                                            allowSingleDateInRange
-                                            value={dateRangeValue}
-                                            onChange={handleDateRangeChange}
-                                            dropdownType={isSmallScreen ? "modal" : "popover"}
-                                            modalProps={{ zIndex: getDefaultZIndex('popover') }}
-                                            placeholder="Select event date(s)"
-                                            label="Date"
-                                            description="Select a single date, or create a range (start and end dates)."
-                                            required
-                                            leftSection={<CalendarMonthRoundedIcon />}
-                                            leftSectionWidth="40px"
-                                            color="rgb(5, 5, 73)"
-                                            styles={DATE_PICKER_STYLES}
-                                            firstDayOfWeek={0}
-                                            clearable={!!form.getValues().endDate}
-                                            valueFormatter={formatDateRangeValue}
-                                        />
-                                    </Group>
-                                    <Checkbox
-                                        {...form.getInputProps('allDay', { type: 'checkbox' })}
-                                        key={form.key('allDay')}
-                                        label="All Day"
-                                        onChange={validateOnChange('allDay', { type: 'checkbox' })}
-                                        color="rgb(5, 5, 73)"
-                                    />
-                                    {!form.getValues().allDay &&
-                                        <Group grow align="flex-start">
-                                            <TimePicker
-                                                {...form.getInputProps('startTime')}
-                                                key={form.key('startTime')}
-                                                leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                                                label="Start time"
-                                                disabled={form.getValues().allDay}
-                                                required={!form.getValues().allDay}
-                                                onChange={handleStartTimeChange}
-                                                withDropdown
-                                                minutesStep={5}
-                                                hoursStep={1}
-                                                format="12h"
-                                            />
-                                            <TimePicker
-                                                {...form.getInputProps('endTime')}
-                                                key={form.key('endTime')}
-                                                leftSection={<ClockIcon color="rgb(5, 5, 73)" size="1.25rem" />}
-                                                label="End Time"
-                                                required={!form.getValues().allDay}
-                                                onChange={handleEndTimeChange}
-                                                disabled={form.getValues().allDay}
-                                                withDropdown
-                                                minutesStep={5}
-                                                hoursStep={1}
-                                                format="12h"
-                                            />
-                                        </Group>
-                                    }
-                                </Stack>
-                            </div>
-                            <EventFormRepeat
-                                dateValue={startDate}
-                                stack={stack}
-                                customRule={customRule}
-                                repeatKind={repeatKind}
-                                onRepeatKindChange={setRepeatKind}
-                            />
-                            <Select
-                                {...form.getInputProps('visibility')}
-                                key={form.key('visibility')}
-                                data={[{ value: "public", label: "Public" }, { value: "private", label: "Private" }]}
-                                allowDeselect={false}
-                                label="Visibility"
-                                leftSection={form.getValues().visibility === "public" ? <VisibilityRoundedIcon style={{ fill: "rgb(5, 5, 73)" }} /> : <VisibilityOffIcon style={{ fill: "rgb(5, 5, 73)" }} />}
-                                leftSectionWidth="40px"
-                            />
-                            {(household?.members?.length ?? 0) > 1 && (
-                                <div className="event-form-repeat-custom--vertical-section">
-                                    <InputWrapper>
-                                        <Stack gap="xs">
-                                            <div>
-                                                <Stack gap={0}>
-                                                    <Input.Label required htmlFor={titleId}>Assigned members</Input.Label>
-                                                    <span className="event-form-input--error">{form.errors.assignedUserIds}</span>
-                                                    <MultiSelect
-                                                        id={titleId}
-                                                        data={memberOptions}
-                                                        value={form.getValues().assignedUserIds.map(String)}
-                                                        onChange={handleMemberChange}
-                                                        renderOption={renderMultiSelectOption}
-                                                        maxDropdownHeight={300}
-                                                        placeholder="Assign members"
-                                                        hidePickedOptions
-                                                        clearable
-                                                        c="black"
-                                                    />
-                                                </Stack>
-                                            </div>
-                                            <Checkbox
-                                                label="All members"
-                                                checked={form.getValues().allMembers}
-                                                onChange={(e) => handleToggleAllMembers(e.currentTarget.checked)}
-                                                color="rgb(5, 5, 73)"
-                                                size="sm"
-                                            />
-                                        </Stack>
-                                    </InputWrapper>
-                                </div>
-                            )}
+        <Modal.Stack>
+            <Modal
+                {...eventFormStackProps}
+                opened={eventFormStackProps?.opened ?? opened}
+                transitionProps={transitionProps}
+                onClose={handleClose}
+                radius="md"
+                title={modalTitle}
+                centered
+                keepMounted
+                fullScreen={isSmallScreen}
+                styles={{
+                    body: { display: "flex", flexDirection: "column", height: "100%", padding: 0, overflow: "hidden" },
+                    content: { overflow: "hidden", maxHeight: "100%", display: "flex", flexDirection: "column" },
+                }}
+            >
+                <div className="event-form-modal--body">
+                    <EventFormTitle form={form} title={title} nameRef={nameRef} />
+                    <Stack gap="md">
+                        <Stack gap="sm">
+                            <EventFormDates form={form} isSmallScreen={isSmallScreen} />
+                            {!form.getValues().allDay &&
+                                <EventFormTimes form={form} endTimeManuallySetRef={endTimeManuallySetRef} />
+                            }
                         </Stack>
-                    </div>
-                    <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0 }}>
-                        <Group w="100%" justify="flex-end">
-                            <Button h="auto" p=".5rem 1rem" size="sm" fw={500} radius="sm" color="rgb(5, 5, 73)" variant="outline" onClick={handleClose}>Cancel</Button>
-                            <Button h="auto" p=".5rem 1rem" size="sm" fw={500} radius="sm" color="rgb(5, 5, 73)" loading={isSaving} onClick={handleSave} data-test="quickadd-submit" disabled={!form.isValid()}>
-                                {isEditMode ? "Update" : "Save"}
-                            </Button>
-                        </Group>
-                    </Modal.Header>
-                </Modal>
-            </Modal.Stack >
-            <Modal.Stack>
-                <EventFormRepeatCustom key={recurrenceSessionId} stack={stack} dateStr={startDate} onApply={handleApplyCustomRule} />
-            </Modal.Stack>
-        </>
+                        <EventFormRepeat
+                            dateValue={startDate}
+                            stack={stack}
+                            customRule={customRule}
+                            repeatKind={repeatKind}
+                            onRepeatKindChange={setRepeatKind}
+                        />
+                        <EventFormVisibility form={form} />
+                        {(household?.members?.length ?? 0) > 1 && (
+                            <EventFormAssignedUsers form={form} household={household} />
+                        )}
+                    </Stack>
+                </div>
+                <ModalFooter>
+                    <Group w="100%" justify="flex-end">
+                        <ButtonStandard onClick={handleClose} label="Cancel" variant="outline" />
+                        <ButtonStandard onClick={handleSave} isLoading={isSaving} label={isEditMode ? "Update" : "Save"} variant="filled" disabled={!form.isValid()} />
+                    </Group>
+                </ModalFooter>
+            </Modal>
+            <EventFormRepeatCustom
+                key={recurrenceSessionId}
+                stack={stack}
+                dateStr={startDate}
+                onApply={handleApplyCustomRule}
+            />
+        </Modal.Stack>
     );
 }

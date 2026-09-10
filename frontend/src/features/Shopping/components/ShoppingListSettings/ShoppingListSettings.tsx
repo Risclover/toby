@@ -7,6 +7,8 @@ import { useIsSmallScreen } from "@/hooks";
 import { useShoppingListSettings, type ShoppingListFormValues } from "../../hooks/useShoppingListSettings";
 import type { ShoppingList } from "@/store";
 import { isTooLight } from "@/utils";
+import { ModalFooter } from "@/components/ModalFooter";
+import { ButtonStandard } from "@/components/ButtonStandard";
 
 type Props = {
     opened: boolean;
@@ -71,12 +73,8 @@ export const ShoppingListSettings = ({ opened, onClose, list }: Props) => {
                 <ShoppingListSettingsBehaviorTab form={form} list={list} />
             </Tabs>
 
-            <Modal.Header
-                component="footer"
-                pos="sticky"
-                bottom={0}
-                style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}
-            >
+            <ModalFooter borderTop="1px solid var(--mantine-color-gray-3)">
+
                 <Group justify="space-between" w="100%">
                     <Button
                         size="compact-sm"
@@ -88,28 +86,24 @@ export const ShoppingListSettings = ({ opened, onClose, list }: Props) => {
                         Reset to default
                     </Button>
                     <Group gap="0.5rem">
-                        <Button
+                        <ButtonStandard
                             color={list.color}
                             variant="outline"
                             onClick={() => form.setValues(initialValues)}
                             disabled={!isDirtyFromInitial || hasColorError}
-                            fw={500}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
+                            label="Cancel"
+                        />
+                        <ButtonStandard
                             color={list.color}
                             variant="filled"
                             disabled={!isDirtyFromInitial || !form.isValid() || hasColorError}
                             onClick={handleSubmit}
-                            loading={isSubmitting}
-                            fw={500}
-                        >
-                            Update
-                        </Button>
+                            isLoading={isSubmitting}
+                            label="Update"
+                        />
                     </Group>
                 </Group>
-            </Modal.Header>
+            </ModalFooter>
 
             {showDiscardWarning && (
                 <DiscardWarning

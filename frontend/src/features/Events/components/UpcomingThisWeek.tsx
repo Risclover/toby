@@ -85,6 +85,7 @@ function formatDateBadge(day: string) {
     );
 }
 
+
 interface UpcomingRow {
     key: string;
     eventId: number;
@@ -94,10 +95,14 @@ interface UpcomingRow {
     sortKey: string;
     creatorId: number;
     householdAdminId: number;
-    attendeeIds: number[];
 }
 
-export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; householdId: number }) {
+type Props = {
+    isReady: boolean;
+    householdId: number
+}
+
+export function UpcomingThisWeek({ isReady, householdId }: Props) {
     const { data: currentUser } = useAuthenticateQuery();
     const [editOpen, setEditOpen] = useState(false);
     const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
@@ -227,7 +232,6 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                     sortKey: startStr,
                     creatorId: payload.creatorId,
                     householdAdminId: payload.householdAdminId,
-                    attendeeIds: ev.attendeeIds
                 });
                 continue;
             }
@@ -259,7 +263,6 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                     sortKey: `${day} ${day === startDay ? startStr.slice(11) : "00:00:00"}`,
                     creatorId: payload.creatorId,
                     householdAdminId: payload.householdAdminId,
-                    attendeeIds: ev.attendeeIds
                 });
             }
         }
@@ -292,17 +295,6 @@ export function UpcomingThisWeek({ isReady, householdId }: { isReady: boolean; h
                                         <Text fz="xs" c="var(--mantine-color-gray-7)">{r.timeLabel}</Text>
                                     </Stack>
                                 </Group>
-                                {(r.householdAdminId === currentUser.id || r.creatorId === currentUser.id) && (
-                                    <div>
-                                        <EventMenu
-                                            isEditing={editOpen && selectedEventId === r.eventId}
-                                            setIsEditing={(val) => val ? openEdit(r.eventId) : null}
-
-                                            onDelete={() => handleDeleteEvent(r.eventId)}
-
-                                        />
-                                    </div>
-                                )}
                             </Group>
                         </Paper>
                     ))

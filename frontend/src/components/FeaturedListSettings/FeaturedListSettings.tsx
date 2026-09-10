@@ -7,6 +7,8 @@ import { DiscardWarning } from "@/features";
 import { useEffect, useMemo, useState } from "react";
 import { FeaturedShoppingListTab } from "./FeaturedShoppingListTab";
 import { type FeaturedShoppingListSettings, useGetFeaturedShoppingListSettingsQuery, useUpdateFeaturedShoppingListSettingsMutation } from "@/store/featuredShoppingListSettingSlice";
+import { ModalFooter } from "../ModalFooter";
+import { ButtonStandard } from "../ButtonStandard";
 
 type Props = {
     opened: boolean;
@@ -220,65 +222,53 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings, acti
                 <FeaturedTasklistTab form={form} handleClose={handleModalClose} />
                 <FeaturedShoppingListTab form={shoppingForm} handleClose={handleModalClose} />
             </Tabs>
-            <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}>
+            <ModalFooter borderTop="1px solid var(--mantine-color-gray-3)">
                 {isShoppingTab ? (
                     <Group justify="space-between" w="100%">
                         <Button size="compact-sm" variant="transparent" color={featuredList?.color} onClick={handleShoppingResetToDefault} fw={500}>Reset to default</Button>
                         <Group gap="0.5rem">
-                            <Button
+                            <ButtonStandard
                                 color={featuredList?.color}
                                 variant="outline"
-                                className="tasklist-settings-footer-btn"
                                 onClick={() => shoppingForm.reset()}
                                 disabled={!shoppingForm.isDirty() || !shoppingForm.isValid()}
-                                fw={500}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
+                                label="Cancel"
+                            />
+                            <ButtonStandard
                                 color={featuredList?.color}
                                 variant="filled"
-                                className="tasklist-settings-footer-btn"
                                 disabled={!shoppingForm.isDirty() || !shoppingForm.isValid()}
                                 onClick={() => handleShoppingSubmit()}
-                                loading={isShoppingSubmitting}
+                                isLoading={isShoppingSubmitting}
                                 loaderProps={{ children: 'Saving...' }}
-                                fw={500}
-                            >
-                                Update
-                            </Button>
+                                label="Update"
+                            />
                         </Group>
                     </Group>
                 ) : (
                     <Group justify="space-between" w="100%">
                         <Button size="compact-sm" variant="transparent" color="var(--tasklist-color)" onClick={handleResetToDefaults} fw={500}>Reset to default</Button>
                         <Group gap="0.5rem">
-                            <Button
+                            <ButtonStandard
                                 color="var(--tasklist-color)"
                                 variant="outline"
-                                className="tasklist-settings-footer-btn"
                                 onClick={() => form.reset()}
                                 disabled={!form.isDirty() || !form.isValid()}
-                                fw={500}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
+                                label="Cancel"
+                            />
+                            <ButtonStandard
                                 color="var(--tasklist-color)"
                                 variant="filled"
-                                className="tasklist-settings-footer-btn"
                                 disabled={!form.isDirty() || !form.isValid()}
                                 onClick={() => handleSubmit()}
-                                loading={isSubmitting}
+                                isLoading={isSubmitting}
                                 loaderProps={{ children: 'Saving...' }}
-                                fw={500}
-                            >
-                                Update
-                            </Button>
+                                label="Update"
+                            />
                         </Group>
                     </Group>
                 )}
-            </Modal.Header>
+            </ModalFooter>
             {
                 showDiscardWarning && (
                     <DiscardWarning

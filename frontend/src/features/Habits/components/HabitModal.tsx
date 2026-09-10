@@ -11,6 +11,8 @@ import { useModalFocus } from "@/hooks/useModalFocus";
 import { KittyNotification } from "@/components/KittyNotification";
 import { KittyIcons } from "@/assets";
 import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
+import { ModalFooter } from "@/components/ModalFooter";
+import { ButtonStandard } from "@/components/ButtonStandard";
 
 interface HabitFormValues {
     name: string;
@@ -171,13 +173,11 @@ export const HabitModal = ({ onSuccess }: Props) => {
                     </div>
                 </Stack>
             </div>
-            <Modal.Header component={'footer'} pos={'sticky'} bottom={0} style={{ borderRadius: 0, borderTop: "1px solid var(--mantine-color-gray-3)" }}>
+            <ModalFooter borderTop="1px solid var(--mantine-color-gray-3)" >
                 <Group justify="flex-end" w="100%">
-                    <Button type="button" onClick={handleSubmit} disabled={form.values.color.trim().length === 0 || form.values.name.trim().length === 0} color="rgb(5, 5, 73)" radius="sm" fw={500}>
-                        Submit
-                    </Button>
+                    <ButtonStandard onClick={handleSubmit} label="Submit" disabled={form.values.color.trim().length === 0 || form.values.name.trim().length === 0} variant="filled" />
                 </Group>
-            </Modal.Header>
+            </ModalFooter>
 
         </Modal>
     )

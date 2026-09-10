@@ -1,4 +1,5 @@
 import { Button, Group, Modal, Text } from "@mantine/core"
+import { ButtonStandard } from "./ButtonStandard";
 
 type Props = {
     itemName?: string;
@@ -18,29 +19,24 @@ export const DeleteConfirmation = ({ modalTitle, itemName, itemType, opened, set
             <Text c="black" size="sm"  >Are you sure you want to delete {itemType === "tasks" ? "these " : !itemName ? "this " : "the "}{itemType} <span className="delete-item-name">{itemName}</span>? Once it's gone, it's gone. This action can't be undone.</Text>
 
             <Group justify="flex-end" w="100%" gap="0.5rem" mt="md">
-                <Button
-                    className="tasklist-settings-footer-btn"
-                    size="compact-sm"
+                <ButtonStandard
                     onClick={() => {
                         setShowDeleteConfirmation(false);
                         triggerRef?.current?.focus();
                     }}
                     color="var(--mantine-color-dark-6)"
                     variant="outline"
-                >
-                    Cancel
-                </Button>
-                <Button
-                    className="tasklist-settings-footer-btn"
-                    size="compact-sm"
+                    label="Cancel"
+                />
+                <ButtonStandard
                     onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteItem();
                     }}
+                    variant="filled"
                     color="red.7"
-                >
-                    Confirm
-                </Button>
+                    label="Confirm"
+                />
             </Group>
         </Modal >
     )

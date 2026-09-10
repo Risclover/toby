@@ -39,8 +39,8 @@ export const UnassignSelfConfirmation = ({ opened, onClose, occurrence }: Props)
             centered
         >
             <Text size="sm">Are you sure you want to leave the event <strong style={{ fontWeight: 600 }}>{eventTitle}</strong>?</Text>
-            {onlyAssignedUser && <Text size="sm" c="gray.9" lh={1.2} mt=".5rem"  ><strong>Note</strong>: Since you're the only person assigned to this event, leaving means permanently deleting it.</Text>}
-            <Group w="100%" justify="flex-end" mt="1rem">
+            {onlyAssignedUser && <Text size="sm" c="gray.9" lh={1.2} mt=".5rem"  ><strong>Note</strong>: Since you're the only person assigned to this event, leaving will permanently delete it.</Text>}
+            <Group justify="flex-end" w="100%" gap="0.5rem" mt="md">
                 <Button
                     fw={500}
                     color="rgb(5, 5, 73)"

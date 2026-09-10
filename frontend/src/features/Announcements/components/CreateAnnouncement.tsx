@@ -7,6 +7,7 @@ import { useCreateAnnouncementModal } from "@/contexts";
 import { RemainingChars } from "@/components/RemainingChars";
 import { useModalFocus } from "@/hooks/useModalFocus";
 import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
+import { ButtonStandard } from "@/components/ButtonStandard";
 
 
 export const CreateAnnouncement = () => {
@@ -77,26 +78,16 @@ export const CreateAnnouncement = () => {
             />
             <Space h="md" />
             <Group justify="flex-end">
-                <Button
+                <ButtonStandard
                     onClick={handleCancelAnnouncement}
-                    className="tasklist-settings-footer-btn"
-                    size="compact-sm"
-                    color="var(--mantine-color-dark-6)"
+                    label="Cancel"
                     variant="outline"
-                    styles={{ label: { fontWeight: "400" } }}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    className="tasklist-settings-footer-btn"
-                    size="compact-sm"
-                    variant="light"
-                    fw={400}
-                    color="rgb(5, 5, 73)"
+                />
+                <ButtonStandard
+                    label="Save"
+                    variant="filled"
                     onClick={handleCreateAnnouncement}
-                >
-                    Save
-                </Button>
+                />
             </Group>
         </Modal>
     )
