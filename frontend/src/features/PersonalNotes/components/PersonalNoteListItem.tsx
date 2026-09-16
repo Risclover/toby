@@ -72,13 +72,6 @@ export const PersonalNoteListItem = ({ note, onNoteClick }: Props) => {
                             )}
                         </div>
                     </div>
-                    <Text
-                        size="sm"
-                        styles={{ root: { color: note.category?.color } }}
-                        className="single-note-footer-right"
-                    >
-                        Open
-                    </Text>
                 </div>
             )}
         </div>

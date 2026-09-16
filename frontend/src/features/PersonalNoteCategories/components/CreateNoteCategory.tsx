@@ -6,6 +6,7 @@ import { useCreateNoteCategory } from "../hooks";
 import { type PersonalNoteCategory } from "@/store/noteCategorySlice";
 
 import "../styles/PersonalNoteCategories.css";
+import { ButtonStandard } from "@/components/ButtonStandard";
 
 type Props = {
     /** Modal visibility */
@@ -104,29 +105,18 @@ export const CreateNoteCategory = ({ opened, close, onCategoryCreated, stack, ca
 
                 {/* Footer (form buttons) */}
                 <div className="create-notes-category-form--footer">
-                    <Group justify="flex-end" mt="md">
-                        <Button
-                            h="auto"
-                            p=".5rem 1rem"
-                            size="sm"
-                            fw={500}
-                            color="rgb(5, 5, 73)"
+                    <Group justify="flex-end" mt="md" gap=".5rem">
+                        <ButtonStandard
+                            label="Cancel"
                             variant="outline"
                             onClick={handleClose}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
+                        />
+                        <ButtonStandard
+                            label="Update"
                             disabled={!form.isDirty() || !form.isValid()}
                             type="submit"
-                            h="auto"
-                            p=".5rem 1rem"
-                            size="sm"
-                            fw={500}
-                            color="rgb(5, 5, 73)"
-                        >
-                            Save
-                        </Button>
+                            variant="filled"
+                        />
                     </Group>
                 </div>
             </form>

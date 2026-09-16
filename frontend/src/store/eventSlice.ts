@@ -26,7 +26,7 @@ export type CalendarEvent = {
     createdAt: string;
     attendees: EventAttendee[];
     attendeeIds: number[];
-    displayColor: string;
+    color: string;
     household: {
         id: number;
         adminId: number;

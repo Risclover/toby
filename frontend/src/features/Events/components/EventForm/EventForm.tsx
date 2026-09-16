@@ -182,8 +182,9 @@ export function EventForm({
             if (edit && event) {
                 if (hasTime) {
                     const startLocal = combineLocalFromStrings(values.startDate, values.startTime);
-                    const endLocal = values.endDate
-                        ? combineLocalFromStrings(values.endDate, values.endTime || values.startTime)
+                    const effectiveEndDate = values.endDate || values.startDate;
+                    const endLocal = values.endTime
+                        ? combineLocalFromStrings(effectiveEndDate, values.endTime)
                         : dayjs(startLocal).add(DEFAULT_EVENT_DURATION_HOURS, "hour").toDate();
                     await updateEvent({
                         id: event.id,
@@ -213,8 +214,9 @@ export function EventForm({
             } else {
                 if (hasTime) {
                     const startLocal = combineLocalFromStrings(values.startDate, values.startTime);
-                    const endLocal = values.endDate
-                        ? combineLocalFromStrings(values.endDate, values.endTime || values.startTime)
+                    const effectiveEndDate = values.endDate || values.startDate;
+                    const endLocal = values.endTime
+                        ? combineLocalFromStrings(effectiveEndDate, values.endTime)
                         : dayjs(startLocal).add(DEFAULT_EVENT_DURATION_HOURS, "hour").toDate();
                     await createEvent({
                         householdId, title: values.title.trim(),

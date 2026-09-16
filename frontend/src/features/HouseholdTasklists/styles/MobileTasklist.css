@@ -37,6 +37,13 @@
     background: var(--input-grey);
 }
 
+.calendar-page-content {
+    background: white;
+    padding: 1rem;
+    position: relative;
+    height: 100%;
+}
+
 .mobile-add-tasklist-btn {
     padding: 0 !important;
     color: white !important;

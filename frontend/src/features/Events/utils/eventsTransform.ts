@@ -20,7 +20,7 @@ export function apiEventToScheduleEvent(e: CalendarEvent) {
         title: e.title,
         start: toWallClockString(e.startUtc),
         end: toWallClockString(e.endUtc),
-        color: e.displayColor,
+        color: e.color,
         payload: {
             hasTime: e.hasTime,
             creatorId: e.creatorId,

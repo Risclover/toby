@@ -16,7 +16,7 @@ export const CalendarPage = () => {
     return (
         <MobileLayout titleComponent={titleComponent}>
             <MobileHomeNavGrid activeTab={2} />
-            <div className={`mobile-tasklists-content${isSmall ? " content-padding" : ""}`}>
+            <div className={`calendar-page-content${isSmall ? " content-padding" : ""}`}>
                 {/* Empty state */}
                 <FullPageCalendar />
             </div>

@@ -3,6 +3,7 @@ import { Button, Group, Modal, Text } from "@mantine/core"
 import type { Occurrence } from "../types";
 import { KittyNotification } from "@/components";
 import { KittyIcons } from "@/assets";
+import { ButtonStandard } from "@/components/ButtonStandard";
 
 type Props = {
     opened: boolean;
@@ -41,28 +42,17 @@ export const UnassignSelfConfirmation = ({ opened, onClose, occurrence }: Props)
             <Text size="sm">Are you sure you want to leave the event <strong style={{ fontWeight: 600 }}>{eventTitle}</strong>?</Text>
             {onlyAssignedUser && <Text size="sm" c="gray.9" lh={1.2} mt=".5rem"  ><strong>Note</strong>: Since you're the only person assigned to this event, leaving will permanently delete it.</Text>}
             <Group justify="flex-end" w="100%" gap="0.5rem" mt="md">
-                <Button
-                    fw={500}
-                    color="rgb(5, 5, 73)"
-                    p=".5rem 1rem"
-                    h="auto"
-                    size="sm"
+                <ButtonStandard
+                    label="Cancel"
                     variant="outline"
                     onClick={onClose}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    fw={500}
+                />
+                <ButtonStandard
+                    label="Confirm"
                     color="red"
-                    p=".5rem 1rem"
-                    h="auto"
-                    size="sm"
                     variant="filled"
                     onClick={handleUnassignSelf}
-                >
-                    Confirm
-                </Button>
+                />
             </Group>
         </Modal>
     )
