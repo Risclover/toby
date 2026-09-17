@@ -371,7 +371,7 @@ def create_event_for_household(hid: int):
         end = parse_iso8601(end_s)
         if start >= end:
             abort(400, description='startUtc must be before endUtc')
-        has_time = True
+        has_time = bool(data.get('hasTime', True))
 
     elif date_s:
         try:
@@ -499,7 +499,7 @@ def update_event(hid: int, event_id: int):
 
             event.start_utc = start
             event.end_utc = end
-            event.has_time = True
+            event.has_time = bool(data.get('hasTime', True))  # allow an explicit all-day range via startUtc/endUtc
 
             if tzid_in:
                 try:

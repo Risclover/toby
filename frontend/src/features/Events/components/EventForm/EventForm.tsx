@@ -22,6 +22,7 @@ import { ModalFooter } from "@/components/ModalFooter";
 import { combineLocalFromStrings } from "../../utils/combineLocalFromStrings";
 import { hmFromIso, ymdFromIso } from "../../utils/fromIso";
 import { roundUpToNearest30Min } from "../../utils/roundUpToNearest30Min";
+import { toAllDayStartUtc, toAllDayEndUtc } from "../../utils/allDayBoundary";
 
 dayjs.extend(customParseFormat);
 
@@ -32,6 +33,11 @@ type Props = {
     householdId: number;
     opened: boolean;
     initialDate: Date;
+    /** Prefills a specific time range (from a clicked/dragged Day/Week view slot) and starts the form in timed mode instead of the all-day default. Omit for the previous all-day-default behavior. */
+    initialStartTime?: string;
+    initialEndTime?: string;
+    /** Distinct end date for a range that spans more than one day (e.g. a Week view drag that crosses days). Omit or match initialDate for a same-day event. */
+    initialEndDate?: string;
     onClose: () => void;
     edit: boolean;
     event?: CalendarEvent;
@@ -41,6 +47,9 @@ export function EventForm({
     householdId,
     opened,
     initialDate,
+    initialStartTime,
+    initialEndTime,
+    initialEndDate,
     onClose,
     edit,
     event,
@@ -83,7 +92,7 @@ export function EventForm({
             seedBlank(dayjs(initialDate).format("YYYY-MM-DD"));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [opened, event?.id, initialDate.getTime()]);
+    }, [opened, event?.id, initialDate.getTime(), initialStartTime, initialEndTime, initialEndDate]);
 
     // Constants
     const allHouseholdMemberIds = useMemo(
@@ -105,14 +114,20 @@ export function EventForm({
         setCustomRule(null);
         setRecurrenceSessionId((n) => n + 1);
 
-        const defaultStartTime = roundUpToNearest30Min(dayjs());
-        const defaultEndTime = defaultStartTime.add(DEFAULT_EVENT_DURATION_HOURS, 'hour');
+        const hasSlotTimes = Boolean(initialStartTime && initialEndTime);
+        const defaultStartTime = hasSlotTimes
+            ? dayjs(initialStartTime, TIME_FORMAT)
+            : roundUpToNearest30Min(dayjs());
+        const defaultEndTime = hasSlotTimes
+            ? dayjs(initialEndTime, TIME_FORMAT)
+            : defaultStartTime.add(DEFAULT_EVENT_DURATION_HOURS, 'hour');
+        const seededEndDate = initialEndDate && initialEndDate !== seededDate ? initialEndDate : '';
 
         const values = {
             title: '',
             startDate: seededDate,
-            endDate: '',
-            allDay: true,
+            endDate: seededEndDate,
+            allDay: !hasSlotTimes,
             startTime: defaultStartTime.format(TIME_FORMAT),
             endTime: defaultEndTime.format(TIME_FORMAT),
             visibility: userSettings?.settings.eventsPrivacyMode === "private_by_default" ? "private" : 'public' as const,
@@ -129,6 +144,7 @@ export function EventForm({
     // Establishes a NEW baseline representing an existing event -- used
     // for the externally-passed `event` prop (edit mode).
     const seedFromEvent = (targetEvent: CalendarEvent) => {
+        console.log(targetEvent.rrule)
         const seededDate = ymdFromIso(targetEvent.startUtc ?? undefined);
         const seededEndDate = targetEvent.hasTime !== false ? ymdFromIso(targetEvent.endUtc ?? undefined) : '';
         const seededTime = targetEvent.hasTime === false ? "" : hmFromIso(targetEvent.startUtc);
@@ -204,7 +220,9 @@ export function EventForm({
                         householdId,
                         title: values.title.trim(),
                         tzid,
-                        date: values.startDate,
+                        startUtc: toAllDayStartUtc(values.startDate, tzid),
+                        endUtc: toAllDayEndUtc(values.endDate || values.startDate, tzid),
+                        hasTime: false,
                         rrule,
                         visibility: values.visibility,
                         allMembers: values.allMembers,
@@ -232,7 +250,9 @@ export function EventForm({
                     await createEvent({
                         householdId,
                         title: values.title.trim(),
-                        date: values.startDate,
+                        startUtc: toAllDayStartUtc(values.startDate, tzid),
+                        endUtc: toAllDayEndUtc(values.endDate || values.startDate, tzid),
+                        hasTime: false,
                         tzid,
                         rrule,
                         visibility: values.visibility,

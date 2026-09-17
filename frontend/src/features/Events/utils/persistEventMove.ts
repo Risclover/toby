@@ -1,6 +1,11 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import type { useCreateEventMutation, useUpdateEventMutation, useExcludeEventOccurrenceMutation } from "@/store";
 import type { EventColorPayload } from "./getEventColors";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 type MoveData = {
     eventId: string | number;
@@ -20,41 +25,39 @@ type Deps = {
     excludeEventOccurrence: ReturnType<typeof useExcludeEventOccurrenceMutation>[0];
 };
 
-/**
- * All-day events store their boundaries as UTC-midnight instants
- * (startUtc "2026-09-17T00:00:00+00:00", endUtc EXCLUSIVE -- midnight of
- * the day after the last day). newStart/newEnd from the schedule library
- * are civil-date-looking strings with no offset (e.g. "2026-09-17
- * 00:00:00"); naively running them through dayjs(...).toISOString() would
- * reinterpret them in the BROWSER's local timezone and shift the UTC
- * instant off midnight -- the same bug fixed in getEventColors.ts. So for
- * all-day events we pull out just the civil date and re-stamp it as UTC
- * midnight ourselves, never letting dayjs's local-offset conversion touch
- * it. The end also has to roll forward one day, since newEnd represents
- * the last INCLUSIVE day (23:59:59, per the same nudge-back-a-second
- * convention as the read side) but the backend wants an EXCLUSIVE
- * boundary.
- */
 const toCivilDate = (value: string) => dayjs(value).format("YYYY-MM-DD");
-const toUtcMidnight = (civilDate: string) => `${civilDate}T00:00:00.000Z`;
 
 /**
- * Moving/resizing a recurring occurrence must NOT move the whole series --
- * we detach just that occurrence (exclude-occurrence, same mechanism as a
- * single-occurrence delete) and create a standalone event at the new time,
- * carrying the series' visibility/attendees forward. A non-recurring event
- * just gets updated in place.
+ * Inverse of toAllDayBoundary in getEventColors.ts: given a plain civil
+ * date and the event's own tzid, reconstruct the UTC instant for midnight
+ * of that date IN THAT TIMEZONE -- mirroring how the create-event form
+ * works (sends `date` + `tzid`, backend converts) and how the backend
+ * actually stores these values.
+ */
+const toUtcInstant = (civilDate: string, tzid: string) =>
+    dayjs.tz(civilDate, tzid).startOf("day").toISOString();
+
+/**
+ * The backend's update-event endpoint infers hasTime from which fields
+ * are present: startUtc/endUtc alone always sets has_time = True, and
+ * the date-only path (the only other way to signal all-day) can't
+ * express a multi-day range at all. So an all-day drag has to send
+ * startUtc/endUtc (to preserve a multi-day span) AND an explicit
+ * hasTime: false (so the backend doesn't force it back to timed) --
+ * dropping either one reproduces one of the two bugs this works around.
  */
 export async function persistEventMove(
     { eventId, newStart, newEnd, event }: MoveData,
     { householdId, updateEvent, createEvent, excludeEventOccurrence }: Deps
 ) {
     const hasTime = event.payload?.hasTime ?? true;
+    const tzid = event.payload?.tzid ?? "UTC";
     const scheduleFields = hasTime
         ? { startUtc: dayjs(newStart).toISOString(), endUtc: dayjs(newEnd).toISOString() }
         : {
-            startUtc: toUtcMidnight(toCivilDate(newStart)),
-            endUtc: toUtcMidnight(dayjs(toCivilDate(newEnd)).add(1, "day").format("YYYY-MM-DD")),
+            startUtc: toUtcInstant(toCivilDate(newStart), tzid),
+            endUtc: toUtcInstant(dayjs(toCivilDate(newEnd)).add(1, "day").format("YYYY-MM-DD"), tzid),
+            hasTime: false,
         };
 
     if (event.recurringInstance?.isRecurringInstance) {

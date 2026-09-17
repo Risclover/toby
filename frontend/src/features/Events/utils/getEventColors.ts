@@ -3,111 +3,107 @@ import type { Schedule } from "@mantine/schedule";
 import type { CalendarEvent } from "@/store";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
+dayjs.extend(timezone);
 
 type ScheduleEventData = NonNullable<ComponentProps<typeof Schedule>["events"]>[number];
 
-export type HouseholdMemberColor = { id: number; color: string };
+export type HouseholdMemberColor = { id: number; color: string; firstName: string };
 
 export type EventColorPayload = {
     colors: string[];
+    memberNames: string[];
     hasTime: boolean;
     visibility: string;
     allMembers: boolean;
     attendeeIds: number[];
+    tzid: string;
+    source: CalendarEvent;
     [key: string]: unknown;
 };
+
+function getAssignedMembers(
+    event: Pick<CalendarEvent, "attendeeIds" | "allMembers">,
+    members: HouseholdMemberColor[]
+): HouseholdMemberColor[] {
+    const assignedIds = event.allMembers ? members.map((m) => m.id) : event.attendeeIds ?? [];
+    const byId = new Map(members.map((m) => [m.id, m]));
+    return assignedIds.map((id) => byId.get(id)).filter((m): m is HouseholdMemberColor => Boolean(m));
+}
 
 export function getEventColors(
     event: Pick<CalendarEvent, "color" | "attendeeIds" | "allMembers">,
     members: HouseholdMemberColor[]
 ): string[] {
-    const assignedIds = event.allMembers ? members.map((m) => m.id) : event.attendeeIds ?? [];
-    if (assignedIds.length === 0) {
-        return [event.color ?? "blue"];
-    }
-    const colorById = new Map(members.map((m) => [m.id, m.color]));
-    const colors = assignedIds.map((id) => colorById.get(id)).filter((c): c is string => Boolean(c));
-    return colors.length > 0 ? colors : [event.color ?? "blue"];
+    const assigned = getAssignedMembers(event, members);
+    return assigned.length > 0 ? assigned.map((m) => m.color) : [event.color ?? "blue"];
 }
 
-/**
- * All-day events have no instant -- "Sep 27" means Sep 27, independent of
- * the viewer's timezone. But the backend stores their start/end as
- * UTC-midnight-anchored instants (startUtc: "2026-09-27T00:00:00+00:00"),
- * and passing that raw offset-tagged string into the schedule library
- * breaks the all-day-ness of it: the library (and dayjs, re-parsing a
- * value we format without an offset) treats it as a real instant and
- * converts to the BROWSER's local timezone for grid/drag math. West of
- * UTC that shifts the apparent calendar day backward -- confirmed live:
- * dragging a 1-day, Sep 27 all-day event produced drop data with start
- * "2026-09-23 17:00:00" (not "00:00:00"), because UTC midnight Sep 27 is
- * 5pm the PREVIOUS day in Pacific time. MonthView, seeing a start/end
- * that genuinely land on two different local calendar days, correctly
- * (from its own point of view) rendered and dragged it as a 2-day span.
- *
- * Fix: extract the civil (UTC) calendar date/time from the stored instant
- * and re-emit it as a plain offset-free local-looking string via
- * dayjs(...).utc().format(...), rather than relying on the browser's
- * local offset -- which is what silently "worked" before, and only by
- * luck, for `end` but never for `start`. Every all-day boundary -- start
- * AND end -- must go through this; never pass an all-day event's raw
- * *Utc string through untouched.
- */
-function toAllDayBoundary(value: string | dayjs.Dayjs): string {
-    return dayjs(value).utc().format("YYYY-MM-DD HH:mm:ss");
+function toAllDayBoundary(value: string | dayjs.Dayjs, tzid: string): string {
+    return dayjs(value).tz(tzid).format("YYYY-MM-DD HH:mm:ss");
 }
 
-function toEventStart(event: Pick<CalendarEvent, "startUtc" | "hasTime">): string {
-    return event.hasTime === false ? toAllDayBoundary(event.startUtc) : event.startUtc;
+function toEventStart(event: Pick<CalendarEvent, "startUtc" | "hasTime" | "tzid">): string {
+    return event.hasTime === false ? toAllDayBoundary(event.startUtc, event.tzid ?? "UTC") : event.startUtc;
 }
 
-/**
- * The backend's endUtc for an all-day event is an EXCLUSIVE boundary --
- * midnight of the day after its last day. That's correct for the event's
- * own span, but it collides with a boundary-inclusivity bug in how the
- * library checks an event against Agenda's week/month range: an event
- * whose end lands EXACTLY on a range's start boundary (an Aug 31 event
- * ending at Sep 1 00:00:00, right where September's range begins) gets
- * counted as inside that range. Confirmed empirically -- removing this
- * nudge reproduces the bug immediately, restoring it fixes it. Nudging
- * the end back by one second keeps the event's displayed span identical
- * while moving it off the exact boundary that triggers the bug.
- */
-function toEventEnd(event: Pick<CalendarEvent, "endUtc" | "hasTime">): string {
+function toEventEnd(event: Pick<CalendarEvent, "endUtc" | "hasTime" | "tzid">): string {
     return event.hasTime === false
-        ? toAllDayBoundary(dayjs(event.endUtc).subtract(1, "second"))
+        ? toAllDayBoundary(dayjs(event.endUtc).subtract(1, "second"), event.tzid ?? "UTC")
         : event.endUtc;
 }
 
-function toEventPayload(event: CalendarEvent, colors: string[]): EventColorPayload {
+function toEventPayload(event: CalendarEvent, colors: string[], memberNames: string[]): EventColorPayload {
     return {
         colors,
+        memberNames,
         hasTime: event.hasTime,
         visibility: event.visibility,
         allMembers: event.allMembers,
         attendeeIds: event.attendeeIds,
+        tzid: event.tzid ?? "UTC",
+        source: event,
     };
 }
 
+/**
+ * The schedule library only learns about excluded occurrences from
+ * recurrence.exdate on the event object itself (docs: "generate occurrence
+ * start times... remove occurrences that match exdate entries") -- it has
+ * no other mechanism. persistEventMove correctly tells the BACKEND to
+ * record an exclusion (exclude-occurrence -> event.exdate), but if we
+ * never read that back into recurrence.exdate here, the library keeps
+ * re-expanding the full, unfiltered rrule on every render. That's why a
+ * detached occurrence looked "duplicated" instead of moved: the backend
+ * exclusion was real, we just never told the library about it.
+ */
+function toRecurrence(event: Pick<CalendarEvent, "rrule" | "exdate">) {
+    return event.rrule ? { recurrence: { rrule: event.rrule, exdate: event.exdate ?? [] } } : {};
+}
+
 export function toScheduleEvent(event: CalendarEvent, members: HouseholdMemberColor[]): ScheduleEventData {
-    const colors = getEventColors(event, members);
+    const assigned = getAssignedMembers(event, members);
+    const colors = assigned.length > 0 ? assigned.map((m) => m.color) : [event.color ?? "blue"];
+    const memberNames = assigned.map((m) => m.firstName);
     const base = {
         id: event.id,
         title: event.title,
         start: toEventStart(event),
         end: toEventEnd(event),
         color: colors[0],
-        payload: toEventPayload(event, colors),
+        payload: toEventPayload(event, colors, memberNames),
     };
-    return (event.rrule ? { ...base, recurrence: { rrule: event.rrule } } : base) as ScheduleEventData;
+    return { ...base, ...toRecurrence(event) } as ScheduleEventData;
 }
 
 export function toMobileMonthEvents(event: CalendarEvent, members: HouseholdMemberColor[]): ScheduleEventData[] {
-    const colors = getEventColors(event, members);
-    const basePayload = toEventPayload(event, colors);
-    const recurrence = event.rrule ? { recurrence: { rrule: event.rrule } } : {};
+    const assigned = getAssignedMembers(event, members);
+    const colors = assigned.length > 0 ? assigned.map((m) => m.color) : [event.color ?? "blue"];
+    const memberNames = assigned.map((m) => m.firstName);
+    const basePayload = toEventPayload(event, colors, memberNames);
+    const recurrence = toRecurrence(event);
     const start = toEventStart(event);
     const end = toEventEnd(event);
 
@@ -134,36 +130,6 @@ export function toMobileMonthEvents(event: CalendarEvent, members: HouseholdMemb
     } as ScheduleEventData));
 }
 
-/**
- * DayView has no notion of an event "continuing" from an earlier day --
- * unlike WeekView (which documents multi-day spanning as a feature) or
- * MonthView (which lays out its own spanning bar), DayView only matches
- * an event to the day its `start` falls on, and only recognizes its
- * all-day slot for events whose boundaries land exactly on midnight. A
- * timed event that crosses midnight without being boundary-aligned is
- * therefore only ever visible on its first day.
- *
- * To make it show up on every day it spans, we produce one segment per
- * day it touches, each clipped to that day's own boundaries -- day 1
- * keeps the real event id (so drag/resize/persistence still resolve to
- * the actual backend event), later days get a synthetic id and are
- * marked non-interactive via isDayViewContinuation.
- *
- * Two things this has to avoid, both learned the hard way:
- *  - Never also hand DayView the original unclipped event alongside the
- *    segments. DayView's embedded Agenda does genuine range-overlap
- *    matching (unlike the grid, which only matches by start day), so an
- *    unclipped multi-day event would double up with its own continuation
- *    segments on every day after the first.
- *  - Never let a segment's end land exactly on the next day's boundary
- *    (day+1 at 00:00:00) -- that's the same range boundary-inclusivity
- *    bug `toEventEnd` works around for real all-day events, and our own
- *    synthetic segments can trip it just as easily.
- *
- * DayView-only -- never mix this into `scheduleEvents`, only pass its
- * output to a standalone <DayView>. Scoped out for now: `hasTime: false`
- * events and recurring events.
- */
 export function toDayViewEvents(events: ScheduleEventData[]): ScheduleEventData[] {
     return events.flatMap((event) => {
         const payload = event.payload as EventColorPayload | undefined;

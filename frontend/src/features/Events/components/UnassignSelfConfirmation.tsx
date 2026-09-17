@@ -1,3 +1,4 @@
+// UnassignSelfConfirmation.tsx
 import { useAuthenticateQuery, useUnassignSelfMutation } from "@/store";
 import { Button, Group, Modal, Text } from "@mantine/core"
 import type { Occurrence } from "../types";
@@ -28,7 +29,9 @@ export const UnassignSelfConfirmation = ({ opened, onClose, occurrence }: Props)
             message: <>You're way too cool to show up to "<strong style={{ fontWeight: 500 }} >{occurrence.payload?.source.title}</strong>". Let's do something else instead!</>,
             color: "green",
             icon: KittyIcons.Cellphone
-        })
+        });
+
+        onClose();
     }
 
     return (

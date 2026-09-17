@@ -58,3 +58,13 @@
     font-size: var(--text-sm);
     font-family: var(--font-family-sora);
 }
+
+.toby-hidden-agenda-header {
+    display: none;
+}
+
+.toby-more-events-button {
+    flex: 0 0 auto;
+    width: fit-content;
+    align-self: flex-start;
+}
