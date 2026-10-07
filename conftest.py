@@ -38,7 +38,7 @@ def clean_db(app):
 
 @pytest.fixture()
 def client(app):
-    """Plain test client — not logged in."""
+    """Plain test client - not logged in."""
     return app.test_client()
 
 

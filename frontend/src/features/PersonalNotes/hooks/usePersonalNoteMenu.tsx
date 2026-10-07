@@ -36,7 +36,7 @@ export const usePersonalNoteMenu = ({ note }: UsePersonalNoteMenuProps) => {
             navigate(`/profile/${userId}?tab=notes`);
             KittyNotification({
                 title: "Note deleted",
-                message: <>Done — "<strong style={{ fontWeight: 500 }}>{note.title}</strong>" has been removed from your notes. Later, gator!</>,
+                message: <>Done - "<strong style={{ fontWeight: 500 }}>{note.title}</strong>" has been removed from your notes. Later, gator!</>,
                 color: "green",
                 icon: KittyIcons.Bubbles,
             });

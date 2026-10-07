@@ -68,3 +68,14 @@
     width: fit-content;
     align-self: flex-start;
 }
+
+.toby-more-events-dropdown {
+    z-index: 300;
+}
+
+
+.mantine-MobileMonthView-mobileMonthViewDay {
+    background-repeat: no-repeat;
+    background-size: calc(100% - 6px) 3px;
+    background-position: center bottom;
+}

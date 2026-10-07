@@ -638,7 +638,7 @@ export const userSlice = apiSlice.injectEndpoints({
 <span class="fstat-no" title="function not covered" >            async onQueryStarted(_args, { dispatch, queryFulfilled }) {</span>
 <span class="cstat-no" title="statement not covered" >                const { data } = await queryFulfilled;</span>
 &nbsp;
-                // Cast needed because `authenticate` is injected in authSlice —
+                // Cast needed because `authenticate` is injected in authSlice -
                 // the base apiSlice doesn't carry its type information here.
 <span class="cstat-no" title="statement not covered" >                dispatch(</span>
 <span class="cstat-no" title="statement not covered" >                    (apiSlice.util.updateQueryData as any)(</span>

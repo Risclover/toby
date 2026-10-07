@@ -220,7 +220,7 @@ export const taskSlice = apiSlice.injectEndpoints({
                             draft.due_today = draft.due_today.filter(t => t.id !== taskId);
                             draft.due_soon = draft.due_soon.filter(t => t.id !== taskId);
                         }
-                        // No undo needed for uncomplete — the task will reappear on refetch
+                        // No undo needed for uncomplete - the task will reappear on refetch
                     })
                 );
 

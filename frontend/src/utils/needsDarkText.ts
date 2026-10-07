@@ -13,5 +13,5 @@ export const needsDarkText = (hexColor: string | undefined): boolean => {
 
     const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 
-    return brightness > 160; // isTooLight uses 240 — this catches the wider "needs black text" range
+    return brightness > 160; // isTooLight uses 240 - this catches the wider "needs black text" range
 };

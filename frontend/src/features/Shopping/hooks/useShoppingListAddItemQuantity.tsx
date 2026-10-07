@@ -52,7 +52,7 @@ export const useShoppingListAddItemQuantity = ({ quantity, onCommit, onClose }: 
             e.stopPropagation(); // prevent Mantine's FocusTrap from also handling Escape
             isDiscardingRef.current = true;
             setLocalValue(quantity);
-            onClose(quantity); // pass snapshot back as explicit finalValue — signals discard
+            onClose(quantity); // pass snapshot back as explicit finalValue - signals discard
         }
     };
 

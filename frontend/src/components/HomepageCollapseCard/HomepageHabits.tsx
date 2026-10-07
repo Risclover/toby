@@ -40,7 +40,7 @@ export const HomepageHabits = ({ isReady }: Props) => {
             return () => clearTimeout(timer);
         }
     }, [checked, habits]);
-    // Scroll to new habit once in DOM. setTimeout unreliable — races against RTK Query + React render.
+    // Scroll to new habit once in DOM. setTimeout unreliable - races against RTK Query + React render.
     useEffect(() => {
         if (!habits) return;
         console.log("habits length:", habits.length, "prev:", prevLengthRef.current);

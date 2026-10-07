@@ -4,8 +4,8 @@ import { useFeaturedShoppingItems } from "./useFeaturedShoppingItems";
 import { useShoppingListGroups } from "./useShoppingListGroups";
 import { truncateGroups, EMPTY_LIST } from "../utils/shoppingGroupUtils";
 
-// Everything the homepage shopping card needs to decide WHAT to render —
-// filtering, grouping, truncation, and the empty/victory state checks — in
+// Everything the homepage shopping card needs to decide WHAT to render -
+// filtering, grouping, truncation, and the empty/victory state checks - in
 // one place, separate from how it's actually rendered.
 export const useFeaturedShoppingDisplay = (
     list: ShoppingList | undefined,
@@ -20,10 +20,10 @@ export const useFeaturedShoppingDisplay = (
     const sortOrder = settings?.sortOrder ?? "created";
     const maxItems = settings?.maxItems ?? 5;
 
-    // Flat mode — used when categoryGroups is off.
+    // Flat mode - used when categoryGroups is off.
     const displayedItems = useFeaturedShoppingItems(items, settings);
 
-    // Grouped mode — always called (hooks can't be conditional), result only
+    // Grouped mode - always called (hooks can't be conditional), result only
     // used when categoryGroupsEnabled is true.
     const groups = useShoppingListGroups(list ?? EMPTY_LIST, {
         groupByCategory: true,

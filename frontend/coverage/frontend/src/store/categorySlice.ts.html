@@ -485,7 +485,7 @@ export type ShoppingCategory = {
 &nbsp;
 export const shoppingCategorySlice = apiSlice.injectEndpoints({
     endpoints: (builder) =&gt; ({
-        // GET ""  — your Flask endpoint expects JSON in the request body with { shoppingListId }
+        // GET ""  - your Flask endpoint expects JSON in the request body with { shoppingListId }
         getShoppingCategories: builder.query&lt;ShoppingCategory[], number&gt;({
             query: <span class="fstat-no" title="function not covered" >(listId) =&gt; ({</span>
 <span class="cstat-no" title="statement not covered" >                url: "/shopping-categories",</span>
@@ -501,7 +501,7 @@ export const shoppingCategorySlice = apiSlice.injectEndpoints({
 <span class="cstat-no" title="statement not covered" >                    : [{ type: "ShoppingCategory" as const, id: `LIST_${listId}` }],</span>
         }),
 &nbsp;
-        // POST "" — body: { name, shoppingListId }
+        // POST "" - body: { name, shoppingListId }
         createShoppingCategory: builder.mutation&lt;
             ShoppingCategory,
             { listId: number; name: string }

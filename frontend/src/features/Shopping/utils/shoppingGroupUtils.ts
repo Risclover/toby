@@ -24,7 +24,7 @@ export const EMPTY_LIST: ShoppingList = {
 };
 
 // maxItems caps unchecked items only, applied globally across the whole
-// display — not per category. Category order follows useShoppingListGroups'
+// display - not per category. Category order follows useShoppingListGroups'
 // own alphabetical sort, with uncategorized items filling any remaining
 // budget last, same relative position as in that hook's return shape.
 export const truncateGroups = (

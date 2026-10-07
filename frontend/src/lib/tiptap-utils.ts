@@ -383,7 +383,7 @@ export const handleImageUpload = async (
   const data = await res.json()
   if (!data.url) throw new Error("Upload failed: no URL returned")
 
-  // Flask/S3 gives no streaming progress — report 100 on completion
+  // Flask/S3 gives no streaming progress - report 100 on completion
   onProgress({ progress: 100 })
   return data.url
 }

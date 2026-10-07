@@ -258,7 +258,7 @@ const TASKLIST_COMPLETED_KEY = "collapsible-card-tasklist-completed";
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >function writeObject(key: string, states: Record&lt;string, boolean&gt;): void {</span></span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >        localStorage.setItem(key, JSON.stringify(states));</span>
-<span class="cstat-no" title="statement not covered" >    } catch { /* quota exceeded or SSR — silently skip */ }</span>
+<span class="cstat-no" title="statement not covered" >    } catch { /* quota exceeded or SSR - silently skip */ }</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
 export <span class="fstat-no" title="function not covered" >function getCardOpen(cardKey: string, defaultOpen = true): boolean {</span>
@@ -296,7 +296,7 @@ export <span class="fstat-no" title="function not covered" >function migrateCard
 <span class="cstat-no" title="statement not covered" >            try {</span>
 <span class="cstat-no" title="statement not covered" >                existing[k] = JSON.parse(raw);</span>
 <span class="cstat-no" title="statement not covered" >                changed = true;</span>
-<span class="cstat-no" title="statement not covered" >            } catch { /* malformed — skip */ }</span>
+<span class="cstat-no" title="statement not covered" >            } catch { /* malformed - skip */ }</span>
 <span class="cstat-no" title="statement not covered" >            localStorage.removeItem(legacyKey);</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >    }</span>

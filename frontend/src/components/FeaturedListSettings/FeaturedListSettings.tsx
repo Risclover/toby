@@ -111,7 +111,7 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings, acti
 
     // Each tab keeps its own form + submit/reset handling via useSettingsModal.
     // We ignore the discard-warning/close plumbing each instance returns
-    // (showDiscardWarning, handleClose, handleDiscardConfirmation, etc.) —
+    // (showDiscardWarning, handleClose, handleDiscardConfirmation, etc.) -
     // that's handled once, centrally, below, since closing the MODAL (as
     // opposed to submitting a single tab's form) needs to know about both.
     const {
@@ -144,7 +144,7 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings, acti
         onClose: () => setShowFeaturedListSettings(false)
     })
 
-    // Re-seed both forms whenever the modal opens — not just the tasklist one.
+    // Re-seed both forms whenever the modal opens - not just the tasklist one.
     // Without this, if the shopping-settings query resolved after mount but
     // before the modal was first opened, the shopping tab would show stale
     // defaults instead of the real saved settings.
@@ -158,7 +158,7 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings, acti
     }, [opened]);
 
     // Switching tabs now requires the tab being LEFT to be clean. If it's
-    // dirty, block the switch and warn — confirming discards only that tab's
+    // dirty, block the switch and warn - confirming discards only that tab's
     // changes, not the destination tab's.
     const handleTabChange = (newValue: string | null) => {
         const leavingForm = activeTab === "shopping" ? shoppingForm : form;
@@ -180,14 +180,14 @@ export const FeaturedListSettings = ({ opened, setShowFeaturedListSettings, acti
 
     const onConfirmDiscard = () => {
         if (pendingTab) {
-            // Tab-switch discard — only the tab being left gets reset.
+            // Tab-switch discard - only the tab being left gets reset.
             const leavingForm = activeTab === "shopping" ? shoppingForm : form;
             leavingForm.reset();
             setShowDiscardWarning(false);
             setActiveTab(pendingTab);
             setPendingTab(null);
         } else {
-            // Modal-close discard — reset both, since either could be dirty.
+            // Modal-close discard - reset both, since either could be dirty.
             form.reset();
             shoppingForm.reset();
             setShowDiscardWarning(false);

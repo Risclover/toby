@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [0.x.x] — 2025-MM-DD
+## [0.x.x] - 2025-MM-DD
 ### Added
 - Shopping list item reordering via drag-and-drop
 - Category-based grouping for shopping items

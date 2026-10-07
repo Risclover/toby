@@ -21,7 +21,7 @@ function readObject(key: string): Record<string, boolean> {
 function writeObject(key: string, states: Record<string, boolean>): void {
     try {
         localStorage.setItem(key, JSON.stringify(states));
-    } catch { /* quota exceeded or SSR — silently skip */ }
+    } catch { /* quota exceeded or SSR - silently skip */ }
 }
 
 export function getCardOpen(cardKey: string, defaultOpen = true): boolean {
@@ -59,7 +59,7 @@ export function migrateCardStates(): void {
             try {
                 existing[k] = JSON.parse(raw);
                 changed = true;
-            } catch { /* malformed — skip */ }
+            } catch { /* malformed - skip */ }
             localStorage.removeItem(legacyKey);
         }
     }

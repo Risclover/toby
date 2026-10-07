@@ -32,7 +32,7 @@ export const FeaturedShoppingListTab = ({ form, handleClose }: Props) => {
     const shoppingLists = lists?.filter(list => list.memberIds?.includes(user.id) || list.allMembers);
     const featuredList = lists?.find(list => list.id === settings?.featuredList.listId);
 
-    // Category grouping and a global max-items cap don't compose meaningfully —
+    // Category grouping and a global max-items cap don't compose meaningfully -
     // with grouping on, "top N" has no coherent ordering across categories
     // (which category gets cut isn't tied to anything the user chose, like
     // sort order does for the flat view). Rather than silently ignore the cap

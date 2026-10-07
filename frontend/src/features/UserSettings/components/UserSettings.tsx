@@ -85,7 +85,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
 
     const { data: household } = useHousehold();
 
-    // Pending image is intentionally outside useForm — File objects aren't
+    // Pending image is intentionally outside useForm - File objects aren't
     // form values, and the upload is a separate mutation.
     const [pendingImage, setPendingImage] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -236,7 +236,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                 <Stack mih={0}>
                     <SettingsSection title="Account">
                         <SettingsItem layout="column" label="Profile image" divider={false} description="Represents you across the app">
-                            {/* Hidden file input — triggered by clicking the avatar */}
+                            {/* Hidden file input - triggered by clicking the avatar */}
                             <input
                                 ref={fileInputRef}
                                 type="file"

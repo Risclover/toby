@@ -36,7 +36,7 @@ export const HomepageListsTasklist = ({ isReady }: { isReady: boolean }) => {
 
 
     const { data: tasklist, isLoading: isTasklistLoading } = useGetTasklistQuery(
-        featuredTasklistId ?? skipToken  // cleaner than the ternary — explicitly skips
+        featuredTasklistId ?? skipToken  // cleaner than the ternary - explicitly skips
     );
     const incompleteCount = (tasklist?.tasks ?? []).filter(t => t.status !== "completed").length;
     const totalCount = tasklist?.tasks?.length ?? 0;

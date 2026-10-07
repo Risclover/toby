@@ -117,7 +117,7 @@ export const userSlice = apiSlice.injectEndpoints({
             async onQueryStarted(_args, { dispatch, queryFulfilled }) {
                 const { data } = await queryFulfilled;
 
-                // Cast needed because `authenticate` is injected in authSlice —
+                // Cast needed because `authenticate` is injected in authSlice -
                 // the base apiSlice doesn't carry its type information here.
                 dispatch(
                     (apiSlice.util.updateQueryData as any)(

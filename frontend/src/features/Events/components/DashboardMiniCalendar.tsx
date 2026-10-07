@@ -26,7 +26,7 @@ function toWallClockString(value: string | Date): string {
 }
 
 // occ.start/occ.end from expandRecurringEvents are "YYYY-MM-DD HH:mm:ss" wall-clock
-// strings already in the viewer's local time — split into the local calendar day(s)
+// strings already in the viewer's local time - split into the local calendar day(s)
 // the occurrence actually spans. Mirrors the old expandSpanToLocalDays, but works
 // directly off wall-clock strings instead of re-parsing through Date/timezone math.
 function expandWallClockSpanToDays(startWallClock: string, endWallClock: string): string[] {
@@ -77,7 +77,7 @@ export function DashboardMiniCalendar({
 }: Props) {
     const numberOfDays = 7;
     const stack = useModalsStack(['events-list', 'recurrence', 'event-form'])
-    // start of the visible 7-day strip — anchored to Sunday
+    // start of the visible 7-day strip - anchored to Sunday
     const [startDate, setStartDate] = useState<Date>(() => startOfWeekSunday(new Date()));
     // date to seed QuickAddEvent
     const [editingEvent, setEditingEvent] = useState<CalendarEvent | undefined>(undefined);
@@ -135,7 +135,7 @@ export function DashboardMiniCalendar({
 
         // expandRecurringEvents can return occurrences that spill outside the
         // requested range for recurring events (confirmed while debugging the
-        // events-list modal double-listing bug) — re-check actual overlap
+        // events-list modal double-listing bug) - re-check actual overlap
         // ourselves rather than trusting its range filtering.
         const occurrences = expandRecurringEvents({
             events: scheduleEvents,

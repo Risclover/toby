@@ -27,7 +27,7 @@ import {
 import { useState } from "react";
 
 // ---------------------------------------------------------------------------
-// Design tokens — matches TOBY's existing palette
+// Design tokens - matches TOBY's existing palette
 // ---------------------------------------------------------------------------
 const T = {
     navy: "#0d1b3e",
@@ -290,7 +290,7 @@ function HabitRow({ habit, isLast }: { habit: Habit; isLast: boolean }) {
 }
 
 // ---------------------------------------------------------------------------
-// Note row — mirrors task-row visual style
+// Note row - mirrors task-row visual style
 // ---------------------------------------------------------------------------
 
 function NoteRow({ note, isLast }: { note: Note; isLast: boolean }) {
@@ -398,7 +398,7 @@ export function UserProfileDemo({ isOwner, user }: UserProfileProps) {
     return (
         <Box style={{ background: T.bg, minHeight: "100vh" }}>
 
-            {/* ── Header — identity info lives here ── */}
+            {/* ── Header - identity info lives here ── */}
             <Box
                 style={{
                     background: T.navy,
@@ -711,7 +711,7 @@ export function UserProfileDemo({ isOwner, user }: UserProfileProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Example usage — swap MOCK_USER for RTK Query data in production
+// Example usage - swap MOCK_USER for RTK Query data in production
 // ---------------------------------------------------------------------------
 
 const MOCK_USER: UserProfileProps["user"] = {
@@ -732,7 +732,7 @@ const MOCK_USER: UserProfileProps["user"] = {
     recentActivity: [
         { id: "1", text: "Completed \"Deep clean the bathroom\"", time: "2 hours ago" },
         { id: "2", text: "Added 6 items to the shopping list", time: "Yesterday" },
-        { id: "3", text: "Logged a bill payment — Electricity", time: "2 days ago" },
+        { id: "3", text: "Logged a bill payment - Electricity", time: "2 days ago" },
         { id: "4", text: "Completed \"Take bins out\"", time: "3 days ago" },
         { id: "5", text: "Checked in for the day", time: "This morning" },
     ],

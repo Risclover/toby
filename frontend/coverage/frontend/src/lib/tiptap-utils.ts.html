@@ -1730,7 +1730,7 @@ export const handleImageUpload = <span class="fstat-no" title="function not cove
 <span class="cstat-no" title="statement not covered" >  const data = await res.json()</span>
 <span class="cstat-no" title="statement not covered" >  if (!data.url) throw new Error("Upload failed: no URL returned")</span>
 &nbsp;
-  // Flask/S3 gives no streaming progress — report 100 on completion
+  // Flask/S3 gives no streaming progress - report 100 on completion
 <span class="cstat-no" title="statement not covered" >  onProgress({ progress: 100 })</span>
 <span class="cstat-no" title="statement not covered" >  return data.url</span>
 <span class="cstat-no" title="statement not covered" >}</span>

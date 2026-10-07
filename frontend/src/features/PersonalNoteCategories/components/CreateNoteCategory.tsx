@@ -32,7 +32,7 @@ type Props = {
  * Mode is determined by the presence of the `category` prop.
  *
  * @example
- * // Create mode — standalone
+ * // Create mode - standalone
  * <CreateNoteCategory
  *   opened={showModal}
  *   close={() => setShowModal(false)}
@@ -40,7 +40,7 @@ type Props = {
  * />
  *
  * @example
- * // Edit mode — inside a Modal.Stack
+ * // Edit mode - inside a Modal.Stack
  * <CreateNoteCategory
  *   stack={stack}
  *   category={editingCategory}

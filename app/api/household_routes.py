@@ -161,7 +161,7 @@ def get_household_shopping_lists(id):
         return jsonify({"error": "Household not found"}), 404
 
     # Was previously unauthenticated with no membership/visibility check at
-    # all — unlike get_household_tasklists just above, which requires login,
+    # all - unlike get_household_tasklists just above, which requires login,
     # checks household membership, and filters per-list for restricted
     # (non-all_members) lists. Mirroring that same pattern here.
     if current_user.household_id != id:

@@ -663,7 +663,7 @@ export const HomepageListsTasklist = <span class="fstat-no" title="function not 
 &nbsp;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    const { data: tasklist, isLoading: isTasklistLoading } = useGetTasklistQuery(</span>
-<span class="cstat-no" title="statement not covered" >        featuredTasklistId ?? skipToken  // cleaner than the ternary — explicitly skips</span>
+<span class="cstat-no" title="statement not covered" >        featuredTasklistId ?? skipToken  // cleaner than the ternary - explicitly skips</span>
 <span class="cstat-no" title="statement not covered" >    );</span>
 <span class="cstat-no" title="statement not covered" >    const incompleteCount = (tasklist?.tasks ?? []).filter(t =&gt; t.status !== "completed").length;</span>
 <span class="cstat-no" title="statement not covered" >    const totalCount = tasklist?.tasks?.length ?? 0;</span>

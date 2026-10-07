@@ -15,6 +15,9 @@ const parseWallClock = (value: string | Date) =>
 const formatDateTime = (value: string | Date) =>
     dayjs(parseWallClock(value)).format(`MMM D${dayjs().year() !== dayjs(parseWallClock(value)).year() ? ", YYYY" : ""}, h:mma`);
 
+const formatDateOnly = (value: string | Date) =>
+    dayjs(parseWallClock(value)).format(`MMM D${dayjs().year() !== dayjs(parseWallClock(value)).year() ? ", YYYY" : ""}`);
+
 const describeRecurrence = (rrule?: string | null) => {
     if (!rrule) return null;
     const freqMatch = rrule.match(/FREQ=(\w+)/);
@@ -41,8 +44,12 @@ export const EventDetailsModal = ({ opened, onClose, occurrence, onEdit }: Props
     const source = payload?.source;
     if (!source) return null;
 
-    const start = occurrence.start as string;
-    const end = occurrence.end as string;
+    // toDayViewEvents clips each day-segment's own start/end for grid
+    // rendering, but stashes the event's TRUE full span on the payload --
+    // prefer that so clicking any day of a multi-day event shows the real
+    // range instead of just that one day's clipped portion.
+    const start = (payload?.originalStart ?? occurrence.start) as string;
+    const end = (payload?.originalEnd ?? occurrence.end) as string;
     const startDay = dayjs(parseWallClock(start)).format("YYYY-MM-DD");
     const endDay = dayjs(parseWallClock(end)).format("YYYY-MM-DD");
     const isMultiDay = startDay !== endDay;
@@ -50,12 +57,12 @@ export const EventDetailsModal = ({ opened, onClose, occurrence, onEdit }: Props
     let timeLabel: string;
     if (payload?.hasTime === false) {
         timeLabel = isMultiDay
-            ? `${dayjs(parseWallClock(start)).format("MMM D")} \u2013 ${dayjs(parseWallClock(end)).format("MMM D")}`
-            : "All day";
+            ? `${formatDateOnly(start)} – ${formatDateOnly(end)} · All day`
+            : `${formatDateOnly(start)} · All day`;
     } else if (isMultiDay) {
-        timeLabel = `${formatDateTime(start)} \u2013 ${formatDateTime(end)}`;
+        timeLabel = `${formatDateTime(start)} – ${formatDateTime(end)}`;
     } else {
-        timeLabel = `${dayjs(parseWallClock(start)).format("h:mma")} \u2013 ${dayjs(parseWallClock(end)).format("h:mma")}`;
+        timeLabel = `${formatDateOnly(start)} · ${dayjs(parseWallClock(start)).format("h:mma")} – ${dayjs(parseWallClock(end)).format("h:mma")}`;
     }
 
     const recurrenceLabel = describeRecurrence((occurrence as any).recurrence?.rrule);
@@ -69,9 +76,9 @@ export const EventDetailsModal = ({ opened, onClose, occurrence, onEdit }: Props
                     <EventActionsMenu occurrence={occurrence} onEdit={onEdit} onDeleted={onClose} />
                 </Group>
 
-                <Text size="sm" c="dimmed">{timeLabel}</Text>
-
                 <EventMemberDots colors={payload?.colors ?? []} names={payload?.memberNames} />
+
+                <Text size="sm" c="dimmed">{timeLabel}</Text>
 
                 {recurrenceLabel && <Text size="sm" c="dimmed">{recurrenceLabel}</Text>}
 

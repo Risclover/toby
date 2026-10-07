@@ -64,11 +64,11 @@ export const ShoppingListCard = ({ list }: Props) => {
                 <span className="shopping-list-empty-state">
                     {uncompleted.length === 0 && (completedCount === 0 ? "Empty list." : "🏅 All completed!")}
                 </span>
-                <ul>
+                {uncompleted.length > 0 && <ul>
                     {list.items.slice(0, 3).map((item: any) => (
                         <ShoppingListItem item={item} />
                     ))}
-                </ul>
+                </ul>}
                 {remainingCount > 0 && <div className="household-tasklist-bottom">+ {remainingCount} more</div>}
             </div>
             <div className="shopping-list-card-footer">

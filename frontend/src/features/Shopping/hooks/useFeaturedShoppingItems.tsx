@@ -19,7 +19,7 @@ export const useFeaturedShoppingItems = (
             return true;
         });
 
-        // 2. SORTING — unchecked first, checked last, then user-selected order
+        // 2. SORTING - unchecked first, checked last, then user-selected order
         result.sort((a, b) => {
             if (a.isChecked !== b.isChecked) {
                 return a.isChecked ? 1 : -1;
@@ -38,7 +38,7 @@ export const useFeaturedShoppingItems = (
             }
         });
 
-        // 3. LIMITING — maxItems caps unchecked items only.
+        // 3. LIMITING - maxItems caps unchecked items only.
         // If showCompleted is true, ALL checked items are still shown regardless of the cap.
         if (maxItems > 0) {
             const unchecked = result.filter(i => !i.isChecked);

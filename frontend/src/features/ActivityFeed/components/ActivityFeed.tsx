@@ -44,7 +44,7 @@ export const ActivityFeed = ({ isReady, householdId, actorId }: Props) => {
         return new Date(normalized).toLocaleDateString();
     };
 
-    // Was formatTaskLine2 — nothing in here was actually task-specific, it
+    // Was formatTaskLine2 - nothing in here was actually task-specific, it
     // just consumed entityLabels + count off the event and rendered a
     // singular label or an expandable "click to show N" list. Generalized
     // with a `nounPlural` param so shopping_item events can reuse it too

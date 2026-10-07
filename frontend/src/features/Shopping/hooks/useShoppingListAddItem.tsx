@@ -65,7 +65,7 @@ export const useShoppingListAddItem = (list: ShoppingList) => {
 
     /** Collapses the details panel and clears its state once the input and details are both empty. */
     function handleOutsideClick() {
-        // Only flush draftQuantity if the popover is still open — if it's already closed,
+        // Only flush draftQuantity if the popover is still open - if it's already closed,
         // it handled its own commit/discard and quantity is already correct.
         const committedQuantity = details.qtyOpened ? details.draftQuantity : details.quantity;
         const hasDetails = committedQuantity > 0 || details.categoryId !== null;

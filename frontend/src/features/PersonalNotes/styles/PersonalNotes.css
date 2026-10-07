@@ -40,7 +40,7 @@
     flex: 1;
     /* Takes all remaining height */
     min-height: 0;
-    /* Critical — allows flex child to shrink below content size */
+    /* Critical - allows flex child to shrink below content size */
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -64,7 +64,7 @@
     min-height: 0;
     box-shadow: var(--mantine-shadow-xs);
     height: 100%;
-    /* Critical — without this, flex children ignore overflow and expand anyway */
+    /* Critical - without this, flex children ignore overflow and expand anyway */
 }
 
 
@@ -465,7 +465,7 @@
     flex-direction: column;
 }
 
-/* Section title — small all-caps label */
+/* Section title - small all-caps label */
 .notes-filter-section-label {
     font-size: 11px;
     font-weight: 600;
@@ -492,7 +492,7 @@
     font-weight: 400;
 }
 
-/* Individual option row — mirrors category-drawer-item style for consistency */
+/* Individual option row - mirrors category-drawer-item style for consistency */
 .filter-drawer-option {
     display: flex;
     align-items: center;
@@ -567,7 +567,7 @@
     border-color: rgb(5, 5, 73);
     background: white;
     padding: 0 .5rem 0 0.4rem;
-    /* right padding only — icon provides left spacing */
+    /* right padding only - icon provides left spacing */
 }
 
 .personal-notes-search-icon {

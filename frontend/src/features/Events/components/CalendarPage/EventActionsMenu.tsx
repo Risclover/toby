@@ -1,4 +1,5 @@
 import type { ComponentProps } from "react";
+import dayjs from "dayjs";
 import { useDisclosure } from "@mantine/hooks";
 import type { Schedule } from "@mantine/schedule";
 import { useHousehold } from "@/hooks";
@@ -7,6 +8,7 @@ import { useAuthenticateQuery, useDeleteEventMutation } from "@/store";
 import { DeleteConfirmation, KittyNotification } from "@/components";
 import { KittyIcons } from "@/assets";
 import type { EventColorPayload } from "../../utils/getEventColors";
+import { toAllDayStartUtc, toAllDayEndUtc } from "../../utils/allDayBoundary";
 import { EventMenu } from "../EventMenu";
 import { DeleteRecurringEventConfirmation } from "../DeleteRecurringEventConfirmation";
 import { UnassignSelfConfirmation } from "../UnassignSelfConfirmation";
@@ -59,12 +61,40 @@ export const EventActionsMenu = ({ occurrence, onEdit, onDeleted }: Props) => {
         onDeleted?.();
     };
 
+    // For a recurring event, `source` is the series' master record, so its
+    // own startUtc/endUtc always reflect the series' very FIRST occurrence
+    // -- not whichever occurrence was actually clicked. occurrence.start/end
+    // (or payload.originalStart/originalEnd, for a Day view continuation
+    // segment) reflect the real clicked occurrence and are what the edit
+    // form should seed from instead.
+    const handleEdit = () => {
+        const occStart = (payload?.originalStart ?? occurrence.start) as string;
+        const occEnd = (payload?.originalEnd ?? occurrence.end) as string;
+
+        if (source.hasTime === false) {
+            // occStart/occEnd are naive, tzid-anchored "YYYY-MM-DD HH:mm:ss"
+            // wall-clock strings (see toAllDayBoundary) -- re-derive real UTC
+            // instants for THIS occurrence's calendar day(s) the same way the
+            // save path does, rather than reusing the master's own boundaries.
+            const tzid = source.tzid ?? "UTC";
+            const startDay = dayjs(occStart).format("YYYY-MM-DD");
+            const endDay = dayjs(occEnd).format("YYYY-MM-DD");
+            onEdit({ ...source, startUtc: toAllDayStartUtc(startDay, tzid), endUtc: toAllDayEndUtc(endDay, tzid) });
+        } else {
+            // Timed events' start/end are raw UTC instants passed straight
+            // through by toEventStart, and Mantine's own recurrence expansion
+            // already shifts them to this specific occurrence -- safe to use
+            // directly as the edited event's boundaries.
+            onEdit({ ...source, startUtc: occStart, endUtc: occEnd });
+        }
+    };
+
     return (
         <>
             <EventMenu
                 isEditing={false}
                 setIsEditing={(val) => {
-                    if (val) onEdit(source);
+                    if (val) handleEdit();
                 }}
                 occurrence={occurrence as any}
                 opened={recurringOpened}

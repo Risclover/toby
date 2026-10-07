@@ -23,7 +23,7 @@ export function MaxTaskCountPicker({ value, onChange, list, disabled = false }: 
 
     // BUG FIX: `ref={setControlRef(val)}` was creating a brand-new function
     // every render. React treats a callback ref with a new identity as
-    // "detach then reattach" on every render — which called setControlsRefs
+    // "detach then reattach" on every render - which called setControlsRefs
     // again, triggering a re-render, which created new callbacks again, on
     // and on. This is what "Maximum update depth exceeded" was pointing at.
     // Caching one stable callback per option value (created once, reused

@@ -561,7 +561,7 @@ export const HomepageHabits = <span class="fstat-no" title="function not covered
 <span class="cstat-no" title="statement not covered" >            return () =&gt; clearTimeout(timer);</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >    }, [checked, habits]);</span>
-    // Scroll to new habit once in DOM. setTimeout unreliable — races against RTK Query + React render.
+    // Scroll to new habit once in DOM. setTimeout unreliable - races against RTK Query + React render.
 <span class="cstat-no" title="statement not covered" >    useEffect(() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        if (!habits) return;</span>
 <span class="cstat-no" title="statement not covered" >        console.log("habits length:", habits.length, "prev:", prevLengthRef.current);</span>

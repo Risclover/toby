@@ -37,7 +37,7 @@ export const useCreateNoteCategory = ({ close, category, onCategoryCreated }: Us
         }
     });
 
-    /** True when a `category` prop is present — drives which mutation fires on submit. */
+    /** True when a `category` prop is present - drives which mutation fires on submit. */
     const isEditing = !!category;
 
     /** For instances of very light colors (prevents terrible design & accessibility outcomes) */

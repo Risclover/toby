@@ -186,7 +186,7 @@ export const CreateReminder = () => {
                         variant="outline"
                         label="Cancel"
                     />
-                    {/* type="submit" triggers form.onSubmit — no onClick needed */}
+                    {/* type="submit" triggers form.onSubmit - no onClick needed */}
                     <ButtonStandard
                         type="submit"
                         variant="filled"

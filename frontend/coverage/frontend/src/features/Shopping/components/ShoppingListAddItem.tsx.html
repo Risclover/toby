@@ -353,7 +353,7 @@ export const ShoppingListAddItem = <span class="fstat-no" title="function not co
 <span class="cstat-no" title="statement not covered" >    const { data: household } = useHousehold();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    const handleOutsideClick = () =&gt; {</span>
-        // Only flush draftQuantity if the popover is still open — if it's already closed,
+        // Only flush draftQuantity if the popover is still open - if it's already closed,
         // it handled its own commit/discard and quantity is already correct
 <span class="cstat-no" title="statement not covered" >        const committedQuantity = qtyOpened ? draftQuantity : quantity;</span>
 <span class="cstat-no" title="statement not covered" >        if (qtyOpened) setQuantity(committedQuantity);</span>

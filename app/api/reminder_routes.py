@@ -45,7 +45,7 @@ def create_or_update_automatic_reminder():
         if field not in data:
             return jsonify({"error": f"Missing {field}"}), 400
 
-    # ✅ trigger_date is a plain date — no timezone conversion needed
+    # ✅ trigger_date is a plain date - no timezone conversion needed
     trigger_date = None
     if data.get("triggerDate"):
         trigger_date = date.fromisoformat(data["triggerDate"])  # expects "YYYY-MM-DD"

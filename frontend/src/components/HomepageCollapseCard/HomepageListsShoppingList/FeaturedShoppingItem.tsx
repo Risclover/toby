@@ -10,7 +10,7 @@ export type FeaturedShoppingItemProps = {
     // True only when CHECKING this item will make it leave the array it's
     // currently being rendered from (grouped mode always relocates it into
     // "Checked off"/off-screen; flat mode only does this when completed
-    // items are hidden — with them shown, checking just re-sorts within the
+    // items are hidden - with them shown, checking just re-sorts within the
     // same visible list, so nothing should fade/unmount).
     fadesOutOnCheck: boolean;
     color: string;
@@ -27,7 +27,7 @@ export const FeaturedShoppingItem = ({ item, listId, fadesOutOnCheck, color, vie
     const [toggleItem] = useToggleShoppingItemMutation();
 
     // Local isChecked here is NOT duplicating the mutation's own optimistic
-    // cache patch (that concern is unchanged — toggleShoppingItem still
+    // cache patch (that concern is unchanged - toggleShoppingItem still
     // handles its own patch/rollback). This state exists for a different
     // reason: to let the CHECKBOX flip instantly while deliberately delaying
     // WHEN we tell the cache about it, so the item has a moment to visibly
@@ -41,8 +41,8 @@ export const FeaturedShoppingItem = ({ item, listId, fadesOutOnCheck, color, vie
     // Only fade/unmount when checking this item will ACTUALLY remove it from
     // the array it's currently rendered from (see fadesOutOnCheck on props).
     // Also gated on canonical item.isChecked (not local isChecked) so an
-    // item that was already checked when rendered — e.g. sitting in the
-    // "Checked off" section — is never treated as mid-exit.
+    // item that was already checked when rendered - e.g. sitting in the
+    // "Checked off" section - is never treated as mid-exit.
     const shouldFadeOnCheck = fadesOutOnCheck && !item.isChecked;
 
     const triggerMutation = async (checked: boolean) => {
@@ -55,10 +55,10 @@ export const FeaturedShoppingItem = ({ item, listId, fadesOutOnCheck, color, vie
         }
     };
 
-    // Checking always gets the delay, in every mode, per the original ask —
+    // Checking always gets the delay, in every mode, per the original ask -
     // long enough to see it checked before anything happens to it, whether
     // that means fading away (grouped mode / hide completed) or just
-    // quietly re-sorting in place. Unchecking fires immediately — no delay
+    // quietly re-sorting in place. Unchecking fires immediately - no delay
     // was ever actually needed there. The "jump on uncheck" that looked like
     // a timing problem was CSS scroll anchoring (fixed in the stylesheet via
     // overflow-anchor: none), not something a delay could have solved.
