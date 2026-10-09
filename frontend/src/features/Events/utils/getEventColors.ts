@@ -68,7 +68,7 @@ function toAllDayBoundary(value: string | dayjs.Dayjs, tzid: string): string {
  * function's caller normalizes through here) can stay a plain, correct
  * boolean comparison instead of every call site needing its own defense.
  */
-function isAllDayValue(hasTime: unknown): boolean {
+export function isAllDayValue(hasTime: unknown): boolean {
     return hasTime === false || hasTime === "0" || hasTime === 0 || hasTime === "false";
 }
 

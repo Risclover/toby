@@ -23,6 +23,7 @@ import {
     toRangeEvents,
     toMemberColorStripe,
     type EventColorPayload,
+    isAllDayValue,
 } from "../../utils/getEventColors";
 import { formatEventDate, formatEventDateTime } from "../../utils/formatEventDate";
 import { EventMemberDots } from "../../components/CalendarPage/EventColorDots";
@@ -46,18 +47,6 @@ const canInteractWithEvent = (event: { payload?: unknown }) =>
 
 export const FullPageCalendar = () => {
     const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
-    // MobileMonthView's selected-day (what the events list below the grid
-    // actually shows) - previously left entirely to Mantine's own internal,
-    // uncontrolled state, which only ever changed on a day-cell tap. That
-    // meant navigating to a different month via stepMobileMonth/the month
-    // picker/goToCurrentMonth changed `date` (the displayed grid) but left
-    // the component's own selected day frozen on whatever was last tapped,
-    // producing a header that still read e.g. "October 31" while the list
-    // under it went empty, since the new month's events have no entry for a
-    // day that isn't even in it. Now controlled from here (passed as
-    // selectedDate/onSelectedDateChange below) so every place that changes
-    // `date` can also resync this to something that actually exists in the
-    // newly-shown month - see resolveMobileSelectedDate.
     const [mobileSelectedDate, setMobileSelectedDate] = useState(() => dayjs().format('YYYY-MM-DD'));
     const [view, setView] = useState<ScheduleViewLevel>("week");
     const [agendaOpen, setAgendaOpen] = useState(false);
@@ -70,22 +59,7 @@ export const FullPageCalendar = () => {
     const [editingEvent, setEditingEvent] = useState<CalendarEvent | undefined>(undefined);
     const [slotRange, setSlotRange] = useState<SlotRange | null>(null);
     const [allDayTargetDate, setAllDayTargetDate] = useState<string | null>(null);
-    // Month view's drag-select reports a plain [rangeStart, rangeEnd] date
-    // pair the exact same shape slotRange has -- but Month view has no time
-    // granularity at all, only whole days, while slotRange is also used for
-    // Day/Week's genuine time-slot drags (which DO carry real start/end
-    // times). Reusing slotRange for both meant EventForm always got fed
-    // initialStartTime/initialEndTime derived from it, which seeded a
-    // month-view multi-day drag as a TIMED event (12:00am - 11:59pm) instead
-    // of an all-day event spanning that date range. Kept as its own state
-    // so the two flows can never bleed into each other.
     const [monthDragRange, setMonthDragRange] = useState<SlotRange | null>(null);
-    // Year view's day-cell click opens the Agenda modal scoped to just that
-    // one day, without touching the main `view`/`date` (you stay on Year
-    // view underneath). agendaRange normally derives its span from `view`,
-    // which doesn't work here since `view` is still "year" - this flag lets
-    // agendaRange (and stepAgenda's step unit) force single-day mode instead.
-    // The toolbar's own "Agenda" button always clears it back to false.
     const [agendaSingleDay, setAgendaSingleDay] = useState(false);
     const [returnModal, setReturnModal] = useState<"agenda" | "details" | null>(null);
     const stack = useModalsStack<ModalId>(['recurrence', 'event-form']);
@@ -108,7 +82,7 @@ export const FullPageCalendar = () => {
     const handleToggleMember = (id: number) => {
         setSelectedMemberIds((current) => {
             const base = current ?? allMemberIds;
-            return base.includes(id) ? base.filter((memberId) => memberId !== id) : [...base, id];
+            return base.includes(id) ? base.filter((memberId: number) => memberId !== id) : [...base, id];
         });
     };
 
@@ -120,7 +94,7 @@ export const FullPageCalendar = () => {
     // against effectiveSelectedIds rather than the raw state so this
     // reads correctly whether selection got to "everyone" via that null
     // default or by individually re-selecting every member by hand.
-    const isAllMembersSelected = allMemberIds.length > 0 && allMemberIds.every((id) => effectiveSelectedIds.includes(id));
+    const isAllMembersSelected = allMemberIds.length > 0 && allMemberIds.every((id: number) => effectiveSelectedIds.includes(id));
 
     const handleToggleAllMembers = () => {
         setSelectedMemberIds(isAllMembersSelected ? [] : allMemberIds);
@@ -130,7 +104,7 @@ export const FullPageCalendar = () => {
         if (!events) return events;
         return events.filter((event) => {
             const attendeeIds = event.allMembers ? allMemberIds : event.attendeeIds ?? [];
-            return attendeeIds.some((id) => effectiveSelectedIds.includes(id));
+            return attendeeIds.some((id: number) => effectiveSelectedIds.includes(id));
         });
     }, [events, allMemberIds, effectiveSelectedIds]);
 
@@ -264,7 +238,7 @@ export const FullPageCalendar = () => {
                         ...data.event,
                         payload: {
                             ...data.event?.payload,
-                            hasTime: sourceEvent?.hasTime ?? data.event?.payload?.hasTime,
+                            hasTime: sourceEvent ? !isAllDayValue(sourceEvent.hasTime) : data.event?.payload?.hasTime,
                             tzid: sourceEvent?.tzid ?? data.event?.payload?.tzid,
                         },
                     },

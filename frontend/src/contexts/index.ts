@@ -5,3 +5,4 @@ export * from "./CreateReminderContext";
 export * from "./HabitModalContext";
 export * from "./NotesFilterContext";
 export * from "./PersonalNoteModalContext";
+export * from "./CalendarContext"

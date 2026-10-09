@@ -2,21 +2,23 @@ import type { ComponentProps } from "react";
 import dayjs from "dayjs";
 import { useDisclosure } from "@mantine/hooks";
 import type { Schedule } from "@mantine/schedule";
-import { useHousehold } from "@/hooks";
-import type { CalendarEvent } from "@/store";
-import { useAuthenticateQuery, useDeleteEventMutation } from "@/store";
+
 import { DeleteConfirmation, KittyNotification } from "@/components";
-import { KittyIcons } from "@/assets";
-import type { EventColorPayload } from "../../utils/getEventColors";
-import { toAllDayStartUtc, toAllDayEndUtc } from "../../utils/allDayBoundary";
 import { EventMenu } from "../EventMenu";
 import { DeleteRecurringEventConfirmation } from "../DeleteRecurringEventConfirmation";
 import { UnassignSelfConfirmation } from "../UnassignSelfConfirmation";
+import { useHousehold } from "@/hooks";
+import { useAuthenticateQuery, useDeleteEventMutation, type CalendarEvent } from "@/store";
+import { isAllDayValue, type EventColorPayload } from "../../utils/getEventColors";
+import { toAllDayStartUtc, toAllDayEndUtc } from "../../utils/allDayBoundary";
+import { KittyIcons } from "@/assets";
 
 type ScheduleEventData = NonNullable<ComponentProps<typeof Schedule>["events"]>[number];
 
 type Props = {
+    // Specific occurrence of a recurring event, or a single-instance event.
     occurrence: ScheduleEventData;
+    // Callback to manage modals in modal stack and resetting event form states
     onEdit: (event: CalendarEvent) => void;
     /** Called after a successful delete. Omit if the caller doesn't need to react (e.g. an agenda row just disappears on its own once the live event list updates). */
     onDeleted?: () => void;
@@ -71,7 +73,7 @@ export const EventActionsMenu = ({ occurrence, onEdit, onDeleted }: Props) => {
         const occStart = (payload?.originalStart ?? occurrence.start) as string;
         const occEnd = (payload?.originalEnd ?? occurrence.end) as string;
 
-        if (source.hasTime === false) {
+        if (isAllDayValue(source.hasTime)) {
             // occStart/occEnd are naive, tzid-anchored "YYYY-MM-DD HH:mm:ss"
             // wall-clock strings (see toAllDayBoundary) -- re-derive real UTC
             // instants for THIS occurrence's calendar day(s) the same way the

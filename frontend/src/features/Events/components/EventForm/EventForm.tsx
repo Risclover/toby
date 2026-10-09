@@ -26,6 +26,7 @@ import { hmFromIso, ymdFromIso } from "../../utils/fromIso";
 import { roundUpToNearest30Min } from "../../utils/roundUpToNearest30Min";
 import { toAllDayStartUtc, toAllDayEndUtc } from "../../utils/allDayBoundary";
 import { EditRecurringEventConfirmation, type EditScope } from "../EditRecurringEventConfirmation";
+import { isAllDayValue } from "../../utils/getEventColors";
 
 
 dayjs.extend(customParseFormat);
@@ -94,7 +95,7 @@ export function EventForm({
     const { form, startDate, title } = useEventForm({
         currentUserId: user.id,
         startDate: event
-            ? ymdFromIso(event.startUtc ?? undefined, event.hasTime === false ? (event.tzid ?? "UTC") : undefined)
+            ? ymdFromIso(event.startUtc ?? undefined, isAllDayValue(event.hasTime) ? (event.tzid ?? "UTC") : undefined)
             : dayjs(initialDate).format("YYYY-MM-DD"),
     });
 
@@ -164,7 +165,7 @@ export function EventForm({
     // Establishes a NEW baseline representing an existing event -- used
     // for the externally-passed `event` prop (edit mode).
     const seedFromEvent = (targetEvent: CalendarEvent) => {
-        const isAllDay = targetEvent.hasTime === false;
+        const isAllDay = isAllDayValue(targetEvent.hasTime);
         const tzid = targetEvent.tzid ?? "UTC";
 
         const seededDate = ymdFromIso(targetEvent.startUtc ?? undefined, isAllDay ? tzid : undefined);
