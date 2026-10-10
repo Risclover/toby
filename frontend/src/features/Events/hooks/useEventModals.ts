@@ -3,9 +3,9 @@ import { useModalsStack } from "@mantine/core";
 import type { CalendarEvent } from "@/store";
 import type { ModalId } from "../types";
 import type { ScheduleEventData } from "../utils/weekAllDayLayout";
-import type { HouseholdMemberColor } from "../utils/getEventColors";
 import type { EventFormSeed } from "../utils/eventFormSeed";
 import { resolveLiveEvent } from "../utils/resolveLiveEvent";
+import type { HouseholdMemberColor } from "../utils/eventColorPayload";
 
 const EVENT_FORM_MODAL_ID: ModalId = "event-form";
 const MODAL_STACK_IDS: ModalId[] = ["recurrence", EVENT_FORM_MODAL_ID];

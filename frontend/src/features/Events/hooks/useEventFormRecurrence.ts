@@ -6,6 +6,7 @@ import {
     matchingPresetKind,
     type CustomRecurrenceRule,
 } from "../utils";
+import type { EventFormState, RepeatKind } from "../utils/eventFormValues";
 
 type RecurrenceState = Pick<EventFormState, "repeatKind" | "customRule">;
 

@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 import { MobileMonthView } from "@mantine/schedule";
 import { UnstyledButton } from "@mantine/core";
-import type { EventColorPayload } from "./getEventColors";
+import type { EventColorPayload } from "./eventColorPayload";
 
 type MobileMonthViewProps = ComponentProps<typeof MobileMonthView>;
 

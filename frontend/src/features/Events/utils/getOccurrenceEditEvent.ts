@@ -5,7 +5,8 @@ import type { CalendarEvent } from "@/store";
 import { toAllDayEndUtc, toAllDayStartUtc } from "./allDayBoundary";
 import { DATE_FORMAT, DEFAULT_TZID } from "./calendarConstants";
 import type { EventSource, ScheduleEventData } from "./calendarTypes";
-import { isAllDayValue, type EventColorPayload } from "./getEventColors";
+import type { EventColorPayload } from "./eventColorPayload";
+import { isAllDayValue } from "./isAllDayValue";
 
 type OccurrenceEditEventProps = {
     occurrence: ScheduleEventData;

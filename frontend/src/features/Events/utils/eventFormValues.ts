@@ -6,9 +6,9 @@ import type { CalendarEvent } from "@/store";
 import "./dayjsPlugins";
 import { DEFAULT_EVENT_DURATION_HOURS, DEFAULT_TZID, TIME_FORMAT } from "./calendarConstants";
 import { hmFromIso, ymdFromIso } from "./fromIso";
-import { isAllDayValue } from "./getEventColors";
 import { parseRRule, type CustomRecurrenceRule, type PresetKind } from "./recurrence";
 import { roundUpToNearest30Min } from "./roundUpToNearest30Min";
+import { isAllDayValue } from "./isAllDayValue";
 
 export const DEFAULT_VISIBILITY = "public";
 export const PRIVATE_VISIBILITY = "private";

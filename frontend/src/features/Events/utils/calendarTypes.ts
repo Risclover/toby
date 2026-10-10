@@ -1,8 +1,7 @@
 import type { ComponentProps } from "react";
 
 import type { Schedule } from "@mantine/schedule";
-
-import type { EventColorPayload } from "./getEventColors";
+import type { EventColorPayload } from "./eventColorPayload";
 
 export type ScheduleViewLevel = NonNullable<ComponentProps<typeof Schedule>["view"]>;
 export type ScheduleEventData = NonNullable<ComponentProps<typeof Schedule>["events"]>[number];

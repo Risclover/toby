@@ -7,7 +7,7 @@ import type {
     useUpdateEventMutation,
 } from "@/store";
 import { DATE_FORMAT, DEFAULT_TZID } from "./calendarConstants";
-import type { EventColorPayload } from "./getEventColors";
+import { type EventColorPayload } from "./eventColorPayload"
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

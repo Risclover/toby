@@ -3,11 +3,11 @@ import dayjs from "dayjs";
 import {
     getDateRange,
     toDateString,
-    toMemberColorStripe,
-    toMobileMonthDayDots,
-    toMobileMonthEvents,
+
     type ScheduleEventData,
 } from "../utils";
+import { toMobileMonthDayDots, toMobileMonthEvents } from "../utils/mobileMonthEvents";
+import { toMemberColorStripe } from "../utils/memberColorStripe";
 
 type UseCalendarMobileMonthViewProps = {
     date: string;
