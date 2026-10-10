@@ -1,7 +1,7 @@
+import { getEventFormSeedProps } from "../../utils";
 import { EventForm } from "../EventForm/EventForm";
 import { useCalendar } from "@/contexts";
 import { EventDetailsModal } from "./EventDetailsModal";
-import { getEventFormSeedProps } from "../../utils/eventFormSeed";
 
 type CalendarModalsProps = {
     date: string;
@@ -9,7 +9,7 @@ type CalendarModalsProps = {
 
 export const CalendarModals = ({ date }: CalendarModalsProps) => {
     const { householdId, modals } = useCalendar();
-    const { stack, details, form, editEvent } = modals;
+    const { stack, details, form } = modals;
 
     const seedProps = getEventFormSeedProps({ seed: form.seed, fallbackDate: date });
 
@@ -20,7 +20,6 @@ export const CalendarModals = ({ date }: CalendarModalsProps) => {
                 opened={details.isOpened}
                 onClose={details.close}
                 occurrence={details.occurrence}
-                onEdit={editEvent}
             />
             {householdId ? (
                 <EventForm

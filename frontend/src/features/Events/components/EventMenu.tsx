@@ -1,65 +1,52 @@
 import { ActionIcon, Menu } from "@mantine/core";
+import { FaSignOutAlt, FaTrash } from "react-icons/fa";
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
-import { FaTrash, FaSignOutAlt } from "react-icons/fa";
+
 import { PencilIcon } from "@/assets/icons/PencilIcon";
-import PersonRemoveRoundedIcon from '@mui/icons-material/PersonRemoveRounded';
-import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
-import { useAuthenticateQuery, useUnassignSelfMutation, type CalendarEvent } from "@/store";
 
-import type { Occurrence } from "../types";
+const MENU_OFFSET = 2;
+const ITEM_ICON_SIZE = ".9rem";
+const TRIGGER_COLOR = "var(--mantine-color-gray-6)";
+const PENCIL_COLOR = "var(--mantine-color-gray-8)";
 
-type Props = {
-    occurrence: Occurrence;
-    setIsEditing: (val: boolean) => void; // fix the type
-    isEditing: boolean;
-    opened: boolean;
-    open: () => void;
-    close: () => void;
-    secondOpened: boolean;
-    secondHandlers: { open: () => void; close: () => void };
-    thirdHandlers: { open: () => void; close: () => void };
-}
-export const EventMenu = ({
-    setIsEditing,
-    isEditing,
-    occurrence,
-    opened,
-    open,
-    close,
-    secondOpened,
-    secondHandlers,
-    thirdHandlers
-}: Props) => {
-    const { data: currentUser } = useAuthenticateQuery();
-    const [unassignSelf] = useUnassignSelfMutation();
+type EventMenuProps = {
+    canEdit: boolean;
+    canLeave: boolean;
+    onEdit: () => void;
+    onDelete: () => void;
+    onLeave: () => void;
+};
 
-    const handleDelete = () => {
-        if (occurrence.recurringInstance?.isRecurringInstance) {
-            open();
-        } else {
-            secondHandlers.open();
-        }
-    }
-
-    const handleUnassignSelf = async () => {
-        await unassignSelf({ id: Number(occurrence.payload?.source.id), householdId: Number(occurrence.payload?.source.householdId) }).unwrap();
-    }
-
-    return (
-        <Menu offset={2}>
-            <Menu.Target>
-                <ActionIcon size="sm" variant="transparent" color="var(--mantine-color-gray-6)">
-                    <IoEllipsisHorizontalSharp />
-                </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-                {occurrence && occurrence.payload?.source.attendeeIds.includes(currentUser.id) && <Menu.Item leftSection={<FaSignOutAlt fontSize=".9rem" />} onClick={thirdHandlers.open}>
+export const EventMenu = ({ canEdit, canLeave, onEdit, onDelete, onLeave }: EventMenuProps) => (
+    <Menu offset={MENU_OFFSET}>
+        <Menu.Target>
+            <ActionIcon size="sm" variant="transparent" color={TRIGGER_COLOR}>
+                <IoEllipsisHorizontalSharp />
+            </ActionIcon>
+        </Menu.Target>
+        <Menu.Dropdown>
+            {canLeave && (
+                <Menu.Item leftSection={<FaSignOutAlt fontSize={ITEM_ICON_SIZE} />} onClick={onLeave}>
                     Leave event
-                </Menu.Item>}
-                {occurrence && (occurrence.payload?.source.household.adminId === currentUser.id || occurrence.payload?.source.creatorId === currentUser.id) &&
-                    <Menu.Item onClick={() => setIsEditing(!isEditing)} leftSection={<PencilIcon size=".9rem" color="var(--mantine-color-gray-8)" />}>{isEditing ? "Cancel edit" : "Edit"}</Menu.Item>}
-                {occurrence && (occurrence.payload?.source.household.adminId === currentUser.id || occurrence.payload?.source.creatorId === currentUser.id) && <Menu.Item onClick={handleDelete} color="red" leftSection={<FaTrash fontSize=".9rem" />}>Delete</Menu.Item>}
-            </Menu.Dropdown>
-        </Menu>
-    )
-}
+                </Menu.Item>
+            )}
+            {canEdit && (
+                <>
+                    <Menu.Item
+                        leftSection={<PencilIcon size={ITEM_ICON_SIZE} color={PENCIL_COLOR} />}
+                        onClick={onEdit}
+                    >
+                        Edit
+                    </Menu.Item>
+                    <Menu.Item
+                        color="red"
+                        leftSection={<FaTrash fontSize={ITEM_ICON_SIZE} />}
+                        onClick={onDelete}
+                    >
+                        Delete
+                    </Menu.Item>
+                </>
+            )}
+        </Menu.Dropdown>
+    </Menu>
+);
