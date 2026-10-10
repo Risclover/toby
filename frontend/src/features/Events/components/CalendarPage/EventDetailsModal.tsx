@@ -31,7 +31,7 @@ export const EventDetailsModal = ({ opened, onClose, occurrence }: EventDetailsM
             <Stack gap="sm">
                 <Group justify="space-between" wrap="nowrap">
                     <Text {...TITLE_PROPS}>{title}</Text>
-                    <EventActionsMenu occurrence={event} />
+                    <EventActionsMenu occurrence={occurrence} onDeleted={onClose} />
                 </Group>
 
                 <EventMemberDots colors={colors} names={memberNames} />
