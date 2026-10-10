@@ -7,7 +7,7 @@ import { useAuthenticateQuery, useGetUserSettingsQuery, type CalendarEvent } fro
 
 import type { EventFormRecurrence } from "./useEventFormRecurrence";
 import { toDateString, type EventFormSeedProps } from "../utils";
-import type { EventFormValues } from "./useEventForm";
+import { DEFAULT_VISIBILITY, getBlankFormValues, getEventFormState, PRIVATE_VISIBILITY, type EventFormValues } from "../utils/eventFormValues";
 
 const PRIVATE_BY_DEFAULT_MODE = "private_by_default";
 

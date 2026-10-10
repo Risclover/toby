@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 
 import type { CalendarEvent } from "@/store";
 
+// @ts-ignore -- runtime-only side-effect module without typings
 import "./dayjsPlugins";
 import { DEFAULT_EVENT_DURATION_HOURS, DEFAULT_TZID, TIME_FORMAT } from "./calendarConstants";
 import { hmFromIso, ymdFromIso } from "./fromIso";
