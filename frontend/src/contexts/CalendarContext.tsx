@@ -6,6 +6,8 @@ import { useMemberFilter } from "@/features/Events/hooks/useMemberFilter";
 import { useScheduleEvents } from "@/features/Events/hooks/useScheduleEvents";
 import { useAgendaModal } from "@/features/Events/hooks/useAgendaModal";
 import { type ScheduleViewLevel } from "@mantine/schedule";
+import { useEventModals } from "@/features/Events/hooks/useEventModals";
+import { useEventMove } from "@/features/Events/hooks/useEventMove";
 
 const EMPTY_MEMBERS: HouseholdMemberColor[] = [];
 
