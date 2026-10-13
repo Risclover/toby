@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useModalsStack } from "@mantine/core";
 import type { CalendarEvent } from "@/store";
 import type { ModalId } from "../types";
-import type { ScheduleEventData } from "../utils/weekAllDayLayout";
+import type { ScheduleEventData } from "../utils/calendarTypes";
 import type { EventFormSeed } from "../utils/eventFormSeed";
 import { resolveLiveEvent } from "../utils/resolveLiveEvent";
 import type { HouseholdMemberColor } from "../utils/eventColorPayload";

@@ -17,5 +17,4 @@ export * from "./FullPageCalendar";
 export * from "./MemberFilterRow";
 export * from "./MobileMonthHeader";
 export * from "./NotifyEventDeleted";
-export * from "./WeekAllDayRow";
 export * from "./WeekEventButton";

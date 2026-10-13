@@ -15,4 +15,3 @@ export * from "./useMemberFilter";
 export * from "./useMobileMonthView";
 export * from "./useScheduleEvents";
 export * from "./useScrollToTopOnChange";
-export * from "./useWeekAllDayEvents";

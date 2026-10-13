@@ -1,14 +1,25 @@
-import { Button, Chip, Group, Modal, NumberInput, Radio, Select, Tooltip } from "@mantine/core";
+import {
+    Group,
+    Modal,
+    NumberInput,
+    Radio,
+    Select,
+    type ModalProps,
+    type useModalsStack,
+} from "@mantine/core";
 import { DatePickerInput, type DateTimeStringValue } from "@mantine/dates";
-import type { useModalsStack } from "@mantine/core";
 
-import { WeekdayChip } from "./WeekdayChip";
-import { useEventFormRepeatCustom, type Freq } from "../../../hooks/useEventFormRepeatCustom";
-import { pluralizeUnit, WEEKDAY_ORDER, type CustomRecurrenceRule } from "../../../utils/recurrence";
-import type { ModalId } from "../../../types";
-import { ModalFooter } from "@/components/ModalFooter";
 import { ButtonStandard } from "@/components/ButtonStandard";
-
+import { ModalFooter } from "@/components/ModalFooter";
+import {
+    ENDS_MODE,
+    FREQ,
+    useEventFormRepeatCustom,
+} from "../../../hooks/useEventFormRepeatCustom";
+import type { ModalId } from "../../../types";
+import { pluralizeUnit, type CustomRecurrenceRule } from "../../../utils/recurrence";
+import { EventFormRepeatEndsOption } from "./EventFormRepeatEndsOption";
+import { EventFormRepeatWeekdays } from "./EventFormRepeatWeekdays";
 
 type Props = {
     /** Modal stack */
@@ -21,22 +32,44 @@ type Props = {
 
 const MIN_NUM_INPUT_VALUE = 1;
 const MAX_NUM_INPUT_VALUE = 9999;
-const CHIP_TOOLTIP_DELAY_MS = 500;
+const REPEAT_INPUT_WIDTH = 70;
+const FREQ_SELECT_WIDTH = 120;
+const ENDS_INPUT_WIDTH = 150;
+const ENDS_DATE_FORMAT = "MMM D, YYYY";
+const OCCURRENCE_UNIT = "occurrence";
 
-const weekdayChips = WEEKDAY_ORDER.map((day) => ({
-    value: day,
-    label: day.charAt(0),
-    tooltip: day,
-}));
+const WHOLE_NUMBER_PROPS = {
+    min: MIN_NUM_INPUT_VALUE,
+    max: MAX_NUM_INPUT_VALUE,
+    clampBehavior: "blur",
+    allowNegative: false,
+    allowDecimal: false,
+} as const;
+
+const MODAL_STYLES: ModalProps["styles"] = {
+    body: {
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        padding: 0,
+        overflow: "hidden",
+    },
+    content: {
+        overflow: "hidden",
+        maxHeight: "100%",
+        display: "flex",
+        flexDirection: "column",
+    },
+};
 
 export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
     const {
         freq,
-        setFreq,
+        onFreqChange,
         selectedDays,
         onDaysChange,
         monthlyMode,
-        setMonthlyMode,
+        onMonthlyModeChange,
         endsMode,
         setEndsMode,
         endsOnDate,
@@ -50,6 +83,10 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
     } = useEventFormRepeatCustom({ stack, dateStr, onApply });
 
     const recurrenceStackProps = stack?.register("recurrence");
+    const occurrenceSuffix = ` ${pluralizeUnit(
+        OCCURRENCE_UNIT,
+        typeof afterOccurrences.value === "number" ? afterOccurrences.value : 0
+    )}`;
 
     return (
         <Modal
@@ -59,162 +96,77 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
             onClose={handleCancel}
             centered
             size="sm"
-            styles={{
-                body: {
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "100%",
-                    padding: 0,
-                    overflow: "hidden"
-                },
-                content: {
-                    overflow: "hidden",
-                    maxHeight: "100%",
-                    display: "flex",
-                    flexDirection: "column"
-                },
-            }}
+            styles={MODAL_STYLES}
         >
             <div className="event-form-modal--body">
                 <div className="event-form-repeat-custom--section">
                     <span className="event-form-repeat-custom--section-text">
                         Repeat every
                     </span>
-
-                    {/** Input number of times to repeat */}
                     <NumberInput
+                        {...WHOLE_NUMBER_PROPS}
                         value={repeatEvery.value}
                         onChange={repeatEvery.onChange}
                         onBlur={repeatEvery.onBlur}
-                        min={MIN_NUM_INPUT_VALUE}
-                        max={MAX_NUM_INPUT_VALUE}
-                        clampBehavior="blur"
-                        allowNegative={false}
-                        allowDecimal={false}
                         aria-label="Repeat every"
-                        w={70}
+                        w={REPEAT_INPUT_WIDTH}
                     />
-
-                    {/** Select frequency (daily, weekly, etc) */}
                     <Select
                         data={freqOptions}
                         value={freq}
-                        onChange={(v) => setFreq(v as Freq | null)}
-                        w={120}
+                        onChange={onFreqChange}
+                        w={FREQ_SELECT_WIDTH}
                         allowDeselect={false}
                     />
                 </div>
 
-                {/** Weekly selected: offer weekday chips to toggle */}
-                {freq === "WEEKLY" && (
-                    <div className="event-form-repeat-custom--vertical-section">
-                        <span className="event-form-repeat-custom--section-text">
-                            Repeat on
-                        </span>
-                        <div className="event-form-repeat-custom--multiday">
-                            <Chip.Group
-                                multiple
-                                value={selectedDays}
-                                onChange={onDaysChange}
-                            >
-                                <Group
-                                    justify="center"
-                                    pt={8}
-                                    gap=".25rem"
-                                >
-                                    <Tooltip.Group
-                                        openDelay={CHIP_TOOLTIP_DELAY_MS}
-                                        closeDelay={CHIP_TOOLTIP_DELAY_MS}
-                                    >
-                                        {weekdayChips.map((chip) => (
-                                            <WeekdayChip
-                                                key={chip.value}
-                                                label={chip.label}
-                                                value={chip.value}
-                                                tooltip={chip.tooltip}
-                                            />
-                                        ))}
-                                    </Tooltip.Group>
-                                </Group>
-                            </Chip.Group>
-                        </div>
-                    </div>
+                {freq === FREQ.WEEKLY && (
+                    <EventFormRepeatWeekdays
+                        selectedDays={selectedDays}
+                        onDaysChange={onDaysChange}
+                    />
                 )}
 
-                {/** Monthly selected: offer monthly options */}
-                {freq === "MONTHLY" && (
+                {freq === FREQ.MONTHLY && (
                     <Select
                         data={monthlyData}
                         value={monthlyMode}
-                        onChange={(v) => setMonthlyMode(v as "day-of-month" | "nth-weekday" | null)}
+                        onChange={onMonthlyModeChange}
                         allowDeselect={false}
                     />
                 )}
 
-                {/** Indicate when recurrence ends (never, on a specific date, or after x times) */}
                 <div className="event-form-repeat-custom--vertical-section">
                     <span className="event-form-repeat-custom--section-text">Ends</span>
                     <div className="event-form-repeat-custom--radio-group">
                         <Radio.Group value={endsMode} onChange={setEndsMode}>
                             <Group mt="xs">
-                                <Radio.Card
-                                    value="never"
-                                    key="never"
-                                    className="radio-root"
-                                >
-                                    <div className="radio-root-label">
-                                        <Radio.Indicator color="navy" />
-                                        <span className="radio-label">Never</span>
-                                    </div>
-                                </Radio.Card>
-                                <Radio.Card
-                                    value="on"
-                                    key="on"
-                                    className="radio-root"
-                                >
-                                    <div className="radio-root-label">
-                                        <Radio.Indicator color="navy" />
-                                        <span className="radio-label">On</span>
-                                    </div>
+                                <EventFormRepeatEndsOption value={ENDS_MODE.NEVER} label="Never" />
+
+                                <EventFormRepeatEndsOption value={ENDS_MODE.ON} label="On">
                                     <DatePickerInput
-                                        disabled={endsMode !== "on"}
+                                        disabled={endsMode !== ENDS_MODE.ON}
                                         value={endsOnDate}
                                         onChange={setEndsOnDate}
                                         minDate={dateStr}
-                                        valueFormat="MMM D, YYYY"
-                                        w={150}
+                                        valueFormat={ENDS_DATE_FORMAT}
+                                        w={ENDS_INPUT_WIDTH}
                                         aria-label="Ends on date"
                                     />
-                                </Radio.Card>
-                                <Radio.Card
-                                    value="after"
-                                    key="after"
-                                    className="radio-root"
-                                >
-                                    <div className="radio-root-label">
-                                        <Radio.Indicator color="navy" />
-                                        <span className="radio-label">After</span>
-                                    </div>
+                                </EventFormRepeatEndsOption>
+
+                                <EventFormRepeatEndsOption value={ENDS_MODE.AFTER} label="After">
                                     <NumberInput
-                                        suffix={
-                                            ` ${pluralizeUnit(
-                                                "occurrence",
-                                                typeof afterOccurrences.value === "number" ? afterOccurrences.value : 0
-                                            )}`
-                                        }
-                                        w={150}
+                                        {...WHOLE_NUMBER_PROPS}
+                                        suffix={occurrenceSuffix}
                                         value={afterOccurrences.value}
                                         onChange={afterOccurrences.onChange}
                                         onBlur={afterOccurrences.onBlur}
-                                        disabled={endsMode !== "after"}
-                                        min={MIN_NUM_INPUT_VALUE}
-                                        max={MAX_NUM_INPUT_VALUE}
-                                        clampBehavior="blur"
-                                        allowNegative={false}
-                                        allowDecimal={false}
+                                        disabled={endsMode !== ENDS_MODE.AFTER}
+                                        w={ENDS_INPUT_WIDTH}
                                         aria-label="After"
                                     />
-                                </Radio.Card>
+                                </EventFormRepeatEndsOption>
                             </Group>
                         </Radio.Group>
                     </div>

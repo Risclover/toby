@@ -36,4 +36,3 @@ export * from "./roundUpToNearest30Min";
 export * from "./toScheduleEvent";
 export * from "./validateEventForm";
 export * from "./week";
-export * from "./weekAllDayLayout";
