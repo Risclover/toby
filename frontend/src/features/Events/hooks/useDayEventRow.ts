@@ -3,6 +3,7 @@ import type { CalendarEvent } from "@/store";
 import type { Occurrence } from "../types";
 import { getDayEventTimeLabel } from "../utils/dayEventTimeLabel";
 import { getEventAttendees } from "../utils/getEventAttendees";
+import { isAllDayValue } from "../utils";
 
 type Props = {
     occurrence: Occurrence;
@@ -16,7 +17,7 @@ export function useDayEventRow({ occurrence }: Props) {
     const timeLabel = getDayEventTimeLabel({
         start: occurrence.start as string,
         end: occurrence.end as string,
-        isAllDay: !source.hasTime,
+        isAllDay: isAllDayValue(source.hasTime),
     });
 
     return {
