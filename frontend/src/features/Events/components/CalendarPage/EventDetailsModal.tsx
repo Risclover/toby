@@ -4,6 +4,7 @@ import { type ScheduleEventData } from "../../utils";
 import { EventActionsMenu } from "./EventActionsMenu";
 import { EventMemberDots } from "./EventColorDots";
 import { getEventDetails } from "../../utils/getEventDetails";
+import { useCalendar } from "@/contexts";
 
 const MODAL_TITLE = "Event details";
 const TITLE_PROPS = { fz: 18, fw: 600 } as const;
@@ -20,6 +21,8 @@ export const EventDetailsModal = ({ opened, onClose, occurrence }: EventDetailsM
 
     const { title, timeLabel, recurrenceLabel, isPrivate, colors, memberNames } = details;
 
+    const { modals } = useCalendar();
+
     return (
         <Modal
             opened={opened}
@@ -31,7 +34,7 @@ export const EventDetailsModal = ({ opened, onClose, occurrence }: EventDetailsM
             <Stack gap="sm">
                 <Group justify="space-between" wrap="nowrap">
                     <Text {...TITLE_PROPS}>{title}</Text>
-                    <EventActionsMenu occurrence={occurrence} onDeleted={onClose} />
+                    <EventActionsMenu occurrence={occurrence} onEdit={modals.editEvent} onDeleted={onClose} />
                 </Group>
 
                 <EventMemberDots colors={colors} names={memberNames} />

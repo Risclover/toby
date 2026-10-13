@@ -1,10 +1,9 @@
 import { useDisclosure } from "@mantine/hooks";
 
 import { DeleteConfirmation } from "@/components";
-import { DeleteRecurringEventConfirmation, EventMenu, UnassignSelfConfirmation, NotifyEventDeleted } from "..";
-import { useCalendar } from "@/contexts";
 import { useHousehold } from "@/hooks";
-import { useAuthenticateQuery, useDeleteEventMutation } from "@/store";
+import { useAuthenticateQuery, useDeleteEventMutation, type CalendarEvent } from "@/store";
+import { DeleteRecurringEventConfirmation, EventMenu, UnassignSelfConfirmation, NotifyEventDeleted } from "..";
 import type { Occurrence } from "../../types";
 import {
     getEventPermissions,
@@ -16,19 +15,20 @@ import {
 type EventActionsMenuProps = {
     /** One occurrence of a recurring event, or a single-instance event. */
     occurrence: ScheduleEventData;
+    /** Opens the edit form, seeded with the occurrence being edited. */
+    onEdit: (event: CalendarEvent) => void;
     /** Called after a successful delete. Omit when the caller needs no reaction (an agenda row just disappears). */
     onDeleted?: () => void;
 };
 
 /**
  * The 3-dot edit/delete/leave menu for one event occurrence, plus its confirmation dialogs.
- * Shared by EventDetailsModal and the agenda row so permissions, the delete mutation and the
- * three dialogs aren't duplicated per call site.
+ * Shared by EventDetailsModal, the agenda row and the day events list so permissions, the
+ * delete mutation and the three dialogs aren't duplicated per call site.
  */
-export const EventActionsMenu = ({ occurrence, onDeleted }: EventActionsMenuProps) => {
+export const EventActionsMenu = ({ occurrence, onEdit, onDeleted }: EventActionsMenuProps) => {
     const { data: currentUser } = useAuthenticateQuery();
     const { data: household } = useHousehold();
-    const { modals } = useCalendar();
     const [deleteEvent] = useDeleteEventMutation();
 
     const [recurringOpened, recurringHandlers] = useDisclosure(false);
@@ -47,7 +47,7 @@ export const EventActionsMenu = ({ occurrence, onDeleted }: EventActionsMenuProp
         ? recurringHandlers.open
         : deleteHandlers.open;
 
-    const handleEdit = () => modals.editEvent(getOccurrenceEditEvent({ occurrence, source }));
+    const handleEdit = () => onEdit(getOccurrenceEditEvent({ occurrence, source }));
 
     const handleDeleteEvent = async () => {
         if (!household?.id) return;
