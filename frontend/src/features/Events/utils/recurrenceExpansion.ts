@@ -21,6 +21,12 @@ function wallClockToRRuleDate(value: string): Date {
     return new Date(Date.UTC(year, month - 1, day, hour, minute, second || 0));
 }
 
+const ISO_DATE_TIME_SEPARATOR = "T";
+
+/** Exdates are stored as wall-clock-in-tzid strings, but an ISO instant may have been written by an older code path. */
+const toExdateWallClock = (exdate: string, tzid: string): string =>
+    exdate.includes(ISO_DATE_TIME_SEPARATOR) ? dayjs(exdate).tz(tzid).format(WALL_CLOCK_FORMAT) : exdate;
+
 /**
  * Expands ONE recurring event into concrete, non-recurring occurrences overlapping
  * [rangeStart, rangeEnd] (inclusive "YYYY-MM-DD"). A non-recurring event passes through unchanged.
@@ -32,6 +38,7 @@ export function expandRecurringOccurrencesInRange(
     rangeStart: string,
     rangeEnd: string
 ): ScheduleEventData[] {
+    console.log("expand", { id: event.id, start: event.start, end: event.end, hasTime: (event.payload as any)?.hasTime, tzid: (event.payload as any)?.tzid, rangeStart, rangeEnd });
     const recurrence = event.recurrence as { rrule: string; exdate: string[] } | undefined;
     if (!recurrence?.rrule) return [event];
 
@@ -58,7 +65,8 @@ export function expandRecurringOccurrencesInRange(
     set.rrule(rule);
     // exdate entries are written by us as wall-clock-in-tzid strings, the same space dtstart lives in.
     (recurrence.exdate ?? []).forEach((ex) => {
-        try { set.exdate(wallClockToRRuleDate(ex)); } catch { /* ignore a bad exdate entry */ }
+        const exdate = wallClockToRRuleDate(toExdateWallClock(ex, tzid));
+        if (!Number.isNaN(exdate.getTime())) set.exdate(exdate);
     });
 
     // Pad the window back by the event's duration so a multi-day occurrence that started before rangeStart isn't missed.

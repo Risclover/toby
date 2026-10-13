@@ -3,7 +3,7 @@ import { Group, Stack, Text, Tooltip } from "@mantine/core";
 import { useDayEventRow } from "../../hooks/useDayEventRow";
 import type { DayEventRowSharedProps, Occurrence } from "../../types";
 import { EVENT_ROW_TOOLTIP_PROPS } from "../../utils/eventRowTooltipProps";
-import { EventActionsMenu } from "../CalendarPage";
+import { EventActionsMenu } from "../CalendarPage/EventActionsMenu";
 import { AttendeeDot } from "./AttendeeDot";
 
 type Props = DayEventRowSharedProps & {
@@ -27,10 +27,7 @@ export const DayEventRow = ({
     onOpenDot,
     groupOwnerId,
 }: Props) => {
-    const { titleRef, isTruncated, source, timeLabel, attendees } = useDayEventRow({ occurrence });
-
-    // Edit still seeds from the series master, as before (see the follow-up fix).
-    const handleEdit = () => onEdit(source);
+    const { titleRef, isTruncated, actionsOccurrence, timeLabel, attendees } = useDayEventRow({ occurrence });
 
     return (
         <div className="event-row">
@@ -74,7 +71,7 @@ export const DayEventRow = ({
                             ))}
                         </Group>
                     </Group>
-                    <EventActionsMenu occurrence={occurrence} onEdit={handleEdit} />
+                    <EventActionsMenu occurrence={actionsOccurrence} onEdit={onEdit} />
                 </Group>
                 <Text size={TIME_SIZE} inline fw={400} c="dimmed">
                     {timeLabel}
