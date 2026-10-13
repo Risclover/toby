@@ -43,14 +43,14 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
                 <Stack gap="0.5rem">
                     <Text size="sm" fw={500} c="black">Importance:</Text>
                     <Group>
-                        <Button color="rgb(5, 5, 73)"
+                        <Button color="navy"
                             size="sm"
                             h="auto"
                             p="0.5rem 1rem"
                             fw={500} variant={localFilters.importance === "all" ? "filled" : "outline"} onClick={() => setLocalFilters({ ...localFilters, importance: "all" })}>
                             All
                         </Button>
-                        <Button color="rgb(5, 5, 73)"
+                        <Button color="navy"
                             size="sm"
                             h="auto"
                             p="0.5rem 1rem"
@@ -65,7 +65,7 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
                     <Text size="sm" fw={500} c="black">Member:</Text>
                     <Group gap="xs" style={{ flexWrap: "nowrap" }}>
                         <Button
-                            color="rgb(5, 5, 73)"
+                            color="navy"
                             size="sm"
                             h="auto"
                             p="0.5rem 1rem"
@@ -108,7 +108,7 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
                     <Text size="sm" fw={500} c="black">Time:</Text>
                     <Group>
                         {["all", "today", "7days", "30days"].map((t) => (
-                            <Button color="rgb(5, 5, 73)"
+                            <Button color="navy"
                                 size="sm"
                                 h="auto"
                                 p="0.5rem 1rem"
@@ -127,10 +127,10 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
 
                 {/* Actions */}
                 <Group grow className="filter-drawer-submit-btns">
-                    <Button color="rgb(5, 5, 73)" variant="light" onClick={handleReset}>
+                    <Button color="navy" variant="light" onClick={handleReset}>
                         Reset
                     </Button>
-                    <Button color="rgb(5, 5, 73)" onClick={handleApply}>Apply</Button>
+                    <Button color="navy" onClick={handleApply}>Apply</Button>
                 </Group>
             </Stack>
         </Drawer>

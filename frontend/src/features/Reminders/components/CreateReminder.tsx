@@ -138,7 +138,7 @@ export const CreateReminder = () => {
                             leftSectionWidth="40px"
                             styles={DATE_PICKER_STYLES}
                             clearable
-                            color="rgb(5, 5, 73)"
+                            color="navy"
                             presets={DATE_PRESETS}
                             valueFormatter={({ date, format }: any) =>
                                 date ? dayjs(date).format(format) : ""

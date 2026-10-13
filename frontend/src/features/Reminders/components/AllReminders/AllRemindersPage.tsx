@@ -27,7 +27,7 @@ export const AllRemindersPage = () => {
             <h1>Reminders</h1>
         </div>
         <ActionIcon
-            className="add-announcement" size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)"
+            className="add-announcement" size="lg" radius="md" variant="filled" color="white" c="navy"
             onClick={() => openCreateReminderModal()}
         >
             <PlusIcon style={{ width: '1.25rem', height: '1.25rem' }} />

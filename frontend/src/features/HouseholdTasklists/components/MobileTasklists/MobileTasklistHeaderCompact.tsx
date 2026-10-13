@@ -27,8 +27,8 @@ export const MobileTasklistHeaderCompact = ({ searchValue, setSearchValue, sortO
 
     return (
         <div className="mobile-announcements-header">
-            <Button styles={{ root: { minWidth: "54px" } }} variant="light" size="sm" color="rgb(5, 5, 73)"><ReorderListIcon /></Button>
-            <Button onClick={open} styles={{ root: { minWidth: "54px" } }} variant="light" size="sm" color="rgb(5, 5, 73)">
+            <Button styles={{ root: { minWidth: "54px" } }} variant="light" size="sm" color="navy"><ReorderListIcon /></Button>
+            <Button onClick={open} styles={{ root: { minWidth: "54px" } }} variant="light" size="sm" color="navy">
                 <FilterAltRoundedIcon />
             </Button>
             <MobileTasklistFilterDrawer

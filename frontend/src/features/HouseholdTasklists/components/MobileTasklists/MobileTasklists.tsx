@@ -64,12 +64,12 @@ export const MobileTasklists = () => {
         <Tooltip.Group openDelay={500} closeDelay={100}>
             <Group gap="0.5rem" className="tasklists-title-right">
                 <Tooltip withArrow events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="Archive">
-                    <ActionIcon size="md" radius="lg" variant="filled" color="white" c="rgb(5, 5, 73)" onClick={() => navigate("/tasklists/archived")}>
+                    <ActionIcon size="md" radius="lg" variant="filled" color="white" c="navy" onClick={() => navigate("/tasklists/archived")}>
                         <ArchivedIcon size="1.25rem" color="currentColor" />
                     </ActionIcon>
                 </Tooltip>
                 <Tooltip events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} withArrow label="Create list">
-                    <ActionIcon size="md" radius="lg" variant="filled" color="white" c="rgb(5, 5, 73)"
+                    <ActionIcon size="md" radius="lg" variant="filled" color="white" c="navy"
                         onClick={() => openModal()}
                     >
                         <PlusIcon style={{ width: '1.25rem', height: '1.25rem' }} />

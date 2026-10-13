@@ -90,7 +90,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                     <Text size="sm" fw={500} c="black">Importance:</Text>
                     <Group>
                         <Button
-                            color="rgb(5, 5, 73)"
+                            color="navy"
                             size="sm"
                             h="auto"
                             p="0.5rem 1rem"
@@ -101,7 +101,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                             All
                         </Button>
                         <Button
-                            color="rgb(5, 5, 73)"
+                            color="navy"
                             size="sm"
                             h="auto"
                             p="0.5rem 1rem"
@@ -120,7 +120,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                     <Group gap="xs" style={{ flexWrap: 'nowrap' }}>
                         {/* "All" Avatar Option */}
                         <Button
-                            color="rgb(5, 5, 73)"
+                            color="navy"
                             size="sm"
                             h="auto"
                             p="0.5rem 1rem"
@@ -169,7 +169,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                         {TIME_OPTIONS.map((option) => (
                             <Button
                                 key={option.value}
-                                color="rgb(5, 5, 73)"
+                                color="navy"
                                 size="13px"
                                 h="auto"
                                 // c="black"
@@ -186,10 +186,10 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
 
                 {/* Actions */}
                 <Group gap={isSmall ? "0.5rem" : "1rem"} grow className="filter-drawer-submit-btns">
-                    <Button color="rgb(5, 5, 73)" variant="light" onClick={handleReset} fw={500}>
+                    <Button color="navy" variant="light" onClick={handleReset} fw={500}>
                         Reset
                     </Button>
-                    <Button color="rgb(5, 5, 73)" onClick={handleApply} fw={500}>
+                    <Button color="navy" onClick={handleApply} fw={500}>
                         Apply
                     </Button>
                 </Group>

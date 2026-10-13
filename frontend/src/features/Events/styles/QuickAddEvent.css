@@ -25,7 +25,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--dot-color-1, rgb(5, 5, 73));
+    background: var(--dot-color-1, var(--primary));
     box-shadow:
         0 0 0 1px #fff,
         var(--dot-gap) 0 0 0 var(--dot-color-2, transparent),
@@ -83,7 +83,7 @@
 }
 
 .event-row.editing {
-    border-left: 2px solid rgb(5, 5, 73);
+    border-left: 2px solid var(--primary);
     padding-left: 8px;
     /* compensate for the border */
     background-color: #f7f8fc;

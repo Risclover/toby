@@ -14,14 +14,14 @@ export const ShoppingListsTitleComponent = ({ openModal }: Props) => {
             <Tooltip.Group openDelay={500} closeDelay={100}>
                 <Group gap="0.5rem" className="tasklists-title-right">
                     <Tooltip withArrow events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="Archive">
-                        <ActionIcon size="md" radius="lg" variant="filled" color="white" c="rgb(5, 5, 73)" onClick={() => navigate("/shopping/archived")}>
+                        <ActionIcon size="md" radius="lg" variant="filled" color="white" c="navy" onClick={() => navigate("/shopping/archived")}>
                             <ArchivedIcon size="1.25rem" color="currentColor" />
                         </ActionIcon>
                     </Tooltip>
                     <Tooltip withArrow events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="Create list">
-                        <ActionIcon size="md" radius="lg" variant="filled" color="white" c="rgb(5, 5, 73)" onClick={openModal}
+                        <ActionIcon size="md" radius="lg" variant="filled" color="white" c="navy" onClick={openModal}
                         >
-                            <PlusIcon size="1.25rem" color="rgb(5, 5, 73)" />
+                            <PlusIcon size="1.25rem" color="navy" />
                         </ActionIcon>
                     </Tooltip>
                 </Group>

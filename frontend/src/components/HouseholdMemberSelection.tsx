@@ -33,7 +33,7 @@ export function HouseholdMemberSelection({
     return (
         <Fieldset legend={legend} className="list-is-for">
             <Checkbox
-                color="rgb(5, 5, 73)"
+                color="navy"
                 size="sm"
                 label="All household members"
                 checked={allMembers} // This will now correctly show as checked
@@ -47,7 +47,7 @@ export function HouseholdMemberSelection({
                     <Stack gap="xs" ml="lg">
                         {members?.map((m) => (
                             <Checkbox
-                                color="rgb(5, 5, 73)"
+                                color="navy"
                                 key={m.id}
                                 size="sm"
                                 label={

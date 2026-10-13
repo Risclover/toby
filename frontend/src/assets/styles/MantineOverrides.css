@@ -63,7 +63,7 @@
 .m_396ce5cb:where([data-selected]):hover:where(:not([data-disabled], [data-static])),
 .m_396ce5cb:where([data-selected]),
 .m_dc6a3c71:where([data-selected]) {
-    background: rgb(5, 5, 73);
+    background: var(--primary);
     color: white;
 }
 

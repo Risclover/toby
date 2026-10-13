@@ -27,7 +27,7 @@ export const FavoritesFilterSectionBody = () => {
                 }}
                 labelPosition="left"
                 label="Show favorite notes only"
-                color="rgb(5, 5, 73)"
+                color="navy"
                 withThumbIndicator={false}
                 size="md"
             />

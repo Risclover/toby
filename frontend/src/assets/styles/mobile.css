@@ -80,7 +80,7 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
-    color: rgb(5, 5, 73);
+    color: var(--primary);
 }
 
 .add-announcement:hover {
@@ -91,7 +91,6 @@
 .tasklists-title-right button:hover {
     opacity: 0.8;
     background-color: white;
-    /* color: rgb(5, 5, 73); */
 }
 
 .title-announcements {
@@ -238,7 +237,7 @@
 
 .mobile-home-nav-grid-btn-icon-container {
     border-radius: 999px;
-    border: 1px solid rgb(5, 5, 73);
+    border: 1px solid var(--primary);
     background: white;
     color: black;
     height: 2rem;
@@ -247,12 +246,12 @@
     align-items: center;
     justify-content: center;
     /* box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; */
-    color: rgb(5, 5, 73);
+    color: var(--primary);
 }
 
 .mobile-home-nav-grid-btn span {
     /* margin-top: 0.25rem; */
-    color: rgb(5, 5, 73);
+    color: var(--primary);
     font-size: var(--text-xs);
     font-weight: 500;
     line-height: 1.5;
@@ -388,7 +387,7 @@
 
 
 .mobile-home-nav-grid-btn.active {
-    border-bottom-color: rgb(5, 5, 73);
+    border-bottom-color: var(--primary);
     cursor: default;
 }
 
@@ -402,7 +401,7 @@
 }
 
 .mobile-home-notice-board-header .indicator {
-    background-color: rgb(5, 5, 73);
+    background-color: var(--primary);
     border-radius: 999px;
     height: 10px;
     box-shadow: var(--mantine-shadow-sm);

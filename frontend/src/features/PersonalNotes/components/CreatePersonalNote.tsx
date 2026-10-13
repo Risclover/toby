@@ -134,7 +134,7 @@ export const CreatePersonalNote = () => {
                             p={isSmallScreen ? ".75rem 1.25rem" : ".5rem 1.25rem"}
                             h="auto"
                             radius="xl"
-                            color="rgb(5, 5, 73)"
+                            color="navy"
                             type="submit"
                         >
                             {isEditing ? "Save" : "Post"}

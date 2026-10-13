@@ -20,7 +20,7 @@ export const SingleNotePrivate = () => {
             <Button
                 onClick={handleNavigateBackToNotes}
                 leftSection={<FaChevronLeft size=".75rem" />}
-                color="rgb(5, 5, 73)"
+                color="navy"
                 fw={500}
             >
                 Go back to notes

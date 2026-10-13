@@ -80,7 +80,7 @@ export const EventFormDates = ({ form, isSmallScreen }: Props) => {
                     required
                     leftSection={<CalendarMonthRoundedIcon />}
                     leftSectionWidth="40px"
-                    color="rgb(5, 5, 73)"
+                    color="navy"
                     styles={DATE_PICKER_STYLES}
                     firstDayOfWeek={0}
                     clearable={!!form.getValues().endDate}
@@ -92,7 +92,7 @@ export const EventFormDates = ({ form, isSmallScreen }: Props) => {
                 key={form.key('allDay')}
                 label="All Day"
                 onChange={validateOnChange('allDay', { type: 'checkbox' })}
-                color="rgb(5, 5, 73)"
+                color="navy"
             />
         </>
     )

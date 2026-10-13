@@ -33,7 +33,7 @@ export const MobileAnnouncements = () => {
             <h1>Announcements</h1>
         </div>
         <ActionIcon
-            className="add-announcement" size="lg" radius="md" variant="filled" color="white" c="rgb(5, 5, 73)"
+            className="add-announcement" size="lg" radius="md" variant="filled" color="white" c="navy"
             onClick={() => openModal()}
         >
             <PlusIcon style={{ width: '1.25rem', height: '1.25rem' }} />

@@ -53,7 +53,7 @@ export const PersonalNotesToolbar = ({
             >
                 <ActionIcon
                     className="personal-notes-search-icon"
-                    color="rgb(5,5,73)"
+                    color="navy"
                     variant={searchOpen ? "transparent" : "subtle"}
                     onClick={() => !searchOpen && handleOpen()}
                     aria-label="Search notes"
@@ -92,7 +92,7 @@ export const PersonalNotesToolbar = ({
                 />
                 {userIsAuthor &&
                     <Button
-                        color="rgb(5, 5, 73)"
+                        color="navy"
                         size={isSmall ? "13px" : "sm"}
                         h="auto"
                         p=".5rem 1rem"

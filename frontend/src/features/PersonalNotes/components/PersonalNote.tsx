@@ -36,8 +36,8 @@ export const PersonalNote = ({ onCategoryClick, noteId, onBack }: Props) => {
     return (
         <div className="personal-note-container">
             <div className="personal-note-top-bar">
-                <Button color="rgb(5, 5, 73)" fw={500} p={0} variant="transparent" size="md" h="auto" onClick={onBack}>
-                    <ChevronDownIcon style={{ transform: "rotate(90deg)", marginRight: ".25rem" }} size="1rem" color="rgb(5, 5, 73)" />
+                <Button color="navy" fw={500} p={0} variant="transparent" size="md" h="auto" onClick={onBack}>
+                    <ChevronDownIcon style={{ transform: "rotate(90deg)", marginRight: ".25rem" }} size="1rem" color="navy" />
                     Back
                 </Button>
                 <div className="single-note-container-header--top-right">

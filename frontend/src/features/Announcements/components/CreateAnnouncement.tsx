@@ -67,7 +67,7 @@ export const CreateAnnouncement = () => {
             {error.length > 0 && <Space h="md" />}
             <Checkbox
                 size="xs"
-                color="rgb(5, 5, 73)"
+                color="navy"
                 radius="xs"
                 label="Mark as important"
                 c="black"

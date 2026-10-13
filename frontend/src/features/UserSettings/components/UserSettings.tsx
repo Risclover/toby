@@ -349,7 +349,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
                             <Switch
                                 withThumbIndicator={false}
                                 size="md"
-                                color="rgb(5, 5, 73)"
+                                color="navy"
                                 checked={form.values.habitsOnHomepage}
                                 onChange={(e) =>
                                     form.setFieldValue("habitsOnHomepage", e.currentTarget.checked)
@@ -443,7 +443,7 @@ export const UserSettings = ({ opened, onClose }: Props) => {
             </div>
             <ModalFooter borderTop="1px solid var(--mantine-color-gray-3)">
                 <Group justify="space-between" w="100%">
-                    <Button size="compact-sm" variant="transparent" color="rgb(5, 5, 73)" onClick={handleResetToDefaults} fw={500}>Reset to default</Button>
+                    <Button size="compact-sm" variant="transparent" color="navy" onClick={handleResetToDefaults} fw={500}>Reset to default</Button>
                     <Group gap="0.5rem">
                         <ButtonStandard
                             variant="outline"

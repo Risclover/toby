@@ -21,7 +21,7 @@ export const HomepageEventsCollapseCard = ({ isReady }: { isReady: boolean }) =>
             <div className="homepage-mini-calendar-container">
                 <DashboardMiniCalendar householdId={user?.householdId!} showAddEvent={showAddEvent} setShowAddEvent={setShowAddEvent} />
             </div>
-            <HomepageCollapseCard title="Upcoming Events" color="rgb(5, 5, 73)" cardKey="events" scrollSelector=".upcoming-events">
+            <HomepageCollapseCard title="Upcoming Events" color="navy" cardKey="events" scrollSelector=".upcoming-events">
                 <UpcomingThisWeek isReady={isReady} householdId={user?.householdId!} />
                 <div className="upcoming-events-container">
                     <AgendaView

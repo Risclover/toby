@@ -46,7 +46,7 @@ export const ShoppingListCard = ({ list }: Props) => {
                     <Text lh={1.2} lineClamp={2} c="black" fw={500} className="shopping-list-head-title">{list.title}</Text>
                     <div className="shopping-list-card-header--top header-right">
                         <Tooltip withArrow label="Featured">
-                            <ActionIcon onClick={handleFeatureToggle} variant="transparent" size="compact-xs" color="rgb(5, 5, 73)">
+                            <ActionIcon onClick={handleFeatureToggle} variant="transparent" size="compact-xs" color="navy">
                                 <StarIconOutline size="20px" color="var(--mantine-color-gray-6)" />
                             </ActionIcon>
                         </Tooltip>

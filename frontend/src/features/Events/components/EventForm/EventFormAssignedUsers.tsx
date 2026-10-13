@@ -77,7 +77,7 @@ export const EventFormAssignedUsers = ({ form, household }: Props) => {
                         label="All members"
                         checked={form.getValues().allMembers}
                         onChange={(e) => handleToggleAllMembers(e.currentTarget.checked)}
-                        color="rgb(5, 5, 73)"
+                        color="navy"
                         size="sm"
                     />
                 </Stack>

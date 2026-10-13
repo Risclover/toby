@@ -564,7 +564,7 @@
 }
 
 .personal-notes-search-container--expanded {
-    border-color: rgb(5, 5, 73);
+    border-color: var(--primary);
     background: white;
     padding: 0 .5rem 0 0.4rem;
     /* right padding only - icon provides left spacing */
@@ -572,14 +572,14 @@
 
 .personal-notes-search-icon {
     flex-shrink: 0;
-    color: rgb(5, 5, 73);
+    color: var(--primary);
     /* cursor: pointer; */
     z-index: 99;
 }
 
 .personal-notes-search-icon--expanded {
     cursor: default !important;
-    color: rgb(5, 5, 73);
+    color: var(--primary);
 
 }
 
@@ -629,7 +629,7 @@
 }
 
 .notes-options-drawer-btn:hover {
-    border-color: rgb(5, 5, 73);
+    border-color: var(--primary);
     /* outline: 1px solid #a78bfa; */
     transition: all 500ms ease;
     background-color: #f7f8fc;
@@ -637,8 +637,8 @@
 
 .notes-options-drawer-btn:hover .notes-options-drawer-btn--title,
 .notes-options-drawer-btn:hover .notes-options-drawer-btn--right svg {
-    color: rgb(5, 5, 73) !important;
-    stroke: rgb(5, 5, 73);
+    color: var(--primary) !important;
+    stroke: var(--primary);
 }
 
 
@@ -655,7 +655,7 @@
 
 .notes-options-drawer-btn--icon svg {
     font-size: 18px;
-    color: rgb(5, 5, 73);
+    color: var(--primary);
 }
 
 .notes-options-drawer-btn--left {
@@ -681,13 +681,13 @@
 
 .notes-options-drawer-btn--active {
     font-weight: 500;
-    color: rgb(5, 5, 73);
+    color: var(--primary);
     font-size: var(--text-sm);
     font-family: var(--font-family-sora)
 }
 
 .notes-options-drawer-btn--right svg {
-    color: rgb(5, 5, 73);
+    color: var(--primary);
 }
 
 
@@ -775,7 +775,7 @@
     font-weight: 500;
     font-family: var(--font-family-sora);
     font-size: var(--text-sm);
-    color: rgb(5, 5, 73);
+    color: var(--primary);
     text-transform: capitalize;
 }
 

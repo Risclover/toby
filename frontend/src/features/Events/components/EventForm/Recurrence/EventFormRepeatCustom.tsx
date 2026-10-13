@@ -163,7 +163,7 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                                     className="radio-root"
                                 >
                                     <div className="radio-root-label">
-                                        <Radio.Indicator color="rgb(5, 5, 73)" />
+                                        <Radio.Indicator color="navy" />
                                         <span className="radio-label">Never</span>
                                     </div>
                                 </Radio.Card>
@@ -173,7 +173,7 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                                     className="radio-root"
                                 >
                                     <div className="radio-root-label">
-                                        <Radio.Indicator color="rgb(5, 5, 73)" />
+                                        <Radio.Indicator color="navy" />
                                         <span className="radio-label">On</span>
                                     </div>
                                     <DatePickerInput
@@ -192,7 +192,7 @@ export const EventFormRepeatCustom = ({ stack, dateStr, onApply }: Props) => {
                                     className="radio-root"
                                 >
                                     <div className="radio-root-label">
-                                        <Radio.Indicator color="rgb(5, 5, 73)" />
+                                        <Radio.Indicator color="navy" />
                                         <span className="radio-label">After</span>
                                     </div>
                                     <NumberInput

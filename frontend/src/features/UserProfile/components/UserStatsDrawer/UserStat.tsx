@@ -65,7 +65,7 @@ export const UserStat = ({ stat, featuredStats }: Props) => {
                     {!isOwner ?
                         <div>
                             {isFeatured ? (
-                                <StarIcon size={isSmall ? "1.25rem" : "1.5rem"} color="rgb(5, 5, 73)" />
+                                <StarIcon size={isSmall ? "1.25rem" : "1.5rem"} color="navy" />
                             ) : (
                                 <StarIconOutline
                                     size={isSmall ? "1.25rem" : "1.5rem"}
@@ -85,7 +85,7 @@ export const UserStat = ({ stat, featuredStats }: Props) => {
 
                         >
                             {isFeatured ? (
-                                <StarIcon size={isSmall ? "1.25rem" : "1.5rem"} color="rgb(5, 5, 73)" />
+                                <StarIcon size={isSmall ? "1.25rem" : "1.5rem"} color="navy" />
                             ) : (
                                 <StarIconOutline
                                     size={isSmall ? "1.25rem" : "1.5rem"}

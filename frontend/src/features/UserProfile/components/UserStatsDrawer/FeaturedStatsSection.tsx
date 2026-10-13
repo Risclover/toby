@@ -57,10 +57,10 @@ export const FeaturedStatsSection = ({ setShowStatsDrawer, featuredStatsInfo, is
                                 h="auto"
                                 p="0"
                                 size="sm"
-                                color="rgb(5, 5, 73)"
+                                color="navy"
                                 onClick={() => setShowStatsDrawer(true)}
                             >
-                                View more <ChevronRightIcon size='.5rem' color="rgb(5, 5, 73)" />
+                                View more <ChevronRightIcon size='.5rem' color="navy" />
                             </Button>
                         }
                     </>
@@ -69,7 +69,7 @@ export const FeaturedStatsSection = ({ setShowStatsDrawer, featuredStatsInfo, is
             {content}
             {isDrawer && (
                 <div className="featured-stats-description">
-                    <StarIcon size="1rem" color="rgb(5, 5, 73)" />
+                    <StarIcon size="1rem" color="navy" />
                     Select up to 4 stats to feature on your profile.
                 </div>
             )}

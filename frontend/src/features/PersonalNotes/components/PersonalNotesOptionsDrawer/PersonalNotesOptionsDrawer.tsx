@@ -84,7 +84,7 @@ export const PersonalNotesOptionsDrawer = ({ sort, onSortChange, view, onViewCha
                 >
                     <ActionIcon
                         h="auto"
-                        color="rgb(5, 5, 73)"
+                        color="navy"
                         variant="subtle"
                         onClick={() => stack.open("options")}
                         styles={{
@@ -93,7 +93,7 @@ export const PersonalNotesOptionsDrawer = ({ sort, onSortChange, view, onViewCha
                             }
                         }}
                     >
-                        <IoOptions size="1.5rem" color="rgb(5, 5, 73)" />
+                        <IoOptions size="1.5rem" color="navy" />
                     </ActionIcon>
                 </Indicator>
             </div>

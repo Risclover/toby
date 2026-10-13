@@ -90,7 +90,7 @@ export const ShoppingListCategories = ({ opened, onClose, list }: Props) => {
                         />
                         <Button
                             styles={{ root: { flexShrink: 0 } }}
-                            color="rgb(5, 5, 73)"
+                            color="navy"
                             size="sm"
                             // radius={0}
                             p="0 1.25rem"

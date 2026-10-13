@@ -29,14 +29,14 @@ export const ShoppingListHeader = ({ list, groupByCategory, setGroupByCategory, 
                     <Tooltip withArrow label="Manage categories">
                         <ActionIcon
                             variant="subtle"
-                            color="rgb(5, 5, 73)"
+                            color="navy"
                             onClick={() => setShowCategories(true)}
                         >
                             <BiSolidCategory size="24px" />
                         </ActionIcon>
                     </Tooltip>
                     <Tooltip withArrow label="List options">
-                        <ActionIcon variant="subtle" color="rgb(5, 5, 73)" onClick={() => setShowOptions(true)}>
+                        <ActionIcon variant="subtle" color="navy" onClick={() => setShowOptions(true)}>
                             <IoOptions size="2rem" />
                         </ActionIcon>
                     </Tooltip>

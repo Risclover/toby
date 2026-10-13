@@ -63,7 +63,7 @@ export const EventsModalHeader = ({
                                     radius="sm"
                                     onClick={() => onDateChange(new Date())}
                                     size="sm"
-                                    color="rgb(5, 5, 73)"
+                                    color="navy"
                                     variant="filled"
                                     p=".5rem 1rem"
                                     h="auto"
@@ -74,7 +74,7 @@ export const EventsModalHeader = ({
                                 : <ActionIcon
                                     onClick={() => onDateChange(new Date())}
                                     variant="subtle"
-                                    color="rgb(5, 5, 73)"
+                                    color="navy"
                                     radius="sm"
                                 >
                                     <TodayRoundedIcon />
@@ -87,7 +87,7 @@ export const EventsModalHeader = ({
                                     onClick={goToPreviousDay}
                                     variant="filled"
                                     radius="sm"
-                                    color="rgb(5, 5, 73)"
+                                    color="navy"
                                 >
                                     <ChevronLeftRoundedIcon />
                                 </ActionIcon>
@@ -97,7 +97,7 @@ export const EventsModalHeader = ({
                                     onClick={goToNextDay}
                                     variant="filled"
                                     radius="sm"
-                                    color="rgb(5, 5, 73)"
+                                    color="navy"
                                 >
                                     <ChevronRightRoundedIcon />
                                 </ActionIcon>
@@ -167,7 +167,7 @@ export const EventsModalHeader = ({
                                         >
                                             <ActionIcon
                                                 variant="subtle"
-                                                color="rgb(5, 5, 73)"
+                                                color="navy"
                                                 size="md"
                                                 radius="sm"
                                             >
@@ -186,7 +186,7 @@ export const EventsModalHeader = ({
                                 >
                                     <ActionIcon
                                         variant="subtle"
-                                        color="rgb(5, 5, 73)"
+                                        color="navy"
                                         size="sm"
                                         radius="sm"
                                         p={0}
@@ -208,7 +208,7 @@ export const EventsModalHeader = ({
                                 size="md"
                                 onClick={onAddEvent}
                                 variant="filled"
-                                color="rgb(5, 5, 73)"
+                                color="navy"
                                 radius="sm"
                                 fw={500}
                             >

@@ -19,7 +19,7 @@ export const VisibilityFilterSectionBody = ({ options }: Props) => {
             <SegmentedControl
                 defaultValue={filters.visibility}
                 data={options}
-                color="rgb(5, 5, 73)"
+                color="navy"
                 onChange={(val) => updateFilters({ visibility: val as VisibilityFilter })}
                 styles={{
                     label: {

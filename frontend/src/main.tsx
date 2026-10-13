@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import { MantineProvider } from "@mantine/core";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Provider } from "react-redux";
 
 import { store } from "@/store";
@@ -19,13 +18,11 @@ if (!rootElement) {
 migrateCardStates();
 
 ReactDOM.createRoot(rootElement).render(
-  <GoogleOAuthProvider clientId="1041583331380-ackq28ak8dudtabgrhlej6p5359bmbv4.apps.googleusercontent.com">
-    <React.StrictMode>
-      <MantineProvider theme={theme}>
-        <Provider store={store}>
-          <App />
-        </Provider>
-      </MantineProvider>
-    </React.StrictMode>
-  </GoogleOAuthProvider>
+  <React.StrictMode>
+    <MantineProvider theme={theme}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </MantineProvider>
+  </React.StrictMode>
 );

@@ -66,7 +66,7 @@ export const DueSoonTab = ({ tasks }: { tasks: OverdueTask[] }) => {
                     {(styles) => (
                         <Group gap={0} style={styles}>
                             <Button radius="sm" size="13px" p=".325rem .5rem" h="auto" variant="light" fw={500} color="red" onClick={handleMassDelete}>Delete</Button>
-                            <Button ml=".5rem" radius="sm" size="13px" p=".325rem .5rem" h="auto" variant="filled" fw={500} color="rgb(5, 5, 73)" onClick={handleMassComplete}>Complete</Button>
+                            <Button ml=".5rem" radius="sm" size="13px" p=".325rem .5rem" h="auto" variant="filled" fw={500} color="navy" onClick={handleMassComplete}>Complete</Button>
                         </Group>
                     )}
                 </Transition>

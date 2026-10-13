@@ -29,7 +29,7 @@ export const ArchivedHouseholdTasklistsMenu = ({ list, tasklistId }: Props) => {
             menuItemTabIndex={0} shadow="md" width={150}
         >
             <Menu.Target>
-                <ActionIcon variant="subtle" color="rgb(5, 5, 73)" size='xs' onClick={(e) => e.stopPropagation()}>
+                <ActionIcon variant="subtle" color="navy" size='xs' onClick={(e) => e.stopPropagation()}>
                     <MoreVertRoundedIcon />
                 </ActionIcon>
             </Menu.Target >

@@ -165,7 +165,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
                             <Input.Description>Hide from other household members.</Input.Description>
                         </div>
                         <Switch
-                            color="rgb(5, 5, 73)"
+                            color="navy"
                             size="md"
                             withThumbIndicator={false}
                             {...form.getInputProps('isPrivate', { type: 'checkbox' })}

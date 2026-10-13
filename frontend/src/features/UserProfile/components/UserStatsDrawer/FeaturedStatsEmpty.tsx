@@ -24,7 +24,7 @@ export const FeaturedStatsEmpty = ({ setShowStatsDrawer }: Props) => {
         return (
             <div className="featured-stats-empty-owner">
                 <div className="featured-stats-empty--icon" style={{ backgroundColor: getLightColor("#050549", .1) }}>
-                    <StarIconOutline size="1.5rem" color="rgb(5, 5, 73)" />
+                    <StarIconOutline size="1.5rem" color="navy" />
                 </div>
                 <div className="featured-stats-empty-owner--title">
                     No featured stats yet
@@ -36,10 +36,10 @@ export const FeaturedStatsEmpty = ({ setShowStatsDrawer }: Props) => {
                     mt="1rem"
                     size="sm"
                     leftSection={
-                        <StatsIcon size=".875rem" color="rgb(5, 5, 73)" />
+                        <StatsIcon size=".875rem" color="navy" />
                     }
                     variant="light"
-                    color="rgb(5, 5, 73)"
+                    color="navy"
                     onClick={() => setShowStatsDrawer(true)}
                 >
                     View your stats
@@ -51,7 +51,7 @@ export const FeaturedStatsEmpty = ({ setShowStatsDrawer }: Props) => {
             <button className="featured-stats-empty" onClick={() => setShowStatsDrawer(true)}>
                 <div className="featured-stats-empty--left">
                     <div className="featured-stats-empty--icon">
-                        <StatsIcon size="1rem" color="rgb(5, 5, 73)" />
+                        <StatsIcon size="1rem" color="navy" />
                     </div>
                     View {possessive} stats
                 </div>

@@ -37,7 +37,7 @@ export const PersonalNotesSortDrawer = ({ stack, drawerProps, sort, onSortChange
                             onClick={() => onSortChange(option.value)}
                         >
                             <Radio
-                                color="rgb(5, 5, 73)"
+                                color="navy"
                                 icon={CheckIcon}
                                 value={option.value}
                                 label={option.label}
