@@ -3,7 +3,7 @@ import { Text } from "@mantine/core";
 import { KittyIcons } from "@/assets";
 import { KittyNotification } from "@/components";
 
-export const notifyEventDeleted = (title: string) =>
+export const NotifyEventDeleted = (title: string) =>
     KittyNotification({
         title: "Event deleted",
         message: (

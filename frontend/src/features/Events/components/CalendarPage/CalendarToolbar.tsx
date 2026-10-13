@@ -1,7 +1,7 @@
 import { Button, Group } from "@mantine/core";
+import { useCalendar } from "@/contexts";
 import { AddEventButton } from "./AddEventButton";
 import { CalendarMemberFilter } from "./CalendarMemberFilter";
-import { useCalendar } from "@/contexts";
 
 type CalendarToolbarProps = {
     date: string;

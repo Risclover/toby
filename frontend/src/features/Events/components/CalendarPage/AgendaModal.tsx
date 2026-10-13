@@ -2,12 +2,11 @@ import type { ComponentProps } from "react";
 import { ActionIcon, Button, Group, Modal, Text } from "@mantine/core";
 import { AgendaView } from "@mantine/schedule";
 import { useCalendar } from "@/contexts";
+
 import { CalendarMemberFilter } from "./CalendarMemberFilter";
 import { EventRow } from "./EventRow";
-import { toRangeEvents } from "../../utils/getEventColors";
+import { toRangeEvents } from "../../utils";
 
-// AgendaView's own date headers are hidden in single-day mode: its event list isn't reliably
-// filtered to the one day, so we always show our own label instead of trusting which header renders.
 const HIDDEN_AGENDA_HEADERS = {
     agendaViewHeader: { display: "none" },
     agendaViewDateHeader: { display: "none" },

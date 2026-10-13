@@ -1,16 +1,18 @@
 import { DayView } from "@mantine/schedule";
+
+import { useCalendar } from "@/contexts";
 import {
+    toDayViewEvents,
     getInteractiveViewProps,
     MORE_EVENTS_PROPS,
-    toDayViewEvents,
     type CalendarViewProps,
 } from "../../utils";
-import { useCalendar } from "@/contexts";
 
 export const CalendarDayView = ({ date, onDateChange, onViewChange }: CalendarViewProps) => {
     const { events, modals, moveEvent } = useCalendar();
 
     const dayEvents = toDayViewEvents(events.scheduleEvents, date);
+
     const interactiveProps = getInteractiveViewProps({
         onMove: moveEvent,
         onEventClick: modals.viewEvent,

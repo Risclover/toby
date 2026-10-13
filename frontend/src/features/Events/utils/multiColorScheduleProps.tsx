@@ -2,7 +2,8 @@ import type { ComponentProps } from "react";
 import { Schedule } from "@mantine/schedule";
 import { EventMemberDots } from "../components/CalendarPage/EventColorDots";
 import { EventColorBackground } from "../components/CalendarPage/EventColorBackground";
-import { getEventTextColor, type EventColorPayload } from "./getEventColors";
+import type { EventColorPayload } from "./eventColorPayload";
+import { getEventTextColor } from "./cssColors";
 
 type ScheduleProps = ComponentProps<typeof Schedule>;
 

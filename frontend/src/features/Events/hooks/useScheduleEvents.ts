@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type { CalendarEvent } from "@/store";
-import { toScheduleEvent, type HouseholdMemberColor } from "../utils/getEventColors";
+import type { HouseholdMemberColor } from "../utils/eventColorPayload";
+import { toScheduleEvent } from "../utils/toScheduleEvent";
 
 type UseScheduleEventsProps = {
     events: CalendarEvent[] | undefined;

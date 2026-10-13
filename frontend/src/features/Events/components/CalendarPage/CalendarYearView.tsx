@@ -1,27 +1,33 @@
-import { YearView } from "@mantine/schedule";
 import dayjs from "dayjs";
-import type { CalendarViewProps, ScheduleEventData } from "../../utils";
+import { YearView } from "@mantine/schedule";
+
 import { useCalendar } from "@/contexts";
+import type { CalendarViewProps, ScheduleEventData } from "../../utils";
 
 const DAY_NUMBER_FORMAT = "D";
-
-// A year cell is far too small for per-member color coding, so cells show just the day number
-// and a click opens a one-day agenda instead. YearView therefore gets no events.
+const MONTH_VIEW = "month";
 const NO_EVENTS: ScheduleEventData[] = [];
 
 const renderYearDay = (dateStr: string) => dayjs(dateStr).format(DAY_NUMBER_FORMAT);
+const YEAR_DAY_PROPS = { renderDay: renderYearDay };
 
 export const CalendarYearView = ({ date, onDateChange, onViewChange }: CalendarViewProps) => {
     const { agenda } = useCalendar();
+
+    const handleMonthClick = (monthStart: string) => {
+        onDateChange(monthStart);
+        onViewChange(MONTH_VIEW);
+    };
 
     return (
         <YearView
             date={date}
             onDateChange={onDateChange}
             onViewChange={onViewChange}
+            onMonthClick={handleMonthClick}
             events={NO_EVENTS}
             onDayClick={agenda.openForDay}
-            renderDay={renderYearDay}
+            {...YEAR_DAY_PROPS}
         />
     );
 };

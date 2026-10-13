@@ -1,9 +1,6 @@
-import type { ComponentProps } from "react";
-import type { Schedule } from "@mantine/schedule";
 import dayjs from "dayjs";
-import type { EventColorPayload } from "./getEventColors";
-
-export type ScheduleEventData = NonNullable<ComponentProps<typeof Schedule>["events"]>[number];
+import type { EventColorPayload } from "./eventColorPayload";
+import type { ScheduleEventData } from "./calendarTypes";
 
 export interface AllDayLaneItem {
     event: ScheduleEventData;

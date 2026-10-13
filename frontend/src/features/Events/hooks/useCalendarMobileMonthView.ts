@@ -28,7 +28,7 @@ export const useCalendarMobileMonthView = ({
     onDateChange,
     scheduleEvents,
 }: UseCalendarMobileMonthViewProps) => {
-    const [selectedDate, setSelectedDate] = useState(() => toDateString());
+    const [selectedDate, setSelectedDate] = useState<string | null>(() => toDateString());
 
     // `events` feeds the list under the grid (one row per real event); `dayDots` feeds the
     // day-cell color stripe (one mark per distinct person per day). They intentionally differ.

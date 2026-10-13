@@ -1,7 +1,8 @@
 import type { CalendarEvent } from "@/store";
 import { EVENT_ID_SEPARATOR } from "./calendarConstants";
 import type { ScheduleEventData } from "./calendarTypes";
-import { toScheduleEvent, type EventColorPayload, type HouseholdMemberColor } from "./getEventColors";
+import type { EventColorPayload, HouseholdMemberColor } from "./eventColorPayload";
+import { toScheduleEvent } from "./toScheduleEvent";
 
 type RecurringInstance = { recurringEventId?: string | number };
 

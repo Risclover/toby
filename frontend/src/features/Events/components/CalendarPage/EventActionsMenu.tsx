@@ -1,21 +1,17 @@
 import { useDisclosure } from "@mantine/hooks";
 
 import { DeleteConfirmation } from "@/components";
+import { DeleteRecurringEventConfirmation, EventMenu, UnassignSelfConfirmation, NotifyEventDeleted } from "..";
+import { useCalendar } from "@/contexts";
 import { useHousehold } from "@/hooks";
 import { useAuthenticateQuery, useDeleteEventMutation } from "@/store";
-
 import type { Occurrence } from "../../types";
 import {
+    getEventPermissions,
+    getOccurrenceEditEvent,
     type EventColorPayload,
     type ScheduleEventData,
 } from "../../utils";
-import { DeleteRecurringEventConfirmation } from "../DeleteRecurringEventConfirmation";
-import { EventMenu } from "../EventMenu";
-import { UnassignSelfConfirmation } from "../UnassignSelfConfirmation";
-import { useCalendar } from "@/contexts";
-import { notifyEventDeleted } from "./notifyEventDeleted";
-import { getEventPermissions } from "../../utils/getEventPermissions";
-import { getOccurrenceEditEvent } from "../../utils/getOccurrenceEditEvent";
 
 type EventActionsMenuProps = {
     /** One occurrence of a recurring event, or a single-instance event. */
@@ -56,7 +52,7 @@ export const EventActionsMenu = ({ occurrence, onDeleted }: EventActionsMenuProp
     const handleDeleteEvent = async () => {
         if (!household?.id) return;
         await deleteEvent({ id: source.id, householdId: household.id }).unwrap();
-        notifyEventDeleted(source.title);
+        NotifyEventDeleted(source.title);
         onDeleted?.();
     };
 

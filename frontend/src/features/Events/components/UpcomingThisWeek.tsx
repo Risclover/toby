@@ -1,15 +1,9 @@
 // src/features/calendar/UpcomingNext7Days.tsx
-import { ActionIcon, ActionIconGroup, Anchor, Button, Card, Group, Paper, ScrollArea, Skeleton, Stack, Text } from "@mantine/core";
+import { Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
-import { useDeleteEventMutation, useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery, type CalendarEvent } from "@/store/eventSlice";
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
-import DeleteRounded from '@mui/icons-material/Delete';
-import BorderColorRoundedIcon from '@mui/icons-material/BorderColorRounded';
+import { useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery } from "@/store/eventSlice";
 import "../styles/UpcomingThisWeek.css"
 import { EventForm } from "./EventForm/EventForm";
-import { Box } from "lucide-react";
-import { EventMenu } from "./EventMenu";
-import { useAuthenticateQuery } from "@/store";
 import { expandRecurringEvents } from "@mantine/schedule";
 
 /** ymd + n days (n may be negative), as a string. */
@@ -48,27 +42,10 @@ function ymd(d: Date) {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-/**
- * Converts one of the backend's ISO-with-offset strings (e.g.
- * "2026-07-18T14:00:00-07:00") into the plain "YYYY-MM-DD HH:mm:ss" wall-clock
- * format @mantine/schedule's rrule expansion expects (see DateTimeStringValue
- * in the Mantine docs). Same idea as eventsTransform.ts's toWallClockString --
- * duplicated here rather than imported because I don't know this file's real
- * relative path to eventsTransform.ts. If you already import that helper
- * elsewhere, swap this out for it instead of keeping two copies.
- */
 function toWallClock(isoWithOffset: string) {
     return isoWithOffset.slice(0, 19).replace("T", " ");
 }
 
-/**
- * Formats a wall-clock string's time-of-day for display, e.g.
- * "2026-07-18 14:00:00" -> "2:00 PM". Constructing the Date via a bare
- * "YYYY-MM-DDTHH:mm:ss" (no trailing Z/offset) makes the JS engine treat it
- * as local time, so toLocaleTimeString() reproduces the given digits exactly
- * -- no browser-timezone reinterpretation risk, unlike parsing the original
- * offset-bearing ISO string directly.
- */
 function formatWallClockTime(wallClock: string) {
     const d = new Date(wallClock.replace(" ", "T"));
     return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -103,20 +80,10 @@ type Props = {
 }
 
 export function UpcomingThisWeek({ isReady, householdId }: Props) {
-    const { data: currentUser } = useAuthenticateQuery();
     const [editOpen, setEditOpen] = useState(false);
     const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
-    const [deleteEvent] = useDeleteEventMutation();
 
-    const handleDeleteEvent = async (eventId: number) => {
-        await deleteEvent({ id: eventId, householdId }).unwrap();
-    };
-
-    const openEdit = (eventId: number) => {
-        setSelectedEventId(eventId);
-        setEditOpen(true);
-    };
     const closeEdit = useCallback(() => {
         setEditOpen(false);
         setTimeout(() => setSelectedEventId(null), 250);
@@ -135,9 +102,6 @@ export function UpcomingThisWeek({ isReady, householdId }: Props) {
     const selectedEvent =
         selectedEventId != null ? allEvents.find(e => e.id === selectedEventId) : undefined;
 
-    // Reshape into @mantine/schedule's event shape so its rrule expansion can
-    // run over them -- this is the same "recurrence.rrule" shape
-    // eventsTransform.ts builds for the main calendar views.
     const scheduleEvents = useMemo(() => {
         return weekEvents
             .filter((e) => e.startUtc && e.endUtc)
@@ -148,13 +112,6 @@ export function UpcomingThisWeek({ isReady, householdId }: Props) {
                     householdAdminId: e.household.adminId,
                 };
 
-                // Two distinct return shapes (rather than spreading
-                // `recurrence` in conditionally) so TS infers a real
-                // discriminated union for the callback's return type --
-                // ScheduleEventData is itself a union
-                // (Single | RecurringSeries | RecurringOverride), and a
-                // single object type with an optional `recurrence?` field
-                // doesn't line up with any one branch of it.
                 if (e.rrule) {
                     return {
                         id: e.id,
@@ -179,10 +136,6 @@ export function UpcomingThisWeek({ isReady, householdId }: Props) {
             });
     }, [weekEvents]);
 
-    // Expands every recurring series into one entry per occurrence that
-    // falls in this week's window. One-off events pass through unchanged.
-    // This is what makes a recurring event show up on every applicable day
-    // instead of just its original start date.
     const expanded = useMemo(() => {
         return expandRecurringEvents({
             events: scheduleEvents,
@@ -191,12 +144,6 @@ export function UpcomingThisWeek({ isReady, householdId }: Props) {
         });
     }, [scheduleEvents, windowStartYmd, windowEndYmd]);
 
-    // Second, independent expansion: any single occurrence (recurring or
-    // not) that itself spans multiple calendar days gets one row per day it
-    // touches within the window, labeled Google-Calendar-style -- "Begins
-    // <time>" on the first day, "All day" on days in between, "Ends <time>"
-    // on the last day. Single-day occurrences (the common case) still
-    // produce exactly one row, same as before.
     const rows = useMemo(() => {
         const out: UpcomingRow[] = [];
 
@@ -207,17 +154,6 @@ export function UpcomingThisWeek({ isReady, householdId }: Props) {
             const realId = Number(ev.recurringInstance?.recurringEventId ?? ev.id);
 
             const startDay = startStr.slice(0, 10);
-            // All-day events use EXCLUSIVE end bounds (the iCalendar DATE-value
-            // convention: `end` marks the start of the day AFTER the event's
-            // last real day, not a day it actually occupies) -- subtract a day
-            // so a single-day all-day event (start = Day X 00:00, end = Day X+1
-            // 00:00) reads as spanning just Day X, not two. This only ever looks
-            // at the DATE portion of `end`, never the time, so it's unaffected
-            // by the backend currently stamping all-day bounds with a stray
-            // 7-hour time-of-day instead of exact midnight -- that drift can
-            // corrupt the hour, but not which day is "last." Timed events keep
-            // inclusive-end semantics unchanged -- their `end` is a real moment
-            // the event is genuinely still happening at.
             const endDay = payload.hasTime
                 ? endStr.slice(0, 10)
                 : addDaysYmd(endStr.slice(0, 10), -1);

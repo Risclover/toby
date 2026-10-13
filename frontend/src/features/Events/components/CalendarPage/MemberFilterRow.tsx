@@ -1,5 +1,5 @@
 import { Group, Text, Tooltip, UnstyledButton } from "@mantine/core";
-import { toDotCssColor } from "../../utils/getEventColors";
+import { toDotCssColor } from "../../utils/cssColors";
 
 type Member = {
     id: number;

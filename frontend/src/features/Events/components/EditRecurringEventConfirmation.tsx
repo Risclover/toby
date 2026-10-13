@@ -1,9 +1,23 @@
-import { Button, Group, Modal, Radio, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 
-export type EditScope = "this-event" | "all-events";
+import { Group, Modal, Radio, Stack, Text } from "@mantine/core";
 
-type Props = {
+import { ButtonStandard } from "@/components/ButtonStandard";
+
+export const EDIT_SCOPE = { THIS: "this-event", ALL: "all-events" } as const;
+export type EditScope = (typeof EDIT_SCOPE)[keyof typeof EDIT_SCOPE];
+
+const RADIO_NAME = "recurring-event-edit";
+const RADIO_COLOR = "rgb(5, 5, 73)";
+// This modal isn't part of EventForm's modals stack, so it needs a z-index above the stack's elevated one.
+const MODAL_Z_INDEX = 1000;
+
+const SCOPE_OPTIONS = [
+    { label: "Just this event", value: EDIT_SCOPE.THIS },
+    { label: "All instances", value: EDIT_SCOPE.ALL },
+] as const;
+
+type EditRecurringEventConfirmationProps = {
     opened: boolean;
     onClose: () => void;
     onConfirm: (scope: EditScope) => void | Promise<void>;
@@ -11,20 +25,19 @@ type Props = {
 };
 
 /**
- * Mirrors DeleteRecurringEventConfirmation's "this vs. all" pattern, but
- * for Save instead of Delete. The difference that keeps this a separate
- * component rather than a shared one: Delete doesn't need any new values
- * from the caller (an id is enough), but a save does -- the edited field
- * values have to already be built by EventForm before this modal can act
- * on either choice, so this component takes a single onConfirm callback
- * instead of owning its own mutations.
+ * "This vs. all" prompt for saving a recurring event. Unlike the delete version, the edited
+ * values already exist in EventForm, so this takes one onConfirm callback instead of owning mutations.
  */
-export const EditRecurringEventConfirmation = ({ opened, onClose, onConfirm, isSaving }: Props) => {
-    const [checked, setChecked] = useState<EditScope>("this-event");
+export const EditRecurringEventConfirmation = ({
+    opened,
+    onClose,
+    onConfirm,
+    isSaving,
+}: EditRecurringEventConfirmationProps) => {
+    const [scope, setScope] = useState<EditScope>(EDIT_SCOPE.THIS);
 
-    const handleConfirm = () => {
-        onConfirm(checked);
-    };
+    const handleScopeChange = (value: string) => setScope(value as EditScope);
+    const handleConfirm = () => onConfirm(scope);
 
     return (
         <Modal
@@ -33,64 +46,34 @@ export const EditRecurringEventConfirmation = ({ opened, onClose, onConfirm, isS
             onClose={onClose}
             size="md"
             centered
-            // EventForm's own modal is registered with useModalsStack
-            // ('event-form'), which actively manages an elevated z-index
-            // for it so it can sit above things like the custom-recurrence
-            // editor nested inside it. This modal isn't part of that stack
-            // (it doesn't need to be nested inside EventForm's modal, just
-            // shown on top of it), so it gets Mantine's ordinary default
-            // z-index instead -- which loses to the stack's elevated one.
-            // A z-index safely above anything Modal.Stack assigns fixes
-            // that without needing to register this in the stack too.
-            zIndex={1000}
-            onExitTransitionEnd={() => setChecked("this-event")}
+            zIndex={MODAL_Z_INDEX}
+            onExitTransitionEnd={() => setScope(EDIT_SCOPE.THIS)}
         >
             <Text size="sm">
                 This event is a recurring event. Do you want to update just this occurrence, or every occurrence in the series?
             </Text>
 
-            <Radio.Group ml="1rem" value={checked} onChange={(value) => setChecked(value as EditScope)}>
+            <Radio.Group ml="1rem" value={scope} onChange={handleScopeChange}>
                 <Stack gap={8} mt="1rem">
-                    <Radio
-                        label="Just this event"
-                        name="recurring-event-edit"
-                        value="this-event"
-                        color="rgb(5, 5, 73)"
-                    />
-                    <Radio
-                        label="All instances"
-                        name="recurring-event-edit"
-                        value="all-events"
-                        color="rgb(5, 5, 73)"
-                    />
+                    {SCOPE_OPTIONS.map((option) => (
+                        <Radio key={option.value} name={RADIO_NAME} color={RADIO_COLOR} {...option} />
+                    ))}
                 </Stack>
             </Radio.Group>
 
             <Group justify="flex-end" w="100%" gap="0.5rem" mt="lg">
-                <Button
-                    fw={500}
-                    color="rgb(5, 5, 73)"
-                    p=".5rem 1rem"
-                    h="auto"
-                    size="sm"
+                <ButtonStandard
+                    label="Cancel"
                     variant="outline"
                     onClick={onClose}
                     disabled={isSaving}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    fw={500}
-                    color="rgb(5, 5, 73)"
-                    p=".5rem 1rem"
-                    h="auto"
-                    size="sm"
+                />
+                <ButtonStandard
+                    label="Confirm & Save"
                     variant="filled"
                     onClick={handleConfirm}
-                    loading={isSaving}
-                >
-                    Confirm & Save
-                </Button>
+                    isLoading={isSaving}
+                />
             </Group>
         </Modal>
     );

@@ -1,12 +1,13 @@
-import { getEventFormSeedProps } from "../../utils";
-import { EventForm } from "../EventForm/EventForm";
 import { useCalendar } from "@/contexts";
+import { EventForm } from "../EventForm";
 import { EventDetailsModal } from "./EventDetailsModal";
+import { getEventFormSeedProps } from "../../utils";
 
 type CalendarModalsProps = {
     date: string;
 };
 
+/** Helps switch between modals from the calendar modal stack */
 export const CalendarModals = ({ date }: CalendarModalsProps) => {
     const { householdId, modals } = useCalendar();
     const { stack, details, form } = modals;

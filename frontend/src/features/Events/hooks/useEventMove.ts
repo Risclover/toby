@@ -5,7 +5,7 @@ import {
     type CalendarEvent,
 } from "@/store";
 import { persistEventMove, type MoveData } from "../utils/persistEventMove";
-import { isAllDayValue } from "../utils/getEventColors";
+import { isAllDayValue } from "../utils/isAllDayValue";
 
 type UseEventMoveProps = {
     householdId: number | undefined;

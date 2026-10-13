@@ -1,15 +1,14 @@
 import type { ComponentProps } from "react";
 import { WeekView } from "@mantine/schedule";
+import { useCalendar } from "@/contexts";
+import { WeekEventButton } from "./WeekEventButton";
+import { useCalendarWeekView } from "../../hooks";
 import {
     getDateRange,
     getInteractiveViewProps,
-    MORE_EVENTS_PROPS,
     toRangeEvents,
     type CalendarViewProps,
 } from "../../utils";
-import { useCalendar } from "@/contexts";
-import { WeekEventButton } from "./WeekEventButton";
-import { useCalendarWeekView } from "../../hooks/useCalendarWeekView";
 
 type WeekRenderEvent = NonNullable<ComponentProps<typeof WeekView>["renderEvent"]>;
 
@@ -45,7 +44,6 @@ export const CalendarWeekView = ({ date, onDateChange, onViewChange }: CalendarV
             onTimeSlotClick={modals.createFromTimeSlot}
             onSlotDragEnd={modals.createFromTimeRange}
             onAllDaySlotClick={modals.createForDay}
-            moreEventsProps={MORE_EVENTS_PROPS}
             renderEvent={renderEvent}
         />
     );

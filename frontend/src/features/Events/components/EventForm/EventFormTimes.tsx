@@ -1,9 +1,9 @@
 import { Group } from "@mantine/core"
 import { TimePicker } from "@mantine/dates"
 import { ClockIcon } from "@/assets";
-import { DEFAULT_EVENT_DURATION_HOURS, TIME_FORMAT } from "./EventForm";
 import type { RefObject } from "react";
 import dayjs from "dayjs";
+import { DEFAULT_EVENT_DURATION_HOURS, TIME_FORMAT } from "../../utils";
 
 type Props = {
     form: any;

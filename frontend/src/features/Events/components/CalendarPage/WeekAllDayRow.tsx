@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Popover, Text, UnstyledButton, Stack, Group } from "@mantine/core";
 import { useWeekAllDayEvents } from "../../hooks/useWeekAllDayEvents";
 import type { ScheduleEventData } from "../../utils/weekAllDayLayout";
-import { toLightCssColor, toDotCssColor, getEventTextColor, type EventColorPayload } from "../../utils/getEventColors";
 import { EventMemberDots } from "./EventColorDots";
+import type { EventColorPayload } from "../../utils/eventColorPayload";
 
 const DAYS_IN_WEEK = 7;
 const LANE_HEIGHT = 26;

@@ -1,5 +1,5 @@
 import { Tooltip } from "@mantine/core";
-import { toDotCssColor } from "../../utils/getEventColors";
+import { toDotCssColor } from "../../utils/cssColors";
 
 type Props = {
     colors: string[];
