@@ -155,7 +155,7 @@ export const MobileTasklistHeader = ({ sortOption, setSortOption, filters, setFi
                     </Combobox.Dropdown>
                 </Combobox>
                 <Tooltip.Group openDelay={500} closeDelay={100}>
-                    <Tooltip withArrow label="Filter list"><ActionIcon onClick={open} variant="transparent" color="navy">
+                    <Tooltip withArrow label="Filter list"><ActionIcon onClick={open} variant="subtle" color="navy">
                         <FilterAltRoundedIcon />
                     </ActionIcon></Tooltip>
                     {(isSmall || isMobile) && filteredTasks?.length > 1 && tasks?.length > 1 && canReorder && <Tooltip label={showReorderMode ? "Close reorder mode" : "Reorder list"}>
