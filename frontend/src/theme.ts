@@ -1,16 +1,23 @@
 import { createTheme, type MantineColorsTuple } from "@mantine/core";
 
+export const BRAND_NAVY = "#050549";
+
+const NAVY_PRIMARY_SHADE = 7;
+
 const navy: MantineColorsTuple = [
     "#e9e9ff",
-    "#b0b0f4",
-    "#8080df",
-    "#4f4fcc",
-    "#2b2bac",
-    "#16167c",
-    "#050549", // brand color: rgb(5, 5, 73)
+    "#b8b8f6",
+    "#8f8fe5",
+    "#6363d6",
+    "#3333cb",
+    "#2222a1",
+    "#131376",
+    BRAND_NAVY,
     "#04043c",
     "#030330",
-    "#020225",
 ];
 
-export const theme = createTheme({ colors: { navy } });
+export const theme = createTheme({
+    primaryShade: NAVY_PRIMARY_SHADE,
+    colors: { navy },
+});

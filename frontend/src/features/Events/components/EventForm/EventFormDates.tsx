@@ -10,7 +10,7 @@ type Props = {
 }
 
 const DATE_PICKER_STYLES = {
-    section: { color: "rgb(5, 5, 73)" },
+    section: { color: "var(--primary)" },
     day: {
         "&[data-weekend]": { color: "#4e0202" },
         "&[data-selected], &[data-selected]:hover": {

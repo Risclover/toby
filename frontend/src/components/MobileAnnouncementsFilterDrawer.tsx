@@ -80,7 +80,7 @@ export const MobileAnnouncementsFilterDrawer = ({ opened, close, householdMember
                                 p="2px"
                                 h="auto"
                                 style={{
-                                    border: localFilters.creatorId === member.id ? "2px solid rgb(5, 5, 73)" : "2px solid transparent",
+                                    border: localFilters.creatorId === member.id ? "2px solid var(--primary)" : "2px solid transparent",
                                     cursor: "pointer",
 
                                 }}

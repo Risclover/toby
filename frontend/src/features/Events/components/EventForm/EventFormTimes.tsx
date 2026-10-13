@@ -36,7 +36,7 @@ export const EventFormTimes = ({ form, endTimeManuallySetRef }: Props) => {
             <TimePicker
                 {...form.getInputProps('startTime')}
                 key={form.key('startTime')}
-                leftSection={<ClockIcon color="navy" size="1.25rem" />}
+                leftSection={<ClockIcon color="var(--primary)" size="1.25rem" />}
                 label="Start time"
                 disabled={form.getValues().allDay}
                 required={!form.getValues().allDay}
@@ -49,7 +49,7 @@ export const EventFormTimes = ({ form, endTimeManuallySetRef }: Props) => {
             <TimePicker
                 {...form.getInputProps('endTime')}
                 key={form.key('endTime')}
-                leftSection={<ClockIcon color="navy" size="1.25rem" />}
+                leftSection={<ClockIcon color="var(--primary)" size="1.25rem" />}
                 label="End Time"
                 required={!form.getValues().allDay}
                 onChange={handleEndTimeChange}

@@ -13,6 +13,7 @@ import { KittyIcons } from "@/assets";
 import { useCloseModalOnNavigate } from "@/hooks/useCloseModalOnNavigate";
 import { ModalFooter } from "@/components/ModalFooter";
 import { ButtonStandard } from "@/components/ButtonStandard";
+import { BRAND_NAVY } from "@/theme";
 
 interface HabitFormValues {
     name: string;
@@ -38,7 +39,7 @@ export const HabitModal = ({ onSuccess }: Props) => {
         initialValues: {
             name: "",
             description: "",
-            color: "#050549",
+            color: BRAND_NAVY,
             isPrivate: userSettings?.settings?.habitsPrivacyMode === "private_by_default"
         },
         validate: {
@@ -56,14 +57,14 @@ export const HabitModal = ({ onSuccess }: Props) => {
             form.setValues({
                 name: habitData.name ?? "",
                 description: habitData.description ?? "",
-                color: habitData.color ?? "#050549",
+                color: habitData.color ?? BRAND_NAVY,
                 isPrivate: habitData.isPrivate ?? false,
             });
         } else {
             form.setValues({
                 name: "",
                 description: "",
-                color: "#050549",
+                color: BRAND_NAVY,
                 isPrivate: userSettings?.settings?.habitsPrivacyMode === "private_by_default",
             });
         }

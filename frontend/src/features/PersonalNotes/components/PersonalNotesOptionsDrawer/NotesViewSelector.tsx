@@ -53,7 +53,7 @@ function MiniPill() {
             height: rem(8),
             width: rem(30),
             borderRadius: rem(999),
-            backgroundColor: "rgb(5, 5, 73)",
+            backgroundColor: "var(--primary)",
             opacity: 0.6,
         }} />
     );
@@ -87,7 +87,7 @@ function GridNoteCard({ faded }: NoteCardProps) {
     return (
         <Box style={{
             border: "1px solid var(--mantine-color-gray-3)",
-            borderTop: "3px solid rgb(5, 5, 73)",
+            borderTop: "3px solid var(--primary)",
             borderRadius: "var(--mantine-radius-sm)",
             overflow: "hidden",
             opacity: faded ? 0.4 : 1,
@@ -113,7 +113,7 @@ function PreviewWindow({ label, onClick, onKeyDown, activeView, children }: Prev
             <Box
                 style={{
                     border: activeView === label.toLowerCase()
-                        ? "2px solid var(--notes-color, rgb(5, 5, 73))"
+                        ? "2px solid var(--notes-color, var(--primary))"
                         : "2px solid transparent",
                     borderRadius: "var(--mantine-radius-md)",
                     padding: "2px",
@@ -138,7 +138,7 @@ function PreviewWindow({ label, onClick, onKeyDown, activeView, children }: Prev
                 <Checkbox
                     onChange={onClick}
                     onKeyDown={onKeyDown}
-                    color="var(--notes-color, rgb(5, 5, 73))"
+                    color="var(--notes-color, var(--primary))"
                     checked={activeView === label.toLowerCase()}
                     size="xs"
                     radius="xl"

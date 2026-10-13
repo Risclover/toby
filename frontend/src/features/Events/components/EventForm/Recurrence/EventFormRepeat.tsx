@@ -66,12 +66,12 @@ export const EventFormRepeat = ({
                         leftSection={
                             <EventRepeatRoundedIcon
                                 style={{
-                                    fill: "rgb(5, 5, 73)"
+                                    fill: "var(--primary)"
                                 }}
                             />
                         }
                         leftSectionWidth="40px"
-                        leftSectionProps={{ color: "rgb(5, 5, 73)" }}
+                        leftSectionProps={{ color: "var(--primary)" }}
                         rightSection={
                             (value !== null && repeatKind !== "none") ? (
                                 <CloseButton

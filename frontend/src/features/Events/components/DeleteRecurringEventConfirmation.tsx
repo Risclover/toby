@@ -9,7 +9,6 @@ import type { Occurrence } from "../types";
 
 const DELETE_SCOPE = { ONE: "one-event", ALL: "all-events" } as const;
 const RADIO_NAME = "recurring-event";
-const RADIO_COLOR = "rgb(5, 5, 73)";
 
 const SCOPE_OPTIONS = [
     { label: "Just this event", value: DELETE_SCOPE.ONE },
@@ -67,7 +66,7 @@ export const DeleteRecurringEventConfirmation = ({
             <Radio.Group ml="1rem" value={scope} onChange={setScope}>
                 <Stack gap={8} mt="1rem">
                     {SCOPE_OPTIONS.map((option) => (
-                        <Radio key={option.value} name={RADIO_NAME} color={RADIO_COLOR} {...option} />
+                        <Radio key={option.value} name={RADIO_NAME} color="navy" {...option} />
                     ))}
                 </Stack>
             </Radio.Group>

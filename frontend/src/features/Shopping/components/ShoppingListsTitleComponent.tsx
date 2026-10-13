@@ -21,7 +21,7 @@ export const ShoppingListsTitleComponent = ({ openModal }: Props) => {
                     <Tooltip withArrow events={{ hover: true, focus: true, touch: false }} openDelay={500} closeDelay={100} label="Create list">
                         <ActionIcon size="md" radius="lg" variant="filled" color="white" c="navy" onClick={openModal}
                         >
-                            <PlusIcon size="1.25rem" color="navy" />
+                            <PlusIcon size="1.25rem" color="var(--primary)" />
                         </ActionIcon>
                     </Tooltip>
                 </Group>

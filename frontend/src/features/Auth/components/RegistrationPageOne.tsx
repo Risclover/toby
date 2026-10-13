@@ -30,9 +30,9 @@ type Props = {
 
 const VisibilityToggleIcon = ({ reveal }: { reveal: boolean }) =>
     reveal ? (
-        <ViewPasswordIcon size="1rem" color="navy" />
+        <ViewPasswordIcon size="1rem" color="var(--primary)" />
     ) : (
-        <HidePasswordIcon size="1rem" color="navy" />
+        <HidePasswordIcon size="1rem" color="var(--primary)" />
     );
 
 export const RegistrationPageOne = ({ onClick, inputProps, createHousehold, inviteCode }: Props) => {

@@ -142,7 +142,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
                                     p={0}
                                     h="auto"
                                     style={{
-                                        border: localFilters?.assignedToId === member.id ? "2px solid rgb(5, 5, 73)" : "2px solid transparent",
+                                        border: localFilters?.assignedToId === member.id ? "2px solid var(--primary)" : "2px solid transparent",
                                         cursor: "pointer",
                                         borderRadius: '50%',
                                         padding: '2px'
@@ -186,7 +186,7 @@ export const MobileTasklistFilterDrawer = ({ opened, close, householdMembers, fi
 
                 {/* Actions */}
                 <Group gap={isSmall ? "0.5rem" : "1rem"} grow className="filter-drawer-submit-btns">
-                    <Button color="navy" variant="light" onClick={handleReset} fw={500}>
+                    <Button color="navy" variant="outline" onClick={handleReset} fw={500}>
                         Reset
                     </Button>
                     <Button color="navy" onClick={handleApply} fw={500}>

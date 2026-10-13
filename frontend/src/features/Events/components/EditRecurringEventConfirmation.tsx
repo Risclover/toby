@@ -8,7 +8,6 @@ export const EDIT_SCOPE = { THIS: "this-event", ALL: "all-events" } as const;
 export type EditScope = (typeof EDIT_SCOPE)[keyof typeof EDIT_SCOPE];
 
 const RADIO_NAME = "recurring-event-edit";
-const RADIO_COLOR = "rgb(5, 5, 73)";
 // This modal isn't part of EventForm's modals stack, so it needs a z-index above the stack's elevated one.
 const MODAL_Z_INDEX = 1000;
 
@@ -56,7 +55,7 @@ export const EditRecurringEventConfirmation = ({
             <Radio.Group ml="1rem" value={scope} onChange={handleScopeChange}>
                 <Stack gap={8} mt="1rem">
                     {SCOPE_OPTIONS.map((option) => (
-                        <Radio key={option.value} name={RADIO_NAME} color={RADIO_COLOR} {...option} />
+                        <Radio key={option.value} name={RADIO_NAME} color="navy" {...option} />
                     ))}
                 </Stack>
             </Radio.Group>

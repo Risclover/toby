@@ -20,8 +20,8 @@ export const EventFormVisibility = ({ form }: Props) => {
             allowDeselect={false}
             label="Visibility"
             leftSection={form.getValues().visibility === "public"
-                ? <VisibilityRoundedIcon style={{ fill: "rgb(5, 5, 73)" }} />
-                : <VisibilityOffIcon style={{ fill: "rgb(5, 5, 73)" }} />
+                ? <VisibilityRoundedIcon style={{ fill: "var(--primary)" }} />
+                : <VisibilityOffIcon style={{ fill: "var(--primary)" }} />
             }
             leftSectionWidth="40px"
         />

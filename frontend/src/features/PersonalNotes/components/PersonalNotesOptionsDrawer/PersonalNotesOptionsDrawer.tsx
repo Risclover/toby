@@ -93,7 +93,7 @@ export const PersonalNotesOptionsDrawer = ({ sort, onSortChange, view, onViewCha
                             }
                         }}
                     >
-                        <IoOptions size="1.5rem" color="navy" />
+                        <IoOptions size="1.5rem" color="var(--primary)" />
                     </ActionIcon>
                 </Indicator>
             </div>

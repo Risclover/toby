@@ -65,7 +65,7 @@
     --text-7xl: 4.5rem;
 
     /* Color system */
-    --primary: rgb(5, 5, 73);
+    --primary: var(--mantine-color-navy-7);
     --important: rgb(230, 176, 2);
     --input-grey: rgb(239, 240, 247);
     --border-grey: rgb(194 194 211);

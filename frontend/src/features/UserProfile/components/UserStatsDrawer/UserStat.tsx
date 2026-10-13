@@ -4,7 +4,7 @@ import { useIsSmallScreen } from "@/hooks";
 import { useAuthenticateQuery, useUpdateFeaturedStatsMutation } from "@/store";
 import { getLightColor } from "@/utils";
 import { StarIcon, StarIconOutline } from "@/assets";
-
+import { BRAND_NAVY } from "@/theme";
 type Props = {
     /** Stat data */
     stat: {
@@ -65,11 +65,11 @@ export const UserStat = ({ stat, featuredStats }: Props) => {
                     {!isOwner ?
                         <div>
                             {isFeatured ? (
-                                <StarIcon size={isSmall ? "1.25rem" : "1.5rem"} color="navy" />
+                                <StarIcon size={isSmall ? "1.25rem" : "1.5rem"} color="var(--primary)" />
                             ) : (
                                 <StarIconOutline
                                     size={isSmall ? "1.25rem" : "1.5rem"}
-                                    color={featuredStats.length === 4 ? "var(--mantine-color-gray-5)" : getLightColor("#050549", 0.6)}
+                                    color={featuredStats.length === 4 ? "var(--mantine-color-gray-5)" : getLightColor(BRAND_NAVY, 0.6)}
                                 />
                             )}
                         </div> :
@@ -85,11 +85,11 @@ export const UserStat = ({ stat, featuredStats }: Props) => {
 
                         >
                             {isFeatured ? (
-                                <StarIcon size={isSmall ? "1.25rem" : "1.5rem"} color="navy" />
+                                <StarIcon size={isSmall ? "1.25rem" : "1.5rem"} color="var(--primary)" />
                             ) : (
                                 <StarIconOutline
                                     size={isSmall ? "1.25rem" : "1.5rem"}
-                                    color={featuredStats.length === 4 ? "var(--mantine-color-gray-5)" : getLightColor("#050549", 0.6)}
+                                    color={featuredStats.length === 4 ? "var(--mantine-color-gray-5)" : getLightColor(BRAND_NAVY, 0.6)}
                                 />
                             )}
                         </ActionIcon>}

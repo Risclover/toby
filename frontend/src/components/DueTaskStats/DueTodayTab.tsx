@@ -68,7 +68,7 @@ export const DueTodayTab = ({ tasks }: { tasks: OverdueTask[] }) => {
             ),
             autoClose: 5000,
             withCloseButton: false,
-            color: "rgb(5, 5, 73)"
+            color: "navy"
         });
     };
 
@@ -105,7 +105,7 @@ export const DueTodayTab = ({ tasks }: { tasks: OverdueTask[] }) => {
             ),
             autoClose: 5000,
             withCloseButton: false,
-            color: "rgb(5, 5, 73)"
+            color: "navy"
         });
     };
 

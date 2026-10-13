@@ -24,7 +24,7 @@ export const ButtonStandard = ({ isLoading, onClick, label, variant, disabled, c
             size="sm"
             fw={500}
             radius="sm"
-            color={color || "rgb(5, 5, 73)"}
+            color={color || "navy"}
             loaderProps={loaderProps}
             type={type || "button"}
         >

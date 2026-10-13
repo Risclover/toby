@@ -3,6 +3,7 @@ import { Button } from "@mantine/core";
 import { useAuthenticateQuery, useGetUserQuery } from "@/store";
 import { getLightColor } from "@/utils";
 import { ChevronRightIcon, StarIconOutline, StatsIcon } from "@/assets";
+import { BRAND_NAVY } from "@/theme";
 
 type Props = {
     /** Whether the stats drawer is open */
@@ -23,8 +24,8 @@ export const FeaturedStatsEmpty = ({ setShowStatsDrawer }: Props) => {
     if (isOwner) {
         return (
             <div className="featured-stats-empty-owner">
-                <div className="featured-stats-empty--icon" style={{ backgroundColor: getLightColor("#050549", .1) }}>
-                    <StarIconOutline size="1.5rem" color="navy" />
+                <div className="featured-stats-empty--icon" style={{ backgroundColor: getLightColor(BRAND_NAVY, .1) }}>
+                    <StarIconOutline size="1.5rem" color="var(--primary)" />
                 </div>
                 <div className="featured-stats-empty-owner--title">
                     No featured stats yet
@@ -36,7 +37,7 @@ export const FeaturedStatsEmpty = ({ setShowStatsDrawer }: Props) => {
                     mt="1rem"
                     size="sm"
                     leftSection={
-                        <StatsIcon size=".875rem" color="navy" />
+                        <StatsIcon size=".875rem" color="var(--primary)" />
                     }
                     variant="light"
                     color="navy"
@@ -51,7 +52,7 @@ export const FeaturedStatsEmpty = ({ setShowStatsDrawer }: Props) => {
             <button className="featured-stats-empty" onClick={() => setShowStatsDrawer(true)}>
                 <div className="featured-stats-empty--left">
                     <div className="featured-stats-empty--icon">
-                        <StatsIcon size="1rem" color="navy" />
+                        <StatsIcon size="1rem" color="var(--primary)" />
                     </div>
                     View {possessive} stats
                 </div>
