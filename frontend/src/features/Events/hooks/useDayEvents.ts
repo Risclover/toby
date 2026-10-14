@@ -4,6 +4,7 @@ import type { useModalsStack } from "@mantine/core";
 import { expandRecurringEvents } from "@mantine/schedule";
 import { useIsSmallScreen } from "@/hooks";
 import { useGetHouseholdEventsForDayQuery } from "@/store";
+import { EVENTS_MODAL_SMALL_SCREEN_WIDTH } from "../utils/eventsModalConstants";
 
 const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -26,8 +27,7 @@ export function useDayEvents({
     stack
 }: Props) {
     const dateStr = dayjs(date).format("YYYY-MM-DD");
-    const isSmallScreen = useIsSmallScreen(475);
-    const dayEventsStackProps = stack?.register('events-list');
+    const isSmallScreen = useIsSmallScreen(EVENTS_MODAL_SMALL_SCREEN_WIDTH); const dayEventsStackProps = stack?.register('events-list');
     const [filterValue, setFilterValue] = useState<string | null>(null);
     const { data: dayEvents = [], isLoading, isFetching } = useGetHouseholdEventsForDayQuery(
         { householdId, date: dateStr, tzid: userTz },

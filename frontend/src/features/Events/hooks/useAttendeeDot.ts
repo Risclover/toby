@@ -2,15 +2,16 @@ import { useState } from "react";
 
 import { useIsSmallScreen } from "@/hooks";
 import type { DayEventRowSharedProps } from "../types";
+import { EVENTS_MODAL_SMALL_SCREEN_WIDTH } from "../utils/eventsModalConstants";
 
 type Props = Pick<DayEventRowSharedProps, "openDotId" | "onOpenDot"> & {
     dotId: string;
 };
 
-const SMALL_SCREEN_MAX_WIDTH = 475;
+const isSmallScreen = useIsSmallScreen(EVENTS_MODAL_SMALL_SCREEN_WIDTH);
 
 export function useAttendeeDot({ dotId, openDotId, onOpenDot }: Props) {
-    const isSmallScreen = useIsSmallScreen(SMALL_SCREEN_MAX_WIDTH);
+    const isSmallScreen = useIsSmallScreen(EVENTS_MODAL_SMALL_SCREEN_WIDTH);
     const [localOpened, setLocalOpened] = useState(false);
 
     const opened = isSmallScreen ? openDotId === dotId : localOpened;

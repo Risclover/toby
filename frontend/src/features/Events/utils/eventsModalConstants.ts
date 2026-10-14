@@ -1,0 +1,1 @@
+export const EVENTS_MODAL_SMALL_SCREEN_WIDTH = 475;
