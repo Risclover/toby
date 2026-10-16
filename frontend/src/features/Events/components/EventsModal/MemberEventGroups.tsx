@@ -1,75 +1,27 @@
-import { ActionIcon, Avatar, Group, Stack, Text } from "@mantine/core";
-import { useState } from "react";
-import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
-import { formatFullName } from "@/utils/formatFullName";
-import { DayEventRow } from "./DayEventRow";
-import { type DayEventRowSharedProps, type MemberLike, type Occurrence, type UserGroup } from "../../types";
+import type { DayEventRowSharedProps, UserGroup } from "../../types";
+import { EventsModalEmptyState } from "./EventsModalEmptyState";
+import { MemberEventSection } from "./MemberEventSection";
 
 type Props = {
     groups: UserGroup[];
     currentUserId?: number;
     rowProps: DayEventRowSharedProps;
-}
-export const MemberEventGroups = ({
-    groups,
-    currentUserId,
-    rowProps,
-}: Props) => {
-    if (groups.length === 0) {
-        return <Text c="dimmed" size="sm">No events for this date.</Text>;
-    }
+};
+
+export const MemberEventGroups = ({ groups, currentUserId, rowProps }: Props) => {
+    if (groups.length === 0) return <EventsModalEmptyState />;
 
     return (
         <>
             {groups.map(({ member, events }) => (
-                <MemberEventSection key={member.id} member={member} events={events} isCurrentUser={member.id === currentUserId} rowProps={rowProps} />
+                <MemberEventSection
+                    key={member.id}
+                    member={member}
+                    events={events}
+                    isCurrentUser={member.id === currentUserId}
+                    rowProps={rowProps}
+                />
             ))}
         </>
-    );
-};
-
-type MemberEventSectionProps = {
-    member: MemberLike;
-    events: Occurrence[];
-    isCurrentUser: boolean;
-    rowProps: DayEventRowSharedProps;
-}
-
-const MemberEventSection = ({
-    member,
-    events,
-    isCurrentUser,
-    rowProps,
-}: MemberEventSectionProps) => {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-
-    return (
-        <Stack gap={4} mb="sm" p="0 .5rem">
-            <div className="member-event-section-header" onClick={(e) => { e.stopPropagation(); setIsCollapsed((prev) => !prev) }}>
-                <Group gap={8} bg="var(--mantine-color-gray-1)" fw={500} p=".75rem" wrap="nowrap" align="center" styles={{ root: { borderRadius: ".5rem" } }}>
-                    <Avatar src={member.profileImg} size={24} radius="xl" />
-                    <div className="events-settings-section-title" style={{ marginBottom: 0, fontSize: "13px" }}>
-                        {formatFullName(member)}{isCurrentUser ? " (You)" : ""}
-                    </div>
-                    <ActionIcon
-                        variant="transparent"
-                        color="black"
-                        size="sm"
-                        radius="sm"
-                        onClick={(e) => { e.stopPropagation(); setIsCollapsed((prev) => !prev) }}
-                        aria-label={isCollapsed ? `Expand ${formatFullName(member)}` : `Collapse ${formatFullName(member)}`}
-                        aria-expanded={!isCollapsed}
-                    >
-                        <ExpandMoreRoundedIcon
-                            fontSize="small"
-                            style={{ transform: isCollapsed ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 150ms ease" }}
-                        />
-                    </ActionIcon>
-                </Group>
-            </div>
-            {!isCollapsed && events.map((occ) => (
-                <DayEventRow key={String(occ.id)} occurrence={occ} groupOwnerId={member.id} {...rowProps} />
-            ))}
-        </Stack>
     );
 };
