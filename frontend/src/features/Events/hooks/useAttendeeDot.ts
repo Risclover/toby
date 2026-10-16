@@ -8,8 +8,6 @@ type Props = Pick<DayEventRowSharedProps, "openDotId" | "onOpenDot"> & {
     dotId: string;
 };
 
-const isSmallScreen = useIsSmallScreen(EVENTS_MODAL_SMALL_SCREEN_WIDTH);
-
 export function useAttendeeDot({ dotId, openDotId, onOpenDot }: Props) {
     const isSmallScreen = useIsSmallScreen(EVENTS_MODAL_SMALL_SCREEN_WIDTH);
     const [localOpened, setLocalOpened] = useState(false);
