@@ -46,7 +46,7 @@ const MemberEventSection = ({
     return (
         <Stack gap={4} mb="sm" p="0 .5rem">
             <div className="member-event-section-header" onClick={(e) => { e.stopPropagation(); setIsCollapsed((prev) => !prev) }}>
-                <Group gap={8} bg="var(--mantine-color-gray-1" fw={500} p=".75rem" wrap="nowrap" align="center" styles={{ root: { borderRadius: ".5rem" } }}>
+                <Group gap={8} bg="var(--mantine-color-gray-1)" fw={500} p=".75rem" wrap="nowrap" align="center" styles={{ root: { borderRadius: ".5rem" } }}>
                     <Avatar src={member.profileImg} size={24} radius="xl" />
                     <div className="events-settings-section-title" style={{ marginBottom: 0, fontSize: "13px" }}>
                         {formatFullName(member)}{isCurrentUser ? " (You)" : ""}
