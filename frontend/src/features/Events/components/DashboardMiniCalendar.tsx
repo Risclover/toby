@@ -2,12 +2,11 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import { Group, Text, useModalsStack } from "@mantine/core";
 import { MiniCalendar } from "@mantine/dates";
 
-import type { CalendarEvent } from "@/store/eventSlice";
 import { EventForm } from "./EventForm/EventForm";
 import { DayEventsModal } from "./EventsModal/DayEventsModal";
-import { MINI_CALENDAR_DAYS, useMiniCalendarWeek } from "../hooks/useMiniCalendarWeek";
-import { useMiniCalendarDots } from "../hooks/useMiniCalendarDots";
-import { dateFromYmd, getDayDots, toYmd } from "../utils/dashboardCalendarHelpers";
+import { MINI_CALENDAR_DAYS, useMiniCalendarWeek, useMiniCalendarDots } from "../hooks";
+import type { CalendarEvent } from "@/store";
+import { dateFromYmd, getDayDots, toYmd } from "../utils";
 import type { ModalId } from "../types";
 import "../styles/QuickAddEvent.css";
 import "../styles/DashboardMiniCalendar.css";

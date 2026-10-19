@@ -22,3 +22,4 @@ export * from "./useEventsModalList";
 export * from "./useMemberEventSection";
 export * from "./useMiniCalendarWeek";
 export * from "./useMiniCalendarDots";
+export * from "./useUpcomingRows";
