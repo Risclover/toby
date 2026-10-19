@@ -14,13 +14,6 @@ type Props = {
 
 const DATE_PICKER_STYLES = {
     section: { color: "var(--primary)" },
-    day: {
-        "&[data-weekend]": { color: "#4e0202" },
-        "&[data-selected], &[data-selected]:hover": {
-            backgroundColor: "#2563eb",
-            color: "white",
-        },
-    },
 };
 
 /** "Oct 19" for a single day, "Oct 19 – Oct 21" for a range. */
