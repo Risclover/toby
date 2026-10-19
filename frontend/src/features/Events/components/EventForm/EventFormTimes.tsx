@@ -1,24 +1,36 @@
 import type { RefObject } from "react";
 import dayjs from "dayjs";
-import { Group } from "@mantine/core"
-import { TimePicker } from "@mantine/dates"
+import { Group } from "@mantine/core";
+import { TimePicker } from "@mantine/dates";
 import { DEFAULT_EVENT_DURATION_HOURS, TIME_FORMAT } from "../../utils";
+import type { EventFormInstance } from "../../types";
 import { ClockIcon } from "@/assets";
 
+const SHARED_TIME_PICKER_PROPS = {
+    leftSection: <ClockIcon color="var(--primary)" size="1.25rem" />,
+    withDropdown: true,
+    minutesStep: 5,
+    hoursStep: 1,
+    format: "12h",
+} as const;
+
 type Props = {
-    form: any;
+    form: EventFormInstance;
+    /** True once the user has edited the end time themselves; stops auto-filling it from the start time. */
     endTimeManuallySetRef: RefObject<boolean>;
-}
+};
 
 export const EventFormTimes = ({ form, endTimeManuallySetRef }: Props) => {
+    const isAllDay = form.getValues().allDay;
+
     const handleStartTimeChange = (value: string) => {
-        form.setFieldValue('startTime', value);
+        form.setFieldValue("startTime", value);
 
         if (value && !endTimeManuallySetRef.current) {
-            const newEndTime = dayjs(value, TIME_FORMAT)
-                .add(DEFAULT_EVENT_DURATION_HOURS, 'hour')
+            const defaultEndTime = dayjs(value, TIME_FORMAT)
+                .add(DEFAULT_EVENT_DURATION_HOURS, "hour")
                 .format(TIME_FORMAT);
-            form.setFieldValue('endTime', newEndTime);
+            form.setFieldValue("endTime", defaultEndTime);
         }
 
         form.validate();
@@ -26,39 +38,30 @@ export const EventFormTimes = ({ form, endTimeManuallySetRef }: Props) => {
 
     const handleEndTimeChange = (value: string) => {
         endTimeManuallySetRef.current = true;
-        form.setFieldValue('endTime', value);
+        form.setFieldValue("endTime", value);
         form.validate();
     };
-
 
     return (
         <Group grow align="flex-start">
             <TimePicker
-                {...form.getInputProps('startTime')}
-                key={form.key('startTime')}
-                leftSection={<ClockIcon color="var(--primary)" size="1.25rem" />}
+                {...SHARED_TIME_PICKER_PROPS}
+                {...form.getInputProps("startTime")}
+                key={form.key("startTime")}
                 label="Start time"
-                disabled={form.getValues().allDay}
-                required={!form.getValues().allDay}
+                disabled={isAllDay}
+                required={!isAllDay}
                 onChange={handleStartTimeChange}
-                withDropdown
-                minutesStep={5}
-                hoursStep={1}
-                format="12h"
             />
             <TimePicker
-                {...form.getInputProps('endTime')}
-                key={form.key('endTime')}
-                leftSection={<ClockIcon color="var(--primary)" size="1.25rem" />}
-                label="End Time"
-                required={!form.getValues().allDay}
+                {...SHARED_TIME_PICKER_PROPS}
+                {...form.getInputProps("endTime")}
+                key={form.key("endTime")}
+                label="End time"
+                disabled={isAllDay}
+                required={!isAllDay}
                 onChange={handleEndTimeChange}
-                disabled={form.getValues().allDay}
-                withDropdown
-                minutesStep={5}
-                hoursStep={1}
-                format="12h"
             />
         </Group>
-    )
-}
+    );
+};
