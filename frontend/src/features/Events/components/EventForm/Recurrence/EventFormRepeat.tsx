@@ -1,13 +1,11 @@
 import { CloseButton, Combobox, InputBase, ScrollArea, useModalsStack } from "@mantine/core"
 import type { DateTimeStringValue } from "@mantine/dates"
 
-import { useEventFormRepeat } from "../../../hooks/useEventFormRepeat";
-import { type CustomRecurrenceRule, type PresetKind } from "../../../utils/recurrence";
+import { useEventFormRepeat } from "../../../hooks";
+import { type CustomRecurrenceRule, type PresetKind } from "../../../utils";
 import type { ModalId } from "../../../types";
 
 import EventRepeatRoundedIcon from '@mui/icons-material/EventRepeatRounded';
-
-
 
 type Props = {
     /** Modal stack */

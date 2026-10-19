@@ -18,3 +18,4 @@ export * from "./MemberFilterRow";
 export * from "./MobileMonthHeader";
 export * from "./NotifyEventDeleted";
 export * from "./WeekEventButton";
+export * from "./NotifyEventDeleteFailed";

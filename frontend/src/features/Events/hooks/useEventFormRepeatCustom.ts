@@ -10,7 +10,7 @@ import {
     pluralizeUnit,
     type CustomRecurrenceRule,
     type RecurrenceEnd,
-} from "../utils/recurrence";
+} from "../utils";
 
 export const FREQ = {
     DAILY: "DAILY",

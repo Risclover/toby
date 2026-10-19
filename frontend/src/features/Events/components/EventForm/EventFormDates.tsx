@@ -1,8 +1,8 @@
 import { Checkbox, getDefaultZIndex, Group } from "@mantine/core"
 import { DatePickerInput, type DateFormatter } from "@mantine/dates"
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import type { EventFormValues } from "../../utils";
 import dayjs from "dayjs";
-import type { EventFormValues } from "../../hooks/useEventForm";
 
 type Props = {
     form: any;

@@ -14,24 +14,6 @@ type Props = {
     onToggleAll: () => void;
 };
 
-/**
- * One colored chip per household member, reusing the same per-member
- * color already used for event dots elsewhere. Click to toggle that
- * member's events in/out of the calendar (both the Agenda list and the
- * main Month/Week/Day grid share this same filter state). A deselected
- * chip dims rather than disappears, so it stays clickable to re-select.
- *
- * The trailing "All" text toggles the whole row at once: dark + underlined
- * when every member is currently selected, dimmed and plain otherwise
- * (including a partial selection - it only reads as "on" when literally
- * everyone is selected). Text rather than a colored circle deliberately -
- * a circle chip in the same style as the member dots implied "All" was
- * another selectable member/color, and there wasn't room to fit the word
- * legibly at that size anyway. Clicking it hands off to onToggleAll, which
- * owns the actual select-all/deselect-all decision (it needs the full
- * member id list to do that, which this component doesn't otherwise need
- * to know).
- */
 export function MemberFilterRow({ members, selectedIds, onToggle, onToggleAll }: Props) {
     const isAllSelected = members.length > 0 && members.every((member) => selectedIds.includes(member.id));
 

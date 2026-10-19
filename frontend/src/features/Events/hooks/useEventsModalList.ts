@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useClickOutside } from "@mantine/hooks";
 
+import { useDayEvents } from "./useDayEvents";
 import { useHousehold, useIsMobile } from "@/hooks";
 import { useAuthenticateQuery, type CalendarEvent } from "@/store";
 import type { DayEventRowSharedProps } from "../types";
-import { EVENTS_FILTER } from "../utils/eventsModalFilter";
-import { getMemberOccurrences, groupOccurrencesByMember } from "../utils/eventsModalGrouping";
-import { useDayEvents } from "./useDayEvents";
+import { EVENTS_FILTER, getMemberOccurrences, groupOccurrencesByMember } from "../utils";
 
 export type UseEventsModalListProps = {
     householdId: number;

@@ -1,8 +1,7 @@
 import { ActionIcon, Menu } from "@mantine/core";
 import { FaSignOutAlt, FaTrash } from "react-icons/fa";
 import { IoEllipsisHorizontalSharp } from "react-icons/io5";
-
-import { PencilIcon } from "@/assets/icons/PencilIcon";
+import { PencilIcon } from "@/assets";
 
 const MENU_OFFSET = 2;
 const ITEM_ICON_SIZE = ".9rem";

@@ -1,10 +1,9 @@
 import { Badge, Group, Modal, Stack, Text } from "@mantine/core";
 
-import { type ScheduleEventData } from "../../utils";
+import { useCalendar } from "@/contexts";
 import { EventActionsMenu } from "./EventActionsMenu";
 import { EventMemberDots } from "./EventColorDots";
-import { getEventDetails } from "../../utils/getEventDetails";
-import { useCalendar } from "@/contexts";
+import { type ScheduleEventData, getEventDetails } from "../../utils";
 
 const MODAL_TITLE = "Event details";
 const TITLE_PROPS = { fz: 18, fw: 600 } as const;

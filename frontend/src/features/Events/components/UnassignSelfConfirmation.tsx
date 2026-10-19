@@ -1,11 +1,9 @@
 import { Group, Modal, Text } from "@mantine/core";
 
-import { KittyIcons } from "@/assets";
-import { KittyNotification } from "@/components";
-import { ButtonStandard } from "@/components/ButtonStandard";
+import { KittyNotification, ButtonStandard } from "@/components";
 import { useAuthenticateQuery, useUnassignSelfMutation } from "@/store";
-
 import type { Occurrence } from "../types";
+import { KittyIcons } from "@/assets";
 
 const TOAST_TITLE_PROPS = { span: true, inherit: true, fw: 500 } as const;
 const DIALOG_TITLE_PROPS = { span: true, inherit: true, fw: 600 } as const;

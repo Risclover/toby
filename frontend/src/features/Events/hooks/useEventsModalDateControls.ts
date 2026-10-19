@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
-
 import { useIsSmallScreen } from "@/hooks";
-import { EVENTS_MODAL_SMALL_SCREEN_WIDTH } from "../utils/eventsModalConstants";
+import { EVENTS_MODAL_SMALL_SCREEN_WIDTH } from "../utils";
 
 type Props = {
     /** Date currently shown in the modal */

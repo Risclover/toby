@@ -16,3 +16,4 @@ export { ChevronRightIcon } from "./ChevronRightIcon";
 export { StatsIcon } from "./StatsIcon";
 export { PlusIcon } from "./PlusIcon";
 export { ClockIcon } from "./ClockIcon"
+export { PencilIcon } from "./PencilIcon"

@@ -1,10 +1,10 @@
 // src/features/calendar/UpcomingNext7Days.tsx
-import { Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
-import { useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery } from "@/store/eventSlice";
-import "../styles/UpcomingThisWeek.css"
-import { EventForm } from "./EventForm/EventForm";
+import { Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { expandRecurringEvents } from "@mantine/schedule";
+import { EventForm } from "./EventForm/EventForm";
+import { useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery } from "@/store";
+import "../styles/UpcomingThisWeek.css"
 
 /** ymd + n days (n may be negative), as a string. */
 function addDaysYmd(day: string, n: number) {

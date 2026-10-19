@@ -1,6 +1,6 @@
-import type { DayEventRowSharedProps, UserGroup } from "../../types";
 import { EventsModalEmptyState } from "./EventsModalEmptyState";
 import { MemberEventSection } from "./MemberEventSection";
+import type { DayEventRowSharedProps, UserGroup } from "../../types";
 
 type Props = {
     groups: UserGroup[];

@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties } from "react";
 import { UnstyledButton } from "@mantine/core";
 import dayjs from "dayjs";
 import { renderEventBody, type ScheduleEventData } from "../../utils";
@@ -8,7 +8,7 @@ const FILL_PASSTHROUGH_STYLE = { ...FILL_STYLE, pointerEvents: "none" } as const
 
 type WeekEventButtonProps = {
     event: ScheduleEventData;
-    buttonProps: ComponentProps<typeof UnstyledButton>;
+    buttonProps: ComponentPropsWithoutRef<"button">;
     draggingEventId: string | number | null;
 };
 
@@ -18,7 +18,7 @@ export const WeekEventButton = ({ event, buttonProps, draggingEventId }: WeekEve
     if (isMultiDay) {
         const isIdle = draggingEventId === null;
         const isBeingDragged = !isIdle && String(draggingEventId) === String(event.id);
-        const style = isIdle || isBeingDragged
+        const style: CSSProperties | undefined = isIdle || isBeingDragged
             ? { ...buttonProps.style, pointerEvents: "auto" }
             : buttonProps.style;
 

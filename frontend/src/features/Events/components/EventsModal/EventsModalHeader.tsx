@@ -1,9 +1,9 @@
 import { ActionIcon, Group, Stack, Text, Tooltip } from "@mantine/core";
 
-import { PlusIcon } from "@/assets";
-import { TOOLTIP_EVENTS } from "../../utils/eventRowTooltipProps";
 import { EventsModalDateControls } from "./EventsModalDateControls";
 import { EventsModalFilter } from "./EventsModalFilter";
+import { TOOLTIP_EVENTS } from "../../utils";
+import { PlusIcon } from "@/assets";
 
 type Props = {
     /** Date chosen to view events */

@@ -1,9 +1,6 @@
 import { useState } from "react";
-
 import { useForm } from "@mantine/form";
-import { DEFAULT_VISIBILITY, getBlankFormValues, type EventFormValues } from "../utils/eventFormValues";
-import { validateEventForm } from "../utils/validateEventForm";
-
+import { DEFAULT_VISIBILITY, getBlankFormValues, type EventFormValues, validateEventForm } from "../utils";
 
 const VALIDATE_ON_CHANGE = [
     "title",

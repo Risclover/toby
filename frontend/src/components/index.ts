@@ -12,7 +12,7 @@ export { InviteLink } from "./InviteLink";
 export { Layout } from "./Layout";
 export { LoggedOutHero } from "./LoggedOutHero";
 export { LoggedOutNavbar } from "./LoggedOutNavbar";
-export { MembersModal } from "./MembersModal";
+export * from "./MembersModal";
 export { MobileAnnouncementsFilterDrawer } from "./MobileAnnouncementsFilterDrawer"
 export { MobileAnnouncementsFull } from "./MobileAnnouncementsFull";
 export { MobileAnnouncementsHeader } from "./MobileAnnouncementsHeader";
@@ -31,3 +31,4 @@ export { DiscardWarning } from "./DiscardWarning";
 export { SettingsItem } from "./SettingsItem";
 export { HouseholdMemberSelection } from "./HouseholdMemberSelection";
 export { ButtonStandard } from "./ButtonStandard";
+export { ModalFooter } from "./ModalFooter";

@@ -1,15 +1,14 @@
 import dayjs from "dayjs";
 import { useCombobox, useModalsStack } from "@mantine/core";
 import type { DateTimeStringValue } from "@mantine/dates";
-
+import type { ModalId } from "../types";
 import {
     describeCustomRecurrenceRule,
     matchingPresetKind,
     nthWeekdaySuffix,
     type CustomRecurrenceRule,
     type PresetKind
-} from "../utils/recurrence";
-import type { ModalId } from "../types";
+} from "../utils";
 
 
 type Props = {

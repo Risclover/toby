@@ -1,6 +1,6 @@
-import type { DayEventRowSharedProps, Occurrence } from "../../types";
 import { DayEventRow } from "./DayEventRow";
 import { EventsModalEmptyState } from "./EventsModalEmptyState";
+import type { DayEventRowSharedProps, Occurrence } from "../../types";
 
 type Props = {
     occurrences: Occurrence[];

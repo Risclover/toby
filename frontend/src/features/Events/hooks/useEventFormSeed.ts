@@ -1,13 +1,11 @@
 import { useEffect, useRef } from "react";
-
 import type { UseFormReturnType } from "@mantine/form";
+
+import type { EventFormRecurrence } from "./useEventFormRecurrence";
 
 import { useHousehold } from "@/hooks";
 import { useAuthenticateQuery, useGetUserSettingsQuery, type CalendarEvent } from "@/store";
-
-import type { EventFormRecurrence } from "./useEventFormRecurrence";
-import { toDateString, type EventFormSeedProps } from "../utils";
-import { DEFAULT_VISIBILITY, getBlankFormValues, getEventFormState, PRIVATE_VISIBILITY, type EventFormValues } from "../utils/eventFormValues";
+import { toDateString, type EventFormSeedProps, DEFAULT_VISIBILITY, getBlankFormValues, getEventFormState, PRIVATE_VISIBILITY, type EventFormValues } from "../utils";
 
 const PRIVATE_BY_DEFAULT_MODE = "private_by_default";
 

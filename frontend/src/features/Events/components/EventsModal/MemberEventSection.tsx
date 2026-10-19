@@ -1,10 +1,10 @@
 import { ActionIcon, Avatar, Group, Stack } from "@mantine/core";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 
-import { formatFullName } from "@/utils/formatFullName";
-import { useMemberEventSection } from "../../hooks/useMemberEventSection";
-import type { DayEventRowSharedProps, MemberLike, Occurrence } from "../../types";
 import { DayEventRow } from "./DayEventRow";
+import { useMemberEventSection } from "../../hooks";
+import { formatFullName } from "@/utils";
+import type { DayEventRowSharedProps, MemberLike, Occurrence } from "../../types";
 
 type Props = {
     member: MemberLike;

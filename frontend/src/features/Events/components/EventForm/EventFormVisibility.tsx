@@ -2,7 +2,7 @@ import { Select } from "@mantine/core"
 import type { FormErrors, UseFormReturnType } from "@mantine/form";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import type { EventFormValues } from "../../hooks/useEventForm";
+import type { EventFormValues } from "../../utils";
 
 type Props = {
     form: UseFormReturnType<EventFormValues, EventFormValues, (values: EventFormValues) => FormErrors>;

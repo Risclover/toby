@@ -1,25 +1,22 @@
 import { useState } from "react";
-
 import dayjs from "dayjs";
-
 import type { UseFormReturnType } from "@mantine/form";
-
 import {
     useCreateEventMutation,
     useExcludeEventOccurrenceMutation,
     useUpdateEventMutation,
     type CalendarEvent,
 } from "@/store";
-
-import type { EditScope } from "../components/EditRecurringEventConfirmation";
-import "../utils/dayjsPlugins";
+import type { EditScope } from "../components";
+import type { EventFormRecurrence } from "./useEventFormRecurrence";
 import {
     DEFAULT_TZID,
     buildRRule,
+    buildScheduleFields,
+    type EventFormValues,
+    type ScheduleFields
 } from "../utils";
-import type { EventFormRecurrence } from "./useEventFormRecurrence";
-import { buildScheduleFields, type ScheduleFields } from "../utils/buildScheduleFields";
-import type { EventFormValues } from "../utils/eventFormValues";
+import "../utils/dayjsPlugins";
 
 const OCCURRENCE_START_FORMAT = "YYYY-MM-DD HH:mm:ss";
 

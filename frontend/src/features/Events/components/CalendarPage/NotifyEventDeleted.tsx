@@ -1,7 +1,7 @@
 import { Text } from "@mantine/core";
 
-import { KittyIcons } from "@/assets";
 import { KittyNotification } from "@/components";
+import { KittyIcons } from "@/assets";
 
 export const NotifyEventDeleted = (title: string) =>
     KittyNotification({

@@ -1,8 +1,6 @@
 import { useState } from "react";
-
 import { Group, Modal, Radio, Stack, Text } from "@mantine/core";
-
-import { ButtonStandard } from "@/components/ButtonStandard";
+import { ButtonStandard } from "@/components";
 
 export const EDIT_SCOPE = { THIS: "this-event", ALL: "all-events" } as const;
 export type EditScope = (typeof EDIT_SCOPE)[keyof typeof EDIT_SCOPE];

@@ -1,8 +1,8 @@
 import { Stack, Text } from "@mantine/core";
 
-import { useEventsModalList, type UseEventsModalListProps } from "../../hooks/useEventsModalList";
 import { FlatEventList } from "./FlatEventList";
 import { MemberEventGroups } from "./MemberEventGroups";
+import { useEventsModalList, type UseEventsModalListProps } from "../../hooks";
 
 type Props = UseEventsModalListProps;
 

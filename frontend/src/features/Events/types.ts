@@ -1,4 +1,6 @@
+import type { UseFormReturnType } from "@mantine/form";
 import { type CalendarEvent } from "@/store";
+import type { EventFormValues } from "./hooks/useEventForm";
 import type { useDayEvents } from "./hooks/useDayEvents";
 
 export type Occurrence = ReturnType<typeof useDayEvents>['occurrences'][number];
@@ -23,3 +25,5 @@ export type DayEventRowSharedProps = {
 };
 
 export type ModalId = 'recurrence' | 'event-form' | 'events-list';
+
+export type EventFormInstance = UseFormReturnType<EventFormValues>;

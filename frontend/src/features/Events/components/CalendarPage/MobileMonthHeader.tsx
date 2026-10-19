@@ -1,7 +1,7 @@
 import { ActionIcon, Group } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
-import { ButtonStandard } from "@/components/ButtonStandard";
-import type { useCalendarMobileMonthView } from "../../hooks/useCalendarMobileMonthView";
+import { ButtonStandard } from "@/components";
+import type { useCalendarMobileMonthView } from "../../hooks";
 
 
 const SPACER_STYLE = { flex: 1 };
@@ -22,7 +22,6 @@ export const MobileMonthHeader = ({ date, navigation }: MobileMonthHeaderProps) 
     const handleNext = () => stepMonth(1);
 
     return (
-        // Equal flex weight on both outer slots keeps the arrows and picker truly centered, Today pinned right.
         <Group justify="space-between" mb="xs" wrap="nowrap" gap={4}>
             <div style={SPACER_STYLE} />
             <Group gap={12} wrap="nowrap">

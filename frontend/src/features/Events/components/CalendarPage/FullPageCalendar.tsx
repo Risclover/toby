@@ -1,20 +1,18 @@
 import { type ComponentType, useState } from "react";
+import { type ScheduleViewLevel } from "@mantine/schedule";
 
-import { useIsSmallScreen } from "@/hooks/useIsSmallScreen";
-
-
+import { CalendarProvider } from "@/contexts";
 import { AgendaModal } from "./AgendaModal";
 import { CalendarDayView } from "./CalendarDayView";
 import { CalendarModals } from "./CalendarModals";
 import { CalendarMobileMonthView } from "./CalendarMobileMonthView";
 import { CalendarMonthView } from "./CalendarMonthView";
-import { CalendarProvider } from "@/contexts";
 import { CalendarToolbar } from "./CalendarToolbar";
 import { CalendarWeekView } from "./CalendarWeekView";
 import { CalendarYearView } from "./CalendarYearView";
-import { type ScheduleViewLevel } from "@mantine/schedule";
+import { useIsSmallScreen } from "@/hooks";
+import { useScrollToTopOnChange } from "../../hooks";
 import { MOBILE_BREAKPOINT, toDateString, type CalendarViewProps } from "../../utils";
-import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 
 const INITIAL_VIEW: ScheduleViewLevel = "week";
 

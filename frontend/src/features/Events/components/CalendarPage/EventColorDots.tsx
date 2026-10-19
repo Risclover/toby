@@ -3,12 +3,6 @@ import { toDotCssColor } from "../../utils/cssColors";
 
 type Props = {
     colors: string[];
-    /**
-     * Parallel to `colors` -- when provided, each dot shows that member's
-     * name in a tooltip (hover on desktop, tap on mobile). Omit to render
-     * plain dots with no tooltip, e.g. the grid event chips, which don't
-     * want this.
-     */
     names?: string[];
 };
 

@@ -3,9 +3,7 @@ import { Group, Stack, Text, UnstyledButton } from "@mantine/core";
 import { useCalendar } from "@/contexts";
 import { EventActionsMenu } from "./EventActionsMenu";
 import { EventMemberDots } from "./EventColorDots";
-import type { ScheduleEventData } from "../../utils/calendarTypes";
-import type { EventColorPayload } from "../../utils/getEventColors";
-import { getEventTimeLabel } from "../..";
+import { getEventTimeLabel, type EventColorPayload, type ScheduleEventData } from "../../utils";
 
 const TEXT_STACK_STYLE = { flex: 1, minWidth: 0 };
 

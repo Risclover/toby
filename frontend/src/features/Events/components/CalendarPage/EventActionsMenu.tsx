@@ -3,7 +3,13 @@ import { useDisclosure } from "@mantine/hooks";
 import { DeleteConfirmation } from "@/components";
 import { useHousehold } from "@/hooks";
 import { useAuthenticateQuery, useDeleteEventMutation, type CalendarEvent } from "@/store";
-import { DeleteRecurringEventConfirmation, EventMenu, UnassignSelfConfirmation, NotifyEventDeleted } from "..";
+import {
+    DeleteRecurringEventConfirmation,
+    EventMenu,
+    NotifyEventDeleted,
+    NotifyEventDeleteFailed,
+    UnassignSelfConfirmation,
+} from "../";
 import type { Occurrence } from "../../types";
 import {
     getEventPermissions,
@@ -51,7 +57,14 @@ export const EventActionsMenu = ({ occurrence, onEdit, onDeleted }: EventActions
 
     const handleDeleteEvent = async () => {
         if (!household?.id) return;
-        await deleteEvent({ id: source.id, householdId: household.id }).unwrap();
+
+        try {
+            await deleteEvent({ id: source.id, householdId: household.id }).unwrap();
+        } catch {
+            NotifyEventDeleteFailed(source.title);
+            return;
+        }
+
         NotifyEventDeleted(source.title);
         onDeleted?.();
     };

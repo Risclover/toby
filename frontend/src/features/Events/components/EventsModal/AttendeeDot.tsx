@@ -3,7 +3,7 @@ import { Avatar, Group, Text, Tooltip } from "@mantine/core";
 import { formatFullName } from "@/utils/formatFullName";
 import { useAttendeeDot } from "../../hooks/useAttendeeDot";
 import type { DayEventRowSharedProps, MemberLike } from "../../types";
-import { EVENT_ROW_TOOLTIP_PROPS } from "../../utils/eventRowTooltipProps";
+import { EVENT_ROW_TOOLTIP_PROPS } from "../../utils";
 import { MemberDot } from "./MemberDot";
 
 type Props = Pick<DayEventRowSharedProps, "openDotId" | "onOpenDot"> & {

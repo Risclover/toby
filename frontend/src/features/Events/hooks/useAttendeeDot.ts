@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useIsSmallScreen } from "@/hooks";
 import type { DayEventRowSharedProps } from "../types";
-import { EVENTS_MODAL_SMALL_SCREEN_WIDTH } from "../utils/eventsModalConstants";
+import { EVENTS_MODAL_SMALL_SCREEN_WIDTH } from "../utils";
 
 type Props = Pick<DayEventRowSharedProps, "openDotId" | "onOpenDot"> & {
     dotId: string;

@@ -1,15 +1,13 @@
 import { useState } from "react";
-
 import dayjs from "dayjs";
-
 import {
     matchingPresetKind,
     type CustomRecurrenceRule,
+    type EventFormState,
+    type RepeatKind
 } from "../utils";
-import type { EventFormState, RepeatKind } from "../utils/eventFormValues";
 
 type RecurrenceState = Pick<EventFormState, "repeatKind" | "customRule">;
-
 const NO_RECURRENCE: RecurrenceState = { repeatKind: "none", customRule: null };
 
 type UseEventFormRecurrenceProps = {
@@ -21,7 +19,6 @@ export type EventFormRecurrence = ReturnType<typeof useEventFormRecurrence>;
 export function useEventFormRecurrence({ startDate }: UseEventFormRecurrenceProps) {
     const [repeatKind, setRepeatKind] = useState<RepeatKind>(NO_RECURRENCE.repeatKind);
     const [customRule, setCustomRule] = useState<CustomRecurrenceRule | null>(NO_RECURRENCE.customRule);
-    // Changing the key remounts EventFormRepeatCustom, so its draft starts fresh for each seeded baseline.
     const [sessionId, setSessionId] = useState(0);
 
     const restart = (state: RecurrenceState = NO_RECURRENCE) => {

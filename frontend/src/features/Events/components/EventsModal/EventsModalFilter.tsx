@@ -1,8 +1,7 @@
 import { ActionIcon, CloseIcon, ComboboxPopover, Group, Indicator, Tooltip } from "@mantine/core";
 import FilterAltRoundedIcon from "@mui/icons-material/FilterAltRounded";
 
-import { EVENTS_FILTER_OPTIONS } from "../../utils/eventsModalFilter";
-import { TOOLTIP_EVENTS } from "../../utils/eventRowTooltipProps";
+import { EVENTS_FILTER_OPTIONS, TOOLTIP_EVENTS } from "../../utils";
 
 type Props = {
     /** Selected filter option */

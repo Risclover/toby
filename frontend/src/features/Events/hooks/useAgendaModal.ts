@@ -1,7 +1,7 @@
 import { useState } from "react";
 import dayjs from "dayjs";
-import { getDateRange, toDateString, type RangeScope } from "../utils";
 import type { ScheduleViewLevel } from "node_modules/@mantine/schedule/lib/types";
+import { getDateRange, toDateString, type RangeScope } from "../utils";
 
 const AGENDA_TITLES = {
     day: "Agenda - Day",

@@ -4,8 +4,8 @@ import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 
-import { useEventsModalDateControls } from "../../hooks/useEventsModalDateControls";
 import { EventsModalTodayButton } from "./EventsModalTodayButton";
+import { useEventsModalDateControls } from "../../hooks";
 
 type Props = {
     /** Date chosen to view events */

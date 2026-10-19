@@ -8,7 +8,6 @@ import { MiniCalendar } from "@mantine/dates";
 import "../styles/QuickAddEvent.css"; // or a global index.css
 import "../styles/DashboardMiniCalendar.css";
 import { useAuthenticateQuery, type User } from "@/store";
-import { useHousehold } from "@/hooks";
 import { DayEventsModal } from "./EventsModal/DayEventsModal";
 import type { ModalId } from "../types";
 
@@ -16,19 +15,12 @@ function toWallClock(isoWithOffset: string) {
     return isoWithOffset.slice(0, 19).replace("T", " ");
 }
 
-// expandRecurringEvents' occurrence type allows start/end to be a Date;
-// at runtime they're always the wall-clock strings we passed in via
-// scheduleEvents, but normalize defensively either way.
 function toWallClockString(value: string | Date): string {
     if (typeof value === "string") return value;
     const pad = (n: number) => String(n).padStart(2, "0");
     return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}`;
 }
 
-// occ.start/occ.end from expandRecurringEvents are "YYYY-MM-DD HH:mm:ss" wall-clock
-// strings already in the viewer's local time - split into the local calendar day(s)
-// the occurrence actually spans. Mirrors the old expandSpanToLocalDays, but works
-// directly off wall-clock strings instead of re-parsing through Date/timezone math.
 function expandWallClockSpanToDays(startWallClock: string, endWallClock: string): string[] {
     const startDay = startWallClock.slice(0, 10);
     // treat an end landing exactly on midnight as "ends at the close of the previous day"

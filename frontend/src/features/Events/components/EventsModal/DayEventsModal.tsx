@@ -3,8 +3,8 @@ import { Modal, useModalsStack } from "@mantine/core"
 
 import { EventsModalHeader } from "./EventsModalHeader";
 import { EventsModalList } from "./EventsModalList";
+import { useDayEvents } from "../../hooks";
 import { type CalendarEvent } from "@/store";
-import { useDayEvents } from "../../hooks/useDayEvents";
 
 const DAY_HEADER_FORMAT = "dddd, MMMM D"; // e.g., "Saturday, September 5"
 
@@ -46,12 +46,10 @@ export const DayEventsModal = ({ stack, date, householdId, onAddEvent, onEditEve
                     onAddEvent={onAddEvent}
                     filterValue={filterValue}
                     onFilterChange={setFilterValue}
-                    householdId={householdId}
                 />
                 <EventsModalList
                     householdId={householdId}
                     date={date}
-                    onAddEvent={onAddEvent}
                     onEditEvent={onEditEvent}
                     filterValue={filterValue}
                 />

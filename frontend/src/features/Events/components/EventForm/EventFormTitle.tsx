@@ -1,8 +1,8 @@
-import { RemainingChars } from "@/components";
+import type { RefObject } from "react";
 import { TextInput } from "@mantine/core"
 import type { FormErrors, UseFormReturnType } from "@mantine/form";
-import type { RefObject } from "react";
-import type { EventFormValues } from "../../hooks/useEventForm";
+import { RemainingChars } from "@/components";
+import type { EventFormValues } from "../../utils";
 
 type Props = {
     form: UseFormReturnType<EventFormValues, EventFormValues, (values: EventFormValues) => FormErrors>;

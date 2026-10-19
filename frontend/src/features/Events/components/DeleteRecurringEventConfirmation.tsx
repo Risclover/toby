@@ -4,7 +4,7 @@ import { Group, Modal, Radio, Stack, Text } from "@mantine/core";
 
 import { ButtonStandard } from "@/components/ButtonStandard";
 import { useDeleteEventMutation, useExcludeEventOccurrenceMutation } from "@/store";
-
+import { NotifyEventDeleteFailed } from "../components/CalendarPage/NotifyEventDeleteFailed";
 import type { Occurrence } from "../types";
 
 const DELETE_SCOPE = { ONE: "one-event", ALL: "all-events" } as const;
@@ -45,8 +45,8 @@ export const DeleteRecurringEventConfirmation = ({
                 await deleteEvent(target).unwrap();
             }
             onClose();
-        } catch (e) {
-            console.error(e);
+        } catch {
+            NotifyEventDeleteFailed(source?.title);
         }
     };
 
