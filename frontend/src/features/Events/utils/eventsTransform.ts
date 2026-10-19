@@ -31,5 +31,5 @@ export function apiEventToScheduleEvent(e: CalendarEvent) {
         } satisfies EventPayload,
     };
 
-    return e.rrule ? { ...base, recurrence: { rrule: e.rrule } } : base;
+    return e.rrule ? { ...base, recurrence: { rrule: e.rrule, exdate: e.exdate } } : base;
 }

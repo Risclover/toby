@@ -37,3 +37,4 @@ export * from "./validateEventForm";
 export * from "./week";
 export * from "./eventsModalConstants";
 export * from "./eventsModalHelpers";
+export * from "./dashboardCalendarHelpers";
