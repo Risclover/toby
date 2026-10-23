@@ -64,3 +64,8 @@ export const getDayDots = (allColors: string[]) => {
         cssVars,
     };
 };
+
+export const formatDayLabel = (ymd: string): string => {
+    const day = dayjs(ymd);
+    return day.format(day.year() === dayjs().year() ? "dddd, MMMM D" : "dddd, MMMM D, YYYY");
+};

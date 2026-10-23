@@ -1,9 +1,9 @@
-import { CalendarProvider } from "@/contexts";
-import { UpcomingAgenda } from "./UpcomingAgenda";
-import { UpcomingFooter, type UpcomingFooterActions } from "./UpcomingFooter";
-import { toDateString } from "../../utils";
 import type { ReactNode } from "react";
 import { CalendarModals } from "../..";
+import { UpcomingAgenda } from "./UpcomingAgenda";
+import { UpcomingFooter, type UpcomingFooterActions } from "./UpcomingFooter";
+import { CalendarProvider } from "@/contexts";
+import { toDateString } from "../../utils";
 
 const AGENDA_VIEW = "week";
 
@@ -14,7 +14,6 @@ type Props = {
     renderFooter?: (actions: UpcomingFooterActions) => ReactNode;
 };
 
-/** Homepage "Upcoming This Week": the calendar's agenda list, with the same details/edit/add modals. */
 export function UpcomingEvents({ isReady, householdId, renderFooter }: Props) {
     return (
         <CalendarProvider view={AGENDA_VIEW}>

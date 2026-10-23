@@ -14,6 +14,8 @@ import { useIsSmallScreen } from "@/hooks";
 import { useScrollToTopOnChange } from "../../hooks";
 import { MOBILE_BREAKPOINT, toDateString, type CalendarViewProps } from "../../utils";
 
+import "../../styles/CalendarPage.css";
+
 const INITIAL_VIEW: ScheduleViewLevel = "week";
 
 const VIEW_COMPONENTS: Record<ScheduleViewLevel, ComponentType<CalendarViewProps>> = {

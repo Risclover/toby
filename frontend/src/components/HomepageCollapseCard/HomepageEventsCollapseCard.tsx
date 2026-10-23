@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { DashboardMiniCalendar, UpcomingEvents } from "@/features";
-import { useAuthenticateQuery } from "@/store";
 import { HomepageCollapseCard } from "./HomepageCollapseCard";
 import { HomepageCollapseCardFooter } from "./HomepageCollapseCardFooter";
+import { useAuthenticateQuery } from "@/store";
 
-export const HomepageEventsCollapseCard = ({ isReady }: { isReady: boolean }) => {
+type Props = {
+    isReady: boolean;
+}
+
+export const HomepageEventsCollapseCard = ({ isReady }: Props) => {
     const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
     const householdId = user?.householdId!;
@@ -14,7 +18,12 @@ export const HomepageEventsCollapseCard = ({ isReady }: { isReady: boolean }) =>
             <div className="homepage-mini-calendar-container">
                 <DashboardMiniCalendar householdId={householdId} />
             </div>
-            <HomepageCollapseCard title="Upcoming Events" color="navy" cardKey="events" scrollSelector=".upcoming-events">
+            <HomepageCollapseCard
+                title="Upcoming Events"
+                color="navy"
+                cardKey="events"
+                scrollSelector=".upcoming-events"
+            >
                 <UpcomingEvents
                     isReady={isReady}
                     householdId={householdId}

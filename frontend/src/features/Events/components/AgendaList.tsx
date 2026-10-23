@@ -10,9 +10,7 @@ type AgendaRenderEvent = NonNullable<AgendaViewProps["renderEvent"]>;
 type Props = {
     range: { start: string; end: string };
     events: AgendaViewProps["events"];
-    /** Styles API overrides, e.g. to hide AgendaView's own date headers. */
     styles?: AgendaViewProps["styles"];
-    /** Wraps each event row in a Box with these props (padding, background...). Omit for the agenda modal's default look. */
     rowProps?: BoxProps;
 };
 

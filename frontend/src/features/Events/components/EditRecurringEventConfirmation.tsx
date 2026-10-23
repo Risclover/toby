@@ -6,9 +6,7 @@ export const EDIT_SCOPE = { THIS: "this-event", ALL: "all-events" } as const;
 export type EditScope = (typeof EDIT_SCOPE)[keyof typeof EDIT_SCOPE];
 
 const RADIO_NAME = "recurring-event-edit";
-// This modal isn't part of EventForm's modals stack, so it needs a z-index above the stack's elevated one.
 const MODAL_Z_INDEX = 1000;
-
 const SCOPE_OPTIONS = [
     { label: "Just this event", value: EDIT_SCOPE.THIS },
     { label: "All instances", value: EDIT_SCOPE.ALL },
