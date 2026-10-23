@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { KittyNotification } from "../KittyNotification";
 import { KittyIcons } from "@/assets";
+import { HomepageCollapseCardFooter } from "./HomepageCollapseCardFooter";
 
 type Props = {
     isReady: boolean;
@@ -194,10 +195,12 @@ export const HomepageHabits = ({ isReady }: Props) => {
                     ))}
                 </ul>
             </div>
-            <div className="homepage-habits-footer">
-                <Button size="compact-sm" fw={500} color="var(--mantine-color-grape-7)" c="white" radius="xl" onClick={() => openModal()}>+ Add new habit</Button>
-                <Button p={0} size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-grape-7)" onClick={() => navigate(`/profile/${user.id}?tab=habits`)}>View all →</Button>
-            </div>
+            <HomepageCollapseCardFooter
+                color="var(--mantine-color-grape-7)"
+                addBtnText="+ Add new habit"
+                addBtnOnClick={() => openModal()}
+                viewAllBtnOnClick={() => navigate(`/profile/${user.id}?tab=habits`)}
+            />
             <HabitModal />
         </div >
     )

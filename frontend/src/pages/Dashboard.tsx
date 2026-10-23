@@ -1,5 +1,5 @@
 import { DashboardMiniCalendar } from "@/features/Events/components/DashboardMiniCalendar";
-import { UpcomingThisWeek } from "@/features/Events/components/UpcomingThisWeek";
+import { UpcomingEvents } from "@/features/Events/components/UpcomingEvents/UpcomingEvents";
 import { Sidebar } from "@/layout/Sidebar";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery, useGetHouseholdShoppingListsQuery } from "@/store/householdSlice";

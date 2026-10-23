@@ -1,4 +1,4 @@
-import { CreateAnnouncementModalProvider, CreateReminderModalProvider, CreateTasklistModalProvider, HabitModalProvider, NoticeBoardProvider } from "@/contexts";
+import { CalendarProvider, CreateAnnouncementModalProvider, CreateReminderModalProvider, CreateTasklistModalProvider, HabitModalProvider, NoticeBoardProvider } from "@/contexts";
 import { PersonalNoteModalProvider } from "./contexts/PersonalNoteModalContext";
 import { CreateShoppingListModalProvider } from "./contexts/CreateShoppingListContext";
 
@@ -9,7 +9,8 @@ const providers = [
     CreateShoppingListModalProvider,
     NoticeBoardProvider,
     HabitModalProvider,
-    PersonalNoteModalProvider
+    PersonalNoteModalProvider,
+    CalendarProvider
 ];
 
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {

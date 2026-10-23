@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState } from "react";
 import { Group, Text, useModalsStack } from "@mantine/core";
 import { MiniCalendar } from "@mantine/dates";
 
@@ -17,14 +17,13 @@ const TODAY_BACKGROUND = "#f1f1ff";
 
 type Props = {
     householdId: number;
-    showAddEvent: boolean;
-    setShowAddEvent: Dispatch<SetStateAction<boolean>>;
 };
 
-export function DashboardMiniCalendar({ householdId, showAddEvent, setShowAddEvent }: Props) {
+export function DashboardMiniCalendar({ householdId }: Props) {
     const stack = useModalsStack(["events-list", "recurrence", "event-form"]);
     const [editingEvent, setEditingEvent] = useState<CalendarEvent | undefined>(undefined);
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [showAddEvent, setShowAddEvent] = useState(false);
 
     const { startDate, headerTitle, goPrev, goNext } = useMiniCalendarWeek();
     const dayDots = useMiniCalendarDots({ householdId, startDate, numberOfDays: MINI_CALENDAR_DAYS });

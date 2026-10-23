@@ -5,8 +5,8 @@ import dayjs from "dayjs";
 import type { CalendarEvent } from "@/store";
 import { type EventColorPayload, type ScheduleEventData } from "../../utils";
 import { formatEventDate, formatEventDateTime } from "../../utils/formatEventDate";
-import { EventMemberDots } from "./EventColorDots";
 import { EventActionsMenu } from "./EventActionsMenu";
+import { EventColorDots } from "./EventColorDots";
 
 export type AgendaRenderEvent = NonNullable<ComponentProps<typeof AgendaView>["renderEvent"]>;
 type AgendaEventButtonProps = Parameters<AgendaRenderEvent>[1];
@@ -43,9 +43,11 @@ export const AgendaEventRow = ({ event, buttonProps, onEdit }: Props) => {
     return (
         <UnstyledButton {...buttonProps} style={{ width: "100%", padding: "8px 4px" }}>
             <Group justify="space-between" wrap="nowrap" align="flex-start">
+                aaa
                 <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
+                    bbb
                     <Text fz={14} fw={500} c="black">{event.title}</Text>
-                    <EventMemberDots colors={colors} names={payload?.memberNames} />
+                    <EventColorDots colors={colors} names={payload?.memberNames} />
                     <Text fz={12} c="dimmed">{getTimeLabel(event, payload)}</Text>
                 </Stack>
                 <div onClick={(e) => e.stopPropagation()}>

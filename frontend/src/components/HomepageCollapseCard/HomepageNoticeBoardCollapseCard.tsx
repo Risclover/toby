@@ -12,6 +12,7 @@ import { useAnnouncementIndicator } from "@/features/Announcements/hooks/useAnno
 import { useAuthenticateQuery, useGetHouseholdQuery, useGetUserRemindersPreviewQuery } from "@/store"
 import { NoticeBoardProvider } from "@/contexts"
 import { useHousehold } from "@/hooks/useHousehold"
+import { HomepageCollapseCardFooter } from "./HomepageCollapseCardFooter"
 
 export const HomepageNoticeBoardCollapseCard = ({ householdId, isReady }: { isReady: boolean; householdId?: number | undefined }) => {
     return (
@@ -66,17 +67,23 @@ const HomepageNoticeBoardContent = ({ isReady, householdId }: { isReady: boolean
                 >
                     <HomepageCollapseCardTab value="reminders">
                         <NoticeBoardReminders isReady={isReady} reminders={reminders} isLoading={remindersLoading} />
-                        <div className="notice-board-footer">
-                            <Button size="compact-sm" color="var(--mantine-color-red-6)" radius="xl" onClick={() => openCreateReminderModal()}>+ New reminder</Button>
-                            <Button p={0} size="xs" fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)" onClick={() => navigate("/reminders")}>View all →</Button>
-                        </div>
+                        <HomepageCollapseCardFooter
+                            color="var(--mantine-color-red-6)"
+                            whiteBg={true}
+                            addBtnText="+ New reminder"
+                            addBtnOnClick={openCreateReminderModal}
+                            viewAllBtnOnClick={() => navigate("/reminders")}
+                        />
                     </HomepageCollapseCardTab>
                     <HomepageCollapseCardTab value="announcements">
                         <NoticeBoardAnnouncements />
-                        <div className="notice-board-footer">
-                            <Button size="compact-sm" color="var(--mantine-color-red-6)" radius="xl" onClick={() => openModal()}>+ New announcement</Button>
-                            <Button size="xs" p={0} fw={400} variant="transparent" radius="xl" color="var(--mantine-color-red-7)" onClick={() => navigate("/announcements")}>View all →</Button>
-                        </div>
+                        <HomepageCollapseCardFooter
+                            color="var(--mantine-color-red-6)"
+                            whiteBg={true}
+                            addBtnText="+ New announcement"
+                            addBtnOnClick={openModal}
+                            viewAllBtnOnClick={() => navigate("/announcements")}
+                        />
                     </HomepageCollapseCardTab>
                 </HomepageCollapseCardTabs>
             </HomepageCollapseCard>

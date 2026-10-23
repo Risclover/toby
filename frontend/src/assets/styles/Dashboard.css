@@ -133,6 +133,8 @@
     grid-column: 9 / span 4;
 }
 
+
+
 @media (min-width: 1200px) {
     .dashboard-grid {
         --columns: 12;

@@ -1,8 +1,7 @@
 import { useState } from "react";
-
 import { Group, Modal, Radio, Stack, Text } from "@mantine/core";
 
-import { ButtonStandard } from "@/components/ButtonStandard";
+import { ButtonStandard } from "@/components";
 import { useDeleteEventMutation, useExcludeEventOccurrenceMutation } from "@/store";
 import { NotifyEventDeleteFailed } from "../components/CalendarPage/NotifyEventDeleteFailed";
 import type { Occurrence } from "../types";

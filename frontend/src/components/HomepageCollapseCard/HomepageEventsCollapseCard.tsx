@@ -1,36 +1,33 @@
-import { DashboardMiniCalendar, UpcomingThisWeek } from "@/features"
-import { HomepageCollapseCard } from "./HomepageCollapseCard"
-import { useAuthenticateQuery, useGetAllHouseholdEventsQuery, useGetHouseholdEventsQuery, useGetUserSettingsQuery } from "@/store"
-import { useState } from "react";
-import { AgendaView } from "@mantine/schedule";
-import dayjs from "dayjs";
-import { useHousehold } from "@/hooks";
-import { apiEventToScheduleEvent } from "@/features/Events/utils/eventsTransform";
+import { useNavigate } from "react-router-dom";
+import { DashboardMiniCalendar, UpcomingEvents } from "@/features";
+import { useAuthenticateQuery } from "@/store";
+import { HomepageCollapseCard } from "./HomepageCollapseCard";
+import { HomepageCollapseCardFooter } from "./HomepageCollapseCardFooter";
 
 export const HomepageEventsCollapseCard = ({ isReady }: { isReady: boolean }) => {
+    const navigate = useNavigate();
     const { data: user } = useAuthenticateQuery();
-
-    const [showAddEvent, setShowAddEvent] = useState(false);
-    const { data: household } = useHousehold();
-    const { data: events } = useGetAllHouseholdEventsQuery({ householdId: household?.id });
-
-    const transformedEvents = events?.map(event => apiEventToScheduleEvent(event));
+    const householdId = user?.householdId!;
 
     return (
         <div className="homepage-events">
             <div className="homepage-mini-calendar-container">
-                <DashboardMiniCalendar householdId={user?.householdId!} showAddEvent={showAddEvent} setShowAddEvent={setShowAddEvent} />
+                <DashboardMiniCalendar householdId={householdId} />
             </div>
             <HomepageCollapseCard title="Upcoming Events" color="navy" cardKey="events" scrollSelector=".upcoming-events">
-                <UpcomingThisWeek isReady={isReady} householdId={user?.householdId!} />
-                <div className="upcoming-events-container">
-                    <AgendaView
-                        rangeStart={dayjs().startOf('week').format('YYYY-MM-DD')}
-                        rangeEnd={dayjs().endOf('week').format('YYYY-MM-DD')}
-                        events={transformedEvents}
-                    />
-                </div>
+                <UpcomingEvents
+                    isReady={isReady}
+                    householdId={householdId}
+                    renderFooter={({ onAddEvent }) => (
+                        <HomepageCollapseCardFooter
+                            color="var(--primary)"
+                            addBtnText="+ New event"
+                            addBtnOnClick={onAddEvent}
+                            viewAllBtnOnClick={() => navigate("/calendar")}
+                        />
+                    )}
+                />
             </HomepageCollapseCard>
         </div>
-    )
-}
+    );
+};

@@ -1,11 +1,11 @@
-import { Stack } from "@mantine/core";
+import { Stack, type BoxProps } from "@mantine/core";
 import { UpcomingEventSkeleton } from "./UpcomingEventSkeleton";
-import { useUpcomingAgendaEvents } from "../hooks/useUpcomingAgendaEvents";
-import "../styles/UpcomingThisWeek.css";
-import { AgendaList } from "./AgendaList";
+import { AgendaList } from "../AgendaList";
+import { useUpcomingAgendaEvents } from "../../hooks";
+import "../../styles/UpcomingThisWeek.css";
 
 const SKELETON_COUNT = 4;
-// The section title already says "this week", so hide AgendaView's own range header.
+const ROW_PROPS: BoxProps = { px: 8, bg: "white", className: "upcoming-agenda-row" };
 const HIDDEN_RANGE_HEADER = { agendaViewHeader: { display: "none" } };
 
 type Props = {
@@ -23,7 +23,14 @@ export const UpcomingAgenda = ({ isReady, householdId }: Props) => {
         if (agendaEvents.length === 0) {
             return <div className="featured-empty-state">Good news, boss - your week is wide open!</div>;
         }
-        return <AgendaList range={range} events={agendaEvents} styles={HIDDEN_RANGE_HEADER} />;
+        return (
+            <AgendaList
+                range={range}
+                events={agendaEvents}
+                styles={HIDDEN_RANGE_HEADER}
+                rowProps={ROW_PROPS}
+            />
+        );
     };
 
     return (

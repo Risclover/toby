@@ -1,5 +1,5 @@
 import { DashboardMiniCalendar } from "@/features/Events/components/DashboardMiniCalendar";
-import { UpcomingThisWeek } from "@/features/Events/components/UpcomingThisWeek";
+import { UpcomingEvents } from "@/features/Events/components/UpcomingEvents/UpcomingEvents";
 import { Sidebar } from "@/layout/Sidebar";
 import { useAuthenticateQuery } from "@/store/authSlice";
 import { useGetHouseholdQuery, useGetHouseholdShoppingListsQuery } from "@/store/householdSlice";
@@ -98,7 +98,7 @@ export function DashboardGrid() {
                 <div className="dash-grid-item item-3"><HouseholdCheckinsMini members={household?.members} /></div>
                 <div className="dash-grid-item item-4">
                     <DashboardMiniCalendar householdId={user?.householdId} showAddEvent={showAddEvent} setShowAddEvent={setShowAddEvent} />
-                    <UpcomingThisWeek householdId={user?.householdId} />
+                    <UpcomingEvents householdId={user?.householdId} />
                 </div>
 
                 {/* Row 3 */}

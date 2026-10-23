@@ -1,6 +1,6 @@
 import { Group, Paper, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
-import type { UpcomingRow } from "../hooks";
+import type { UpcomingRow } from "../../hooks";
 
 type Props = {
     row: UpcomingRow;
