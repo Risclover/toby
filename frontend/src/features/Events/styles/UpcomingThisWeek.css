@@ -77,6 +77,20 @@
     background-color: transparent;
 }
 
+/* Day sections grow with their events; the whole list scrolls instead (see HomepageCollapseCard). */
+.upcoming-day-section [class*="mantine-AgendaView"] {
+    max-height: none;
+    overflow: visible;
+}
+
+.events-section-title {
+    font-size: 14px;
+    color: var(--mantine-color-dark-3) !important;
+    font-weight: 600;
+    letter-spacing: normal;
+
+}
+
 @media (max-width: 425px) {
     .upcoming-events {
         padding: 0.5rem;

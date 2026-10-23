@@ -5,11 +5,13 @@ import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import { formatDayLabel } from "../../utils";
 import { AgendaList } from "../AgendaList";
 import type { UpcomingDay } from "../..";
-
-// We render our own date header (it's the collapse toggle), so hide AgendaView's.
-const HIDDEN_AGENDA_HEADERS = {
+const HEADER_STYLE = { boxShadow: "var(--mantine-shadow-xs)", zIndex: 1 };
+const DAY_AGENDA_STYLES = {
+    // We render our own date header (it's the collapse toggle), so hide AgendaView's.
     agendaViewHeader: { display: "none" },
     agendaViewDateHeader: { display: "none" },
+    // Let each day grow with its events; the whole homepage list scrolls instead.
+    agendaViewBody: { maxHeight: "none", overflow: "visible", },
 };
 
 type Props = {
@@ -30,12 +32,14 @@ export const UpcomingDaySection = ({ day, rowProps }: Props) => {
                 aria-expanded={opened}
                 aria-controls={panelId}
                 w="100%"
-                bg="gray.1"
+                bg="white"
                 px={12}
                 py={8}
+                pos="relative"
+                style={HEADER_STYLE}
             >
                 <Group justify="space-between" wrap="nowrap">
-                    <Text c="black" fz="sm">{formatDayLabel(day.ymd)}</Text>
+                    <div className="events-settings-section-title events-section-title">{formatDayLabel(day.ymd)}</div>
                     <Group gap={6} wrap="nowrap">
                         {!opened && (
                             <Text fz="xs" c="dimmed">
@@ -52,11 +56,11 @@ export const UpcomingDaySection = ({ day, rowProps }: Props) => {
                     </Group>
                 </Group>
             </UnstyledButton>
-            <Collapse expanded={opened} id={panelId}>
+            <Collapse expanded={opened} id={panelId} pl={12}>
                 <AgendaList
                     range={{ start: day.ymd, end: day.ymd }}
                     events={day.events}
-                    styles={HIDDEN_AGENDA_HEADERS}
+                    styles={DAY_AGENDA_STYLES}
                     rowProps={rowProps}
                 />
             </Collapse>
