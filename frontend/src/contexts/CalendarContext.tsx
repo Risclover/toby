@@ -1,13 +1,15 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useHousehold } from "@/hooks";
+import {
+    useMemberFilter,
+    useScheduleEvents,
+    useAgendaModal,
+    useEventModals,
+    useEventMove,
+    type ScheduleViewLevel,
+    type HouseholdMemberColor
+} from "@/features/Events";
 import { useGetAllHouseholdEventsQuery } from "@/store";
-import { type HouseholdMemberColor } from "@/features/Events/utils/getEventColors";
-import { useMemberFilter } from "@/features/Events/hooks/useMemberFilter";
-import { useScheduleEvents } from "@/features/Events/hooks/useScheduleEvents";
-import { useAgendaModal } from "@/features/Events/hooks/useAgendaModal";
-import { type ScheduleViewLevel } from "@mantine/schedule";
-import { useEventModals } from "@/features/Events/hooks/useEventModals";
-import { useEventMove } from "@/features/Events/hooks/useEventMove";
 
 const EMPTY_MEMBERS: HouseholdMemberColor[] = [];
 

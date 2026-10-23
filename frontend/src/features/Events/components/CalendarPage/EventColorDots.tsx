@@ -6,9 +6,9 @@ type Props = {
     names?: string[];
 };
 
-export function EventMemberDots({ colors, names }: Props) {
+export function EventColorDots({ colors, names }: Props) {
     return (
-        <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
+        <div style={{ display: "flex", gap: 3, flexShrink: 0, marginLeft: "6px" }}>
             {colors.map((color, i) => {
                 const dotStyle = {
                     width: 11,

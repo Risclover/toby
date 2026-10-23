@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 import { Schedule } from "@mantine/schedule";
-import { EventMemberDots } from "../components/CalendarPage/EventColorDots";
+import { EventColorDots } from "../components/CalendarPage/EventColorDots";
 import { EventColorBackground } from "../components/CalendarPage/EventColorBackground";
 import type { EventColorPayload } from "./eventColorPayload";
 import { getEventTextColor } from "./cssColors";
@@ -28,7 +28,7 @@ export const renderEventBody: NonNullable<ScheduleProps["renderEventBody"]> = (e
                 height: "100%",
             }}
         >
-            {isMultiUser && <EventMemberDots colors={colors} />}
+            {isMultiUser && <EventColorDots colors={colors} />}
             <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{event.title}</span>
         </div>
     );

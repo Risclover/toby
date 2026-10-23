@@ -2,7 +2,7 @@ import { Badge, Group, Modal, Stack, Text } from "@mantine/core";
 
 import { useCalendar } from "@/contexts";
 import { EventActionsMenu } from "./EventActionsMenu";
-import { EventMemberDots } from "./EventColorDots";
+import { EventColorDots } from "./EventColorDots";
 import { type ScheduleEventData, getEventDetails } from "../../utils";
 
 const MODAL_TITLE = "Event details";
@@ -36,7 +36,7 @@ export const EventDetailsModal = ({ opened, onClose, occurrence }: EventDetailsM
                     <EventActionsMenu occurrence={occurrence} onEdit={modals.editEvent} onDeleted={onClose} />
                 </Group>
 
-                <EventMemberDots colors={colors} names={memberNames} />
+                <EventColorDots colors={colors} names={memberNames} />
 
                 <Text size="sm" c="dimmed">{timeLabel}</Text>
 

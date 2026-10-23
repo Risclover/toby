@@ -1,15 +1,9 @@
-import { Group, Paper, Skeleton, Stack } from "@mantine/core";
+import { Skeleton, Stack } from "@mantine/core";
 
 export const UpcomingEventSkeleton = () => (
-    <Paper color="white" radius="md" p=".5rem" shadow="xs" className="upcoming-event">
-        <Group justify="space-between">
-            <Group>
-                <div className="event-skeleton-date"><Skeleton h={35} w={30} /></div>
-                <Stack gap=".25rem">
-                    <Skeleton w="300px" h={8} />
-                    <Skeleton w="50px" h={6} />
-                </Stack>
-            </Group>
-        </Group>
-    </Paper>
+    <Stack gap={6} py={8} px={4}>
+        <Skeleton w="60%" h={14} />
+        <Skeleton w={48} h={8} />
+        <Skeleton w={110} h={10} />
+    </Stack>
 );

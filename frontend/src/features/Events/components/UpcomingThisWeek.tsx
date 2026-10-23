@@ -1,28 +1,21 @@
-import { Stack } from "@mantine/core";
-import { UpcomingEventRow } from "./UpcomingEventRow";
-import { UpcomingEventSkeleton } from "./UpcomingEventSkeleton";
-import { useUpcomingRows } from "../hooks";
-import "../styles/UpcomingThisWeek.css";
+import { CalendarProvider } from "@/contexts";
+import { CalendarModals } from "./CalendarPage/CalendarModals";
+import { UpcomingAgenda } from "./UpcomingAgenda";
+import { toDateString } from "../utils";
 
-const SKELETON_COUNT = 5;
+const AGENDA_VIEW = "week";
 
 type Props = {
     isReady: boolean;
     householdId: number;
 };
 
+/** Homepage "Upcoming This Week": the calendar's agenda list, with the same details/edit modals. */
 export function UpcomingThisWeek({ isReady, householdId }: Props) {
-    const { rows, isLoading } = useUpcomingRows(householdId);
-
     return (
-        <div className="upcoming-events-container">
-            <Stack className="upcoming-events" gap="xs">
-                {!isReady || isLoading
-                    ? Array.from({ length: SKELETON_COUNT }, (_, i) => <UpcomingEventSkeleton key={i} />)
-                    : rows.length === 0
-                        ? <div className="featured-empty-state">Good news, boss - your week is wide open!</div>
-                        : rows.map((row) => <UpcomingEventRow key={row.key} row={row} />)}
-            </Stack>
-        </div>
+        <CalendarProvider view={AGENDA_VIEW}>
+            <UpcomingAgenda isReady={isReady} householdId={householdId} />
+            <CalendarModals date={toDateString()} />
+        </CalendarProvider>
     );
 }
