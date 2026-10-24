@@ -5,13 +5,13 @@ import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import { formatDayLabel } from "../../utils";
 import { AgendaList } from "../AgendaList";
 import type { UpcomingDay } from "../..";
-const HEADER_STYLE = { boxShadow: "var(--mantine-shadow-xs)", zIndex: 1 };
+// const HEADER_STYLE = { boxShadow: "var(--mantine-shadow-xs)", zIndex: 1 };
 const DAY_AGENDA_STYLES = {
     // We render our own date header (it's the collapse toggle), so hide AgendaView's.
     agendaViewHeader: { display: "none" },
     agendaViewDateHeader: { display: "none" },
     // Let each day grow with its events; the whole homepage list scrolls instead.
-    agendaViewBody: { maxHeight: "none", overflow: "visible", },
+    agendaViewBody: { maxHeight: "none", overflow: "hidden", background: "#f7f8fc", },
 };
 
 type Props = {
@@ -26,17 +26,17 @@ export const UpcomingDaySection = ({ day, rowProps }: Props) => {
     const eventCount = day.events.length;
 
     return (
-        <div>
+        <div className="upcoming-event-section">
             <UnstyledButton
                 onClick={toggle}
                 aria-expanded={opened}
                 aria-controls={panelId}
                 w="100%"
-                bg="white"
+                bg="#fff"
                 px={12}
                 py={8}
                 pos="relative"
-                style={HEADER_STYLE}
+            // style={HEADER_STYLE}
             >
                 <Group justify="space-between" wrap="nowrap">
                     <div className="events-settings-section-title events-section-title">{formatDayLabel(day.ymd)}</div>
@@ -56,7 +56,7 @@ export const UpcomingDaySection = ({ day, rowProps }: Props) => {
                     </Group>
                 </Group>
             </UnstyledButton>
-            <Collapse expanded={opened} id={panelId} pl={12}>
+            <Collapse expanded={opened} id={panelId}>
                 <AgendaList
                     range={{ start: day.ymd, end: day.ymd }}
                     events={day.events}

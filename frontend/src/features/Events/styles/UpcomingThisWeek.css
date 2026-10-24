@@ -18,12 +18,12 @@
 
 .upcoming-events-container {
     padding: .25rem;
-    background: white;
+    background: pink;
 }
 
 .upcoming-events {
     overflow-y: auto;
-    max-height: 250px;
+    max-height: 350px;
 }
 
 .upcoming-events p:first-of-type {
@@ -69,11 +69,17 @@
     width: 50px;
 }
 
+.upcoming-agenda-row {
+    padding: 0 1rem;
+    background: #f7f8fc;
+    overflow: hidden;
+}
+
 .upcoming-agenda-row:not(:last-of-type) {
     border-bottom: 1px solid var(--mantine-color-gray-2);
 }
 
-.upcoming-agenda-row>button:hover {
+.upcoming-agenda-row>button .upcoming-agenda-row>button:hover {
     background-color: transparent;
 }
 
@@ -85,15 +91,28 @@
 
 .events-section-title {
     font-size: 14px;
-    color: var(--mantine-color-dark-3) !important;
+    /* color: var(--mantine-color-dark-3) !important; */
     font-weight: 600;
     letter-spacing: normal;
 
+}
+
+.upcoming-event-section {
+    margin: .25rem .5rem;
+    box-shadow: var(--mantine-shadow-xs);
+    border-radius: .5rem;
 }
 
 @media (max-width: 425px) {
     .upcoming-events {
         padding: 0.5rem;
         padding-top: 0;
+    }
+
+    .upcoming-events,
+    .upcoming-event-section {
+        margin: 0;
+        border-radius: 0;
+        padding: 0;
     }
 }

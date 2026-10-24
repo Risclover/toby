@@ -4,6 +4,9 @@ import { EventsModalDateControls } from "./EventsModalDateControls";
 import { EventsModalFilter } from "./EventsModalFilter";
 import { TOOLTIP_EVENTS } from "../../utils";
 import { PlusIcon } from "@/assets";
+import { useEventsModalDateControls } from "../..";
+import { DatePickerInput } from "@mantine/dates";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 
 type Props = {
     /** Date chosen to view events */
@@ -19,11 +22,14 @@ type Props = {
 };
 
 const OPTIONS_GAP = 10;
-const FILTER_LABEL_GAP = 4;
-const FILTER_LABEL_SIZE = "12px";
-const FILTER_LABEL_TOP_MARGIN = 4;
 const PLUS_ICON_SIZE = "1.25rem";
+const DATE_INPUT_STYLES = { input: { border: 0 } };
 
+const DATE_INPUT_CHEVRON = (
+    <div className="expand-events-date-picker">
+        <ExpandMoreRoundedIcon />
+    </div>
+);
 /** Options for the events list modal: date picking, filter and 'add event'. */
 export const EventsModalHeader = ({
     date,
@@ -33,26 +39,34 @@ export const EventsModalHeader = ({
     onFilterChange,
 }: Props) => {
     const isFiltered = filterValue !== null;
-
+    const {
+        isSmallScreen,
+        handleDateChange,
+    } = useEventsModalDateControls({ date, onDateChange });
     return (
         <div className="events-modal-header">
-            <Stack gap={0}>
-                <EventsModalDateControls date={date} onDateChange={onDateChange} />
+            <Stack gap={4}>
+                <EventsModalDateControls
+                    date={date}
+                    onDateChange={onDateChange}
+                    isFiltered={isFiltered}
+                    filterValue={filterValue}
+                />
                 <Group
                     align="flex-end"
-                    justify={isFiltered ? "space-between" : "flex-end"}
+                    justify="space-between"
                     gap={OPTIONS_GAP}
                 >
-                    {isFiltered && (
-                        <Group gap={FILTER_LABEL_GAP}>
-                            <Text size={FILTER_LABEL_SIZE} c="black" fw={500} mt={FILTER_LABEL_TOP_MARGIN}>
-                                Filter active:
-                            </Text>
-                            <Text size={FILTER_LABEL_SIZE} fw={400} mt={FILTER_LABEL_TOP_MARGIN}>
-                                {` ${filterValue}`}
-                            </Text>
-                        </Group>
-                    )}
+                    <DatePickerInput
+                        placeholder="Pick date"
+                        value={date}
+                        onChange={handleDateChange}
+                        clearable={false}
+                        rightSection={DATE_INPUT_CHEVRON}
+                        rightSectionPointerEvents="none"
+                        dropdownType={isSmallScreen ? "modal" : "popover"}
+                        styles={DATE_INPUT_STYLES}
+                    />
                     <Group>
                         <EventsModalFilter
                             filterValue={filterValue}

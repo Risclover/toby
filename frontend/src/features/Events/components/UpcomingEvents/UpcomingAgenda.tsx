@@ -5,7 +5,7 @@ import "../../styles/UpcomingThisWeek.css";
 import { useUpcomingAgendaEvents } from "../..";
 
 const SKELETON_COUNT = 4;
-const ROW_PROPS: BoxProps = { px: 4, bg: "white", className: "upcoming-agenda-row" };
+const ROW_PROPS: BoxProps = { px: 8, bg: "white", className: "upcoming-agenda-row" };
 
 type Props = {
     isReady: boolean;

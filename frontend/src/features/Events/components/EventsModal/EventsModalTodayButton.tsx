@@ -11,23 +11,19 @@ const BUTTON_PADDING = ".5rem 1rem";
 
 export const EventsModalTodayButton = ({ isSmallScreen, onClick }: Props) => (
     <Tooltip label="Jump to today" withArrow>
-        {isSmallScreen ? (
-            <ActionIcon onClick={onClick} variant="subtle" color="navy" radius="sm">
-                <TodayRoundedIcon />
-            </ActionIcon>
-        ) : (
-            <Button
-                onClick={onClick}
-                radius="sm"
-                size="sm"
-                color="navy"
-                variant="filled"
-                p={BUTTON_PADDING}
-                h="auto"
-                fw={500}
-            >
-                Today
-            </Button>
-        )}
+
+        <Button
+            onClick={onClick}
+            radius="sm"
+            size="sm"
+            color="navy"
+            variant="filled"
+            p={BUTTON_PADDING}
+            h="auto"
+            fw={500}
+        >
+            Today
+        </Button>
+
     </Tooltip>
 );
