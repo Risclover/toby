@@ -1,17 +1,18 @@
-import type { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCalendar } from "@/contexts";
-import { toDateString } from "../../utils";
+import { toDateString } from "@/features";
+import { HomepageCollapseCardFooter } from "@/components/HomepageCollapseCard/HomepageCollapseCardFooter";
 
-export type UpcomingFooterActions = {
-    onAddEvent: () => void;
-};
-
-type Props = {
-    renderFooter: (actions: UpcomingFooterActions) => ReactNode;
-};
-
-/** Bridges the calendar context to a footer rendered by the host (the homepage card). */
-export const UpcomingFooter = ({ renderFooter }: Props) => {
+export const UpcomingFooter = () => {
+    const navigate = useNavigate();
     const { modals } = useCalendar();
-    return <>{renderFooter({ onAddEvent: () => modals.createForDay(toDateString()) })}</>;
+
+    return (
+        <HomepageCollapseCardFooter
+            color="var(--primary)"
+            addBtnText="+ New event"
+            addBtnOnClick={() => modals.createForDay(toDateString())}
+            viewAllBtnOnClick={() => navigate("/calendar")}
+        />
+    );
 };

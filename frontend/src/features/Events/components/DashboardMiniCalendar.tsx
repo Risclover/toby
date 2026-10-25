@@ -1,41 +1,21 @@
-import { useState } from "react";
-import { Group, Text, useModalsStack } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
 import { MiniCalendar } from "@mantine/dates";
-
-import { EventForm } from "./EventForm/EventForm";
-import { DayEventsModal } from "./EventsModal/DayEventsModal";
-import { MINI_CALENDAR_DAYS, useMiniCalendarWeek, useMiniCalendarDots } from "../hooks";
-import type { CalendarEvent } from "@/store";
-import { dateFromYmd, getDayDots, toYmd } from "../utils";
-import type { ModalId } from "../types";
+import { useCalendar } from "@/contexts";
+import { MINI_CALENDAR_DAYS, useMiniCalendarWeek } from "../hooks/useMiniCalendarWeek";
+import { useMiniCalendarDots } from "../hooks/useMiniCalendarDots";
+import { getDayDots, toYmd } from "../utils/dashboardCalendarHelpers";
 import "../styles/QuickAddEvent.css";
 import "../styles/DashboardMiniCalendar.css";
 
-type NavigableScreen = Exclude<ModalId, "recurrence">;
-
 const TODAY_BACKGROUND = "#f1f1ff";
 
-type Props = {
-    householdId: number;
-};
-
-export function DashboardMiniCalendar({ householdId }: Props) {
-    const stack = useModalsStack(["events-list", "recurrence", "event-form"]);
-    const [editingEvent, setEditingEvent] = useState<CalendarEvent | undefined>(undefined);
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [showAddEvent, setShowAddEvent] = useState(false);
-
+/** Homepage week strip. Clicking a day opens the calendar's agenda modal for that day. */
+export function DashboardMiniCalendar() {
+    const { agenda } = useCalendar();
     const { startDate, headerTitle, goPrev, goNext } = useMiniCalendarWeek();
-    const dayDots = useMiniCalendarDots({ householdId, startDate, numberOfDays: MINI_CALENDAR_DAYS });
+    const dayDots = useMiniCalendarDots({ startDate, numberOfDays: MINI_CALENDAR_DAYS });
 
     const todayYmd = toYmd(new Date());
-
-    const navigateTo = (screen: NavigableScreen, eventToEdit?: CalendarEvent) => {
-        setEditingEvent(eventToEdit);
-        setShowAddEvent(screen === "event-form");
-        stack.close(screen === "event-form" ? "events-list" : "event-form");
-        stack.open(screen);
-    };
 
     return (
         <div className="events-calendar">
@@ -56,7 +36,7 @@ export function DashboardMiniCalendar({ householdId }: Props) {
                 onNext={goNext}
                 // Do NOT use onChange/onDateChange for opening the modal (arrows trigger them).
                 getDayProps={(ymd) => {
-                    const { hasDots, hasOverflow, overflowCount, cssVars } = getDayDots(dayDots.get(ymd) ?? []);
+                    const { hasDots, hasOverflow, overflowCount, cssVars } = getDayDots(dayDots[ymd] ?? []);
                     const hasEvents = hasDots || hasOverflow;
 
                     return {
@@ -66,30 +46,9 @@ export function DashboardMiniCalendar({ householdId }: Props) {
                         className: hasEvents ? "mc-has-events" : "mc-no-events",
                         style: { background: ymd === todayYmd ? TODAY_BACKGROUND : undefined, ...cssVars },
                         title: hasEvents ? "Has events" : undefined,
-                        onClick: () => {
-                            setSelectedDate(dateFromYmd(ymd));
-                            stack.open("events-list");
-                        },
+                        onClick: () => agenda.openForDay(ymd),
                     };
                 }}
-            />
-
-            <DayEventsModal
-                householdId={householdId}
-                date={selectedDate}
-                setSelectedDate={setSelectedDate}
-                stack={stack}
-                onAddEvent={() => navigateTo("event-form")}
-                onEditEvent={(event) => navigateTo("event-form", event)}
-            />
-            <EventForm
-                householdId={householdId}
-                opened={showAddEvent}
-                initialDate={selectedDate}
-                onClose={() => navigateTo("events-list")}
-                edit={Boolean(editingEvent)}
-                event={editingEvent}
-                stack={stack}
             />
         </div>
     );

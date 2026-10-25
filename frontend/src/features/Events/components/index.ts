@@ -7,3 +7,4 @@ export * from "./CalendarPage";
 export * from "./EventForm";
 export * from "./EventsModal";
 export * from "./UpcomingEvents/UpcomingEvents";
+export * from "./HomepageCalendarScope";
