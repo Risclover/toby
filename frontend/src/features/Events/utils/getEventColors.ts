@@ -1,7 +1,8 @@
 import type { CalendarEvent } from "@/store";
+import { formatFullName } from "@/utils/formatFullName";
 
 import { DEFAULT_EVENT_COLOR } from "./calendarConstants";
-import type { HouseholdMemberColor } from "./eventColorPayload";
+import type { EventMember, HouseholdMemberColor } from "./eventColorPayload";
 
 export function getAssignedMembers(
     event: Pick<CalendarEvent, "attendeeIds" | "allMembers">,
@@ -19,3 +20,9 @@ export function getEventColors(
     const assigned = getAssignedMembers(event, members);
     return assigned.length > 0 ? assigned.map((m) => m.color) : [event.color ?? DEFAULT_EVENT_COLOR];
 }
+
+/** Display name and avatar for a member dot's tooltip. */
+export const toEventMember = (member: HouseholdMemberColor): EventMember => ({
+    name: formatFullName(member),
+    profileImg: member.profileImg,
+});

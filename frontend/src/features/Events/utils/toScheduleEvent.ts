@@ -5,9 +5,9 @@ import type { CalendarEvent } from "@/store";
 import "./dayjsPlugins";
 import { DEFAULT_EVENT_COLOR, DEFAULT_TZID, WALL_CLOCK_FORMAT } from "./calendarConstants";
 import type { ScheduleEventData } from "./calendarTypes";
-import type { EventColorPayload, HouseholdMemberColor } from "./eventColorPayload";
-import { getAssignedMembers } from "./getEventColors";
+import { getAssignedMembers, toEventMember } from "./getEventColors";
 import { isAllDayValue } from "./isAllDayValue";
+import type { EventColorPayload, EventMember, HouseholdMemberColor } from "./eventColorPayload";
 
 function toAllDayBoundary(value: string | dayjs.Dayjs, tzid: string): string {
     return dayjs(value).tz(tzid).format(WALL_CLOCK_FORMAT);
@@ -23,10 +23,10 @@ function toEventEnd(event: Pick<CalendarEvent, "endUtc" | "hasTime" | "tzid">): 
         : event.endUtc;
 }
 
-function toEventPayload(event: CalendarEvent, colors: string[], memberNames: string[]): EventColorPayload {
+function toEventPayload(event: CalendarEvent, colors: string[], members: EventMember[]): EventColorPayload {
     return {
         colors,
-        memberNames,
+        members,
         // Normalized to a real boolean here, so downstream `payload.hasTime === false` checks are safe.
         hasTime: !isAllDayValue(event.hasTime),
         visibility: event.visibility,
@@ -48,16 +48,18 @@ function toRecurrence(event: Pick<CalendarEvent, "rrule" | "exdate">) {
 export function toScheduleEvent(event: CalendarEvent, members: HouseholdMemberColor[]): ScheduleEventData {
     const assigned = getAssignedMembers(event, members);
     const colors = assigned.length > 0 ? assigned.map((m) => m.color) : [event.color ?? DEFAULT_EVENT_COLOR];
-    const memberNames = assigned.map((m) => m.firstName);
+    const eventMembers = assigned.map(toEventMember); // changed
     const base = {
         id: event.id,
         title: event.title,
         start: toEventStart(event),
         end: toEventEnd(event),
         color: colors[0],
-        // Mantine's own all-day flag, separate from payload.hasTime. Without it an all-day event lands in the timed grid.
+        // Mantine's own top-level allDay flag - separate from our payload.hasTime,
+        // which only drives our own formatting/display logic. Without this, the
+        // library places an all-day event in the timed grid using raw start/end.
         allDay: isAllDayValue(event.hasTime),
-        payload: toEventPayload(event, colors, memberNames),
+        payload: toEventPayload(event, colors, eventMembers), // changed
     };
     return { ...base, ...toRecurrence(event) } as ScheduleEventData;
 }

@@ -1,32 +1,43 @@
 import { Tooltip } from "@mantine/core";
 import { toDotCssColor } from "../../utils/cssColors";
+import type { EventMember } from "../../utils/eventColorPayload";
+import { MemberTooltipLabel } from "./MemberTooltipLabel";
 
 type Props = {
     colors: string[];
-    names?: string[];
+    /** Same order as `colors`; a dot with no matching member gets no tooltip. */
+    members?: EventMember[];
 };
 
-export function EventColorDots({ colors, names }: Props) {
-    return (
-        <div style={{ display: "flex", gap: 3, flexShrink: 0, marginLeft: "6px" }}>
-            {colors.map((color, i) => {
-                const dotStyle = {
-                    width: 11,
-                    height: 11,
-                    borderRadius: "50%",
-                    background: toDotCssColor(color),
-                    flexShrink: 0,
-                    marginLeft: "-6px",
-                    border: "1px solid white",
-                } as const;
-                const name = <>{names?.[i]}</>
+const CONTAINER_STYLE = { display: "flex", gap: 3, flexShrink: 0, marginLeft: "6px" } as const;
 
-                if (!name) {
+const DOT_STYLE = {
+    width: 11,
+    height: 11,
+    borderRadius: "50%",
+    flexShrink: 0,
+    marginLeft: "-6px",
+    border: "1px solid white",
+} as const;
+
+export function EventColorDots({ colors, members }: Props) {
+    return (
+        <div style={CONTAINER_STYLE}>
+            {colors.map((color, i) => {
+                const dotStyle = { ...DOT_STYLE, background: toDotCssColor(color) };
+                const member = members?.[i];
+
+                if (!member) {
                     return <span key={i} style={dotStyle} />;
                 }
 
                 return (
-                    <Tooltip key={i} label={name} withArrow events={{ hover: true, focus: true, touch: true }}>
+                    <Tooltip
+                        key={i}
+                        label={<MemberTooltipLabel member={member} />}
+                        withArrow
+                        events={{ hover: true, focus: true, touch: true }}
+                    >
                         <span style={dotStyle} />
                     </Tooltip>
                 );

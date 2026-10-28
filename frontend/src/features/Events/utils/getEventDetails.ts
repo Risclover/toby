@@ -1,6 +1,6 @@
 import type { ScheduleEventData } from "./calendarTypes";
 import { describeRecurrence } from "./describeRecurrence";
-import type { EventColorPayload } from "./getEventColors";
+import type { EventColorPayload } from "./eventColorPayload";
 import { getEventDetailsTimeLabel } from "./getEventTimeLabel";
 
 const PUBLIC_VISIBILITY = "public";
@@ -11,7 +11,7 @@ export type EventDetails = {
     recurrenceLabel: string | null;
     isPrivate: boolean;
     colors: NonNullable<EventColorPayload["colors"]>;
-    memberNames: EventColorPayload["memberNames"];
+    members: EventColorPayload["members"];
 };
 
 export const getEventDetails = (occurrence: ScheduleEventData): EventDetails | null => {
@@ -29,6 +29,6 @@ export const getEventDetails = (occurrence: ScheduleEventData): EventDetails | n
         recurrenceLabel: describeRecurrence(source.rrule),
         isPrivate: Boolean(payload.visibility) && payload.visibility !== PUBLIC_VISIBILITY,
         colors: payload.colors ?? [],
-        memberNames: payload.memberNames,
+        members: payload.members,
     };
 };

@@ -1,10 +1,23 @@
 import type { CalendarEvent } from "@/store";
 
-export type HouseholdMemberColor = { id: number; color: string; firstName: string };
+export type HouseholdMemberColor = {
+    id: number;
+    color: string;
+    firstName: string;
+    lastName: string;
+    profileImg?: string | null;
+};
+
+/** What a member dot's tooltip needs: a display name and an avatar. */
+export type EventMember = {
+    name: string;
+    profileImg?: string | null;
+};
 
 export type EventColorPayload = {
     colors: string[];
-    memberNames: string[];
+    /** Same order as `colors`; empty when the event has no assigned members. */
+    members: EventMember[];
     hasTime: boolean;
     visibility: string;
     allMembers: boolean;

@@ -18,7 +18,7 @@ export const EventDetailsModal = ({ opened, onClose, occurrence }: EventDetailsM
     const details = occurrence ? getEventDetails(occurrence) : null;
     if (!occurrence || !details) return null;
 
-    const { title, timeLabel, recurrenceLabel, isPrivate, colors, memberNames } = details;
+    const { title, timeLabel, recurrenceLabel, isPrivate, colors, members } = details;
 
     const { modals } = useCalendar();
 
@@ -36,7 +36,7 @@ export const EventDetailsModal = ({ opened, onClose, occurrence }: EventDetailsM
                     <EventActionsMenu occurrence={occurrence} onEdit={modals.editEvent} onDeleted={onClose} />
                 </Group>
 
-                <EventColorDots colors={colors} names={memberNames} />
+                <EventColorDots colors={colors} members={members} />
 
                 <Text size="sm" c="dimmed">{timeLabel}</Text>
 

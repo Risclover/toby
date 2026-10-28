@@ -1,14 +1,11 @@
 import { Group, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import { toDotCssColor } from "../../utils/cssColors";
-
-type Member = {
-    id: number;
-    color: string;
-    firstName: string;
-};
+import type { HouseholdMemberColor } from "../../utils/eventColorPayload";
+import { toEventMember } from "../../utils/getEventColors";
+import { MemberTooltipLabel } from "./MemberTooltipLabel";
 
 type Props = {
-    members: Member[];
+    members: HouseholdMemberColor[];
     selectedIds: number[];
     onToggle: (id: number) => void;
     onToggleAll: () => void;
@@ -21,16 +18,18 @@ export function MemberFilterRow({ members, selectedIds, onToggle, onToggleAll }:
         <Group gap={6}>
             {members.map((member) => {
                 const isSelected = selectedIds.includes(member.id);
+                const { name, profileImg } = toEventMember(member);
+
                 return (
                     <Tooltip
                         key={member.id}
-                        label={member.firstName}
+                        label={<MemberTooltipLabel member={{ name, profileImg }} />}
                         withArrow
                         events={{ hover: true, focus: true, touch: true }}
                     >
                         <UnstyledButton
                             onClick={() => onToggle(member.id)}
-                            aria-label={member.firstName}
+                            aria-label={name}
                             aria-pressed={isSelected}
                             style={{
                                 width: 22,
@@ -52,11 +51,7 @@ export function MemberFilterRow({ members, selectedIds, onToggle, onToggleAll }:
                 aria-pressed={isAllSelected}
                 style={{ padding: "2px 0" }}
             >
-                <Text
-                    size="xs"
-                    fw={500}
-                    c="blue.9"
-                >
+                <Text size="xs" fw={500} c="blue.9">
                     {isAllSelected ? "Clear all" : "Select all"}
                 </Text>
             </UnstyledButton>

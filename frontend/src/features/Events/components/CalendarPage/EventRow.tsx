@@ -36,7 +36,7 @@ export const EventRow = ({ event, buttonProps }: EventRowProps) => {
             <Group justify="space-between" wrap="nowrap" align="flex-start">
                 <Stack gap={4} style={TEXT_STACK_STYLE}>
                     <Text fz={14} fw={500} c="black">{event.title}</Text>
-                    <EventColorDots colors={colors} names={payload?.memberNames} />
+                    <EventColorDots colors={colors} members={payload?.members} />
                     <Text fz={12} c="dimmed">{timeLabel}</Text>
                 </Stack>
                 <div onClick={stopPropagation}>
