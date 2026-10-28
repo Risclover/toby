@@ -85,7 +85,8 @@
 .events-settings-section-title {
     margin-bottom: 0;
     line-height: 1;
-    color: black;
+    color: var(--mantine-color-dark-3);
+    font-weight: 600;
 }
 
 .settings-section-container .mantine-InputWrapper-description {

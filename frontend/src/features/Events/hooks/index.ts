@@ -2,7 +2,6 @@ export * from "./useAgendaModal";
 export * from "./useCalendarMobileMonthView";
 export * from "./useCalendarWeekView";
 export * from "./useClampedNumberInput";
-export * from "./useDayEvents";
 export * from "./useEventForm";
 export * from "./useEventFormRecurrence";
 export * from "./useEventFormRepeat";
@@ -16,10 +15,6 @@ export * from "./useMobileMonthView";
 export * from "./useScheduleEvents";
 export * from "./useScrollToTopOnChange";
 export * from "./useEventFormAssignedUsers";
-export * from "./useDayEventRow";
-export * from "./useEventsModalDateControls"
-export * from "./useEventsModalList";
-export * from "./useMemberEventSection";
 export * from "./useMiniCalendarWeek";
 export * from "./useMiniCalendarDots";
 export * from "./useUpcomingAgendaEvents"

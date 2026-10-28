@@ -19,7 +19,7 @@ export function EventColorDots({ colors, names }: Props) {
                     marginLeft: "-6px",
                     border: "1px solid white",
                 } as const;
-                const name = names?.[i];
+                const name = <>{names?.[i]}</>
 
                 if (!name) {
                     return <span key={i} style={dotStyle} />;

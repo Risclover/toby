@@ -5,6 +5,5 @@ export * from "./EventMenu";
 export * from "./UnassignSelfConfirmation";
 export * from "./CalendarPage";
 export * from "./EventForm";
-export * from "./EventsModal";
 export * from "./UpcomingEvents/UpcomingEvents";
 export * from "./HomepageCalendarScope";
