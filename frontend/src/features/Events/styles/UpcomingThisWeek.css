@@ -16,9 +16,10 @@
     color: var(--mantine-color-dark-7);
 }
 
+/* changed: pink -> white */
 .upcoming-events-container {
     padding: .25rem;
-    background: pink;
+    background: #fff;
 }
 
 .upcoming-events {
@@ -71,36 +72,51 @@
 
 .upcoming-agenda-row {
     padding: 0 1rem;
-    background: #f7f8fc;
-    overflow: hidden;
+    background: #fff;
 }
 
 .upcoming-agenda-row:not(:last-of-type) {
     border-bottom: 1px solid var(--mantine-color-gray-2);
 }
 
-.upcoming-agenda-row>button .upcoming-agenda-row>button:hover {
+.upcoming-agenda-row>button:hover {
     background-color: transparent;
 }
 
-/* Day sections grow with their events; the whole list scrolls instead (see HomepageCollapseCard). */
-.upcoming-day-section [class*="mantine-AgendaView"] {
-    max-height: none;
-    overflow: visible;
+/* outlines would otherwise be clipped by the section's overflow: hidden */
+.upcoming-event-section button:focus-visible {
+    outline-offset: -2px;
 }
 
 .events-section-title {
     font-size: 14px;
-    /* color: var(--mantine-color-dark-3) !important; */
     font-weight: 600;
     letter-spacing: normal;
-
 }
 
 .upcoming-event-section {
     margin: .25rem .5rem;
     box-shadow: var(--mantine-shadow-xs);
     border-radius: .5rem;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* changed: header is #f7f8fc; the hover rule I added earlier is gone */
+.upcoming-event-section-header {
+    background: #f7f8fc !important;
+}
+
+/* Divider only while open; a collapsed section is just the header. */
+.upcoming-event-section-header[aria-expanded="true"] {
+    border-bottom: 1px solid var(--mantine-color-gray-3);
+}
+
+.upcoming-events-filter {
+    background: white;
+    padding: 0.75rem 0.875rem;
+    border-bottom: 2px solid var(--mantine-color-gray-3);
+    margin-bottom: .25rem;
 }
 
 @media (max-width: 425px) {

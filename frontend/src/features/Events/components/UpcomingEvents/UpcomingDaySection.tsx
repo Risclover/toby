@@ -5,13 +5,14 @@ import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import { formatDayLabel } from "../../utils";
 import { AgendaList } from "../AgendaList";
 import type { UpcomingDay } from "../..";
-// const HEADER_STYLE = { boxShadow: "var(--mantine-shadow-xs)", zIndex: 1 };
+
 const DAY_AGENDA_STYLES = {
     // We render our own date header (it's the collapse toggle), so hide AgendaView's.
     agendaViewHeader: { display: "none" },
     agendaViewDateHeader: { display: "none" },
     // Let each day grow with its events; the whole homepage list scrolls instead.
-    agendaViewBody: { maxHeight: "none", overflow: "hidden", background: "#f7f8fc", },
+    // The section card clips the corners, so no overflow clipping is needed here.
+    agendaViewBody: { maxHeight: "none", overflow: "visible", background: "#fff" },
 };
 
 type Props = {
@@ -28,15 +29,13 @@ export const UpcomingDaySection = ({ day, rowProps }: Props) => {
     return (
         <div className="upcoming-event-section">
             <UnstyledButton
+                className="upcoming-event-section-header"
                 onClick={toggle}
                 aria-expanded={opened}
                 aria-controls={panelId}
                 w="100%"
-                bg="#fff"
                 px={12}
                 py={8}
-                pos="relative"
-            // style={HEADER_STYLE}
             >
                 <Group justify="space-between" wrap="nowrap">
                     <div className="events-settings-section-title events-section-title">{formatDayLabel(day.ymd)}</div>

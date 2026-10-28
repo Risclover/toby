@@ -3,6 +3,7 @@ import { UpcomingDaySection } from "./UpcomingDaySection";
 import { UpcomingEventSkeleton } from "./UpcomingEventSkeleton";
 import "../../styles/UpcomingThisWeek.css";
 import { useUpcomingAgendaEvents } from "../../hooks";
+import { CalendarMemberFilter } from "../CalendarPage";
 
 const SKELETON_COUNT = 4;
 const ROW_PROPS: BoxProps = { px: 4, bg: "white", className: "upcoming-agenda-row" };
@@ -27,6 +28,10 @@ export function UpcomingEvents({ isReady, householdId }: Props) {
 
     return (
         <div className="upcoming-events-container">
+            {/* Outside the scroller so it stays pinned while the days scroll beneath it. */}
+            <div className="upcoming-events-filter">
+                <CalendarMemberFilter />
+            </div>
             <Stack className="upcoming-events" gap={0}>
                 {renderContent()}
             </Stack>

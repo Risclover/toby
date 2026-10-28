@@ -1,4 +1,4 @@
-import { DashboardMiniCalendar, HomepageCalendarScope, UpcomingEvents } from "@/features";
+import { CalendarMemberFilter, DashboardMiniCalendar, HomepageCalendarScope, UpcomingEvents } from "@/features";
 import { useAuthenticateQuery } from "@/store";
 import { HomepageCollapseCard } from "./HomepageCollapseCard";
 import { UpcomingFooter } from "../../features/Events/components/UpcomingEvents/UpcomingFooter";

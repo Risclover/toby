@@ -918,11 +918,6 @@ form {
     cursor: pointer;
 }
 
-.upcoming-events-container {
-    background: #f7f8fc;
-    padding: 0rem;
-}
-
 .upcoming-events-container .mantine-AgendaView-agendaViewBody {
     max-height: 200px;
     overflow-y: auto;
