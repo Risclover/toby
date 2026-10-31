@@ -1,8 +1,11 @@
 from pathlib import Path
 from flask import Flask, send_from_directory, jsonify
 from flask_talisman import Talisman
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
+from dotenv import load_dotenv 
 
-from .config      import Config
+from .config import Config
 from .extensions  import (
     db,
     migrate,
@@ -10,23 +13,20 @@ from .extensions  import (
     login_manager,
     configure_logging,
 )
-from .blueprints  import register_blueprints
+from .blueprints import register_blueprints
 from .middlewares import register_middlewares
-from .errors      import register_error_handlers
+from .errors import register_error_handlers
 from .scheduler import init_scheduler
-from .seeds       import seed_commands
-from app.models      import User
-from sqlalchemy import event
-from sqlalchemy.engine import Engine
+from .seeds import seed_commands
+from app.models import User
+
 import time, logging
-from dotenv import load_dotenv 
 import os
 
 print("FLASK_ENV =", os.getenv("FLASK_ENV"))
 print("S3_BUCKET =", os.environ.get("S3_BUCKET"))
-# --------------------------------------------------------------------------- #
-#  Application factory
-# --------------------------------------------------------------------------- #
+
+# ---- Application factory ----
 def create_app(config_class=None) -> Flask:
     """
     Create and configure a new Flask application instance.
@@ -61,18 +61,15 @@ def create_app(config_class=None) -> Flask:
             "frame-ancestors": ["'self'"],
         },
     )
-    # --------------------------------------------------------------------- #
-    # Configuration & secrets
-    # --------------------------------------------------------------------- #
+
+    # ---- Config & secrets ----
     configure_logging(app)
     app.config.from_object(config_class or Config)
     SECRET_KEY = os.urandom(32)
     app.config['SECRET_KEY'] = SECRET_KEY
     app.config["DEBUG"] = True
 
-    # --------------------------------------------------------------------- #
-    # Initialise extensions
-    # --------------------------------------------------------------------- #
+    # ---- Initialize extensions ----
     db.init_app(app)
     migrate.init_app(app, db)
     cors.init_app(app, supports_credentials=True)
@@ -83,38 +80,28 @@ def create_app(config_class=None) -> Flask:
         """Return the User instance given a unicode ID."""
         return User.query.get(int(user_id))
 
-    # --------------------------------------------------------------------- #
-    # Blueprints, CLI commands, middlewares, error handlers
-    # --------------------------------------------------------------------- #
+    # ---- Blueprints, CLI commands, middlewares, error handlers ----
     register_blueprints(app)
     register_middlewares(app, db)
     register_error_handlers(app)
     app.cli.add_command(seed_commands)
-    with app.app_context():
-        init_scheduler(app)
+    if app.config.get("RUN_SCHEDULER", True):
+        with app.app_context():
+            init_scheduler(app)
     
-
-    # --------------------------------------------------------------------- #
-    # Single-Page App fallback
-    # --------------------------------------------------------------------- #
+    # ---- Single-page app fallback ----
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def spa_fallback(path):
-        # Block only API and auth endpoints from falling through to React
         if path.startswith("api/") or path.startswith("auth/"):
             return jsonify({"error": "Not found"}), 404
 
         static_dir = Path(app.static_folder)
         requested = static_dir / path
 
-        # Serve real static files if requested (like main.js, logo.png, etc.)
         if path and requested.exists():
             return send_from_directory(static_dir, path)
 
-        # Otherwise, serve React’s entry point
         return send_from_directory(static_dir, "index.html"), 200
 
     return app
-
-
-app = create_app()
