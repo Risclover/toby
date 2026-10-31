@@ -23,3 +23,4 @@ from .shopping_list_member import ShoppingListMember
 from .shopping_item_unit import ShoppingItemUnit
 from .featured_shopping_list_setting import FeaturedShoppingListSetting
 from .event_attendee import EventAttendee
+from .notification import Notification

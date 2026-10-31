@@ -20,7 +20,8 @@ _BLUEPRINT_PATHS = (
     "app.api.personal_note_routes:personal_note_routes",
     "app.api.personal_note_category_routes:personal_note_category_routes",
     "app.api.shopping_item_unit_routes:shopping_item_unit_routes",
-    "app.api.featured_shopping_list_setting_routes:featured_shopping_list_setting_routes"
+    "app.api.featured_shopping_list_setting_routes:featured_shopping_list_setting_routes",
+    "app.api.notification_routes:notification_routes"
 )
 
 def register_blueprints(app):
