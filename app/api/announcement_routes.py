@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 import base64
 import pytz
 from app.utils.timezone import utc_datetime_to_local
-from app.utils.activity_service import ActivityService
+from app.services import ActivityService
 
 announcement_routes = Blueprint("announcements", __name__)
 

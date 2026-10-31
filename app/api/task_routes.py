@@ -5,7 +5,7 @@ from app.extensions import db
 from datetime import datetime, date
 from flask_login import current_user, login_required
 from app.utils.reminder_utils import create_task_due_reminders
-from app.utils.activity_service import ActivityService
+from app.services import ActivityService
 from app.api.tasklist_routes import get_tasklist_audience_ids
 import pytz
 

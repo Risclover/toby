@@ -8,7 +8,7 @@ import base64
 from datetime import datetime, date, timedelta, timezone
 from app.utils.parse_datetime import parse_datetime
 from app.utils.timezone import utc_datetime_to_local, get_user_timezone
-from app.utils.activity_service import ActivityService
+from app.services import ActivityService
 from app.api.tasklist_routes import get_tasklist_audience_ids
 
 import json

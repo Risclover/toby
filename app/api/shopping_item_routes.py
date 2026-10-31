@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import current_user, login_required
 from app.models import ShoppingItem, ShoppingCategory
 from app.extensions import db
-from app.utils.activity_service import ActivityService
+from app.services import ActivityService
 
 
 shopping_item_routes = Blueprint("shopping-items", __name__)

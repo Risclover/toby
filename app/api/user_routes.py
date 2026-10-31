@@ -8,7 +8,7 @@ from app.s3_helpers import (
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo 
 from pytz import all_timezones
-from app.utils.activity_service import ActivityService
+from app.services import ActivityService
 from app.utils.stats import compute_user_stats
 
 

@@ -4,7 +4,7 @@ from app.extensions import db
 from flask_login import current_user, login_required
 from app.models.tasklist import SortOrder
 from app.utils.reminder_utils import create_task_due_reminders
-from app.utils.activity_service import ActivityService
+from app.services import ActivityService
 import pytz
 from datetime import datetime, date
 

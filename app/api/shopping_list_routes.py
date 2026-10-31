@@ -3,7 +3,7 @@ from app.models import ShoppingList, ShoppingItem, User, Household
 from app.models.shopping_list_member import ShoppingListMember
 from app.extensions import db
 from flask_login import current_user, login_required
-from app.utils.activity_service import ActivityService
+from app.services import ActivityService
 from datetime import datetime
 
 shopping_list_routes = Blueprint("shopping-lists", __name__)

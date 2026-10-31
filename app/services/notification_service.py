@@ -6,7 +6,7 @@ BATCH_WINDOW_MINUTES = 15
 
 class NotificationService:
     @staticmethod
-    def record(
+    def notify(
         household_id,
         recipient_id,
         actor_id,
