@@ -12,6 +12,9 @@ class NotificationType(str, enum.Enum):
     TASKLIST_DELETED = "tasklist_deleted"
     TASK_CHANGED = "task_changed"
     TASK_DELETED = "task_deleted"
+    TASK_COMPLETED = "task_completed" # A task user is assigned to was completed by someone else
+    TASK_REOPENED = "task_reopened" # A task user is assigned to was reopened by someone else
+    TASK_OVERDUE = "task_overdue" # A task user is assigned to is overdue
     MEMBER_JOINED = "member_joined"
     MEMBER_LEFT = "member_left"
     MEMBER_REMOVED = "member_removed"
