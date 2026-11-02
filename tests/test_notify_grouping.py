@@ -2,6 +2,7 @@ from app.models.notification import Notification, NotificationType, Notification
 from app.services.notification_service import NotificationService
 from datetime import datetime, timedelta, timezone
 
+# Helpers
 def assign_task(household, actor, recipient, **overrides):
     """notify() with sensible defaults"""
     args = dict(
@@ -17,6 +18,8 @@ def assign_task(household, actor, recipient, **overrides):
     return NotificationService.notify(**args)
 
 
+
+# Tests
 def test_no_batch_key_no_fold(household, make_user):
     """Without a batch key, each call creates a new row"""
     alice = make_user("alice")
@@ -80,7 +83,7 @@ def test_fold_updates_created_at(db, household, make_user):
     assign_task(household, alice, bob, entity_label="Dishes", batch_key="batch1")
     notification = Notification.query.filter_by(recipient_id=bob.id).one()
 
-    # Backdate it, still inside the 15-minute window, so the bump is unmistakable.
+    # Backdate it, still inside the 15-minute window, so the time update is unmistakable.
     notification.created_at = datetime.now(timezone.utc) - timedelta(minutes=10)
     db.session.commit()
     backdated = notification.created_at   
@@ -210,7 +213,7 @@ def test_folds_per_recipient(db, household, make_user):
 def test_fold_counts_new_labels(household, make_user):
     alice = make_user("alice")
     bob = make_user("bob")
-    
+
     assign_task(household, alice, bob, entity_label="Dishes", batch_key="b")
     assign_task(household, alice, bob, entity_label="Laundry", batch_key="b")
 

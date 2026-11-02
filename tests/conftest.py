@@ -3,7 +3,7 @@ import pytest
 from app import create_app
 from app.config import Config
 from app.extensions import db as _db
-from app.models import Household, User 
+from app.models import Household, User, Notification, NotificationType, NotificationEntity
 
 # Each user needs a different color
 # Admin gets "black", and make_user hands out these in order
@@ -82,6 +82,28 @@ def make_user(db, household):
         fields = {"household_id": household.id, "color": next(colors)}
         fields.update(overrides)
         return _create_user(db, name, **fields)
+    return _make
+
+
+@pytest.fixture
+def make_notification(db, household):
+    """Insert one notification row and return it."""
+    def _make(recipient, **overrides):
+        fields = dict(
+            household_id=household.id,
+            recipient_id=recipient.id,
+            actor_id=None,
+            type=NotificationType.TASK_ASSIGNED,
+            entity_type=NotificationEntity.TASK,
+            entity_id=1,
+            entity_label="Dishes",
+            entity_labels=["Dishes"],
+        )
+        fields.update(overrides)
+        notification = Notification(**fields)
+        db.session.add(notification)
+        db.session.commit()
+        return notification
     return _make
 
 

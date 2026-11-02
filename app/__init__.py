@@ -26,7 +26,7 @@ import os
 print("FLASK_ENV =", os.getenv("FLASK_ENV"))
 print("S3_BUCKET =", os.environ.get("S3_BUCKET"))
 
-# ---- Application factory ----
+# Application factory
 def create_app(config_class=None) -> Flask:
     """
     Create and configure a new Flask application instance.
@@ -37,12 +37,12 @@ def create_app(config_class=None) -> Flask:
         static_folder=str(Path(__file__).resolve().parents[1] / "frontend" / "build"),
     )
     
-
     app.config.update(
-        SQLALCHEMY_RECORD_QUERIES=True,   # built-in
-        SQLALCHEMY_ECHO=False,            # turn ON if you want raw SQL too
-        SLOW_QUERY_THRESHOLD=0.05,        # 50 ms
+        SQLALCHEMY_RECORD_QUERIES=True,   
+        SQLALCHEMY_ECHO=False,       
+        SLOW_QUERY_THRESHOLD=0.05, 
     )
+
     @event.listens_for(Engine, "before_cursor_execute")
     def before_cursor_execute(conn, cursor, stmt, params, context, executemany):
         context._query_start_time = time.perf_counter()
@@ -62,14 +62,14 @@ def create_app(config_class=None) -> Flask:
         },
     )
 
-    # ---- Config & secrets ----
+    # Config & secrets
     configure_logging(app)
     app.config.from_object(config_class or Config)
     SECRET_KEY = os.urandom(32)
     app.config['SECRET_KEY'] = SECRET_KEY
     app.config["DEBUG"] = True
 
-    # ---- Initialize extensions ----
+    # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
     cors.init_app(app, supports_credentials=True)
@@ -80,7 +80,7 @@ def create_app(config_class=None) -> Flask:
         """Return the User instance given a unicode ID."""
         return User.query.get(int(user_id))
 
-    # ---- Blueprints, CLI commands, middlewares, error handlers ----
+    # Blueprints, CLI commands, middlewares, error handlers
     register_blueprints(app)
     register_middlewares(app, db)
     register_error_handlers(app)
@@ -89,7 +89,7 @@ def create_app(config_class=None) -> Flask:
         with app.app_context():
             init_scheduler(app)
     
-    # ---- Single-page app fallback ----
+    # Single-page app fallback
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def spa_fallback(path):

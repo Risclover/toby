@@ -4,27 +4,45 @@ import enum
 from datetime import datetime, timezone
 
 class NotificationType(str, enum.Enum):
-    TASK_ASSIGNED = "task_assigned"
-    EVENT_ASSIGNED = "event_assigned"
-    EVENT_CHANGED = "event_changed"
-    EVENT_DELETED = "event_deleted"
-    TASKLIST_ASSIGNED = "tasklist_assigned"
-    TASKLIST_DELETED = "tasklist_deleted"
-    TASK_CHANGED = "task_changed"
-    TASK_DELETED = "task_deleted"
+    # Events
+    EVENT_ASSIGNED = "event_assigned" # User was assigned to an event
+    EVENT_UNASSIGNED = "event_unassigned" # User was unassigned from event
+    EVENT_CHANGED = "event_changed" # Event user assigned to was changed; OR, event user created was changed (by someone else)
+    EVENT_DELETED = "event_deleted" # Event user assigned to was deleted; OR, event user created was deleted (by someone else)
+
+     # Tasklists
+    TASKLIST_ASSIGNED = "tasklist_assigned" # User assigned to a tasklist
+    TASKLIST_UNASSIGNED = "tasklist_unassigned" # User unassigned from tasklist
+    TASKLIST_DELETED = "tasklist_deleted" # Tasklist user assigned to was deleted; OR, tasklist user created was deleted (by someone else)
+    
+    # Tasks
+    TASK_ASSIGNED = "task_assigned" # User was assigned to a task
+    TASK_UNASSIGNED = "task_unassigned" # User was unassigned from task
+    TASK_CHANGED = "task_changed" # Task assigned to was changed; OR, task user created was changed by someone else
+    TASK_DELETED = "task_deleted" # Task assigned to was deleted; OR, task user created was deleted by someone else
     TASK_COMPLETED = "task_completed" # A task user is assigned to was completed by someone else
     TASK_REOPENED = "task_reopened" # A task user is assigned to was reopened by someone else
     TASK_OVERDUE = "task_overdue" # A task user is assigned to is overdue
-    MEMBER_JOINED = "member_joined"
-    MEMBER_LEFT = "member_left"
-    MEMBER_REMOVED = "member_removed"
-    SHOPPING_LIST_ASSIGNED = "shopping_list_assigned"
-    SHOPPING_LIST_DELETED = "shopping_list_deleted"
-    REMINDER_ASSIGNED = "reminder_assigned"
-    ANNOUNCEMENT_EDITED = "announcement_edited"
-    ANNOUNCEMENT_DELETED = "announcement_deleted"
-    ADMIN_CHANGED = "admin_changed"
-    ADMIN_REQUEST = "admin_request"
+
+    # Shopping lists
+    SHOPPING_LIST_ASSIGNED = "shopping_list_assigned" # User assigned to shopping list 
+    SHOPPING_LIST_UNASSIGNED = "shopping_list_unassigned" # User unassigned from shopping list
+    SHOPPING_LIST_DELETED = "shopping_list_deleted" # Assigned shopping list deleted; OR, list user created was deleted by someone else
+
+    # Reminders
+    REMINDER_ASSIGNED = "reminder_assigned" # User given reminder by another user 
+
+    # Announcements
+    ANNOUNCEMENT_EDITED = "announcement_edited" # Announcement user created was edited
+    ANNOUNCEMENT_DELETED = "announcement_deleted" # Announcement user created was deleted
+
+    # Household
+    ADMIN_CHANGED = "admin_changed" # Household admin changed
+    ADMIN_REQUEST = "admin_request" # Admin requesting user to become admin
+    MEMBER_JOINED = "member_joined" # Member joined household
+    MEMBER_LEFT = "member_left" # Member left household
+    MEMBER_REMOVED = "member_removed" # Member removed from household 
+
 
 class NotificationEntity(str, enum.Enum):
     TASK = "task"
@@ -35,9 +53,9 @@ class NotificationEntity(str, enum.Enum):
     REMINDER = "reminder"
     ANNOUNCEMENT = "announcement"
 
+
 def _utcnow():
     return datetime.now(timezone.utc)
-
 
 def _iso(dt):
     """ISO-8601 in UTC, whether the database returns naive or aware datetimes."""
@@ -57,9 +75,8 @@ class Notification(db.Model):
     actor_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     type = db.Column(SAEnum(NotificationType, native_enum=False, length=32), nullable=False)
 
-    entity_type = db.Column(SAEnum(NotificationEntity, native_enum=False, length=16), nullable=True)
     entity_id = db.Column(db.Integer, nullable=True)
-
+    entity_type = db.Column(SAEnum(NotificationEntity, native_enum=False, length=16), nullable=True)
     entity_label = db.Column(db.String(255), nullable=True)
     entity_labels = db.Column(db.JSON, nullable=True)
     event_metadata = db.Column(db.JSON, nullable=True)
@@ -70,10 +87,10 @@ class Notification(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=_utcnow)
     read_at = db.Column(db.DateTime(timezone=True), nullable=True)
 
-    # relationships
+    # Relationships
     actor = db.relationship("User", foreign_keys=[actor_id], lazy="joined")
 
-    # indices
+    # Indices
     __table_args__ = (
         db.Index("ix_notifications_recipient_read", "recipient_id", "read_at"),
         db.Index("ix_notifications_recipient_created", "recipient_id", "created_at"),

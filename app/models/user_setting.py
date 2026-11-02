@@ -21,6 +21,7 @@ class UserSettings(db.Model):
     habits_privacy_mode = db.Column(db.Enum(PrivacyMode), default=PrivacyMode.NORMAL, nullable=False)
     notes_privacy_mode = db.Column(db.Enum(PrivacyMode), default=PrivacyMode.NORMAL, nullable=False)
     events_privacy_mode = db.Column(db.Enum(PrivacyMode), default=PrivacyMode.NORMAL, nullable=False)
+    
 
     user = db.relationship("User", back_populates="user_settings", uselist=False)
 

@@ -19,6 +19,7 @@ def test_notifies_recipient(household, make_user):
     notifications = Notification.query.filter_by(recipient_id=bob.id).all()
     assert len(notifications) == 1
 
+
 def test_dedupes_recipients(household, make_user):
     """The same id twice gives one row"""
     alice=make_user("alice")
@@ -35,6 +36,7 @@ def test_dedupes_recipients(household, make_user):
     notifications = Notification.query.filter_by(recipient_id=alice.id).all()
     assert len(notifications) == 1
 
+
 def test_no_recipients(household, make_user):
     """Empty list returns [] and creates nothing"""
     alice=make_user("alice")
@@ -50,6 +52,7 @@ def test_no_recipients(household, make_user):
     notifications = Notification.query.all()
     assert len(notifications) == 0
     assert notification == []
+
 
 def test_system_actor(household, make_user):
     """`actor_id = None` notifies everyone"""
@@ -70,6 +73,7 @@ def test_system_actor(household, make_user):
     assert len(notifications) == 2
     for n in notifications:
         assert n.actor_id is None
+
 
 def test_stores_fields(household, make_user):
     """type, household, entity type, id and label are saved"""
@@ -93,6 +97,7 @@ def test_stores_fields(household, make_user):
     assert notification.entity_type == NotificationEntity.TASK
     assert notification.entity_id == 1
     assert notification.entity_label == "Dishes"
+
 
 def test_starts_unread(household, make_user):
     """read_at is None, count == 1"""
@@ -148,6 +153,7 @@ def test_labels_empty_without_label(household, make_user):
 
     notification = Notification.query.filter_by(recipient_id=bob.id).first()
     assert notification.entity_labels == []
+
 
 def test_does_not_commit(db, household, make_user):
     """After session rollback, the rows are gone."""
