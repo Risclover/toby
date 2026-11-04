@@ -24,6 +24,9 @@ class NotificationService:
 
         notifications = []
         for recipient_id in dict.fromkeys(recipient_ids):
+            if recipient_id == actor_id:
+                continue
+                
             existing = None
             if batch_key:
                 existing = (

@@ -8,10 +8,10 @@ def _ids(response):
     return [item["id"] for item in response.get_json()["items"]]
 
 
-
 # Tests
 PROTECTED = [
     ("get", "/api/notifications"),
+    ("get", "/api/notifications/unseen-count"),
 ]
 
 @pytest.mark.parametrize("method, url", PROTECTED)
@@ -166,7 +166,63 @@ def test_list_item_shape(client, login, make_user, make_notification):
         "entityId", "entityLabel", "entityLabels", "eventMetadata",
         "count", "createdAt", "readAt",
     }
-
     assert item["type"] == "task_assigned"
     assert item["actor"] is None
     assert item["readAt"] is None
+
+
+
+# GET /unseen-count
+def test_unseen_counts_new(client, login, make_user, make_notification):
+    """A user who has never opened notifications is counted for every unread notification"""
+    alice = make_user("alice")
+    bob = make_user("bob")
+    make_notification(alice)
+    make_notification(alice)
+    make_notification(bob)
+
+    login(alice)
+    response = client.get("/api/notifications/unseen-count")
+
+    assert response.status_code == 200
+    assert response.get_json()["count"] == 2
+
+
+def test_unseen_excludes_read(client, login, make_user, make_notification):
+    """Notification already read is not counted"""
+    alice = make_user("alice")
+    make_notification(alice)
+    make_notification(alice, read_at=datetime.now(timezone.utc))
+    login(alice)
+
+    response = client.get("/api/notifications/unseen-count")
+
+    assert response.status_code == 200
+    assert response.get_json()["count"] == 1
+
+
+def test_unseen_only_mine(client, login, make_user, make_notification):
+    """Unseen count is only for logged-in user"""
+    alice = make_user("alice")
+    bob = make_user("bob")
+    make_notification(alice)
+    make_notification(bob)
+
+    login(alice)
+    response = client.get("/api/notifications/unseen-count")
+
+    assert response.status_code == 200
+    assert response.get_json()["count"] == 1
+
+
+def test_unseen_capped(client, login, make_user, make_notification):
+    """The count stops at 21 (so the bell can show 20+ without counting everything)"""
+    alice = make_user("alice")
+    for _ in range(101):
+        make_notification(alice)
+
+    login(alice)
+    response = client.get("/api/notifications/unseen-count")
+
+    assert response.status_code == 200
+    assert response.get_json()["count"] == 21

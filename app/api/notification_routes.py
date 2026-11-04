@@ -11,6 +11,7 @@ notification_routes = Blueprint("notifications", __name__)
 
 DEFAULT_LIMIT = 20
 MAX_LIMIT = 100
+UNSEEN_CAP = 21
 
 def _encode_cursor(notification):
     """Opaque, URL-safe bookmark: this row's (created_at, id)."""
@@ -53,3 +54,20 @@ def get_notifications():
     next_cursor = _encode_cursor(rows[-1]) if has_next else None
 
     return jsonify({"items": [n.to_dict() for n in rows], "nextCursor": next_cursor}), 200
+
+
+@notification_routes.route("/unseen-count", methods=["GET"])
+@login_required
+def get_unseen_count():
+    query = Notification.query.filter(
+        Notification.recipient_id == current_user.id,
+        Notification.read_at.is_(None),
+    )
+
+    last_seen = current_user.notifications_last_seen_at
+    if last_seen is not None:
+        query = query.filter(Notification.created_at > last_seen)
+
+    # limit() before count() makes SQL stop counting at the cap
+    count = query.limit(UNSEEN_CAP).count()
+    return jsonify({"count": count}), 200

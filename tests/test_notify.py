@@ -19,21 +19,43 @@ def test_notifies_recipient(household, make_user):
     notifications = Notification.query.filter_by(recipient_id=bob.id).all()
     assert len(notifications) == 1
 
+def test_skips_actor(db, household, make_user):
+    """User doesn't get notified about their own actions"""
+    alice = make_user("alice")   # actor
+    bob = make_user("bob")
+
+    notifications = NotificationService.notify(
+        type=NotificationType.TASK_ASSIGNED,
+        household_id=household.id,
+        recipient_ids=[alice.id, bob.id],
+        actor_id=alice.id,
+        entity_type=NotificationEntity.TASK,
+        entity_id=1,
+        entity_label="Dishes",
+    )
+    db.session.commit()
+
+    assert [n.recipient_id for n in notifications] == [bob.id]
+    assert Notification.query.filter_by(recipient_id=alice.id).count() == 0
+    assert Notification.query.filter_by(recipient_id=bob.id).count() == 1
+
 
 def test_dedupes_recipients(household, make_user):
     """The same id twice gives one row"""
-    alice=make_user("alice")
+    alice = make_user("alice") 
+    bob = make_user("bob")   
+
     NotificationService.notify(
         type=NotificationType.TASK_ASSIGNED,
         household_id=household.id,
-        recipient_ids=[alice.id, alice.id],
+        recipient_ids=[bob.id, bob.id],
         actor_id=alice.id,
         entity_type=NotificationEntity.TASK,
         entity_id=1,
         entity_label="Dishes",
     )
 
-    notifications = Notification.query.filter_by(recipient_id=alice.id).all()
+    notifications = Notification.query.filter_by(recipient_id=bob.id).all()
     assert len(notifications) == 1
 
 

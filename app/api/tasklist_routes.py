@@ -155,6 +155,13 @@ def add_task(id):
         batch_key=f"task-created-{tasklist.id}",
     )
 
+    if task.assigned_to_id:
+        NotificationService.notify(
+            type=NotificationType.TASK_ASSIGNED,
+            household_id=tasklist.household_id,
+            recipient_ids=[task.assigned_to_id],
+        )
+
     db.session.commit()
     return jsonify(task.to_dict()), 201
 

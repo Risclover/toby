@@ -42,7 +42,7 @@ class NotificationType(str, enum.Enum):
     MEMBER_JOINED = "member_joined" # Member joined household
     MEMBER_LEFT = "member_left" # Member left household
     MEMBER_REMOVED = "member_removed" # Member removed from household 
-
+    USER_REMOVED = "user_removed" # Current user removed from household
 
 class NotificationEntity(str, enum.Enum):
     TASK = "task"
