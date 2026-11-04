@@ -9,6 +9,8 @@ def _ids(response):
 
 
 # Tests
+
+# GET /notifications
 PROTECTED = [
     ("get", "/api/notifications"),
     ("get", "/api/notifications/unseen-count"),
@@ -226,3 +228,148 @@ def test_unseen_capped(client, login, make_user, make_notification):
 
     assert response.status_code == 200
     assert response.get_json()["count"] == 21
+
+
+
+# POST /seen
+def test_seen_sets_last_seen(client, login, db, make_user):
+    """Opening notifications stores a newer last-seen time for the user"""
+    alice = make_user("alice")
+    alice.notifications_last_seen_at = datetime.now(timezone.utc) - timedelta(days=1)
+    db.session.commit()
+    db.session.refresh(alice)
+    before = alice.notifications_last_seen_at
+    login(alice)
+
+    response = client.post("/api/notifications/seen")
+
+    assert response.status_code == 200
+    db.session.refresh(alice)
+    assert alice.notifications_last_seen_at > before
+
+
+def test_new_after_seen_counts(client, login, db, make_user, make_notification):
+    """Notifications created after the last time the user opens notifications are counted"""
+    alice = make_user("alice")
+    seen_at = datetime.now(timezone.utc)
+    alice.notifications_last_seen_at = seen_at
+    db.session.commit()
+
+    make_notification(alice, created_at=seen_at - timedelta(hours=1))
+    make_notification(alice, created_at=seen_at + timedelta(hours=1))
+    login(alice)
+
+    response = client.get("/api/notifications/unseen-count")
+
+    assert response.get_json()["count"] == 1
+
+
+def test_seen_keeps_rows_unread(client, login, make_user, make_notification):
+    """Opening notifications clears the badge but does not mark any notifications as read"""
+    alice = make_user("alice")
+    make_notification(alice)
+    make_notification(alice)
+    login(alice)
+
+    response = client.post("/api/notifications/seen")
+
+    items = client.get("/api/notifications").get_json()["items"]
+
+    assert len(items) == 2
+    assert all(item["readAt"] is None for item in items)
+
+
+
+# POST /<notification_id>/read
+def test_mark_read(client, login, make_user, make_notification):
+    """Marking a notification as read sets its read_at"""
+    alice = make_user("alice")
+    notification = make_notification(alice)
+    login(alice)
+
+    response = client.post(f"/api/notifications/{notification.id}/read")
+
+    assert response.status_code == 200
+    assert response.get_json()["readAt"] is not None
+
+
+def test_mark_read_twice_keeps_original(client, login, make_user, make_notification):
+    """Marking a notification as read twice keeps the original read_at"""
+    alice = make_user("alice")
+    notification = make_notification(alice)
+    login(alice)
+    url = f"/api/notifications/{notification.id}/read"
+
+    first = client.post(url).get_json()["readAt"]
+    second = client.post(url).get_json()["readAt"]
+
+    assert first is not None
+    assert first == second
+
+
+# POST /<notification_id>/unread
+def test_mark_unread(client, login, make_user, make_notification):
+    """Marking a notification as unread clears its read_at"""
+    alice = make_user("alice")
+    notification = make_notification(alice, read_at=datetime.now(timezone.utc))
+    login(alice)
+
+    response = client.post(f"/api/notifications/{notification.id}/unread")
+
+    assert response.status_code == 200
+    assert response.get_json()["readAt"] is None
+
+
+@pytest.mark.parametrize("action", ["read", "unread"])
+def test_mark_read_missing_404(client, login, make_user, action):
+    """Changing the read state for a notification that does not exist returns a 404"""
+    alice = make_user("alice")
+    login(alice)
+
+    response = client.post(f"/api/notifications/999/{action}")
+
+    assert response.status_code == 404
+
+@pytest.mark.parametrize("action", ["read", "unread"])
+def test_mark_read_other_users_404(client, login, make_user, make_notification, action):
+    """A user cannot change another user's notification, and cannot tell that it exists"""
+    alice = make_user("alice")
+    bob = make_user("bob")
+    notification = make_notification(bob)
+    login(alice)
+
+    response = client.post(f"/api/notifications/{notification.id}/{action}")
+
+    assert response.status_code == 404
+
+
+# POST /read-all
+def test_mark_all_read(client, login, make_user, make_notification):
+    """Marking all notifications as read sets their read_at"""
+    bob = make_user("bob")
+    make_notification(bob)
+    make_notification(bob)
+    make_notification(bob, read_at=datetime.now(timezone.utc))   # already read: not counted
+    login(bob)
+
+    response = client.post("/api/notifications/read-all")
+
+    assert response.status_code == 200
+    assert response.get_json()["updated"] == 2
+    items = client.get("/api/notifications").get_json()["items"]
+    assert len(items) == 3
+    assert all(item["readAt"] is not None for item in items)
+
+
+def test_mark_all_read_leaves_others(client, login, db, make_user, make_notification):
+    """Mark all read never touches another user's notifications"""
+    alice = make_user("alice")
+    bob = make_user("bob")
+    alices = make_notification(alice)
+    make_notification(bob)
+    login(bob)
+
+    client.post("/api/notifications/read-all")
+
+    db.session.refresh(alices)       # the request ran in its own session
+    assert alices.read_at is None
