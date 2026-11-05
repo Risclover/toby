@@ -171,8 +171,7 @@ def test_list_item_shape(client, login, make_user, make_notification):
 
     assert set(item) == {
         "id", "recipientId", "householdId", "actor", "type", "entityType",
-        "entityId", "entityLabel", "entityLabels", "eventMetadata",
-        "count", "createdAt", "readAt",
+        "entityId", "entityLabel", "entityLabels", "count", "createdAt", "readAt",
     }
     assert item["type"] == "task_assigned"
     assert item["entityType"] == "task"
@@ -384,7 +383,7 @@ def test_mark_all_read(client, login, make_user, make_notification):
     bob = make_user("bob")
     make_notification(bob)
     make_notification(bob)
-    make_notification(bob, read_at=datetime.now(timezone.utc))   # already read: not counted
+    make_notification(bob, read_at=datetime.now(timezone.utc))   
     login(bob)
 
     response = client.post("/api/notifications/read-all")
@@ -406,7 +405,7 @@ def test_mark_all_read_leaves_others(client, login, db, make_user, make_notifica
 
     client.post("/api/notifications/read-all")
 
-    db.session.refresh(alices)       # the request ran in its own session
+    db.session.refresh(alices)    
     assert alices.read_at is None
 
 

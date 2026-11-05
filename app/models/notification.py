@@ -44,6 +44,7 @@ class NotificationType(str, enum.Enum):
     MEMBER_REMOVED = "member_removed" # Member removed from household 
     USER_REMOVED = "user_removed" # Current user removed from household
 
+
 class NotificationEntity(str, enum.Enum):
     TASK = "task"
     EVENT = "event"
@@ -79,7 +80,6 @@ class Notification(db.Model):
     entity_type = db.Column(SAEnum(NotificationEntity, native_enum=False, length=16), nullable=True)
     entity_label = db.Column(db.String(255), nullable=True)
     entity_labels = db.Column(db.JSON, nullable=True)
-    event_metadata = db.Column(db.JSON, nullable=True)
 
     batch_key = db.Column(db.String(100), nullable=True)
     count = db.Column(db.Integer, nullable=False, default=1)
@@ -116,7 +116,6 @@ class Notification(db.Model):
             "entityId": self.entity_id,
             "entityLabel": self.entity_label,
             "entityLabels": self.entity_labels or [],
-            "eventMetadata": self.event_metadata,
             "count": self.count,
             "createdAt": _iso(self.created_at),
             "readAt": _iso(self.read_at),

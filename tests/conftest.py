@@ -27,7 +27,7 @@ def app():
             f"Refusing to run tests against {_db.engine.url}"
         )
         _db.create_all()
-        yield app # The test runs here
+        yield app
         _db.session.remove()
         _db.drop_all()
 
@@ -76,7 +76,7 @@ def household(db):
 @pytest.fixture
 def make_user(db, household):
     """Factory: make_user("alice") creates a user in the test household."""
-    colors = iter(MEMBER_COLORS) # next(colors) gives a new color each call
+    colors = iter(MEMBER_COLORS)
 
     def _make(name, **overrides):
         fields = {"household_id": household.id, "color": next(colors)}
@@ -118,6 +118,6 @@ def login(client):
     """login(user) makes later requests from `client` look signed in as that user"""
     def _login(user):
         with client.session_transaction() as session:
-            session["_user_id"] = str(user.id) # Flask-Login's session key
+            session["_user_id"] = str(user.id)
             session["_fresh"] = True
     return _login
