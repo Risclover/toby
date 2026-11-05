@@ -12,13 +12,19 @@ def _ids(response):
 
 # GET /notifications
 PROTECTED = [
-    ("get", "/api/notifications"),
-    ("get", "/api/notifications/unseen-count"),
+    ("GET", "/api/notifications"),
+    ("GET", "/api/notifications/unseen-count"),
+    ("POST", "/api/notifications/seen"),
+    ("POST", "/api/notifications/1/read"),
+    ("POST", "/api/notifications/1/unread"),
+    ("POST", "/api/notifications/read-all"),
 ]
 
 @pytest.mark.parametrize("method, url", PROTECTED)
 def test_requires_login(client, method, url):
-    response = getattr(client, method)(url)
+    """Every notification endpoint rejects a request that is not logged in"""
+    response = client.open(url, method=method)
+
     assert response.status_code == 401
 
 
@@ -156,9 +162,9 @@ def test_list_ignores_household(db, client, login, make_user, make_notification)
 
 
 def test_list_item_shape(client, login, make_user, make_notification):
-    """Each item has the expected shape"""
+    """Each listed notification has the documented keys, with values in the documented formats"""
     bob = make_user("bob")
-    note = make_notification(bob, entity_label="Dishes")
+    make_notification(bob)
     login(bob)
 
     item = client.get("/api/notifications").get_json()["items"][0]
@@ -169,10 +175,26 @@ def test_list_item_shape(client, login, make_user, make_notification):
         "count", "createdAt", "readAt",
     }
     assert item["type"] == "task_assigned"
+    assert item["entityType"] == "task"
+    assert item["entityLabels"] == ["Dishes"]
+    assert item["count"] == 1
     assert item["actor"] is None
     assert item["readAt"] is None
+    assert datetime.fromisoformat(item["createdAt"]).tzinfo is not None
 
 
+@pytest.mark.parametrize("limit, expected", [("0", 1), ("-5", 1), ("abc", 20)])
+def test_list_bad_limit(client, login, make_user, make_notification, limit, expected):
+    """A zero, negative or non-numeric limit is clamped instead of breaking the list"""
+    bob = make_user("bob")
+    for _ in range(25):
+        make_notification(bob)
+    login(bob)
+
+    response = client.get(f"/api/notifications?limit={limit}")
+
+    assert response.status_code == 200
+    assert len(response.get_json()["items"]) == expected
 
 # GET /unseen-count
 def test_unseen_counts_new(client, login, make_user, make_notification):
@@ -373,3 +395,17 @@ def test_mark_all_read_leaves_others(client, login, db, make_user, make_notifica
 
     db.session.refresh(alices)       # the request ran in its own session
     assert alices.read_at is None
+
+
+@pytest.mark.parametrize("limit, expected", [("0", 1), ("-5", 1), ("abc", 20)])
+def test_list_bad_limit(client, login, make_user, make_notification, limit, expected):
+    """A zero, negative or non-numeric limit is clamped instead of breaking the list"""
+    bob = make_user("bob")
+    for _ in range(25):
+        make_notification(bob)
+    login(bob)
+
+    response = client.get(f"/api/notifications?limit={limit}")
+
+    assert response.status_code == 200
+    assert len(response.get_json()["items"]) == expected
