@@ -5,6 +5,7 @@ from flask_login import current_user, login_required
 from sqlalchemy import and_, or_
 from app.extensions import db
 from app.models.notification import Notification
+from app.services import NotificationService
 
 notification_routes = Blueprint("notifications", __name__)
 
@@ -35,6 +36,9 @@ def _get_my_notification(notification_id):
 @notification_routes.route("", methods=["GET"])
 @login_required
 def get_notifications():
+    NotificationService.prune_read(current_user.id)
+    db.session.commit()
+
     limit = request.args.get("limit", default=DEFAULT_LIMIT, type=int)
     limit = max(1, min(limit, MAX_LIMIT))
     cursor = request.args.get("cursor")

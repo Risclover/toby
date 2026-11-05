@@ -3,9 +3,21 @@ from app.models.notification import Notification
 from datetime import datetime, timezone, timedelta
 
 BATCH_WINDOW_MINUTES = 15
-
+RETENTION_DAYS = 30
 
 class NotificationService:
+    @staticmethod
+    def prune_read(user_id):
+        cutoff = datetime.now(timezone.utc) - timedelta(days=RETENTION_DAYS)
+        return (
+            Notification.query
+            .filter(
+                Notification.recipient_id == user_id,
+                Notification.read_at < cutoff,
+            )
+            .delete(synchronize_session=False)
+        )
+
     @staticmethod
     def notify(
         type,
@@ -26,7 +38,7 @@ class NotificationService:
         for recipient_id in dict.fromkeys(recipient_ids):
             if recipient_id == actor_id:
                 continue
-                
+
             existing = None
             if batch_key:
                 existing = (

@@ -1,6 +1,6 @@
 import pytest
 from app.models.notification import Notification, NotificationType, NotificationEntity
-from app.services.notification_service import NotificationService
+from app.services import NotificationService, RETENTION_DAYS
 from datetime import datetime, timedelta, timezone
 
 # Helpers
@@ -195,6 +195,19 @@ def test_list_bad_limit(client, login, make_user, make_notification, limit, expe
 
     assert response.status_code == 200
     assert len(response.get_json()["items"]) == expected
+
+
+def test_list_prunes(client, login, make_user, make_notification):
+    """Loading the list deletes the user's notifications that were read long ago"""
+    bob = make_user("bob")
+    make_notification(bob, read_at=datetime.now(timezone.utc) - timedelta(days=RETENTION_DAYS + 1))
+    make_notification(bob)   # unread: stays
+    login(bob)
+
+    items = client.get("/api/notifications").get_json()["items"]
+
+    assert len(items) == 1
+
 
 # GET /unseen-count
 def test_unseen_counts_new(client, login, make_user, make_notification):

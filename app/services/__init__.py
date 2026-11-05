@@ -1,2 +1,2 @@
 from .activity_service import ActivityService
-from .notification_service import NotificationService
+from .notification_service import NotificationService, RETENTION_DAYS
