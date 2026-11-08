@@ -3,7 +3,7 @@ import pytest
 from app import create_app
 from app.config import Config
 from app.extensions import db as _db
-from app.models import Household, User, Notification, NotificationType, NotificationEntity
+from app.models import Household, User, Notification, NotificationType, NotificationEntity, Task, Tasklist
 
 # Each user needs a different color
 # Admin gets "black", and make_user hands out these in order
@@ -121,3 +121,27 @@ def login(client):
             session["_user_id"] = str(user.id)
             session["_fresh"] = True
     return _login
+
+
+@pytest.fixture
+def make_tasklist(db, household):
+    def _make(creator, **overrides):
+        fields = dict(title="Chores", color="blue", household_id=household.id, all_members=True, creator_id=creator.id)
+        fields.update(overrides)
+        tasklist = Tasklist(**fields)
+        db.session.add(tasklist)
+        db.session.commit()
+        return tasklist
+    return _make
+
+
+@pytest.fixture
+def make_task(db):
+    def _make(tasklist, creator, **overrides):
+        fields = dict(title="Dishes", list_id=tasklist.id, creator_id=creator.id, assigned_to_id=None)
+        fields.update(overrides)
+        task = Task(**fields)
+        db.session.add(task)
+        db.session.commit()
+        return task
+    return _make

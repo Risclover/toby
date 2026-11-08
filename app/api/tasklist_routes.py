@@ -7,6 +7,7 @@ from app.utils.reminder_utils import create_task_due_reminders
 from app.services import ActivityService
 import pytz
 from datetime import datetime, date
+from app.services.notification_triggers import notify_task_assigned
 
 tasklist_routes = Blueprint("tasklists", __name__)
 
@@ -25,6 +26,14 @@ def get_tasklist_audience_ids(tasklist):
     for link in tasklist.member_links:
         audience.add(link.user_id)
     return list(audience)
+
+def user_can_access_tasklist(tasklist, user_id):
+    """True if this user can see the list. None audience means household-wide."""
+    audience = get_tasklist_audience_ids(tasklist)
+    if audience is None:
+        user = User.query.get(user_id)
+        return user is not None and user.household_id == tasklist.household_id
+    return user_id in audience
 
 @tasklist_routes.route("/<int:id>", methods=["GET"])
 def get_tasklist(id):
@@ -98,9 +107,14 @@ def create_tasklist():
     return jsonify(tasklist.to_dict()), 201
 
 @tasklist_routes.route("/<int:id>/tasks", methods=["POST"])
+@login_required
 def add_task(id):
     data = request.get_json() or {}
     tasklist = Tasklist.query.get_or_404(id)
+
+    assignee_id = data.get("assigned_to_id")
+    if assignee_id is not None and not user_can_access_tasklist(tasklist, assignee_id):
+        return jsonify({"error": "Assignee cannot access this list"}), 400
 
     new_sort_index = 0
     if tasklist.new_item_position == "top":
@@ -133,7 +147,7 @@ def add_task(id):
         status=data.get("status", "pending"),
         is_important=data.get("isImportant", False),
         due_date=due_date_utc,
-        assigned_to_id=data.get("assigned_to_id"),
+        assigned_to_id=assignee_id,
         list_id=id,
         sort_index=new_sort_index,
     )
@@ -155,12 +169,7 @@ def add_task(id):
         batch_key=f"task-created-{tasklist.id}",
     )
 
-    if task.assigned_to_id:
-        NotificationService.notify(
-            type=NotificationType.TASK_ASSIGNED,
-            household_id=tasklist.household_id,
-            recipient_ids=[task.assigned_to_id],
-        )
+    notify_task_assigned(task, current_user)
 
     db.session.commit()
     return jsonify(task.to_dict()), 201
