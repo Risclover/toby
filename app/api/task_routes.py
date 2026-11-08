@@ -6,7 +6,8 @@ from datetime import datetime, date
 from flask_login import current_user, login_required
 from app.utils.reminder_utils import create_task_due_reminders
 from app.services import ActivityService
-from app.api.tasklist_routes import get_tasklist_audience_ids
+from app.api.tasklist_routes import get_tasklist_audience_ids, user_can_access_tasklist
+from app.services.notification_triggers import notify_task_assigned
 import pytz
 
 task_routes = Blueprint("tasks", __name__)
@@ -70,6 +71,7 @@ def update_task_status(id):
 @login_required
 def update_task(id):
     task = Task.query.get_or_404(id)
+    old_assignee_id = task.assigned_to_id
 
     tasklist = task.tasklist
     is_all_members = tasklist.all_members or task.assigned_to_id is None
@@ -84,9 +86,16 @@ def update_task(id):
 
     data = request.get_json(silent=True) or {}
 
-    for field in ("title", "description", "isImportant", "status"):
+    assignee_id = data.get("assignedToId")
+    if assignee_id is not None and not user_can_access_tasklist(tasklist, assignee_id):
+        return jsonify({"error": "Assignee cannot access this list"}), 400
+
+    for field in ("title", "description", "status"):
         if field in data:
             setattr(task, field, data[field])
+
+    if "isImportant" in data:
+        task.is_important = data["isImportant"]
 
     if "notes" in data:
         task.notes = data["notes"]
@@ -107,14 +116,20 @@ def update_task(id):
     timezone_str = data.get("timezone") or current_user.timezone or "UTC"
     create_task_due_reminders(task)
 
+    if task.assigned_to_id != old_assignee_id:
+        notify_task_assigned(task, current_user)
+
     db.session.commit()
     db.session.refresh(task)
     return jsonify(task.to_dict()), 200
 
 
 @task_routes.route("/<int:id>", methods=["GET"])
+@login_required
 def get_task(id):
-    task = Task.query.get(id)
+    task = Task.query.get_or_404(id)
+    if task.tasklist.household_id != current_user.household_id:
+        return jsonify({"error": "Forbidden"}), 403
     return jsonify(task.to_dict()), 200
 
 
