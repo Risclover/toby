@@ -9,17 +9,21 @@ class NotificationType(str, enum.Enum):
     EVENT_UNASSIGNED = "event_unassigned" # User was unassigned from event
     EVENT_CHANGED = "event_changed" # Event user assigned to was changed; OR, event user created was changed (by someone else)
     EVENT_DELETED = "event_deleted" # Event user assigned to was deleted; OR, event user created was deleted (by someone else)
+    EVENT_SELF_UNASSIGNED = "event_self_unassigned" # An assignee unassigned themselves from event (notifies assigner)
 
      # Tasklists
     TASKLIST_ASSIGNED = "tasklist_assigned" # User assigned to a tasklist
     TASKLIST_UNASSIGNED = "tasklist_unassigned" # User unassigned from tasklist
     TASKLIST_DELETED = "tasklist_deleted" # Tasklist user assigned to was deleted; OR, tasklist user created was deleted (by someone else)
+    TASKLIST_CHANGED = "tasklist_changed" # Tasklist user assigned to was changed; OR, tasklist user created was changed (by someone else) (e.g. name was changed)\
+    TASKLIST_SELF_UNASSIGNED = "tasklist_self_unassigned" # An assignee unassigned themselves from tasklist (notifies assigner)
     
     # Tasks
-    TASK_ASSIGNED = "task_assigned" # User was assigned to a task
-    TASK_UNASSIGNED = "task_unassigned" # User was unassigned from task
-    TASK_CHANGED = "task_changed" # Task assigned to was changed; OR, task user created was changed by someone else
-    TASK_DELETED = "task_deleted" # Task assigned to was deleted; OR, task user created was deleted by someone else
+    TASK_ASSIGNED = "task_assigned" # User was assigned to a task ("Bob assigned you to the task (task)", or "You have (num) new task assignment(s)" or something)
+    TASK_UNASSIGNED = "task_unassigned" # User was unassigned from assigned task (Bob unassigns Alice, so Alice gets "You were unassigned from (task) by Bob" or something)
+    TASK_SELF_UNASSIGNED = "task_self_unassigned" # An assignee unassigned themselves from task (e.g. Bob assigns Alice, but Alice unassigns herself, so Bob gets "Alice unassigned" notification)
+    TASK_CHANGED = "task_changed" # Task assigned to was changed; OR, task user created was changed by someone else ("The task (task) was changed")
+    TASK_DELETED = "task_deleted" # Task assigned to was deleted; OR, task user created was deleted by someone else ("The task (task) was deleted")
     TASK_COMPLETED = "task_completed" # A task user is assigned to was completed by someone else
     TASK_REOPENED = "task_reopened" # A task user is assigned to was reopened by someone else
     TASK_OVERDUE = "task_overdue" # A task user is assigned to is overdue
@@ -28,6 +32,8 @@ class NotificationType(str, enum.Enum):
     SHOPPING_LIST_ASSIGNED = "shopping_list_assigned" # User assigned to shopping list 
     SHOPPING_LIST_UNASSIGNED = "shopping_list_unassigned" # User unassigned from shopping list
     SHOPPING_LIST_DELETED = "shopping_list_deleted" # Assigned shopping list deleted; OR, list user created was deleted by someone else
+    SHOPPING_LIST_CHANGED = "shopping_list_changed" # Assigned/created shopping list was changed (e.g. name was changed) by someone else
+    SHOPPING_LIST_SELF_UNASSIGNED = "shopping_list_self_unassigned" # An assignee unassigned themselves from shopping list (notifies assigner)
 
     # Reminders
     REMINDER_ASSIGNED = "reminder_assigned" # User given reminder by another user 
@@ -39,6 +45,7 @@ class NotificationType(str, enum.Enum):
     # Household
     ADMIN_CHANGED = "admin_changed" # Household admin changed
     ADMIN_REQUEST = "admin_request" # Admin requesting user to become admin
+    ADMIN_REQUEST_DENIED = "admin_request_denied" # Admin request was denied by requested user (inform requestee)
     MEMBER_JOINED = "member_joined" # Member joined household
     MEMBER_LEFT = "member_left" # Member left household
     MEMBER_REMOVED = "member_removed" # Member removed from household 
