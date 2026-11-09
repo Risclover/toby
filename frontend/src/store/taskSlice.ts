@@ -60,6 +60,8 @@ export interface TasklistType {
 
 type CreateTasklistBase = {
     title: string;
+    color: string;
+    householdId: number;
 }
 
 type CreateForUser = CreateTasklistBase & {
@@ -71,23 +73,16 @@ type CreateForUser = CreateTasklistBase & {
 }
 
 type CreateForHousehold = CreateTasklistBase & {
-    householdId: number;
-    color: string;
     allMembers: true;          // literal true
     memberIds?: never;         // must be absent
-    userId?: never;
 }
 
 type CreateForHouseholdSubset = CreateTasklistBase & {
-    householdId: number;
-    color: string;
     allMembers: false;         // literal false
     memberIds: number[];       // required now
-    userId?: never;
 };
 
-// Request types
-export type CreateTasklistRequest = CreateForUser | CreateForHousehold | CreateForHouseholdSubset
+export type CreateTasklistRequest = CreateForHousehold | CreateForHouseholdSubset
 
 export interface CreateTaskRequest {
     title: string;
@@ -156,6 +151,12 @@ type UpdateTaskPatch = Partial<
 >;
 
 type TasklistTag = { type: "Tasklist"; id: number | string };
+
+export interface LeaveListRequest {
+    listId: number;
+    householdId?: number;
+}
+
 
 // Converts Date or string → YYYY-MM-DD (no timezone shift)
 const toDateOnlyString = (value?: string | Date | null): string | null => {
@@ -246,40 +247,22 @@ export const taskSlice = apiSlice.injectEndpoints({
         }),
 
         createHouseholdTasklist: builder.mutation<TasklistType, CreateTasklistRequest>({
-            query: (arg) => {
-                // user-owned
-                if ("creatorId" in arg) {
-                    const { title, color, creatorId } = arg;
-                    return {
-                        url: "tasklists",
-                        method: "POST",
-                        body: { title, color, creator_id: creatorId },
-                    };
-                }
-
-                // household-owned
-                const { title, color, householdId, allMembers } = arg;
-                return {
-                    url: `households/${householdId}/tasklists`,
-                    method: "POST",
-                    body: {
-                        title,
-                        color,
-                        allMembers,
-                        ...(allMembers === false ? { memberIds: arg.memberIds } : {}),
-                    },
-                };
-            },
+            query: (arg) => ({
+                url: `households/${arg.householdId}/tasklists`,
+                method: "POST",
+                body: {
+                    title: arg.title,
+                    color: arg.color,
+                    allMembers: arg.allMembers,
+                    ...(arg.allMembers === false ? { memberIds: arg.memberIds } : {}),
+                },
+            }),
             invalidatesTags: (result) =>
-                result
+                result?.householdId
                     ? [
                         { type: "Tasklist", id: result.id },
-                        result.householdId
-                            ? { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` }
-                            : { type: "Tasklist", id: `USER_${result.creatorId}` },
-                        ...(result.householdId
-                            ? [{ type: "Activity" as const, id: `HOUSEHOLD_${result.householdId}` }]
-                            : []),
+                        { type: "Tasklist", id: `HOUSEHOLD_${result.householdId}` },
+                        { type: "Activity", id: `HOUSEHOLD_${result.householdId}` },
                     ]
                     : [],
         }),
@@ -333,7 +316,7 @@ export const taskSlice = apiSlice.injectEndpoints({
                 method: "PATCH",
                 body: {
                     ...patch,
-                    dueDate: toDateOnlyString(patch.dueDate),
+                    ...("dueDate" in patch ? { dueDate: toDateOnlyString(patch.dueDate) } : {}),
                 },
             }),
 
@@ -343,7 +326,7 @@ export const taskSlice = apiSlice.injectEndpoints({
             ) {
                 const normalizedPatch = {
                     ...patch,
-                    dueDate: toDateOnlyString(patch.dueDate),
+                    ...("dueDate" in patch ? { dueDate: toDateOnlyString(patch.dueDate) } : {}),
                 };
 
                 const p1 = dispatch(
@@ -654,7 +637,22 @@ export const taskSlice = apiSlice.injectEndpoints({
                 return tags;
             },
         }),
-    }),
+
+        leaveList: builder.mutation<{ message: string }, LeaveListRequest>({
+            query: ({ listId }) => ({
+                url: `/tasklists/${listId}/leave`,
+                method: "POST",
+            }),
+            invalidatesTags: (_res, _err, { listId, householdId }): any[] => [
+                { type: "Tasklist", id: listId },
+                { type: "Tasklist", id: "LIST" },
+                "FeaturedListSettings",
+                ...(householdId != null
+                    ? [{ type: "Tasklist", id: `HOUSEHOLD_${householdId}` }]
+                    : []),
+            ],
+        }),
+    })
 })
 
 export const {
@@ -673,5 +671,6 @@ export const {
     useReorderTasksMutation,
     useArchiveListMutation,
     useUnarchiveListMutation,
-    useDuplicateListMutation
+    useDuplicateListMutation,
+    useLeaveListMutation,
 } = taskSlice;
