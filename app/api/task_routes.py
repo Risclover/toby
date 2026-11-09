@@ -7,7 +7,14 @@ from flask_login import current_user, login_required
 from app.utils.reminder_utils import create_task_due_reminders
 from app.services import ActivityService
 from app.api.tasklist_routes import get_tasklist_audience_ids, user_can_access_tasklist
-from app.services.notification_triggers import notify_task_assigned
+from app.services.notification_triggers import (
+    notify_task_assigned,
+    notify_task_unassigned,
+    notify_task_self_unassigned,
+    notify_task_changed,
+    notify_task_deleted,
+    notify_task_status_changed,
+)
 import pytz
 
 task_routes = Blueprint("tasks", __name__)
@@ -28,6 +35,7 @@ def parse_due_date(val: str) -> datetime:
 @login_required
 def update_task_status(id):
     task = Task.query.get_or_404(id)
+    old_status = task.status
     data = request.get_json(silent=True) or {}
 
     completed = data.get("completed")
@@ -63,6 +71,8 @@ def update_task_status(id):
         batch_key=f"task-{action}-{tasklist.id}",
     )
 
+    notify_task_status_changed(task, old_status, current_user)
+
     db.session.commit()
     return jsonify(task.to_dict()), 200
 
@@ -72,6 +82,8 @@ def update_task_status(id):
 def update_task(id):
     task = Task.query.get_or_404(id)
     old_assignee_id = task.assigned_to_id
+    old_status = task.status
+    old_content = (task.title, task.description, task.notes, task.due_date)
 
     tasklist = task.tasklist
     is_all_members = tasklist.all_members or task.assigned_to_id is None
@@ -117,7 +129,16 @@ def update_task(id):
     create_task_due_reminders(task)
 
     if task.assigned_to_id != old_assignee_id:
+        if old_assignee_id is not None:
+            notify_task_unassigned(task, old_assignee_id, current_user)
+            if old_assignee_id == current_user.id:
+                notify_task_self_unassigned(task, current_user)
         notify_task_assigned(task, current_user)
+
+    if (task.title, task.description, task.notes, task.due_date) != old_content:
+        notify_task_changed(task, current_user, old_assignee_id)
+
+    notify_task_status_changed(task, old_status, current_user)
 
     db.session.commit()
     db.session.refresh(task)
@@ -175,6 +196,8 @@ def delete_task(id):
         audience_ids=get_tasklist_audience_ids(tasklist),
         batch_key=f"task-deleted-{tasklist.id}",
     )
+
+    notify_task_deleted(task, current_user)
 
     task.delete()
     db.session.commit()

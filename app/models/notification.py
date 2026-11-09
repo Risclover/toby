@@ -26,7 +26,7 @@ class NotificationType(str, enum.Enum):
     TASK_DELETED = "task_deleted" # Task assigned to was deleted; OR, task user created was deleted by someone else ("The task (task) was deleted")
     TASK_COMPLETED = "task_completed" # A task user is assigned to was completed by someone else
     TASK_REOPENED = "task_reopened" # A task user is assigned to was reopened by someone else
-    TASK_OVERDUE = "task_overdue" # A task user is assigned to is overdue
+    # TASK_OVERDUE = "task_overdue" # A task user is assigned to is overdue
 
     # Shopping lists
     SHOPPING_LIST_ASSIGNED = "shopping_list_assigned" # User assigned to shopping list 

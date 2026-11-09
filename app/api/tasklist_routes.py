@@ -7,7 +7,11 @@ from app.utils.reminder_utils import create_task_due_reminders
 from app.services import ActivityService
 import pytz
 from datetime import datetime, date
-from app.services.notification_triggers import notify_task_assigned
+from app.services.notification_triggers import (
+    notify_task_assigned,
+    notify_task_deleted,
+    notify_task_status_changed,
+)
 
 tasklist_routes = Blueprint("tasklists", __name__)
 
@@ -199,6 +203,8 @@ def delete_task(list_id, id):
         batch_key=f"task-deleted-{tasklist.id}",
     )
 
+    notify_task_deleted(task, current_user)
+
     db.session.delete(task)
     db.session.commit()
     return jsonify(deleted_task), 200
@@ -212,6 +218,11 @@ def clear_list(list_id):
     # Creator or admin can clear
     if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
         return jsonify({"error": "Forbidden"}), 403
+
+    # Notify first: the bulk delete below skips the ORM, so the tasks must be read now.
+    # The batch key folds these into one notification per person.
+    for task in Task.query.filter_by(list_id=list_id).all():
+        notify_task_deleted(task, current_user)
 
     Task.query.filter_by(list_id=list_id).delete()
     db.session.commit()
@@ -475,7 +486,9 @@ def complete_all_tasks(id):
         return jsonify({"error": "Forbidden"}), 403
 
     for task in tasklist.tasks:
+        old_status = task.status
         task.status = "completed"
+        notify_task_status_changed(task, old_status, current_user)
 
     ActivityService.record(
         household_id=tasklist.household_id,
@@ -500,7 +513,9 @@ def incomplete_all_tasks(id):
         return jsonify({"error": "Forbidden"}), 403
 
     for task in tasklist.tasks:
+        old_status = task.status
         task.status = "in_progress"
+        notify_task_status_changed(task, old_status, current_user)
 
     ActivityService.record(
         household_id=tasklist.household_id,

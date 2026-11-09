@@ -145,3 +145,5 @@ def make_task(db):
         db.session.commit()
         return task
     return _make
+
+\
