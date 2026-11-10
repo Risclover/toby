@@ -1,4 +1,5 @@
 import { MobileHomeHeader } from "@/components/MobileHomeHeader"
+import NotificationDebug from "@/features/Notifications/components/NotificationDebug";
 import type React from "react"
 import type { JSX } from "react"
 
@@ -11,6 +12,7 @@ export const MobileLayout = ({ titleComponent, children }: Props) => {
         <div className="mobile-home-container">
             <div className="mobile-home-container-top">
                 <MobileHomeHeader />
+                <NotificationDebug />
                 {titleComponent}
             </div>
             <div className="mobile-home-container-bottom">

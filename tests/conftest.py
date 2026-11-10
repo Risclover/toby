@@ -146,4 +146,31 @@ def make_task(db):
         return task
     return _make
 
-\
+
+@pytest.fixture
+def make_event(db, household):
+    def _make(creator, attendees=(), **overrides):
+        args = dict(
+            household_id=household.id,
+            creator_id=creator.id,
+            title="Dinner",
+            tzid="UTC",
+            start_utc=datetime(2026, 12, 1, 18, 0, tzinfo=timezone.utc),
+            end_utc=datetime(2026, 12, 1, 19, 0, tzinfo=timezone.utc),
+            has_time=True,
+        )
+        args.update(overrides)
+        event = Event(**args)
+        db.session.add(event)
+        db.session.flush()
+        for user in attendees:
+            db.session.add(EventAttendee(event_id=event.id, user_id=user.id))
+        db.session.commit()
+        return event
+    return _make
+
+
+
+@pytest.fixture
+def admin(household):
+    return User.query.get(household.admin_id)

@@ -8,6 +8,14 @@ from app.models import Household, Event, EventAttendee, User, VALID_VISIBILITIES
 from zoneinfo import ZoneInfo
 from flask_login import current_user, login_required
 from app.utils.timezone import utc_datetime_to_local, ensure_utc
+from app.services.notification_triggers import (
+    event_attendee_ids,
+    event_content,
+    notify_event_attendees_changed,
+    notify_event_changed,
+    notify_event_deleted,
+    notify_event_self_unassigned,
+)
 
 try:
     from dateutil.rrule import rrulestr
@@ -402,6 +410,8 @@ def create_event_for_household(hid: int):
     attendee_ids = resolve_attendee_ids(hid, requested_attendee_ids, fallback_id=current_user.id)
     set_event_attendees(ev, attendee_ids)
 
+    notify_event_attendees_changed(ev, set(), set(attendee_ids), current_user)
+
     db.session.commit()
     return jsonify(event_to_local_dict(ev, current_user)), 201
 
@@ -411,6 +421,8 @@ def create_event_for_household(hid: int):
 def delete_event(hid: int, event_id: int):
     ev = get_event_or_404(hid, event_id)
     require_creator_or_admin(ev, "delete")
+
+    notify_event_deleted(ev, current_user)
 
     db.session.delete(ev)  # cascades to event_attendees
     db.session.commit()
@@ -444,8 +456,12 @@ def exclude_event_occurrence(hid: int, event_id: int):
         existing.append(occurrence_start)
         event.exdate = ",".join(existing)
 
+        attendee_ids = event_attendee_ids(event)
+        notify_event_changed(event, attendee_ids, attendee_ids, current_user)
+
     db.session.commit()
     return jsonify(event_to_local_dict(event, current_user)), 200
+
 
 
 @event_routes.route("/households/<int:hid>/events/<int:event_id>", methods=["PATCH", "PUT"])
@@ -454,6 +470,10 @@ def update_event(hid: int, event_id: int):
     event = get_event_or_404(hid, event_id)
     require_creator_or_admin(event, "update")
     data = request.get_json(silent=True) or {}
+
+    before_content = event_content(event)
+    before_ids = event_attendee_ids(event)
+    after_ids = before_ids
 
     if "title" in data:
         title = (data.get("title") or "").strip()
@@ -477,6 +497,7 @@ def update_event(hid: int, event_id: int):
     if "attendeeIds" in data:
         attendee_ids = resolve_attendee_ids(hid, data.get("attendeeIds") or [], fallback_id=event.creator_id)
         set_event_attendees(event, attendee_ids)
+        after_ids = set(attendee_ids)
 
     tzid_in = data.get('tzid')
     schedule_keys = {'startUtc', 'endUtc', 'date'}
@@ -539,6 +560,10 @@ def update_event(hid: int, event_id: int):
                 event.tzid = tzid_in
                 event.has_time = False
 
+    notify_event_attendees_changed(event, before_ids, after_ids, current_user)
+    if event_content(event) != before_content:
+        notify_event_changed(event, before_ids, after_ids, current_user)
+
     db.session.commit()
     return jsonify(event_to_local_dict(event, current_user)), 200
 
@@ -559,10 +584,12 @@ def unassign_self(hid: int, event_id: int):
 
     remaining_count = EventAttendee.query.filter_by(event_id=event.id).count()
     if remaining_count <= 1:
+        notify_event_deleted(event, current_user)
         db.session.delete(event)  # cascades to event_attendees
         db.session.commit()
         return jsonify({"deleted": True, "id": event_id}), 200
-        
+
     db.session.delete(link)
+    notify_event_self_unassigned(event, current_user)
     db.session.commit()
     return jsonify(event_to_local_dict(event, current_user)), 200

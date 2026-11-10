@@ -5,13 +5,18 @@ from flask_login import current_user, login_required
 from app.models.tasklist import SortOrder
 from app.utils.reminder_utils import create_task_due_reminders
 from app.services import ActivityService
-import pytz
-from datetime import datetime, date
 from app.services.notification_triggers import (
     notify_task_assigned,
     notify_task_deleted,
     notify_task_status_changed,
+    tasklist_access_ids,
+    notify_tasklist_access_changed,
+    notify_tasklist_self_unassigned,
+    notify_tasklist_changed,
+    notify_tasklist_deleted,
 )
+import pytz
+from datetime import datetime, date
 
 tasklist_routes = Blueprint("tasklists", __name__)
 
@@ -32,12 +37,20 @@ def get_tasklist_audience_ids(tasklist):
     return list(audience)
 
 def user_can_access_tasklist(tasklist, user_id):
-    """True if this user can see the list. None audience means household-wide."""
     audience = get_tasklist_audience_ids(tasklist)
     if audience is None:
         user = User.query.get(user_id)
         return user is not None and user.household_id == tasklist.household_id
     return user_id in audience
+
+def clear_featured_list(tasklist_id, user_ids):
+    """Unfeature this list for users who can no longer see it."""
+    if not user_ids:
+        return
+    FeaturedListSetting.query.filter(
+        FeaturedListSetting.tasklist_id == tasklist_id,
+        FeaturedListSetting.user_id.in_(user_ids),
+    ).update({FeaturedListSetting.tasklist_id: None}, synchronize_session=False)
 
 @tasklist_routes.route("/<int:id>", methods=["GET"])
 def get_tasklist(id):
@@ -90,34 +103,14 @@ def get_tasklists(id):
     return jsonify([t.to_dict() for t in user_lists]), 200
 
 
-@tasklist_routes.route("", methods=["POST"])
-def create_tasklist():
-    data = request.get_json()
-
-    tasklist = Tasklist(
-        title=data["title"],
-        color=data["color"],
-        creator_id=data.get("creator_id", current_user.id),
-        household_id=data.get("household_id")
-    )
-
-    db.session.add(tasklist)
-
-    household = Household.query.get(data.get("household_id"))
-    household.tasklists.append(tasklist)
-
-    db.session.commit()
-
-    return jsonify(tasklist.to_dict()), 201
-
 @tasklist_routes.route("/<int:id>/tasks", methods=["POST"])
 @login_required
 def add_task(id):
     data = request.get_json() or {}
     tasklist = Tasklist.query.get_or_404(id)
 
-    assignee_id = data.get("assigned_to_id")
-    if assignee_id is not None and not user_can_access_tasklist(tasklist, assignee_id):
+    assigned_to_id = data.get("assigned_to_id")
+    if assigned_to_id is not None and not user_can_access_tasklist(tasklist, assigned_to_id):
         return jsonify({"error": "Assignee cannot access this list"}), 400
 
     new_sort_index = 0
@@ -151,7 +144,7 @@ def add_task(id):
         status=data.get("status", "pending"),
         is_important=data.get("isImportant", False),
         due_date=due_date_utc,
-        assigned_to_id=assignee_id,
+        assigned_to_id=assigned_to_id,
         list_id=id,
         sort_index=new_sort_index,
     )
@@ -253,6 +246,8 @@ def delete_list(id):
         audience_ids=get_tasklist_audience_ids(tasklist),
     )
 
+    notify_tasklist_deleted(tasklist, current_user)
+
     db.session.delete(tasklist)
     db.session.commit()
     return jsonify({"message": f"List {id} deleted"}), 200
@@ -269,6 +264,7 @@ def edit_tasklist(id):
 
     data = request.get_json()
     old_title = tasklist.title
+    before_ids = tasklist_access_ids(tasklist)
     title = data["title"]
     tasklist.title = title
 
@@ -282,6 +278,9 @@ def edit_tasklist(id):
         event_metadata={"oldTitle": old_title},
         audience_ids=get_tasklist_audience_ids(tasklist),
     )
+
+    if title != old_title:
+        notify_tasklist_changed(tasklist, before_ids, current_user)
 
     db.session.commit()
     return jsonify(tasklist.to_dict()), 200
@@ -342,6 +341,11 @@ def duplicate_list(id):
             event_metadata={"duplicatedFrom": original_list.title},
             audience_ids=get_tasklist_audience_ids(new_list),
         )
+
+        # duplicate() copies the member links by id, so read them from the original.
+        if not new_list.all_members:
+            copied_ids = {link.user_id for link in original_list.member_links}
+            notify_tasklist_access_changed(new_list, set(), copied_ids, current_user)
 
         db.session.commit()
         return jsonify(new_list.to_dict()), 201
@@ -413,6 +417,8 @@ def update_list_settings(id):
 
     data = request.get_json() or {}
     old_title = tasklist.title
+    before_ids = tasklist_access_ids(tasklist)
+    after_ids = None   # stays None unless the members change
 
     field_mapping = {
         "title": "title",
@@ -428,7 +434,8 @@ def update_list_settings(id):
         if json_key in data:
             setattr(tasklist, model_attr, data[json_key])
 
-    if "title" in data and data["title"] != old_title:
+    title_changed = "title" in data and data["title"] != old_title
+    if title_changed:
         ActivityService.record(
             household_id=tasklist.household_id,
             actor_id=current_user.id,
@@ -457,6 +464,7 @@ def update_list_settings(id):
                 tasklist.all_members = True
                 for link in tasklist.member_links[:]:
                     db.session.delete(link)
+                after_ids = household_member_ids | {tasklist.creator_id}
             else:
                 tasklist.all_members = False
 
@@ -471,6 +479,14 @@ def update_list_settings(id):
 
                 for uid in ids_to_add:
                     db.session.add(TasklistMember(tasklist_id=tasklist.id, user_id=uid))
+
+                after_ids = new_member_ids | {tasklist.creator_id}
+
+    if title_changed:
+        notify_tasklist_changed(tasklist, before_ids, current_user)
+    if after_ids is not None:
+        clear_featured_list(tasklist.id, before_ids - after_ids)
+        notify_tasklist_access_changed(tasklist, before_ids, after_ids, current_user)
 
     db.session.commit()
     return jsonify(tasklist.to_dict()), 200
@@ -553,15 +569,47 @@ def manage_assigned_members(id):
         return jsonify(
             {"error": "Members must belong to the household", "invalid": list(invalid_ids)}), 400
 
+    before_ids = tasklist_access_ids(tasklist)
+
     for link in tasklist.member_links[:]:
         db.session.delete(link)
 
     if new_member_ids == household_member_ids:
         tasklist.all_members = True
+        after_ids = household_member_ids | {tasklist.creator_id}
     else:
         tasklist.all_members = False
         for user_id in new_member_ids:
             db.session.add(TasklistMember(tasklist_id=tasklist.id, user_id=user_id))
+        after_ids = new_member_ids | {tasklist.creator_id}
+
+    clear_featured_list(tasklist.id, before_ids - after_ids)
+    notify_tasklist_access_changed(tasklist, before_ids, after_ids, current_user)
 
     db.session.commit()
     return jsonify(tasklist.to_dict()), 200
+
+
+@tasklist_routes.route("/<int:id>/leave", methods=["POST"])
+@login_required
+def leave_list(id):
+    """A member takes themselves off a restricted list. The creator is told."""
+    tasklist = Tasklist.query.get_or_404(id)
+
+    if tasklist.all_members:
+        return jsonify({"error": "Everyone in the household has access to this list"}), 400
+    if current_user.id == tasklist.creator_id:
+        return jsonify({"error": "You can't leave a list you created"}), 400
+
+    link = TasklistMember.query.filter_by(
+        tasklist_id=tasklist.id, user_id=current_user.id
+    ).first()
+    if link is None:
+        return jsonify({"error": "You are not a member of this list"}), 404
+
+    db.session.delete(link)
+    clear_featured_list(tasklist.id, {current_user.id})
+    notify_tasklist_self_unassigned(tasklist, current_user)
+
+    db.session.commit()
+    return jsonify({"message": f"Left list {id}"}), 200

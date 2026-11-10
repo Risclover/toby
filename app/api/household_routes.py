@@ -10,6 +10,7 @@ from app.utils.parse_datetime import parse_datetime
 from app.utils.timezone import utc_datetime_to_local, get_user_timezone
 from app.services import ActivityService
 from app.api.tasklist_routes import get_tasklist_audience_ids
+from app.services.notification_triggers import notify_tasklist_access_changed
 
 import json
 
@@ -142,6 +143,11 @@ def create_household_tasklist(household_id):
         event_metadata={"listId": tasklist.id, "listTitle": tasklist.title},
         audience_ids=get_tasklist_audience_ids(tasklist),
     )
+
+    # Everyone in a household-wide list already sees it in the activity feed;
+    # only a chosen subset is "assigned". The creator is skipped as the actor.
+    if not all_members:
+        notify_tasklist_access_changed(tasklist, set(), set(member_ids), current_user)
 
     db.session.commit()
     t_dict = tasklist.to_dict()

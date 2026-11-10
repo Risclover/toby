@@ -483,11 +483,16 @@ textarea.editable-title.is-editing {
 .input-label-description .mantine-InputWrapper-label {
     display: flex;
     align-items: center;
+    font-weight: 500;
 }
 
 .input-label-description .mantine-InputWrapper-label svg {
     color: var(--mantine-color-gray-7);
     /* transform: rotate(180deg); */
+}
+
+.m_8fdc1311 {
+    font-weight: 500;
 }
 
 .manage-members-member {
