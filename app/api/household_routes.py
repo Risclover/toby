@@ -13,6 +13,7 @@ from app.api.tasklist_routes import get_tasklist_audience_ids
 from app.services.notification_triggers import (
     notify_tasklist_access_changed,
     notify_shopping_list_access_changed,
+    notify_reminder_assigned,
 )
 
 import json
@@ -387,7 +388,15 @@ def create_manual_reminder(household_id):
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json()
-    assigned_user_ids = data.get("assignedToIds", [])
+    assigned_user_ids = set(data.get("assignedToIds", []))
+
+    household_member_ids = {u.id for u in household.members}
+    invalid_ids = assigned_user_ids - household_member_ids
+    if invalid_ids:
+        return jsonify({
+            "error": "assignedToIds must belong to the household",
+            "invalid": sorted(invalid_ids),
+        }), 400
 
     trigger_date = None
     raw_date = data.get("triggerDate")
@@ -415,6 +424,8 @@ def create_manual_reminder(household_id):
 
     for user_id in assigned_user_ids:
         db.session.add(ReminderAssignment(reminder_id=reminder.id, user_id=user_id))
+
+    notify_reminder_assigned(reminder, assigned_user_ids, current_user)
 
     db.session.commit()
 

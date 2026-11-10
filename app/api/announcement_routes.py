@@ -9,6 +9,10 @@ import base64
 import pytz
 from app.utils.timezone import utc_datetime_to_local
 from app.services import ActivityService
+from app.services.notification_triggers import (
+    notify_announcement_edited,
+    notify_announcement_deleted,
+)
 
 announcement_routes = Blueprint("announcements", __name__)
 
@@ -84,6 +88,9 @@ def delete_announcement(announcement_id: int):
         entity_id=announcement.id,
         entity_label=announcement.message[:80] if announcement.message else None,
     )
+
+    # Before the delete: the notification reads the message. The author is skipped if they deleted it.
+    notify_announcement_deleted(announcement, current_user)
 
     db.session.delete(announcement)
     db.session.commit()
@@ -247,6 +254,10 @@ def toggle_importance(id):
         abort(403, description="Only the creator or admin can toggle importance")
     
     announcement.is_important = not announcement.is_important
+
+    # The author is told when the admin changes it; skipped automatically when they do it themselves.
+    notify_announcement_edited(announcement, current_user)
+
     db.session.commit()
     
     ann_dict = announcement.to_dict(user=current_user)

@@ -286,3 +286,57 @@ def notify_shopping_list_deleted(shopping_list, actor):
     return _notify_deleted(
         _SHOPPING_LIST, shopping_list, shopping_list_access_ids(shopping_list), actor
     )
+
+
+# ---- REMINDERS ----
+
+def _snippet(text, limit=80):
+    """A reminder or announcement has no title, so its label is its first words."""
+    text = (text or "").strip()
+    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
+def notify_reminder_assigned(reminder, assignee_ids, actor):
+    """Tell the people a manual reminder was set for. The actor is skipped by the service."""
+    if not assignee_ids:
+        return []
+    return NotificationService.notify(
+        type=NotificationType.REMINDER_ASSIGNED,
+        household_id=reminder.household_id,
+        recipient_ids=sorted(assignee_ids),
+        actor_id=actor.id,
+        entity_type=NotificationEntity.REMINDER,
+        entity_id=reminder.id,
+        entity_label=_snippet(reminder.message),
+        batch_key="reminder-assigned",
+    )
+
+
+# ---- ANNOUNCEMENTS ----
+
+def _notify_announcement(type_, announcement, actor, batch_key):
+    """Tell the author that someone else changed or removed their announcement."""
+    return NotificationService.notify(
+        type=type_,
+        household_id=announcement.household_id,
+        recipient_ids=[announcement.user_id],
+        actor_id=actor.id,
+        entity_type=NotificationEntity.ANNOUNCEMENT,
+        entity_id=announcement.id,
+        entity_label=_snippet(announcement.message),
+        batch_key=batch_key,
+    )
+
+
+def notify_announcement_edited(announcement, actor):
+    return _notify_announcement(
+        NotificationType.ANNOUNCEMENT_EDITED, announcement, actor,
+        f"announcement-edited-{announcement.id}",
+    )
+
+
+def notify_announcement_deleted(announcement, actor):
+    """Call BEFORE deleting the announcement."""
+    return _notify_announcement(
+        NotificationType.ANNOUNCEMENT_DELETED, announcement, actor, "announcement-deleted"
+    )

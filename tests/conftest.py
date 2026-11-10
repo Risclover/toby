@@ -3,7 +3,7 @@ import pytest
 from app import create_app
 from app.config import Config
 from app.extensions import db as _db
-from app.models import Household, User, Notification, NotificationType, NotificationEntity, Task, Tasklist, ShoppingList, Event, EventAttendee
+from app.models import Household, User, Notification, NotificationType, NotificationEntity, Task, Tasklist, ShoppingList, Event, EventAttendee, Announcement
 from datetime import datetime, timezone
 
 # Each user needs a different color
@@ -187,7 +187,24 @@ def make_shopping_list(db, household):
         return shopping_list
     return _make
 
+@pytest.fixture
+def make_announcement(db, household):
+    def _make(author, **overrides):
+        args = dict(
+            household_id=household.id,
+            user_id=author.id,
+            message="Trash day moved to Friday",
+        )
+        args.update(overrides)
+        announcement = Announcement(**args)
+        db.session.add(announcement)
+        db.session.commit()
+        return announcement
+    return _make
+
 
 @pytest.fixture
 def admin(household):
     return User.query.get(household.admin_id)
+
+

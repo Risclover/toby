@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, abort, current_app
 from flask_login import current_user, login_required
 from app.extensions import db
 from app.models import Reminder, User, Household, ReminderType, ReminderAssignment
+from app.services.notification_triggers import notify_reminder_assigned
 from datetime import date
 
 reminder_routes = Blueprint("reminders", __name__)
@@ -111,6 +112,18 @@ def update_manual_reminder(id):
 
     data = request.get_json()
 
+    # Validate before changing anything, so a rejected request leaves the reminder untouched.
+    assigned_user_ids = None
+    if "assignedToIds" in data:
+        assigned_user_ids = set(data["assignedToIds"])
+        household_member_ids = {u.id for u in reminder.household.members}
+        invalid_ids = assigned_user_ids - household_member_ids
+        if invalid_ids:
+            return jsonify({
+                "error": "assignedToIds must belong to the household",
+                "invalid": sorted(invalid_ids),
+            }), 400
+
     if "reminderBody" in data:
         reminder.message = data["reminderBody"]
 
@@ -119,13 +132,12 @@ def update_manual_reminder(id):
         raw = data["triggerDate"]
         reminder.trigger_date = date.fromisoformat(raw) if raw else None
 
-    if "assignedToIds" in data:
-        assigned_user_ids = set(data["assignedToIds"])
-
+    if assigned_user_ids is not None:
         existing_assignments = {a.user_id: a for a in reminder.assignments}
         existing_user_ids = set(existing_assignments.keys())
 
-        for user_id in assigned_user_ids - existing_user_ids:
+        added_ids = assigned_user_ids - existing_user_ids
+        for user_id in added_ids:
             db.session.add(
                 ReminderAssignment(
                     reminder_id=reminder.id,
@@ -136,6 +148,9 @@ def update_manual_reminder(id):
 
         for user_id in existing_user_ids - assigned_user_ids:
             db.session.delete(existing_assignments[user_id])
+
+        # Only people newly added are told; removing someone is silent.
+        notify_reminder_assigned(reminder, added_ids, current_user)
 
     db.session.commit()
     return jsonify(reminder.to_dict()), 200
