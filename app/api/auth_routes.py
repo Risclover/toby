@@ -3,7 +3,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
 from app.services import ActivityService
-
+from app.services.notification_triggers import notify_member_joined
 from app.models import User, Household, ShoppingList, assign_user_color
 from app.extensions import db
 from app.forms import LoginForm
@@ -67,12 +67,13 @@ def google_login():
             )
             db.session.add(user)
 
-    # Join household atomically if invite code provided and user has none yet
     if invite_code and not user.household_id:
         household = Household.query.filter_by(invite_code=invite_code).first()
         if household:
+            _assign_household_color(user, household.id)   # color first, see join_existing_household
             user.household_id = household.id
-            _assign_household_color(user, household.id)
+            db.session.flush()   # a brand-new user needs an id before it can be announced
+            notify_member_joined(household, user)
 
     db.session.commit()
     login_user(user)
@@ -194,6 +195,8 @@ def join_household(invite_code):
         color=assign_user_color(household.id),
     )
     db.session.add(user)
+    db.session.flush()
+    notify_member_joined(household, user)
     db.session.commit()
     login_user(user)
 
@@ -267,7 +270,13 @@ def join_existing_household(invite_code):
     if not household:
         return jsonify({"error": "Invalid invite code"}), 400
 
-    current_user.household_id = household.id
+    already_member = current_user.household_id == household.id
+
+    # Color first: its query autoflushes, and flushing the new household_id
+    # with the user's old color can break the (household_id, color) unique rule.
     _assign_household_color(current_user, household.id)
+    current_user.household_id = household.id
+    if not already_member:
+        notify_member_joined(household, current_user)
     db.session.commit()
     return jsonify({"user": current_user.to_dict(), "household": household.to_dict()}), 200

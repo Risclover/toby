@@ -340,3 +340,66 @@ def notify_announcement_deleted(announcement, actor):
     return _notify_announcement(
         NotificationType.ANNOUNCEMENT_DELETED, announcement, actor, "announcement-deleted"
     )
+
+
+# ---- HOUSEHOLD ----
+
+def _notify_household(type_, household, recipient_ids, actor, subject_id, label, batch_key):
+    """Shared by the household triggers. The subject is the user the news is about."""
+    recipients = sorted(recipient_ids)
+    if not recipients:
+        return []
+    return NotificationService.notify(
+        type=type_,
+        household_id=household.id,
+        recipient_ids=recipients,
+        actor_id=actor.id,
+        entity_type=NotificationEntity.USER,
+        entity_id=subject_id,
+        entity_label=label,
+        batch_key=batch_key,
+    )
+
+
+def notify_member_joined(household, new_member):
+    """Tell everyone already in the household. Call after the new member's household_id is set."""
+    others = {u.id for u in household.members} - {new_member.id}
+    return _notify_household(
+        NotificationType.MEMBER_JOINED, household, others, new_member,
+        new_member.id, new_member.display_name, "member-joined",
+    )
+
+
+def notify_member_left(household, leaving_member):
+    """Tell the people who stay. Call BEFORE the member's household_id is cleared."""
+    remaining = {u.id for u in household.members} - {leaving_member.id}
+    return _notify_household(
+        NotificationType.MEMBER_LEFT, household, remaining, leaving_member,
+        leaving_member.id, leaving_member.display_name, "member-left",
+    )
+
+
+def notify_member_removed(household, removed_user, actor):
+    """Tell the people who stay. Call BEFORE the removed user's household_id is cleared."""
+    remaining = {u.id for u in household.members} - {removed_user.id}
+    return _notify_household(
+        NotificationType.MEMBER_REMOVED, household, remaining, actor,
+        removed_user.id, removed_user.display_name, "member-removed",
+    )
+
+
+def notify_user_removed(household, removed_user, actor):
+    """Tell the removed person. The label is the household's name."""
+    return _notify_household(
+        NotificationType.USER_REMOVED, household, {removed_user.id}, actor,
+        removed_user.id, household.name, "user-removed",
+    )
+
+
+def notify_admin_changed(household, new_admin, actor):
+    """Tell everyone in the household who the admin is now, the new admin included."""
+    everyone = {u.id for u in household.members}
+    return _notify_household(
+        NotificationType.ADMIN_CHANGED, household, everyone, actor,
+        new_admin.id, new_admin.display_name, "admin-changed",
+    )

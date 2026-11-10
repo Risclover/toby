@@ -1,7 +1,16 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
-from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment, RepeatFrequency, User, ShoppingListMember, ShoppingList
+from app.models import Household, Tasklist, TasklistMember, Announcement, AnnouncementSeen, Reminder, ReminderType, ReminderAssignment, RepeatFrequency, User, ShoppingListMember, ShoppingList, FeaturedListSetting
+from app.services.notification_triggers import (
+    notify_tasklist_access_changed,
+    notify_shopping_list_access_changed,
+    notify_reminder_assigned,
+    notify_member_removed,
+    notify_user_removed,
+    notify_admin_changed,
+    notify_member_left,
+)
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy import or_
 import base64
@@ -10,11 +19,6 @@ from app.utils.parse_datetime import parse_datetime
 from app.utils.timezone import utc_datetime_to_local, get_user_timezone
 from app.services import ActivityService
 from app.api.tasklist_routes import get_tasklist_audience_ids
-from app.services.notification_triggers import (
-    notify_tasklist_access_changed,
-    notify_shopping_list_access_changed,
-    notify_reminder_assigned,
-)
 
 import json
 
@@ -472,6 +476,15 @@ def get_household_reminders_preview(household_id):
         for assignment in visible
     ]), 200
 
+def detach_from_household(user):
+    """Everything that must happen to a user when they stop being a member,
+    whether they left or were removed."""
+    # TODO: call content cleanup helper here
+    # Their featured list belonged to the household they're leaving.
+    FeaturedListSetting.query.filter_by(user_id=user.id).update({"tasklist_id": None})
+    user.household_id = None
+
+
 @household_routes.route("/<int:household_id>/members/<int:user_id>", methods=["DELETE"])
 @login_required
 def remove_household_member(household_id, user_id):
@@ -490,13 +503,38 @@ def remove_household_member(household_id, user_id):
     if not user or user.household_id != household_id:
         return jsonify({"error": "User not found in this household"}), 404
 
-    # TODO: call content cleanup helper here
+    # Before household_id is cleared: the triggers read the household's members.
+    notify_member_removed(household, user, current_user)
+    notify_user_removed(household, user, current_user)
 
     user.removed_from_household_id = household_id
-    user.household_id = None
+    detach_from_household(user)
     db.session.commit()
 
     return jsonify({"message": f"User {user_id} removed from household {household_id}"}), 200
+
+
+@household_routes.route("/<int:household_id>/leave", methods=["POST"])
+@login_required
+def leave_household(household_id):
+    household = Household.query.get(household_id)
+
+    if not household:
+        return jsonify({"error": "Household not found"}), 404
+
+    if current_user.household_id != household_id:
+        return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
+
+    if current_user.id == household.admin_id:
+        return jsonify({"error": "Transfer the admin role before leaving the household"}), 400
+
+    # Before household_id is cleared: the trigger reads the household's members.
+    notify_member_left(household, current_user)
+
+    detach_from_household(current_user)
+    db.session.commit()
+
+    return jsonify({"message": f"Left household {household_id}"}), 200
 
 @household_routes.route("/<int:household_id>/admin", methods=["PATCH"])
 @login_required
@@ -516,7 +554,11 @@ def transfer_admin_role(household_id):
     if not new_admin or new_admin.household_id != household_id:
         return jsonify({"error": "New admin user not found in this household"}), 404
 
-    household.admin_id = new_admin_id
+    if new_admin.id == household.admin_id:
+        return jsonify({"error": "That user is already the admin"}), 400
+
+    household.admin_id = new_admin.id
+    notify_admin_changed(household, new_admin, current_user)
     db.session.commit()
 
     return jsonify({"message": f"Admin role transferred to user {new_admin_id} in household {household_id}"}), 200
