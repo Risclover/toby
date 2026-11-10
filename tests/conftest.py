@@ -3,7 +3,8 @@ import pytest
 from app import create_app
 from app.config import Config
 from app.extensions import db as _db
-from app.models import Household, User, Notification, NotificationType, NotificationEntity, Task, Tasklist
+from app.models import Household, User, Notification, NotificationType, NotificationEntity, Task, Tasklist, ShoppingList, Event, EventAttendee
+from datetime import datetime, timezone
 
 # Each user needs a different color
 # Admin gets "black", and make_user hands out these in order
@@ -169,6 +170,22 @@ def make_event(db, household):
         return event
     return _make
 
+
+@pytest.fixture
+def make_shopping_list(db, household):
+    def _make(creator, **overrides):
+        args = dict(
+            title="Groceries",
+            household_id=household.id,
+            creator_id=creator.id,
+            all_members=True,
+        )
+        args.update(overrides)
+        shopping_list = ShoppingList(**args)
+        db.session.add(shopping_list)
+        db.session.commit()
+        return shopping_list
+    return _make
 
 
 @pytest.fixture

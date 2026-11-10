@@ -11,6 +11,7 @@ _OPPOSITE_PAIRS = [
     (NotificationType.TASK_COMPLETED, NotificationType.TASK_REOPENED),
     (NotificationType.TASKLIST_ASSIGNED, NotificationType.TASKLIST_UNASSIGNED),
     (NotificationType.EVENT_ASSIGNED, NotificationType.EVENT_UNASSIGNED),
+    (NotificationType.SHOPPING_LIST_ASSIGNED, NotificationType.SHOPPING_LIST_UNASSIGNED)
 ]
 OPPOSITE_TYPES = {
     **{first: second for first, second in _OPPOSITE_PAIRS},

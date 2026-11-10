@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
 import pytest
-
+from datetime import datetime
 from app.models import Event
 from app.models.notification import Notification, NotificationEntity, NotificationType
 
@@ -18,13 +18,13 @@ def count(user, type_):
 
 
 def event_url(event, suffix=""):
-    return f"/api/households/{event.household_id}/events/{event.id}{suffix}"       # MATCH
+    return f"/api/events/households/{event.household_id}/events/{event.id}{suffix}"
 
 
 def create(client, household, **overrides):
     payload = {"title": "Picnic", "startUtc": START, "endUtc": END, "tzid": "UTC"}
     payload.update(overrides)
-    return client.post(f"/api/households/{household.id}/events", json=payload)     # MATCH
+    return client.post(f"/api/events/households/{household.id}/events", json=payload)
 
 
 def edit(client, event, **payload):

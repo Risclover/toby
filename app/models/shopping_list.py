@@ -1,14 +1,12 @@
 from copy import deepcopy
 from enum import Enum
-
-import re
-
 from app.extensions import db
 from flask_login import current_user
 from sqlalchemy import inspect
 from app.models import ShoppingItem
 from app.models.shopping_list_member import ShoppingListMember
 from app.models.shopping_category import ShoppingCategory
+import re
 
 class DuplicateMode(str, Enum):
     ONLY_UNCOMPLETE = 'only_uncomplete'
@@ -79,7 +77,29 @@ class ShoppingList(db.Model):
             return [m.id for m in (self.household.members or [])]
         return [link.user_id for link in self.member_links]
 
-    def duplicate(self, mode: DuplicateMode = DuplicateMode.ALL_PRESERVE):
+    def is_private(self):
+        """Restricted, and nobody but the creator is on it."""
+        return not self.all_members and all(
+            link.user_id == self.creator_id for link in self.member_links
+        )
+
+    def has_access(self, user):
+        """Whether the user may see this list at all."""
+        if user.household_id != self.household_id:
+            return False
+        if self.all_members or user.id == self.creator_id:
+            return True
+        if user.id in {link.user_id for link in self.member_links}:
+            return True
+        return self.household.admin_id == user.id and not self.is_private()
+
+    def can_manage(self, user):
+        """Whether the user may edit, archive, clear or delete this list."""
+        if user.id == self.creator_id:
+            return True
+        return self.household.admin_id == user.id and self.has_access(user)
+
+    def duplicate(self, mode: DuplicateMode = DuplicateMode.ALL_PRESERVE, *, creator_id=None):
         base_title = re.sub(r' \(Copy(?: \d+)?\)$', '', self.title)
         
         # Find existing copies
@@ -101,7 +121,7 @@ class ShoppingList(db.Model):
 
         duplicate = ShoppingList(
             title=new_title,
-            creator_id=self.creator_id,
+            creator_id=creator_id or self.creator_id,
             household_id=self.household_id,
             all_members=self.all_members,
             default_sort=self.default_sort,

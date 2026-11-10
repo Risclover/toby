@@ -197,8 +197,9 @@ def delete_task(id):
         batch_key=f"task-deleted-{tasklist.id}",
     )
 
-    notify_task_deleted(task, current_user)
+    task_id = task.id
+    notify_task_deleted(task, current_user)   # before the delete: needs the row's title and assignee
 
-    task.delete()
+    db.session.delete(task)
     db.session.commit()
-    return {"message": f"Task (id: {task.id}) deleted from database"}
+    return {"message": f"Task (id: {task_id}) deleted from database"}

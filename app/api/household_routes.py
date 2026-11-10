@@ -10,7 +10,10 @@ from app.utils.parse_datetime import parse_datetime
 from app.utils.timezone import utc_datetime_to_local, get_user_timezone
 from app.services import ActivityService
 from app.api.tasklist_routes import get_tasklist_audience_ids
-from app.services.notification_triggers import notify_tasklist_access_changed
+from app.services.notification_triggers import (
+    notify_tasklist_access_changed,
+    notify_shopping_list_access_changed,
+)
 
 import json
 
@@ -27,9 +30,7 @@ def decode_cursor(cursor: str) -> dict:
     except Exception:
         raise ValueError("Invalid cursor")
 
-# --------------------
-# HOUSEHOLD
-# --------------------
+# ---- HOUSEHOLD ----
 @household_routes.route("/<int:id>")
 def get_household(id):
     household = Household.query.get(id)
@@ -41,9 +42,7 @@ def get_household(id):
     h_dict["createdAt"] = utc_datetime_to_local(current_user, household.created_at).isoformat()
     return jsonify(h_dict)
 
-# --------------------
-# TASKLISTS
-# --------------------
+# ---- TASKLISTS ----
 @household_routes.route("/<int:household_id>/tasklists", methods=["GET"])
 @login_required
 def get_household_tasklists(household_id):
@@ -56,34 +55,15 @@ def get_household_tasklists(household_id):
     if current_user.household_id != household_id:
         return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
 
-    is_admin = current_user.id == household.admin_id
-
     lists = Tasklist.query.filter_by(
         household_id=household_id,
         is_archived=is_archived
     ).options(joinedload(Tasklist.archiver)).all()
 
-    user_lists = []
-    for tasklist in lists:
-        # Admin sees everything
-        if is_admin:
-            user_lists.append(tasklist)
-            continue
-
-        if tasklist.creator_id == current_user.id:
-            user_lists.append(tasklist)
-            continue
-
-        is_assigned = TasklistMember.query.filter_by(
-            tasklist_id=tasklist.id,
-            user_id=current_user.id
-        ).first() is not None
-
-        if tasklist.all_members or is_assigned:
-            user_lists.append(tasklist)
-
     tasklists = []
-    for t in user_lists:
+    for t in lists:
+        if not t.has_access(current_user):
+            continue
         t_dict = t.to_dict()
         if hasattr(t, "created_at") and t.created_at:
             t_dict["createdAt"] = utc_datetime_to_local(current_user, t.created_at).isoformat()
@@ -156,9 +136,7 @@ def create_household_tasklist(household_id):
 
     return jsonify(t_dict), 201
 
-# --------------------
-# SHOPPING LISTS
-# --------------------
+# ---- SHOPPING LISTS ----
 @household_routes.route("/<int:id>/shopping")
 @login_required
 def get_household_shopping_lists(id):
@@ -166,31 +144,13 @@ def get_household_shopping_lists(id):
     if not household:
         return jsonify({"error": "Household not found"}), 404
 
-    # Was previously unauthenticated with no membership/visibility check at
-    # all - unlike get_household_tasklists just above, which requires login,
-    # checks household membership, and filters per-list for restricted
-    # (non-all_members) lists. Mirroring that same pattern here.
     if current_user.household_id != id:
         return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
 
-    is_admin = current_user.id == household.admin_id
-
-    visible_lists = []
-    for sl in household.shopping_lists:
-        if is_admin or sl.creator_id == current_user.id or sl.all_members:
-            visible_lists.append(sl)
-            continue
-
-        is_assigned = ShoppingListMember.query.filter_by(
-            list_id=sl.id,
-            user_id=current_user.id
-        ).first() is not None
-
-        if is_assigned:
-            visible_lists.append(sl)
-
     shopping_lists = []
-    for sl in visible_lists:
+    for sl in household.shopping_lists:
+        if not sl.has_access(current_user):
+            continue
         sl_dict = sl.to_dict()
         if hasattr(sl, "created_at") and sl.created_at:
             sl_dict["createdAt"] = utc_datetime_to_local(current_user, sl.created_at).isoformat()
@@ -209,17 +169,9 @@ def get_household_shopping_list(household_id, shopping_list_id):
         return jsonify({"error": "Forbidden: You are not a member of this household"}), 403
 
     shopping_list = next((sl for sl in household.shopping_lists if sl.id == shopping_list_id), None)
-    if not shopping_list:
+    # A list the viewer can't see looks the same as one that doesn't exist.
+    if not shopping_list or not shopping_list.has_access(current_user):
         return jsonify({"error": "Shopping list not found in this household"}), 404
-
-    is_admin = current_user.id == household.admin_id
-    if not is_admin and shopping_list.creator_id != current_user.id and not shopping_list.all_members:
-        is_assigned = ShoppingListMember.query.filter_by(
-            list_id=shopping_list.id,
-            user_id=current_user.id
-        ).first() is not None
-        if not is_assigned:
-            return jsonify({"error": "Forbidden"}), 403
 
     sl_dict = shopping_list.to_dict()
     if hasattr(shopping_list, "created_at") and shopping_list.created_at:
@@ -280,14 +232,16 @@ def create_shopping_list(household_id):
         audience_ids=shopping_list.assignee_ids()
     )
 
+    # Only a chosen subset is "assigned"; the creator is skipped as the actor.
+    if not all_members:
+        notify_shopping_list_access_changed(shopping_list, set(), set(member_ids), current_user)
+
     db.session.commit()
 
     return jsonify(shopping_list.to_dict()), 201
 
 
-# --------------------
-# ANNOUNCEMENTS
-# --------------------
+# ---- ANNOUNCEMENTS ----
 @household_routes.route("/<int:household_id>/announcements")
 @login_required
 def list_announcements(household_id: int):
@@ -388,9 +342,7 @@ def list_announcements(household_id: int):
         "totalCount": total_count,
     })
 
-# --------------------
-# REMINDERS
-# --------------------
+# ---- REMINDERS ----
 @household_routes.route("/<int:household_id>/reminders", methods=["GET"])
 @login_required
 def get_household_reminders(household_id):

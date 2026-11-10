@@ -179,7 +179,7 @@ def delete_task(list_id, id):
     tasklist = Tasklist.query.get(list_id)
 
     # Creator or admin can delete
-    if current_user.id != task.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     deleted_task = task.to_dict()
@@ -209,7 +209,7 @@ def clear_list(list_id):
     tasklist = Tasklist.query.get_or_404(list_id)
 
     # Creator or admin can clear
-    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     # Notify first: the bulk delete below skips the ORM, so the tasks must be read now.
@@ -228,7 +228,7 @@ def delete_list(id):
     tasklist = Tasklist.query.get_or_404(id)
 
     # Creator or admin can delete
-    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     FeaturedListSetting.query.filter(FeaturedListSetting.tasklist_id == id).update(
@@ -259,7 +259,7 @@ def edit_tasklist(id):
     tasklist = Tasklist.query.get_or_404(id)
 
     # Creator or admin can edit
-    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json()
@@ -324,9 +324,8 @@ def duplicate_list(id):
         original_list = Tasklist.query.get_or_404(id)
 
         # Admin bypasses audience check
-        if not is_household_admin(original_list.household_id):
-            if current_user.id not in original_list.audience_user_ids():
-                return jsonify({"error": "Access denied"}), 403
+        if not original_list.has_access(current_user):
+            return jsonify({"error": "Access denied"}), 403
 
         new_list = original_list.duplicate()
         db.session.flush()
@@ -360,7 +359,7 @@ def archive_list(id):
     tasklist = Tasklist.query.get_or_404(id)
 
     # Creator or admin can archive
-    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     tasklist.is_archived = True
@@ -386,7 +385,7 @@ def unarchive_list(id):
     tasklist = Tasklist.query.get_or_404(id)
 
     # Creator or admin can unarchive
-    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     tasklist.is_archived = False
@@ -412,7 +411,7 @@ def update_list_settings(id):
     tasklist = Tasklist.query.get_or_404(id)
 
     # Creator or admin can update settings
-    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json() or {}
@@ -483,9 +482,9 @@ def update_list_settings(id):
                 after_ids = new_member_ids | {tasklist.creator_id}
 
     if title_changed:
-        notify_tasklist_changed(tasklist, before_ids, current_user)
+        kept_ids = before_ids if after_ids is None else before_ids & after_ids
+        notify_tasklist_changed(tasklist, kept_ids, current_user)
     if after_ids is not None:
-        clear_featured_list(tasklist.id, before_ids - after_ids)
         notify_tasklist_access_changed(tasklist, before_ids, after_ids, current_user)
 
     db.session.commit()
@@ -498,7 +497,7 @@ def complete_all_tasks(id):
     tasklist = Tasklist.query.get_or_404(id)
 
     # Creator or admin can bulk complete
-    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     for task in tasklist.tasks:
@@ -525,7 +524,7 @@ def incomplete_all_tasks(id):
     tasklist = Tasklist.query.get_or_404(id)
 
     # Creator or admin can bulk incomplete
-    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     for task in tasklist.tasks:
@@ -553,7 +552,7 @@ def manage_assigned_members(id):
     tasklist = Tasklist.query.get_or_404(id)
 
     # Creator or admin can manage members
-    if current_user.id != tasklist.creator_id and not is_household_admin(tasklist.household_id):
+    if not tasklist.can_manage(current_user):
         return jsonify({"error": "Forbidden"}), 403
 
     data = request.get_json() or {}
