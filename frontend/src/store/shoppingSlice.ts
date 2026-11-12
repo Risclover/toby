@@ -197,6 +197,16 @@ export const shoppingSlice = apiSlice.injectEndpoints({
             invalidatesTags: (_r, _e, { listId }) => [{ type: "ShoppingList", id: listId }],
         }),
 
+        leaveShoppingList: builder.mutation<{ message: string }, { listId: number; householdId: number }>({
+            query: ({ listId }) => ({ url: `/shopping-lists/${listId}/leave`, method: "POST" }),
+            invalidatesTags: (_r, _e, { listId, householdId }) => [
+                { type: "ShoppingList", id: listId },
+                { type: "ShoppingList", id: "LIST" },
+                { type: "ShoppingList", id: `HOUSEHOLD_${householdId}` },
+                { type: "Activity" as const, id: `HOUSEHOLD_${householdId}` },
+            ],
+        }),
+
         updateListOptions: builder.mutation<ShoppingList, { listId: number; defaultSort?: "created" | "alpha"; groupByCategory?: boolean }>({
             query: ({ listId, ...body }) => ({
                 url: `/shopping-lists/${listId}/options`,
@@ -227,12 +237,15 @@ export const shoppingSlice = apiSlice.injectEndpoints({
                 body: { name, categoryId, quantity, unit },
             }),
             async onQueryStarted({ listId, name, categoryId = null, quantity = "", unit = "" }, { dispatch, queryFulfilled }) {
+                if (listId === undefined) return;
+                const id = listId;
+
                 const tempId = Math.floor(Math.random() * -1e9);
                 const patch = dispatch(
-                    shoppingSlice.util.updateQueryData("getShoppingList", listId, (draft) => {
+                    shoppingSlice.util.updateQueryData("getShoppingList", id, (draft) => {
                         draft.items.push({
                             id: tempId,
-                            listId,
+                            listId: id,
                             name,
                             quantity,
                             unit,
@@ -250,7 +263,7 @@ export const shoppingSlice = apiSlice.injectEndpoints({
                 try {
                     const { data: created } = await queryFulfilled;
                     dispatch(
-                        shoppingSlice.util.updateQueryData("getShoppingList", listId, (draft) => {
+                        shoppingSlice.util.updateQueryData("getShoppingList", id, (draft) => {
                             const idx = draft.items.findIndex((i) => i.id === tempId);
                             if (idx !== -1) draft.items[idx] = created;
                         })
@@ -411,6 +424,7 @@ export const {
     useUncheckAllItemsMutation,
     useClearShoppingListMutation,
     useManageAssignedMembersMutation,
+    useLeaveShoppingListMutation,
     useUpdateListOptionsMutation,
     // items
     useAddShoppingItemMutation,

@@ -1,6 +1,6 @@
 import { AdminBadgeIcon } from "@/assets/icons/AdminBadgeIcon";
 import { RemoveMemberIcon } from "@/assets/icons/RemoveMemberIcon";
-import { useAuthenticateQuery, useTransferAdminRoleMutation, type Household } from "@/store";
+import { useAuthenticateQuery, type Household } from "@/store";
 import { ActionIcon, Menu } from "@mantine/core"
 import { IoEllipsisVerticalSharp } from "react-icons/io5";
 import type { HouseholdMember } from "./MembersModal";

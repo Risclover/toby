@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from app.models.notification import NotificationEntity, NotificationType
+from app.models.notification import Notification, NotificationEntity, NotificationType
 from app.services.notification_service import NotificationService
 from app.utils.timezone import ensure_utc
 
@@ -403,3 +403,40 @@ def notify_admin_changed(household, new_admin, actor):
         NotificationType.ADMIN_CHANGED, household, everyone, actor,
         new_admin.id, new_admin.display_name, "admin-changed",
     )
+
+
+
+def notify_admin_request(household, candidate, admin):
+    """The admin offered the role: tell the candidate."""
+    _notify_household(
+        NotificationType.ADMIN_REQUEST,
+        household,
+        [candidate.id],
+        admin,
+        subject_id=admin.id,
+        label=household.name,
+        batch_key=f"admin-request-{household.id}",
+    )
+
+
+def notify_admin_request_declined(household, admin, candidate):
+    """The candidate said no: tell the admin."""
+    _notify_household(
+        NotificationType.ADMIN_REQUEST_DECLINED,
+        household,
+        [admin.id],
+        candidate,
+        subject_id=candidate.id,
+        label=f"{candidate.first_name} {candidate.last_name}",
+        batch_key=f"admin-request-declined-{candidate.id}",
+    )
+
+
+def retract_admin_request(household, candidate_id):
+    """The admin cancelled: delete the candidate's unread request, if there is one."""
+    Notification.query.filter_by(
+        household_id=household.id,
+        recipient_id=candidate_id,
+        type=NotificationType.ADMIN_REQUEST,
+        read_at=None,  # MATCH: use whatever marks a row as unread in your model
+    ).delete()

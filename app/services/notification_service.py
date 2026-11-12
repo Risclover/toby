@@ -80,7 +80,7 @@ def _fold_into(existing, entity_id, entity_label, now):
 class NotificationService:
     @staticmethod
     def notify(type, household_id, recipient_ids, actor_id, entity_type=None, entity_id=None,
-               entity_label=None, event_metadata=None, batch_key=None):
+               entity_label=None, batch_key=None):
         """Notify each recipient. Never commits.
 
         Skips the actor. If the notification undoes an unread one (assigned vs

@@ -10,6 +10,9 @@ from app.services.notification_triggers import (
     notify_user_removed,
     notify_admin_changed,
     notify_member_left,
+    notify_admin_request,
+    notify_admin_request_declined,
+    retract_admin_request,
 )
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy import or_
@@ -479,9 +482,15 @@ def get_household_reminders_preview(household_id):
 def detach_from_household(user):
     """Everything that must happen to a user when they stop being a member,
     whether they left or were removed."""
-    # TODO: call content cleanup helper here
-    # Their featured list belonged to the household they're leaving.
     FeaturedListSetting.query.filter_by(user_id=user.id).update({"tasklist_id": None})
+
+    # If they were the pending admin candidate, the offer dies with their membership.
+    # Must run before household_id is cleared, since it filters on it.
+    Household.query.filter_by(id=user.household_id, pending_admin_id=user.id).update(
+        {"pending_admin_id": None}
+    )
+
+    # TODO: call content cleanup helper here
     user.household_id = None
 
 
@@ -562,3 +571,93 @@ def transfer_admin_role(household_id):
     db.session.commit()
 
     return jsonify({"message": f"Admin role transferred to user {new_admin_id} in household {household_id}"}), 200
+
+
+# ---- ADMIN REQUEST ----
+
+def _request_dict(household):
+    if household.pending_admin_id is None:
+        return None
+    return {
+        "id": household.id,
+        "householdId": household.id,
+        "fromUserId": household.admin_id,
+        "toUserId": household.pending_admin_id,
+    }
+
+
+@household_routes.route("/<int:household_id>/admin-request", methods=["GET"])
+@login_required
+def get_admin_request(household_id):
+    if current_user.household_id != household_id:
+        return {"error": "Forbidden"}, 403
+    household = Household.query.get_or_404(household_id)
+    return {"request": _request_dict(household)}, 200
+
+
+@household_routes.route("/<int:household_id>/admin-request", methods=["POST"])
+@login_required
+def create_admin_request(household_id):
+    household = Household.query.get_or_404(household_id)
+    if household.admin_id != current_user.id:
+        return {"error": "Only the admin can hand over the role"}, 403
+
+    new_admin_id = (request.get_json(silent=True) or {}).get("newAdminId")
+    candidate = User.query.get(new_admin_id) if new_admin_id else None
+    if candidate is None or candidate.household_id != household.id:
+        return {"error": "That person isn't a member of this household"}, 400
+    if candidate.id == current_user.id:
+        return {"error": "You're already the admin"}, 400
+    if household.pending_admin_id is not None:
+        return {"error": "There's already a pending admin request"}, 409
+
+    household.pending_admin_id = candidate.id
+    notify_admin_request(household, candidate, current_user)
+    db.session.commit()
+    return {"request": _request_dict(household)}, 201
+
+
+@household_routes.route("/<int:household_id>/admin-request/accept", methods=["POST"])
+@login_required
+def accept_admin_request(household_id):
+    household = Household.query.get_or_404(household_id)
+    if household.pending_admin_id is None:
+        return {"error": "No pending admin request"}, 404
+    if household.pending_admin_id != current_user.id:
+        return {"error": "This request isn't for you"}, 403
+
+    household.admin_id = current_user.id
+    household.pending_admin_id = None
+    notify_admin_changed(household, current_user, current_user)
+    db.session.commit()
+    return household.to_dict(current_user), 200
+
+
+@household_routes.route("/<int:household_id>/admin-request/decline", methods=["POST"])
+@login_required
+def decline_admin_request(household_id):
+    household = Household.query.get_or_404(household_id)
+    if household.pending_admin_id is None:
+        return {"error": "No pending admin request"}, 404
+    if household.pending_admin_id != current_user.id:
+        return {"error": "This request isn't for you"}, 403
+
+    household.pending_admin_id = None
+    notify_admin_request_declined(household, household.admin, current_user)
+    db.session.commit()
+    return {"request": None}, 200
+
+
+@household_routes.route("/<int:household_id>/admin-request", methods=["DELETE"])
+@login_required
+def cancel_admin_request(household_id):
+    household = Household.query.get_or_404(household_id)
+    if household.admin_id != current_user.id:
+        return {"error": "Only the admin can cancel the request"}, 403
+    if household.pending_admin_id is None:
+        return {"error": "No pending admin request"}, 404
+
+    retract_admin_request(household, household.pending_admin_id)  # before clearing
+    household.pending_admin_id = None
+    db.session.commit()
+    return {"request": None}, 200

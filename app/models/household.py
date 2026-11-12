@@ -8,11 +8,12 @@ class Household(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     admin_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    pending_admin_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL", name="fk_households_pending_admin_id"), nullable=True)
     invite_code = db.Column(db.String(64), unique=True, nullable=True, index=True)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     tzid = db.Column(db.String(64), nullable=False, default="America/Los_Angeles")
     accent_color = db.Column(db.String(20), nullable=False, default="gray")
-    
+
     announcements = db.relationship(
         "Announcement",
         back_populates="household",

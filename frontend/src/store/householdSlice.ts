@@ -3,6 +3,13 @@ import type { ShoppingList } from "./shoppingSlice";
 import type { TasklistType } from "./taskSlice";
 
 export type Household = { id: number; name: string; adminId: number };
+export type AdminRequest = {
+    id: number;
+    householdId: number;
+    fromUserId: number;
+    toUserId: number;
+    createdAt: string;
+};
 type Tasklist = { id: number; title: string; createdAt: string; memberIds: number[] };
 type TasklistTag = { type: "Tasklist"; id: number | string };
 type ShoppingCategory = { id: number; listId: number; name: string; createdAt: string; updatedAt: string };
@@ -84,18 +91,73 @@ export const householdSlice = apiSlice.injectEndpoints({
                 method: "DELETE",
             }),
             invalidatesTags: (_result, _error, { householdId }) => [
-                { type: "Household", id: householdId }
+                { type: "Household", id: householdId },
+                { type: "AdminRequest", id: householdId },
             ],
         }),
 
-        transferAdminRole: builder.mutation<Household, { householdId: number; userId: number }>({
+        leaveHousehold: builder.mutation<{ message: string }, { householdId: number }>({
+            query: ({ householdId }) => ({
+                url: `/households/${householdId}/leave`,
+                method: "POST",
+            }),
+            // "Session" refreshes the current user, whose householdId is now gone.
+            invalidatesTags: (_result, _error, { householdId }) => [
+                "Session",
+                { type: "Household", id: householdId },
+                { type: "AdminRequest", id: householdId },
+            ],
+        }),
+
+        // ---- ADMIN REQUEST ----
+
+        getAdminRequest: builder.query<{ request: AdminRequest | null }, number>({
+            query: (householdId) => `/households/${householdId}/admin-request`,
+            providesTags: (_result, _error, householdId) => [
+                { type: "AdminRequest", id: householdId },
+            ],
+        }),
+
+        createAdminRequest: builder.mutation<{ request: AdminRequest }, { householdId: number; userId: number }>({
             query: ({ householdId, userId }) => ({
-                url: `/households/${householdId}/admin`,
-                method: "PATCH",
+                url: `/households/${householdId}/admin-request`,
+                method: "POST",
                 body: { newAdminId: userId },
             }),
             invalidatesTags: (_result, _error, { householdId }) => [
-                { type: "Household", id: householdId }
+                { type: "AdminRequest", id: householdId },
+            ],
+        }),
+
+        acceptAdminRequest: builder.mutation<{ message: string }, { householdId: number }>({
+            query: ({ householdId }) => ({
+                url: `/households/${householdId}/admin-request/accept`,
+                method: "POST",
+            }),
+            // adminId on the household changes
+            invalidatesTags: (_result, _error, { householdId }) => [
+                { type: "Household", id: householdId },
+                { type: "AdminRequest", id: householdId },
+            ],
+        }),
+
+        declineAdminRequest: builder.mutation<{ message: string }, { householdId: number }>({
+            query: ({ householdId }) => ({
+                url: `/households/${householdId}/admin-request/decline`,
+                method: "POST",
+            }),
+            invalidatesTags: (_result, _error, { householdId }) => [
+                { type: "AdminRequest", id: householdId },
+            ],
+        }),
+
+        cancelAdminRequest: builder.mutation<{ message: string }, { householdId: number }>({
+            query: ({ householdId }) => ({
+                url: `/households/${householdId}/admin-request`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (_result, _error, { householdId }) => [
+                { type: "AdminRequest", id: householdId },
             ],
         }),
 
@@ -118,5 +180,10 @@ export const {
     useGetHouseholdShoppingListsQuery,
     useGetHouseholdShoppingListQuery,
     useRemoveHouseholdMemberMutation,
-    useTransferAdminRoleMutation,
+    useLeaveHouseholdMutation,
+    useGetAdminRequestQuery,
+    useCreateAdminRequestMutation,
+    useAcceptAdminRequestMutation,
+    useDeclineAdminRequestMutation,
+    useCancelAdminRequestMutation,
 } = householdSlice;

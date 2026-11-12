@@ -45,7 +45,7 @@ class NotificationType(str, enum.Enum):
     # Household
     ADMIN_CHANGED = "admin_changed" # Household admin changed
     ADMIN_REQUEST = "admin_request" # Admin requesting user to become admin
-    ADMIN_REQUEST_DENIED = "admin_request_denied" # Admin request was denied by requested user (inform requestee)
+    ADMIN_REQUEST_DECLINED = "admin_request_declined" # Admin request was declined by requested user
     MEMBER_JOINED = "member_joined" # Member joined household
     MEMBER_LEFT = "member_left" # Member left household
     MEMBER_REMOVED = "member_removed" # Member removed from household 
