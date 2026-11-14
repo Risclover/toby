@@ -87,6 +87,9 @@ class Notification(db.Model):
     entity_type = db.Column(SAEnum(NotificationEntity, native_enum=False, length=16), nullable=True)
     entity_label = db.Column(db.String(255), nullable=True)
     entity_labels = db.Column(db.JSON, nullable=True)
+    # Where the entity lives, when it has a container: a task's tasklist id.
+    # Like entity_id, this is a plain id with no FK, since the target varies by type.
+    parent_id = db.Column(db.Integer, nullable=True)
 
     batch_key = db.Column(db.String(100), nullable=True)
     count = db.Column(db.Integer, nullable=False, default=1)
@@ -123,6 +126,7 @@ class Notification(db.Model):
             "entityId": self.entity_id,
             "entityLabel": self.entity_label,
             "entityLabels": self.entity_labels or [],
+            "parentId": self.parent_id,
             "count": self.count,
             "createdAt": _iso(self.created_at),
             "readAt": _iso(self.read_at),

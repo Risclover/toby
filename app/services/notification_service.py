@@ -63,7 +63,7 @@ def _find_undoable(*, recipient_id, household_id, type, entity_type, entity_id, 
         .first()
     )
 
-def _fold_into(existing, entity_id, entity_label, now):
+def _fold_into(existing, entity_id, entity_label, parent_id, now):
     """Merge a new occurrence into an existing notification."""
     labels = list(existing.entity_labels or [])
     is_repeat = bool(entity_label) and entity_label in labels
@@ -74,18 +74,23 @@ def _fold_into(existing, entity_id, entity_label, now):
     existing.entity_labels = labels
     if existing.entity_id != entity_id:
         existing.entity_id = None      # one id can't point at two different entities
+    if existing.parent_id != parent_id:
+        existing.parent_id = None      # nor at two different parents
     existing.created_at = now
 
 
 class NotificationService:
     @staticmethod
     def notify(type, household_id, recipient_ids, actor_id, entity_type=None, entity_id=None,
-               entity_label=None, batch_key=None):
+               entity_label=None, batch_key=None, parent_id=None):
         """Notify each recipient. Never commits.
 
         Skips the actor. If the notification undoes an unread one (assigned vs
         unassigned, completed vs reopened), both disappear. Otherwise it folds into a
         matching unread row, or creates a new one.
+
+        parent_id is where the entity lives, when it has a container (a task's
+        tasklist id). The frontend uses it to link to the right page.
         """
         now = datetime.now(timezone.utc)
         notifications = []
@@ -110,7 +115,7 @@ class NotificationService:
                 )
 
             if existing:
-                _fold_into(existing, entity_id, entity_label, now)
+                _fold_into(existing, entity_id, entity_label, parent_id, now)
                 notifications.append(existing)
                 continue
 
@@ -119,6 +124,7 @@ class NotificationService:
                 type=type, entity_type=entity_type, entity_id=entity_id,
                 entity_label=entity_label,
                 entity_labels=[entity_label] if entity_label else [],
+                parent_id=parent_id,
                 batch_key=batch_key,
             )
             db.session.add(notification)

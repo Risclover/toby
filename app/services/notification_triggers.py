@@ -8,7 +8,10 @@ from app.utils.timezone import ensure_utc
 # ---- TASKS ----
 
 def _notify_task(type_, task, actor, recipient_ids, batch_prefix):
-    """Shared by the task triggers. Never commits."""
+    """Shared by the task triggers. Never commits.
+
+    The task's list is stored as the parent, so the notification can link to it.
+    """
     return NotificationService.notify(
         type=type_,
         household_id=task.tasklist.household_id,
@@ -18,6 +21,7 @@ def _notify_task(type_, task, actor, recipient_ids, batch_prefix):
         entity_id=task.id,
         entity_label=task.title,
         batch_key=f"{batch_prefix}-{task.list_id}",
+        parent_id=task.list_id,
     )
 
 
@@ -405,30 +409,19 @@ def notify_admin_changed(household, new_admin, actor):
     )
 
 
-
 def notify_admin_request(household, candidate, admin):
-    """The admin offered the role: tell the candidate."""
-    _notify_household(
-        NotificationType.ADMIN_REQUEST,
-        household,
-        [candidate.id],
-        admin,
-        subject_id=admin.id,
-        label=household.name,
-        batch_key=f"admin-request-{household.id}",
+    """The admin offered the role: tell the candidate. The label is the household's name."""
+    return _notify_household(
+        NotificationType.ADMIN_REQUEST, household, {candidate.id}, admin,
+        admin.id, household.name, f"admin-request-{household.id}",
     )
 
 
 def notify_admin_request_declined(household, admin, candidate):
     """The candidate said no: tell the admin."""
-    _notify_household(
-        NotificationType.ADMIN_REQUEST_DECLINED,
-        household,
-        [admin.id],
-        candidate,
-        subject_id=candidate.id,
-        label=f"{candidate.first_name} {candidate.last_name}",
-        batch_key=f"admin-request-declined-{candidate.id}",
+    return _notify_household(
+        NotificationType.ADMIN_REQUEST_DECLINED, household, {admin.id}, candidate,
+        candidate.id, candidate.display_name, f"admin-request-declined-{candidate.id}",
     )
 
 
@@ -438,5 +431,5 @@ def retract_admin_request(household, candidate_id):
         household_id=household.id,
         recipient_id=candidate_id,
         type=NotificationType.ADMIN_REQUEST,
-        read_at=None,  # MATCH: use whatever marks a row as unread in your model
+        read_at=None,
     ).delete()
